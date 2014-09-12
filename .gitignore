@@ -1,0 +1,27 @@
+# ignore 
+*.local.neon
+*~
+*.lock
+./log/
+./temp/
+./vendor/
+./www/img/ # ignoruje i podadresare, bez toho lomitka by ignoroval jen soubory ve slozce, dal uz by to bral
+./www/js
+*/composer.json
+*/web.config
+
+# track
+!.
+!./app/
+!./bin/
+!./tests/
+!./www/
+
+
+/vendor/others/PresenterTree/PresenterTree.php
+/vendor/others/PresenterTree/config.neon
+/vendor/others/PresenterTree/example.old
+/vendor/others/PresenterTree/PresenterInfo.php
+/vendor/
+/temp/
+/log/app/config/config.local.neon

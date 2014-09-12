@@ -69,30 +69,4 @@ abstract class BasePresenter extends Presenter {
 	$configParams = $this->presenter->context->getParameters();
 	return $configParams['models']['salt'];
     }
-
-//    public function collectPresenters() {
-//	$cache = $this->getCache('Nette.RobotLoader');
-//
-//	dd($cache);
-//	if (!isset($cache['data']['list']))
-//	    throw new InvalidArgumentException('Data from RobotLoader were not loaded!');
-//
-//	$data = array();
-//
-//	foreach ($cache['data']['list'] as $prname => $page) {
-//	    if ((preg_match('/^(?<name>\w+)presenter$/', $prname, $matches)) && ($matches['name'] != 'i')) {
-//
-//		$data[] = $matches['name'];
-//	    }
-//	}
-//	dd($data);
-//    }
-//
-//    public function getCacheStorage() {
-//	return $this->getContext()->getService('cacheStorage');
-//    }
-//
-//    public function getCache($namespace) {
-//	return new \Nette\Caching\Cache($this->getCacheStorage(), $namespace);
-//    }
 }

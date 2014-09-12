@@ -1,0 +1,96 @@
+{**
+ * Sportsclub application main layout template
+ *
+ * @param string   $basePath web base path
+ * @param string   $robots   tell robots how to index the content of a page (optional)
+ * @param array    $flashes  flash messages
+*}
+
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="utf-8">
+	<meta name="description" content="{block meta-description}">
+	<meta name="robots" content="{$robots}" n:ifset="$robots">
+
+	<title>{block title|striptags|upper}Nette Application Skeleton{/block}</title>
+
+	{var theme => "default"}
+
+	{block styleSheets}
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/reset.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/root.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/grido.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/screen.css">
+	<link rel="stylesheet" media="print" href="{$basePath}/css/{$theme}/print.css">
+	{/}
+	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
+	{block head}{/}
+    </head>
+
+    <body>
+	<script> document.documentElement.className += ' js';</script>
+	{block scripts}
+	<script src="{$basePath}/js/jquery.js"></script>
+	<script src="{$basePath}/js/netteForms.js"></script>
+	<script src="{$basePath}/js/main.js"></script>
+	<script src="{$basePath}/js/grido.js"></script>
+	<script>
+	$(document).ready(function() {
+    $('input[data-dateinput-type]').dateinput({
+        datetime: {
+            dateFormat: 'd.m.yy',
+            timeFormat: 'H:mm',
+            options: { // options for type=datetime
+                changeYear: true
+            }
+        },
+        'datetime-local': {
+            dateFormat: 'd.m.yy',
+            timeFormat: 'H:mm'
+        },
+        date: {
+            dateFormat: 'd.m.yy'
+        },
+        month: {
+            dateFormat: 'MM yy'
+        },
+        week: {
+            dateFormat: "w. 'week of' yy"
+        },
+        time: {
+            timeFormat: 'H:mm'
+        },
+        options: { // global options
+            closeText: "Close"
+        }
+    });
+});
+	</script>
+	{/}
+
+	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+
+	<section>
+	    <header>
+		<section class="content">
+		    <nav>NAVIGACE
+		    </nav>
+		</section>
+	    </header>
+
+	    <section>
+		<section class="content">
+		    {include content}
+		</section>
+	    </section>
+
+	    <footer>
+		<section class="content">
+		    Sportsclub 2014
+		</section>
+	    </footer>
+	</section>
+</body>
+</html>

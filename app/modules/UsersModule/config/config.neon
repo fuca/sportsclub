@@ -1,0 +1,20 @@
+#
+# Config file for UsersModule
+#
+
+usersModule:
+	# tady si nastavim svoje vecicky
+
+services:
+	# tady si muzu definovat sluzby v ramci meho modulu
+	users.userService:
+			class:
+				App\Model\Service\UserService
+				setup:
+					- setCacheStorage(@serviceEntityCache)
+
+factories:
+	# tady si muzu definovat tovarny na ruzny komponenty atp v ramci myho modulu
+	# viz http://doc.nette.org/cs/2.2/di-extensions
+	# a http://pla.nette.org/cs/create-components-with-autowiring
+

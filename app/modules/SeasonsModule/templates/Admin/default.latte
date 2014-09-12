@@ -1,0 +1,16 @@
+{* Latte template *}
+{layout ./base.latte}
+
+{block content}
+
+<a href="{plink :Seasons:Admin:addSeason}">Nova sezona</a> 
+
+{control seasonsGrid}
+
+<a href="{plink :Seasons:Admin:addSeasonTax}">Nova sezonni povinnost</a>
+
+{control seasonTaxGrid}
+
+<a href="{plink :Seasons:Admin:addSeasonApplication}">Nova sezonni prihlaska</a>
+
+{control seasonApplicationGrid}

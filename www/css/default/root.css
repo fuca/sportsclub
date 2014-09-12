@@ -1,0 +1,27 @@
+/* 
+    Created on : Aug 5, 2014, 2:51:40 PM
+    Author     : fuca
+*/
+
+body {
+    margin: 0;
+    padding: 0;
+    background: red;
+}
+
+	header {
+	    background: #E6DFBF;
+	}
+
+	section {
+
+	}
+
+	footer {
+	    background: #DDD;
+	}
+
+	.content {
+	    margin: auto;
+	    width: 50%;
+	}

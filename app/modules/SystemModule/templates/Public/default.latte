@@ -1,0 +1,22 @@
+{* Latte template *}
+
+{block content}
+
+<a href="{plink :System:Auth:default}">Přihlásit</a>
+
+<a href="{plink :Articles:Admin:}">Admin article presenter</a>
+<a href="{plink :Users:Admin:default}">Admin user presenter</a>
+<a href="{plink :Security:Admin:default}">Admin auth presenter</a>
+<a href="{plink :System:Admin:default}">Admin system presenter</a>
+<a href="{plink :Seasons:Admin:default}">Admin season presenter</a>
+<a href="{plink :Payments:Admin:default}">Admin payments presenter</a>
+
+
+<h2>Dalsi den</h2>
+
+<ol>    
+    <li>Nacitani vsech moznych resourcu asi hodit do modelu auth, ci kde to bude</li>
+</ol>
+
+<a n:foreach="$actions as $key => $action" href="{plink $key}">{$key}<br></a>
+

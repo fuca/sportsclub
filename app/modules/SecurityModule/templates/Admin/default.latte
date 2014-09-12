@@ -1,0 +1,14 @@
+{* Latte template *}
+{layout ./base.latte}
+
+{block content}
+
+<a href="{plink :Security:Admin:addRole}">Nova role</a>
+
+{control rolesGrid}
+
+<a href="{plink :Security:Admin:addRule}">Nove pravidlo</a>
+{control rulesGrid}
+
+<a href="{plink :Security:Admin:addPosition}">Nova pozice</a>
+{control positionsGrid}

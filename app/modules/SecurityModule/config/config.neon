@@ -1,0 +1,58 @@
+#
+# Config file for SecurityModule
+#
+
+parameters:
+	# tady si nastavim svoje vecicky
+	security.cacheDir: 
+
+services:
+	# tady si muzu definovat sluzby v ramci meho modulu
+
+	security.moduleCacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/securityModule/)
+		autowired: false
+
+	security.rolesService:
+		class:
+			App\Model\Service\RoleService
+			setup:
+				- setCacheStorage(@security.moduleCacheStorage)
+
+	security.resourceService:
+		class:
+			App\SecurityModule\Model\Service\ResourceService
+			setup:
+				- setCacheStorage(@security.moduleCacheStorage)
+				- setPresenterTree()
+
+	security.aclRulesService:
+		class:
+			App\Model\Service\AclRuleService
+			setup:
+				- setCacheStorage(@security.moduleCacheStorage)
+				- setRoleService()
+	security.aclService:
+		class:
+			App\SecurityModule\Model\Acl
+
+	security.positionsService:
+		class:
+			App\Model\Service\PositionService
+			setup:
+				- setCacheStorage(@security.moduleCacheStorage)
+				- setSportGroupService()
+				- setUserService()
+				- setRoleService()
+	authenticator: 
+		class:
+			App\SecurityModule\Model\Authenticator
+			setup:
+				- setSalt(%models.salt%)
+				- setRolesService()
+				- setUsersService()
+factories:
+	# tady si muzu definovat tovarny na ruzny komponenty atp v ramci myho modulu
+	# viz http://doc.nette.org/cs/2.2/di-extensions
+	# a http://pla.nette.org/cs/create-components-with-autowiring
+

@@ -1,0 +1,162 @@
+#
+# ENSURE NOT EXPOSURING THIS FILE TO CLIENT SIDE USERS
+#
+
+includes:
+	# - nazev.neon ## nejnizsi priorita
+	# - nazev.neon ## vyssi priorita
+	- config.local.neon
+
+
+
+
+parameters:
+	database:
+		dsn: 'mysql:host=127.0.0.1;dbname=sportsclub'
+		user: root
+		password:   pw
+		options: 
+			lazy: true
+	models:
+		salt: $2a$06$D095INKqFG8iuPts/cr70.
+		
+	debugger: 
+		email: michal.fuca.fucik@gmail.com
+
+doctrine: # doctrine configuration
+	#host:	    127.0.0.1
+	#user:	    root
+	#dbname:	    sportsclub
+	#password:   880609Fuca
+	metadata:
+		App:	%appDir%
+		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
+
+annotations: # configure of annotations extension
+	ignore:	[hideInTree, Secured, Resource] # array of ignored annotations
+
+php:
+	date.timezone: Europe/Prague
+	# zlib.output_compression: yes
+
+
+nette:
+	application:
+		errorPresenter: Public:Error
+		debugger: true
+		catchExceptions: false
+
+		mapping:
+			*: App\*Module\Presenters\*Presenter
+
+	session:
+		expiration: 14 days
+		#autoStart: smart ## default smart on
+		name: sportsClub
+
+	database:
+		connection: %database%
+
+	routing:
+		debugger: true
+		
+	security:
+		#frames: yes ## default no (SAMEORIGIN)
+		
+	#mailer: smtp ## default je sendMailer
+
+	forms:
+		#EQUAL: 'Please enter %s' ## we can change default messages here
+	container: 
+		debugger: true
+	debugger:
+		email: %debugger.email%
+		strictMode: true
+		editor: sublime
+		browser: chromium-browser
+		bar:
+			#- Nette\DI\Diagnostics\ContainerPanel ## already on from container:debugger:true
+			
+		blueScreen: # panely do Laděnky
+			#- DoctrinePanel::renderException
+		
+services:
+	#- App\Model\UserManager
+
+	# tohle uz neni treba je to nahrazeno 
+	#robotLoader:
+	#	class: Nette\Loaders\RobotLoader
+	#	setup:
+	#		- setCacheStorage
+
+	presenterTree:	Kdyby\PresenterTree
+
+	#- Nette\Caching\Storages\MemcachedStorage()
+	
+	- App\RouterFactory
+	router: @App\RouterFactory::createRouter
+
+	cacheStorage: # redefinovani cache pro system, at je v tom poradek
+		class: Nette\Caching\Storages\FileStorage(%tempDir%)
+
+	serviceEntityCache: # tohle by odtud melo zmizet a kazdy modul by mel mit svoji storage
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/)
+		autowired: no
+
+
+	- 
+		class:
+			App\SystemModule\Model\Service\SportTypeService
+			setup:
+				- setCacheStorage(@serviceEntityCache)
+	- 
+		class:
+			App\SystemModule\Model\Service\SportGroupService
+			setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setSportTypeService()
+
+	-	
+		class:
+			App\SeasonsModule\Model\Service\SeasonService
+			setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
+	-	
+		class:	
+			App\SeasonsModule\Model\Service\SeasonTaxService
+			setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
+				- setSportGroupService()
+				- setSeasonService()
+	-	
+		class:	
+			App\SeasonsModule\Model\Service\SeasonApplicationService
+			setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
+				- setSportGroupService()
+				- setSeasonService()
+				- setSeasonTaxService()
+				- setPaymentService() #otestovat, zda  to bude fungovat ikdyz tu ta servisa nebude vytvorena, kdyztak zkusit do toho setteru dat = NULL jako optional
+	- 
+		class:
+			App\PaymentsModule\Model\Service\PaymentService
+			setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUsersService()
+				- setSeasonService()
+
+	#- App\Model\Service\WallService()
+	#- App\Model\Service\ForumService()
+
+extensions:
+	annotations: Kdyby\Annotations\DI\AnnotationsExtension
+	console: Kdyby\Console\DI\ConsoleExtension
+	events: Kdyby\Events\DI\EventsExtension
+	doctrine: Kdyby\Doctrine\DI\OrmExtension
+	doctrine2identity: Majkl578\NetteAddons\Doctrine2Identity\DI\IdentityExtension
+
+	usersModule: App\UsersModule\Config\UsersModuleExtension
+	securityModule: App\SecurityModule\Config\SecurityModuleExtension

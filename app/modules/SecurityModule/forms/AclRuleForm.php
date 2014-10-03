@@ -33,12 +33,13 @@ class AclRuleForm extends BaseForm {
     /** @var array of Roles */
     private $modes;
     
-    
     public function getResources() {
 	return $this->resources;
     }
 
     public function getPrivileges() {
+//	if ($this->presenter->isAjax())
+//	    $this->privileges = $this->presenter->getPrivileges();
 	return $this->privileges;
     }
 
@@ -79,21 +80,29 @@ class AclRuleForm extends BaseForm {
 		->addRule(Form::FILLED, self::SLCT_ROLE)
 		->setRequired(true);
 
-	$this->addSelect('resource', 'Zdroj', $this->getResources())
+	$resSelect = $this->addSelect('resource', 'Zdroj', $this->getResources())
 		->setPrompt(self::SLCT_RESOURCE)
 		->addRule(Form::FILLED, self::SLCT_RESOURCE)
 		->setRequired(true);
-
-	$this->addSelect('privilege', 'Akce', $this->getPrivileges())
+	
+		$privSelect = $this->addSelect('privilege', 'Akce', $this->getPrivileges())
 		->setPrompt(self::SLCT_ACTION)
 		->addRule(Form::FILLED, self::SLCT_ACTION)
 		->setRequired(true);
 
+//	$privSelect = $this->addDependentSelectBox('privilege', 'Akce', $resSelect, callback($this,'getPrivileges'))
+//		->setPrompt(self::SLCT_ACTION)
+//		->addRule(Form::FILLED, self::SLCT_ACTION)
+//		->setRequired(true);
 	
 	$this->addSelect('mode', 'Mód', $this->getModes())
 		->setPrompt(self::SLCT_MODE)
 		->addRule(Form::FILLED, self::SLCT_MODE)
 		->setRequired(true);
+	
+//	if($this->presenter->isAjax()) {
+//	    $privSelect->addOnSubmitCallback(callback($this, "invalidateControl"), "privilegesSnippet");
+//	}
 	
 	$this->addSubmit('submitButton', 'Uložit');
 

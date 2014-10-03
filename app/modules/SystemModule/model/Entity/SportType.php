@@ -52,7 +52,7 @@ class SportType extends BaseEntity implements IIdentifiable {
     /** @ORM\Column(type="string", nullable=true) */
     protected $note;
     
-    public function __construct(array $values) {
+    public function __construct(array $values = []) {
 	parent::__construct();
 	$this->fromArray($values);
     }

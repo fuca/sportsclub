@@ -50,12 +50,12 @@ class PaymentService extends BaseService implements IPaymentService {
     private $paymentDao;
 
     /**
-     * @var App\Model\Service\IUserService,
+     * @var \App\Model\Service\IUserService,
      */
     private $usersService;
 
     /**
-     * @var App\SeasonsModule\Model\Service\ISeasonService
+     * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     private $seasonService;
 
@@ -85,14 +85,14 @@ class PaymentService extends BaseService implements IPaymentService {
 	    throw new NullPointerException("Argument Payment was null.", 0);
 	try {
 	    $now = new DateTime();
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $this->paymentOwnerTypeHandle($p);
 	    $this->paymentSeasonTypeHandle($p);
 	    $this->paymentEditorTypeHandle($p);
 	    $p->setOrderedDate($now);
 	    $this->paymentDao->save($p);
 	    $this->invalidateEntityCache($p);
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {
 	    throw new Exceptions\DuplicateEntryException($ex);
 	} catch (Exception $ex) {
@@ -156,9 +156,10 @@ class PaymentService extends BaseService implements IPaymentService {
 	    }
 	    $cache = $this->getEntityCache();
 	    $data = $cache->load($id);
-	    if ($data !== null) {
+	    if ($data === null) {
 		$data = $this->paymentDao->find($id);
-		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
+		//$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
+		$opt = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (Exception $ex) {
@@ -198,7 +199,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	if ($p === NULL)
 	    throw new NullPointerException("Argument Payment was null.", 0);
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $paymentDb = $this->paymentDao->find($p->getId(), false);
 	    if ($paymentDb !== null) {
 		$paymentDb->fromArray($p->toArray());
@@ -208,7 +209,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$this->paymentDao->save($paymentDb);
 		$this->invalidateEntityCache($paymentDb);
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {
 	    throw new Exceptions\DuplicateEntryException($ex);
 	} catch (Exception $ex) {

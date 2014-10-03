@@ -21,7 +21,7 @@ $configurator->setTempDirectory(__DIR__ . '/../temp');
 
 // robot loader se stara o nacitani mych veci a composer autoloader se stara o nacitani knihoven
 $robotLoader = $configurator->createRobotLoader()
-	->addDirectory(LIBS_DIR)
+	->addDirectory(__DIR__ . '/../vendor/others')
 	->addDirectory(__DIR__)
 	->register();
 //$composer->addClassMap($robotLoader->getIndexedClasses());
@@ -47,6 +47,9 @@ DateInput::register($configurator);
 Form::extensionMethod('addImageSelectBox', function(Form $_this, $name, $label = NULL, array $items = NULL, $size = NULL) {
   return $_this[$name] = new RadekDostal\NetteComponents\ImageSelectBox($label, $items, $size);
 });
+
+\DependentSelectBox\DependentSelectBox::register();
+\DependentSelectBox\JsonDependentSelectBox::register();
 
 // regitration of app modules
 

@@ -41,36 +41,48 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var App\Model\Service\IRoleService
+     * @var \App\Model\Service\IRoleService
      */
     public $roleService;
     
     /**
      * @inject
-     * @var App\Model\Service\IAclRuleService
+     * @var \App\Model\Service\IAclRuleService
      */
     public $ruleService;
     
     /**
      * @inject
-     * @var App\Model\Service\IPositionService
+     * @var \App\Model\Service\IPositionService
      */
     public $positionService;
     
     /**
      * @inject
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     public $userService;   
     
     /**
      * @inject
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $sportGroupService; 
+    
+    /**
+     * @inject
+     * @var \App\SecurityModule\Model\Service\IResourceService
+     */
+    public $resourcesService;
 
     public function startup() {
 	parent::startup();
+    }
+    
+    public function beforeRender() {
+	parent::beforeRender();
+	//$this->template->_form = $this['addRuleForm'];
+	//$this->template->_form = $this['updateRuleForm'];
     }
 
     /**
@@ -327,6 +339,15 @@ class AdminPresenter extends SecuredPresenter {
 	}
     }
     
+    public function handleGetPrivileges($value) {
+	$resource = $this->resourcesService->getResource($value);
+	$privileges = $resource->getPrivileges();
+	$this['addRuleForm']['privilege']
+		->setPrompt("Vyber si")
+		->setItems($privileges);
+	$this->invalidateControl("privilegesSnippet");
+    }
+    
     public function handleDeleteRule($id) {
 	if (!$id) {
 	    $this->flashMessage("Identifier of rule has to be specified, '{$id}' given", self::FM_ERROR);
@@ -428,11 +449,10 @@ class AdminPresenter extends SecuredPresenter {
     private function prepareAclRuleForm($name) {
 	$form = new AclRuleForm($this, $name);
 	$form->setModes(AclMode::getOptions());
-	$form->setResources($this->getResources());
-	$form->setPrivileges(AclPrivilege::getOptions());
+	$form->setResources($this->resourcesService->getSelectResources());
+	$form->setPrivileges([]);//AclPrivilege::getOptions());
 	try {
-	    $roles = $this->roleService
-		    ->getSelectRoles(); 
+	    $roles = $this->roleService->getSelectRoles(); 
 	} catch (\Exception $e) {
 	    dd($e);
 	}

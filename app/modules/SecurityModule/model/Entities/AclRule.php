@@ -26,7 +26,8 @@ use Doctrine\ORM\Mapping as ORM,
     Doctrine\ORM\Mapping\GeneratedValue,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\AclMode,
-    \App\Model\Misc\EntityMapperTrait;
+    \App\Model\Misc\EntityMapperTrait,
+    \Doctrine\ORM\PersistentCollection;
 
 /**
  * ORM persistable entity representing acl rule
@@ -55,14 +56,14 @@ class AclRule extends BaseEntity {
     protected $role;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable = true)
      */
     protected $resource;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable = true)
      */
-    protected $privilege;
+    protected $privilege; // tohle by mela byt kolekce nebo sikovny string
 
     /**
      * @ORM\Column(type="AclMode")
@@ -86,7 +87,7 @@ class AclRule extends BaseEntity {
 	return $this->resource;
     }
 
-    public function getPrivilege() {
+    public function getPrivileges() {
 	return $this->privilege;
     }
 
@@ -106,12 +107,33 @@ class AclRule extends BaseEntity {
 	$this->resource = $resource;
     }
 
-    public function setPrivilege($privilege) {
+    public function setPrivileges($privilege) {
 	$this->privilege = $privilege;
     }
 
     public function setMode($mode) {
 	$this->mode = $mode;
+    }
+    
+    public function isPermit() {
+	return $this->getMode() == AclMode::PERMIT;
+    }
+    
+    public function isDeny() {
+	return $this->getMode() == AclMode::DENY;
+    }
+    
+    public function hasResource() {
+	return $this->getResource() != null;
+    }
+    
+    public function hasPrivileges() {
+	$ps =$this->getPrivileges();
+	if ($ps instanceof PersistentCollection) {
+	    return !$ps->isEMpty();
+	} else {
+	    return !empty($ps);
+	}
     }
 
 }

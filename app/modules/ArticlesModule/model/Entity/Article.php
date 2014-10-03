@@ -88,7 +88,7 @@ class Article extends BaseEntity implements IIdentifiable {
     protected $comments;
 
     /**
-     * @ManyToMany(targetEntity="SportGroup", fetch="LAZY")
+     * @ManyToMany(targetEntity="SportGroup", fetch="EAGER")
      * @JoinTable(name="Article_SportGroup",
       joinColumns={@JoinColumn(name="article_id", referencedColumnName="id")},
       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")})

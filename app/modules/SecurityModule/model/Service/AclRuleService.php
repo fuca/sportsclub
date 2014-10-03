@@ -42,7 +42,7 @@ class AclRuleService extends BaseService implements IAclRuleService {
     private $aclRuleDao;
 
     /**
-     * @var App\Model\Service\IRoleService
+     * @var \App\Model\Service\IRoleService
      */
     private $roleService;
 
@@ -73,7 +73,7 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	try {
 	    // TODO think about that 
 	    $roleDb = $this->roleService->getRole($arule->getRole(), false);
-	    //$roleDb = $this->getEntityManager()->getDao(\App\Model\Entities\Role::getClassName())->find($arule->getRole());
+	    //$roleDb = $this->entityManager->getDao(\App\Model\Entities\Role::getClassName())->find($arule->getRole());
 	    if ($roleDb !== null) {
 		$arule->setRole($roleDb);
 	    } else {
@@ -114,6 +114,19 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	}
 	return $data;
     }
+    
+    public function getRules() {
+	$cache = $this->getEntityCache();
+	$data = $cache->load(self::ENTITY_COLLECTION);
+	if ($data === null) {
+	    $data = $this->aclRuleDao->findAll();
+	    $opt = [
+		Cache::TAGS => [self::ENTITY_COLLECTION],
+		Cache::SLIDING => true];
+	    $cache->save(self::ENTITY_COLLECTION, $data, $opt);
+	}
+	return $data;
+    }
 
     public function deleteRule($id) {
 	if ($id === null)
@@ -137,16 +150,16 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	    throw new Exceptions\NullPointerException("Argument AclRule cannot be null", 0);
 
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $dbRule = $this->aclRuleDao->find($arule->getId());
 	    if ($dbRule !== null) {
 		$dbRule->fromArray($arule->toArray());
 		$dbRole = $this->roleService->getRole($arule->getRole(), false);
 		$dbRule->setRole($dbRole);
-		$this->getEntityManager()->merge($dbRule);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($dbRule);
+		$this->entityManager->flush();
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($dbRule);
 	} catch (DuplicateEntryException $e) {
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), 20, $e);

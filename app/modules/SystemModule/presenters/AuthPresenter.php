@@ -20,55 +20,43 @@ namespace App\SystemModule\Presenters;
 
 use Nette\Application\UI\Form,
     Nette\Security\AuthenticationException,
-    \App\SystemModule\Presenters\BasePresenter;
+    \App\SystemModule\Presenters\BasePresenter,
+    App\SystemModule\Forms\LogInForm,
+    Kdyby\Monolog\Logger;
 
 /**
  * AuthPresenter
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AuthPresenter extends BasePresenter {
-
+    
     /**
-     * Sign-in form factory.
-     * @return Nette\Application\UI\Form
+     * @inject 
+     * @var \App\Model\Service\IUserService
      */
-    protected function createComponentSignInForm() {
-	$form = new Form;
-	$form->addText('username', 'Username:')
-		->setRequired('Please enter your username.');
-
-	$form->addPassword('password', 'Password:')
-		->setRequired('Please enter your password.');
-
-	$form->addCheckbox('remember', 'Keep me signed in');
-
-	$form->addSubmit('send', 'Sign in');
-
-	$form->onSuccess[] = $this->signInFormSucceeded;
-	return $form;
+    public $users;
+    
+    public function actionDefault() {
+	$this->logger->addInfo("Jsme v AUTH IN");
+	$this->redirect("in");
     }
-
-    public function signInFormSucceeded($form) {
-	$values = $form->getValues();
-
-	if ($values->remember) {
-	    // TODO move time values into DB?
-	    $this->getUser()->setExpiration('14 days', FALSE);
-	} else {
-	    $this->getUser()->setExpiration('20 minutes', TRUE);
-	}
-
-	try {
-	    $this->getUser()->login($values->username, $values->password);
-	    $this->redirect(':Public:Homepage:default');
-	} catch (AuthenticationException $e) {
-	    $form->addError($e->getMessage());
-	}
+    
+    public function actionIn() {
+//	// set pw admin to user no 1
+//	$u = $this->users->getUser(1);
+//	//dd($u);
+//	$o = ['salt'=>$this->context->parameters['models']['salt'], 'cost'=>4];
+//	//dd("salt", $o);
+//	$h = \App\Misc\Passwords::hash("admin", $o);
+//	//dd($h);    
+//	$this->users->updateUser($u->setPassword($h));
+////	dd(\App\Misc\Passwords::verify("admin", $h));
+//	// $2y$04$$2a06$05IKqFG8iuPts/ceDww1QeqjiwOTM3OaQI8W.VyN3/1Ur.i
     }
 
     public function actionOut() {
 	$this->getUser()->logout();
-	$this->flashMessage('You have been signed out.');
+	$this->flashMessage('Byl jste odhlášen.');
 	$this->redirect('in');
     }
 

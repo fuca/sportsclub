@@ -40,13 +40,13 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var App\SystemModule\Model\Service\ISportTypeService
+     * @var \App\SystemModule\Model\Service\ISportTypeService
      */
     public $sportTypeService;
 
     /**
      * @inject
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $sportGroupService;
 
@@ -94,6 +94,7 @@ class AdminPresenter extends SecuredPresenter {
 	    }
 	} catch (DataErrorException $ex) {
 	    $this->flashMessage("Nepodařilo se načíst požadovaná data", self::FM_ERROR);
+	    $this->redirect("default");
 	}
     }
 

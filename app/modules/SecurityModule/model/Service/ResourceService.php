@@ -41,7 +41,7 @@ class ResourceService extends BaseService implements IResourceService {
     private $presenterTree;
 
 //    /**
-//     * @var App\Model\IModuleCacheService
+//     * @var \App\Model\IModuleCacheService
 //     */
 //    private $cacheService;
 
@@ -138,7 +138,7 @@ class ResourceService extends BaseService implements IResourceService {
     public function getSelectResources() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
-	if ($data != null) {
+	if ($data == null) {
 	    $tree = $this->getResources();
 	    $data = $this->deepFlatten($tree);
 	    $opt = [Cache::TAGS => [self::SELECT_COLLECTION]];

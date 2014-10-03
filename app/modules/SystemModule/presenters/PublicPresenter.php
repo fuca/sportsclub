@@ -26,8 +26,13 @@ use App\SystemModule\Presenters\BasePresenter;
  */
 class  PublicPresenter extends  BasePresenter {
     
+    /**
+     * @inject
+     * @var \Kdyby\Monolog\Logger
+     */
+    public $logger;
+    
     public function renderDefault() {
-	
     }
 
 }

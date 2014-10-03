@@ -20,6 +20,7 @@ namespace App\Model\Service;
 
 use \App\Model\Entities\User,
     \App\Model\Entities\Role,
+    \App\Model\Entities\Position,
     Kdyby\Doctrine\DuplicateEntryException,
     \App\Services\Exceptions\DataErrorException,
     \App\Model\Misc\Exceptions,
@@ -43,10 +44,17 @@ class RoleService extends BaseService implements IRoleService {
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $roleDao;
+    
+    /**
+     * 
+     * @param \Kdyby\Doctrine\EntityDao
+     */
+    private $positionDao;
 
     public function __construct(EntityManager $em) {
 	parent::__construct($em, Role::getClassName());
 	$this->roleDao = $em->getDao(Role::getClassName());
+	$this->positionDao = $em->getDao(Position::getClassName());
     }
 
     public function createRole(Role $r) {
@@ -100,7 +108,7 @@ class RoleService extends BaseService implements IRoleService {
     public function getRoles() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::ENTITY_COLLECTION);
-	if ($data === null) {
+	if ($data == null) {
 	    $data = $this->roleDao->findAll();
 	    $opt = [
 		Cache::TAGS => [self::ENTITY_COLLECTION],

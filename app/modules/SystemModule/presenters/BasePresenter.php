@@ -32,7 +32,7 @@ abstract class BasePresenter extends Presenter {
     const SECURED_ANNOTATION_ID = "Secured";
 
     /**
-     * @staticvar string Flash messages type
+     * @const string Flash messages type
      */
     const FM_SUCCESS = "success",
 	    FM_ERROR = "error",
@@ -41,11 +41,30 @@ abstract class BasePresenter extends Presenter {
     /** @var string @persistent */
     public $ajax = 'on';
 
+    /** @persistent */
+    protected $lang = 'cz';
+
     /** @var actual managing entity entity id */
     private $entityId;
 
+    /**
+     * @inject
+     * @var \Kdyby\Translation\Translator
+     */
+    public $translator;
+    
+    /**
+     * @inject
+     * @var \Kdyby\Monolog\Logger
+     */
+    public $logger;
+
     public function getEntityId() {
 	return $this->entityId;
+    }
+    
+    public function getTranslator() {
+	return $this->translator;
     }
 
     /** @var string @persistent */
@@ -56,17 +75,36 @@ abstract class BasePresenter extends Presenter {
 	$this->entityId = $this->getParameter(self::NUM_IDENTIFIER);
     }
 
+    protected function createTemplate($class = NULL) {
+	$template = parent::createTemplate($class);
+	$template->registerHelperLoader(callback($this->translator->createTemplateHelpers(), 'loader'));
+
+	return $template;
+    }
+
     protected function beforeRender() {
 	parent::beforeRender();
 	$this->setLayout('publicLayout');
+
+	$this->template->setTranslator($this->translator);
 	//$this->template->layoutsPath = '../../../../templates/';
-	$this->template->layoutsPath = APP_DIR . "/modules/SystemModule/templates/";
-	$this->template->actions = [];//$this->getResources();
-	//$this->getContext()->getService('presenterTree');
+	$appDir = $this->context->parameters['appDir'];
+	$this->template->layoutsPath = $appDir . "/modules/SystemModule/templates/";
+    }
+    
+    protected function handleException( $ex) {
+	dd($ex);
     }
 
-    public function getSalt() {
-	$configParams = $this->presenter->context->getParameters();
-	return $configParams['models']['salt'];
+    // <editor-fold desc="COMPONENT FACTORIES">
+
+    public function createComponentLoginControl($name) {
+	$c = new \App\SystemModule\Components\LogInControl($this, $name);
+	$p = $this;
+
+	$c->setLogInTarget(":System:Public:default");
+	return $c;
     }
+
+    // </editor-fold>
 }

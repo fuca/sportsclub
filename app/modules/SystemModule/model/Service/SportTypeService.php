@@ -111,8 +111,8 @@ class SportTypeService extends BaseService implements ISportTypeService {
 	    $dbType = $this->sportTypeDao->find($type->getId());
 	    if ($dbType !== null) {
 		$dbType->fromArray($type->toArray());
-		$this->getEntityManager()->merge($dbType);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($dbType);
+		$this->entityManager->flush();
 		$this->invalidateEntityCache($dbType);
 	    }
 	} catch (DuplicateEntryException $ex) {

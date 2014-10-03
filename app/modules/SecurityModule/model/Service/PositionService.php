@@ -50,17 +50,17 @@ class PositionService extends BaseService implements IPositionService {
     private $positionDao;
 
     /**
-     * @var App\Model\Service\IRoleService
+     * @var \App\Model\Service\IRoleService
      */
     private $roleService;
 
     /**
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     private $sportGroupService;
 
     /**
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     private $userService;
 
@@ -189,17 +189,17 @@ class PositionService extends BaseService implements IPositionService {
 	if ($p == null)
 	    throw new NullPointerException("Argument Position cannot be null", 0);
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $pDb = $this->positionDao->find($p->getId());
 	    if ($pDb !== null) {
 		$pDb->fromArray($p->toArray());
 		$this->posGroupTypeHandle($pDb);
 		$this->posOwnerTypeHandle($pDb);
 		$this->posRoleTypeHandle($pDb);
-		$this->getEntityManager()->merge($pDb);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($pDb);
+		$this->entityManager->flush();
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($pDb);
 	} catch (DuplicateEntryException $ex) {
 	    throw new Exceptions\DuplicateEntryException($ex);

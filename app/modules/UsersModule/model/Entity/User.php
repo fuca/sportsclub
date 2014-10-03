@@ -194,6 +194,7 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
 
     public function setPassword($password) {
 	$this->password = $password;
+	return $this;
     }
 
     public function setPasswordChangeRequired($passwordChangeRequired) {

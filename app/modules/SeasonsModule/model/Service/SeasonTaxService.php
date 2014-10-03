@@ -34,7 +34,8 @@ use \Nette\DateTime,
     \App\Model\Service\IUserService,
     \App\SeasonsModule\Model\Service\ISeasonService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \Kdyby\Doctrine\EntityManager;
+    \Kdyby\Doctrine\EntityManager,
+    \App\SeasonsModule\Model\Service\ISeasonTaxService;
 
 /**
  * Service for managing season related entities
@@ -49,17 +50,17 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
     private $seasonTaxDao;
 
     /**
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     private $sportGroupService;
 
     /**
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     private $userService;
 
     /**
-     * @var App\SeasonsModule\Model\Service\ISeasonService
+     * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     private $seasonService;
 
@@ -171,7 +172,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	if ($t == null)
 	    throw new NullPointerException("Argumen SeasonTax cannot be null", 0);
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $tDb = $this->seasonTaxDao->find($t->getId());
 	    if ($tDb !== null) {
 		$tDb->fromArray($t->toArray());
@@ -179,10 +180,10 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		$this->taxSportGroupTypeHandle($tDb);
 		$this->taxEditorTypeHandle($tDb);
 		$tDb->setChanged(new DateTime());
-		$this->getEntityManager()->merge($tDb);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($tDb);
+		$this->entityManager->flush();
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($t);
 	} catch (DuplicateEntryException $ex) {
 	    throw new Exceptions\DuplicateEntryException($ex);

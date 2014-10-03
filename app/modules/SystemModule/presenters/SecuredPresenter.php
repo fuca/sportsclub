@@ -29,10 +29,8 @@ abstract class SecuredPresenter extends BasePresenter {
     
     public function checkRequirements($element) {
 	parent::checkRequirements($element);
-	if ($element->hasAnnotation(self::SECURED_ANNOTATION_ID)) {
-	    $secAnn = $element->getAnnotation(self::SECURED_ANNOTATION_ID);
-	    $user = $this->getUser();
-	    if (!$user->isLoggedIn()) {
+	$user = $this->getUser();
+	if (!$user->isLoggedIn()) {
 		if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
                 $this->flashMessage('Uplynula maximální doba neaktivity! Systém vás z bezpečnostních důvodů odhlásil.', 'warning');
             }
@@ -41,9 +39,12 @@ abstract class SecuredPresenter extends BasePresenter {
             $this->redirect(':System:Auth:in', array('backlink' => $backlink));
 	    }
 	    
+	if ($element->hasAnnotation(self::SECURED_ANNOTATION_ID)) {
+	    $secAnn = $element->getAnnotation(self::SECURED_ANNOTATION_ID);
+	    
 //	    if (!$user->isAllowed($element->getName(), $secAnn->getPrivileges())) {
 //		$this->flashMessage('Na vstup do této sekce nemáte dostatečné oprávnění!', self::FM_WARNING);
-//                $this->redirect(':System:Public:default');
+//                $this->redirect('Homepage:default');
 //	    }
 	    // asi by se tu mely proverovat ty skupinovy a vlastnicky prava, ci co..
 	}
@@ -56,31 +57,5 @@ abstract class SecuredPresenter extends BasePresenter {
     
     public function actionDefault() {
     }
-    
-//    private $userId;
-//    
-//     public function startup() {
-//
-//	parent::startup();
-//
-//	$user = $this->getUser();
-//	$this->userId = $user->id;
-//	if (!$user->isLoggedIn()) {
-//	    if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
-//		$this->flashMessage('Uplynula doba neaktivity! Systém vás z bezpečnostních důvodů odhlásil.', 'warning');
-//	    }
-//	    
-//	    $backlink = $this->storeRequest();
-//	    $this->redirect(':Public:Auth:in', array('backlink' => $backlink));
-//	    
-//	    } else {
-//	    // TODO authorization part 
-//
-//		if (!$user->isAllowed($this->name.':'.$this->action)) {
-//		    $this->flashMessage('Na vstup do této sekce nemáte dostatečné oprávnění!', 'warning');
-//		    $this->redirect('Homepage:default');
-//		}
-//	    }
-//    }
     
 }

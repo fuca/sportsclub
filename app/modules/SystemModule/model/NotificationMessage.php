@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
+namespace App\SystemModule\Model\Service;
+use Nette\Mail\Message;
+
 /**
- * Notification
+ * NotificationMessage class
  *
  * @author <michal.fuca.fucik(at)gmail.com>
  */
-class Notification {
-    
-    protected $layout;
-    
+class NotificationMessage extends Message {
     
 }

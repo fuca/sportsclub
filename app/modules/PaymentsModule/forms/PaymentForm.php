@@ -25,7 +25,7 @@ use \App\Forms\BaseForm,
     \App\Services\Exceptions\DuplicateEntryException,
     Vodacek\Forms\Controls\DateInput,
     App\Model\Misc\PaymentStatus,
-    App\Model\Misc\PaymentOwnerType;
+    App\Model\Misc\Enum\PaymentOwnerType;
 
 /**
  * Form for creating and updating seasons

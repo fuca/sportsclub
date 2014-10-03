@@ -62,6 +62,8 @@ interface IUserService {
     
     function getUsersDatasource();
     
+    function regeneratePassword($id);
+    
     /**
      * Returns collection of Users according to given SportGroup
      */

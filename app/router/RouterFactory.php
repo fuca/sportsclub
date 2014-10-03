@@ -18,7 +18,7 @@ class RouterFactory {
     public function createRouter() {
 	$router = new RouteList();
 	$router[] = new Route('index.php',"System:Public:default");
-	$router[] = new Route('<presenter>/<action>[/<id>]', 'System:Public:default');
+	$router[] = new Route('[<locale=cs cs|en>/]<presenter>/<action>[/<id>]', 'System:Public:default');
 	
 	return $router;
     }

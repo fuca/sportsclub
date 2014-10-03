@@ -1,0 +1,11 @@
+services:
+	articlesModule.storage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/articlesModule)
+		autowired: no
+	-
+		class:
+			App\ArticlesModule\Model\Service\ArticleService
+		setup:
+			- setCacheStorage(@articlesModule.storage)
+			- setSportGroupService()
+			- setUserService()

@@ -1,0 +1,5 @@
+admin:
+	eventAdd: "Add event"
+	eventNew: "New event"
+eventForm.errors:
+	eventAlreadyExist: "Event with given title already exist"

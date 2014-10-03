@@ -23,9 +23,10 @@ use App\Model\Entities\SportGroup,
     \App\Services\Exceptions\DataErrorException,
     App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
-    \App\Services\Exceptions,
+    App\Model\Misc\Exceptions,
     Nette\Caching\Cache,
-    \Kdyby\Doctrine\DuplicateEntryException;
+    \Kdyby\Doctrine\DuplicateEntryException,
+    App\SystemModule\Model\Service\ISportGroupService;
 
 /**
  * Service for managing sport types
@@ -41,7 +42,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 
     /**
      *
-     * @var App\SystemModule\Model\Service\ISportTypeService
+     * @var \App\SystemModule\Model\Service\ISportTypeService
      */
     private $sportTypeService;
     
@@ -123,17 +124,17 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	if ($g == null)
 	    throw new NullPointerException("Argument SportGroup cannot be null", 0);
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $dbGroup = $this->getSportGroup($g->getId(), false);
 
 	    if ($dbGroup !== null) {
 		$dbGroup->fromArray($g->toArray());
 		$this->groupParentHandle($dbGroup);
 		$this->groupSportTypeHandle($dbGroup);
-		$this->getEntityManager()->merge($dbGroup);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($dbGroup);
+		$this->entityManager->flush();
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($dbGroup);
 	} catch (DuplicateEntryException $e) {
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), 20, $e);

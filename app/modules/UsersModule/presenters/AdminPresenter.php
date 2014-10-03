@@ -18,7 +18,7 @@
 
 namespace App\UsersModule\Presenters;
 
-use App\SystemModule\Presenters\SecuredPresenter,
+use 
     App\UsersModule\Forms\UserForm,
     \Grido\Grid,
     \Nette\Utils\Strings,
@@ -38,7 +38,8 @@ use App\SystemModule\Presenters\SecuredPresenter,
     \App\Model\Misc\Exceptions\DuplicateEntryException,
     \App\Model\Misc\Enum\FormMode,
     \Nette\DateTime,
-    \Nette\ArrayHash;
+    \Nette\ArrayHash,  
+    App\SystemModule\Presenters\SecuredPresenter;
 
 /**
  * UserPresenter
@@ -49,7 +50,7 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     public $userService;
 
@@ -60,7 +61,7 @@ class AdminPresenter extends SecuredPresenter {
 	// vykreslujeme grid
     }
 
-    /////////////////////////// NEW USER ///////////////////////////////////////
+    // <editor-fold desc="ADD USER">
 
     /**
      * User admin presenter action of New user request
@@ -117,9 +118,8 @@ class AdminPresenter extends SecuredPresenter {
 	$this->redirect("Admin:default");
     }
 
-    //------------------------ END NEW USER ----------------------------------//
-    ///////////////////////// REMOVE USER //////////////////////////////////////
-
+    // </editor-fold>
+    // <editor-fold desc="REMOVE USER">
     /**
      * Delete user handler (topdown)
      * @param numeric $id
@@ -140,8 +140,8 @@ class AdminPresenter extends SecuredPresenter {
 	}
     }
 
-    // ------------------------ END REMOVE USER ------------------------------//
-    /////////////////////////// UPDATE USER ////////////////////////////////////
+    // </editor-fold>
+    // <editor-fold desc="UPDATE USER">
 
     /**
      * Action for filling updateUserForm control by values from database
@@ -159,7 +159,7 @@ class AdminPresenter extends SecuredPresenter {
 	    return;
 	}
 
-	$uUser = $this->userService->getUserId($id);
+	$uUser = $this->userService->getUser($id);
 	$form = $this->getComponent('updateUserForm');
 
 	$data = $uUser->toArray() + $uUser->getContact()->toArray() + $uUser->getContact()->getAddress()->toArray();
@@ -215,9 +215,27 @@ class AdminPresenter extends SecuredPresenter {
 	$form->initialize();
 	return $form;
     }
+    
+    public function handleRegenPassword($id) {
+	if(!is_numeric($id)) {
+	    $this->flashMessage("Bad format of user id", self::FM_WARNING);
+	    // TODO LOG SECURITY VIOLATION
+	    return;
+	}
+	try {
+	    if ($this->userService->regeneratePassword($id) != null) {
+		$this->flashMessage("Nové heslo pro uživatele s id {$id} bylo vygenerováno");   
+	    }
+	} catch (App\Model\Misc\Exceptions\DataErrorException $e) {
+	    $this->flashMessage("Nepodařilo se vygenerovat nové heslo pro uživatele s id {$id}.", self::FM_ERROR);
+	    // TODO LOG 
+	    return;
+	}
+	$this->redirect('this');
+    }
 
-    // ------------------------ END UPDATE USER ------------------------------//
-
+    // </editor-fold>
+    // <editor-fold desc="Users grid">
     /**
      * Component factory of UsersGrid
      * @param string $name
@@ -320,6 +338,7 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->addActionHref('application', '[Uprav]', 'updateUser')
 		->setIcon('pencil');
 	// setDisable() - nastavi callback, kdy ma byt vypnuto - vhodne pri overovani opravneni
+	$grid->addActionHref("regenPassword", "[NPW]", 'regenPassword!');
 	$grid->addActionHref('delete', '[Smaz]', "deleteUser!")
 		->setIcon('trash')
 		->setConfirm(function($u) {
@@ -364,5 +383,6 @@ class AdminPresenter extends SecuredPresenter {
 		break;
 	}
     }
-
+    
+    // </editor-fold>
 }

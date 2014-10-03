@@ -16,73 +16,190 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\EventsModule\Model\Service;
 
-use \App\Services\Exceptions\NullPointerException,
-	\App\Model\Entities\Event,
-	\App\Model\Entities\User,
-	\App\Model\Entities\SportGroup,
-	\App\Services\Exceptions\DataErrorException,
-    \Doctrine\ORM\NoResultException;
+use \App\Model\Entities\Event,
+    \App\Model\Entities\User,
+    \App\Model\Entities\SportGroup,
+    \App\Services\Exceptions,
+    \Kdyby\Doctrine\DuplicateEntryException,
+    \Doctrine\ORM\NoResultException,
+    \Kdyby\Doctrine\DBALException,
+    \Kdyby\Doctrine\EntityManager,
+    \App\Model\Service\BaseService,
+    \Nette\Utils\DateTime,
+    \Nette\Utils\Strings,
+    \Nette\Caching\Cache,
+    \Grido\DataSources\Doctrine,
+    \Doctrine\Common\Collections\ArrayCollection,
+    \App\SystemModule\Model\Service\ISportGroupService,
+    App\Model\Service\IUserService;
 
 /**
  * Service for dealing with Event related entities
  *
  * @author <michal.fuca.fucik(at)gmail.com>
  */
-class EventService extends \Nette\Object implements IEventService {
-    
-    /**
-     * @var \Kdyby\Doctrine\EntityManager
-     */
-    private $entityManager;
+class EventService extends BaseService implements IEventService {
 
     /**
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $eventDao;
     
-    function __construct(\Kdyby\Doctrine\EntityManager $em) {
-	$this->entityManager = $em;
-	$this->eventDao = $em->getDao(Event::getClassName());
+    /**
+     * @var \App\SystemModule\Model\Service\ISportGroupService
+     */
+    private $sportGroupService;
+    
+    /**
+     * @var \App\Model\Service\IUserService
+     */
+    private $userService;
+    
+    public function getUserService() {
+	return $this->userService;
     }
     
+    public function setGroupService(ISportGroupService $egs) {
+	$this->sportGroupService = $egs;
+    }
+    
+    public function setUserService(IUserService $uss) {
+	$this->userService = $uss;
+    }
+
+    function __construct(EntityManager $em) {
+	parent::__construct($em, Event::getClassName());
+	$this->eventDao = $em->getDao(Event::getClassName());
+    }
+
     public function confirmParticipation(Event $e, User $u) {
 	if ($e === NULL)
-	    throw new NullPointerException("Argument Event was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
 	if ($u === NULL)
-	    throw new NullPointerException("Argument User was null", 0);
+	    throw new Exceptions\NullPointerException("Argument User was null", 0);
+	// TODO how should this work?
+	// dodelat entitu nebo vazebni tabulku participaci? asi primo entitu, at pak muzu udelat control pro vypis tech participaci k dane evente
+    }
+    
+    public function rejectParticipation(Event $e, User $u) {
+	if ($e === NULL)
+	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	if ($u === NULL)
+	    throw new Exceptions\NullPointerException("Argument User was null", 0);
 	// TODO how should this work?
     }
 
     public function createEvent(Event $e) {
 	if ($e === NULL)
-	    throw new NullPointerException("Argument Event was null", 0);
-	$this->eventDao->save($e);
+	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	try {
+	    $e->setEditor($e->getAuthor());
+	    $e->setUpdated(new DateTime);
+	    $e->setAlias(Strings::webalize($e->getTitle()));
+	    $this->sportGroupsTypeHandle($e);
+	    $this->eventDao->save($e);
+	    $this->invalidateEntityCache($e);
+	} catch (\Kdyby\Doctrine\DBALException $ex) {
+	    dd($ex);
+	    //throw new Exceptions\DuplicateEntryException("Event with this title already exists");
+	} catch (Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage());
+	}
     }
+   
+    private function sportGroupsTypeHandle(Event $e) {
+	if ($e === null)
+	    throw new Exceptions\NullPointerException("Argument event was null");
+	try {
+	    $coll = new ArrayCollection();
+	    foreach ($e->getGroups() as $eg) {
+	    $dbG = $this->sportGroupService->getSportGroup($eg, false);
+		if ($dbG !== null) {
+		   $coll->add($dbG); 
+		}
+	    }
+	    $e->setGroups($coll);
+	} catch (Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+	return $e;
+    }
+    
+    private function editorTypeHandle(Event $e) {
+	if ($e === null)
+	    throw new NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($e->getEditor());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $e->setEditor($editor);
+	} catch (Exception $ex) {
+	    throw new DataErrorException($ex);
+	}
+    }
+    
+    private function authorTypeHandle(Event $e) {
+	if ($e === null)
+	    throw new NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($e->getAuthor());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $e->setAuthor($editor);
+	} catch (Exception $ex) {
+	    throw new DataErrorException($ex);
+	}
+    }
+     
 
-    public function deleteEvent(Event $e) {
-	if ($e === NULL)
-	    throw new NullPointerException("Argument Event was null", 0);
-	$db = $this->eventDao->find($e->id);
-	if ($db !== NULL) { 
-	    $this->eventDao->delete($db);
-	} else {
-	    throw new DataErrorException("Entity not found", 2);
+    public function deleteEvent($id) {
+	if (!is_numeric($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
+	try {
+	    $dbE = $this->eventDao->find($id);
+	    if ($dbE !== null) {
+		$this->eventDao->delete($dbE);
+	    }
+	} catch (DBALException $ex) {
+	    $this->getLogger()->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), 0, $ex->getPrevious());
 	}
     }
 
-    public function getEvent($id) {
+    public function getEvent($id, $useCache = true) {
 	if ($id === NULL)
-	    throw new NullPointerException("Argument Event was null", 0);
-	$res = $this->eventDao->find($id);
-	return $res;
+	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	if (!is_numeric($id))
+	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
+	try {
+	    if (!$useCache) {
+		return $this->eventDao->find($id);
+	    }
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if ($data === null) {
+		$data = $this->eventDao->find($id);
+		$opt = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
+		$cache->save($id, $data, $opt);
+	    }
+	} catch (Exception $ex) {
+	    throw new DataErrorException($ex);
+	}
+	return $data;
     }
 
     public function getEvents(SportGroup $g) {
-	if ($g === NULL) 
-	    throw new NullPointerException("Argument SportGroup was null", 0);
-	
+	if ($g === NULL)
+	    throw new Exceptions\NullPointerException("Argument SportGroup was null", 0);
+
 	$qb = $this->entityManager->createQueryBuilder();
 	$qb->select('e')
 		->from('App\Model\Entities\Event', 'e')
@@ -92,18 +209,33 @@ class EventService extends \Nette\Object implements IEventService {
 	return $qb->getQuery()->getResult();
     }
 
-    public function rejectParticipation(Event $e, User $u) {
-	if ($e === NULL)
-	    throw new NullPointerException("Argument Event was null", 0);
-	if ($u === NULL)
-	    throw new NullPointerException("Argument User was null", 0);
-	// TODO how should this work?
-    }
-
     public function updateEvent(Event $e) {
 	if ($e === NULL)
-	    throw new NullPointerException("Argument Event was null", 0);
-	$this->eventDao->save($e);
+	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	try {
+	    $this->entityManager->beginTransaction();
+	    $eDb = $this->eventDao->find($e->getId());
+	    if ($eDb !== null) {
+		$eDb->fromArray($e->toArray());
+		$this->sportGroupsTypeHandle($eDb);
+		$this->editorTypeHandle($eDb);
+		$this->authorTypeHandle($eDb);
+		$this->entityManager->merge($eDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($eDb);
+	    }
+	    $this->entityManager->commit();
+	} catch (DuplicateEntryException $ex) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DuplicateEntryException($ex);
+	} catch (Exception $ex) {
+	    throw new Exceptions\DataErrorException("Update event could not been proceeded");
+	}
     }
 
+    public function getEventsDataSource() {
+	$model = new Doctrine(
+		$this->eventDao->createQueryBuilder('ev'));
+	return $model;
+    }
 }

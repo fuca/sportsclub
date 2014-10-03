@@ -1,0 +1,17 @@
+services:
+	applicationsListener:
+		class:
+			App\PaymentsModule\Model\Listeners\ApplicationsListener
+		tags: [kdyby.subscriber]
+
+	-
+		class:
+			App\PaymentsModule\Model\Service\PaymentService
+		setup:
+			- setCacheStorage(@serviceEntityCache)
+			- setUsersService()
+			- setSeasonService()
+
+translation:
+	dirs: 
+		- %appDir%/modules/PaymentsModule/lang

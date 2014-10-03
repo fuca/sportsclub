@@ -24,6 +24,7 @@ use Nette\Object,
     Nette\Security\IAuthenticator,
     Nette\Security\AuthenticationException,
     Nette\Utils\Strings,
+    \App\Misc\Passwords,
     \Doctrine\ORM\NoResultException,
     App\Model\Service\IUserService,
     App\Model\Service\IRoleService;
@@ -37,12 +38,12 @@ use Nette\Object,
 final class Authenticator extends Object implements IAuthenticator {
 
     /**
-     * @var App\Model\Service\IRoleService 
+     * @var \App\Model\Service\IRoleService 
      */
     private $rolesService;
     
     /**
-     * @var App\Model\Service\IUserService 
+     * @var \App\Model\Service\IUserService 
      */
     private $usersService;
 
@@ -72,29 +73,19 @@ final class Authenticator extends Object implements IAuthenticator {
 	try {
 	    $user = $this->usersService->getUserEmail($username);
 	} catch (NoResultException $ex) {		////// tohle doctrina urcite nevyhazuje.... otestovat a predelat
-	    throw new AuthenticationException("Wrong username or password", self::IDENTITY_NOT_FOUND);
+	    throw new AuthenticationException("Špatné jméno nebo heslo", self::IDENTITY_NOT_FOUND);
 	}
+	    
+	if (!Passwords::verify($password, $user->password))
+	    throw new AuthenticationException("Špatné jméno nebo heslo", self::INVALID_CREDENTIAL);
+	
 	if (!$user->active) {
 	    $name = "(" . $user->id . ")";
-	    throw new AuthenticationException("User $name is not active member of this organization. Please contact our office for solution.");
+	    throw new AuthenticationException("Uživatel se zadaným emailem není aktivním členem této organizace. Pokud máte pocit, že je tato informace chybná, prosím kontaktujte sekretariát.");
 	}
-	if (\App\Misc\Passwords::verify($password, $user->password))
-	    throw new AuthenticationException("Wrong email or password", self::INVALID_CREDENTIAL);
-
-//	$data = array(
-//	    'nick' => $user->nick,
-//	    'name' => $user->name,
-//	    'surname' => $user->surname,
-//	    'activity' => $user->active,
-//	    'email' => $user->contact->email,
-//	    'leagueId' => $user->leagueId,
-//	    'profileChangeRequired' => $user->profileChangeRequired,
-//	    'passwordChangeRequired' => $user->passwordChangeRequired,
-//	    'password' => $user->password,
-//	    'lastLogin' => $user->lastLogin);
 
 	$user->lastLogin = new DateTime();
-	$roles = $this->roleService->getUserRoles($user);
+	$roles = $this->rolesService->getUserRoles($user);
 	$user->setRoles($roles);
 	$identity = $user;
 

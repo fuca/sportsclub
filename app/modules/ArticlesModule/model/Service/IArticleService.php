@@ -16,41 +16,27 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\ArticlesModule\Model\Service;
 
 use App\Model\Entities\Article,
     App\Model\Entities\SportGroup;
 
 /**
  * Interface for Article service
- *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface IArticleService {
     
-    /**
-     * 
-     */
     function createArticle(Article $a);
     
-    /**
-     * 
-     */
     function updateArticle(Article $a);
     
-    /**
-     * 
-     */
-    function deleteArticle(Article $a);
-    
-    /**
-     * 
-     */
+    function deleteArticle($id);
+
     function getArticle($id);
     
-    /**
-     * 
-     */
     function getArticles(SportGroup $g);
+    
+    function getArticlesDatasource();
     
 }

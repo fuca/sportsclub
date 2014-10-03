@@ -20,7 +20,8 @@ namespace App\Forms;
 
 use App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
-    \Nette\ComponentModel\IContainer;
+    \Nette\ComponentModel\IContainer,
+    \Nette\Localization\ITranslator;
 
 /**
  * Description of BaseForm
@@ -31,10 +32,14 @@ abstract class BaseForm extends Form {
 
     /** @var form mode */
     private $mode;
+    
+    /** @var callable onSuccess handler */
+    private $successHandler;
 
-    public function __construct(IContainer $parent = NULL, $name = NULL) {
+    public function __construct(IContainer $parent = NULL, $name = NULL, ITranslator $translator) {
 	parent::__construct($parent, $name);
 	$this->mode = FormMode::CREATE_MODE;
+	$this->setTranslator($translator);
     }
 
     public function setMode($mode) {
@@ -43,6 +48,16 @@ abstract class BaseForm extends Form {
 	} else {
 	    throw new \Nette\InvalidArgumentException("Passed mode must be one of FormMode's constants, '$mode' given");
 	}
+    }
+    
+    public function setSuccessHandler($successHandler) {
+	if (!is_callable($successHandler))
+	    throw new \App\Model\Misc\Exceptions\InvalidArgumentException("Passed argument has to be callable");
+	$this->successHandler = $successHandler;
+    }
+    
+    public function getSuccessHandler() {
+	return $this->successHandler;
     }
 
     public function getMode() {

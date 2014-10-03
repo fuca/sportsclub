@@ -18,19 +18,19 @@
 
 /*
  * Cache se vytvari podle namespace servicy
- * klice k jednotlivym entitam jsou jejich id a pod konstantami v teto tride
+ * klice k jednotlivym entitam jsou jejich id a konstanty v teto tride
  */
 
 namespace App\Model\Service;
 
-use \Nette\Utils\Strings,
+use 
+    \Nette\Utils\Strings,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \Nette\Caching\Cache,
     \Nette\Object,
     \Nette\Caching\IStorage,	
     \App\Model\IIdentifiable,
-    \Kdyby\Doctrine\EntityManager,
-    App\Services\Exceptions\NullPointerException;
+    \Kdyby\Doctrine\EntityManager;
 
 /**
  * Abstract parent of services
@@ -43,6 +43,7 @@ abstract class BaseService extends Object {
 	  SELECT_COLLECTION = "selectList";
     
     const MAX_PRIORITY = 10;
+    
     /**
      * @var \Kdyby\Doctrine\EntityManager
      */
@@ -57,6 +58,13 @@ abstract class BaseService extends Object {
      * @var \Nette\Caching\Cache
      */
     private $entityCache;
+    
+    /**
+     * @var \Kdyby\Monolog\Logger
+     */
+    protected $logger;
+    
+    // TODO SET NOTIFICATION SERVICE
     
     private $className;
     
@@ -84,6 +92,14 @@ abstract class BaseService extends Object {
 	$this->cacheStorage = $cacheStorage;
     }
     
+    public function setLogger(Logger $logger) {
+	$this->logger = $logger;
+    }
+    
+    protected function getLogger() {
+	return $this->logger;
+    }
+    
     protected function getMixId($o) {
 	if ($o === null) return null;
 	return $o instanceof IIdentifiable ? $o->getId() : $o;
@@ -106,15 +122,21 @@ abstract class BaseService extends Object {
 	$this->setEntityClassName($entityClassName);
     }
     
-    protected function invalidateEntityCache(BaseEntity $e, array $tags = []) {
-	if ($e === null)
-	    throw new Exceptions\NullPointerException("Passed entity was null", 0);
-	$defTags = [self::ENTITY_COLLECTION, self::SELECT_COLLECTION];
+    protected function invalidateEntityCache(BaseEntity $e = null, array $tags = [self::ENTITY_COLLECTION, self::SELECT_COLLECTION], $force = false) {
 	$cache = $this->getEntityCache();
-	$cache->clean([Cache::TAGS => !empty($tags)?$tags:$defTags]);
+	if ($e === null) {
+	    if ($force) {
+		$this->purgeCache();
+		return;
+	    }
+	    $cache->clean([Cache::TAGS => $tags]);
+	} else {
+	    $tags[] = $e->getId();
+	    $cache->clean([Cache::TAGS => $tags]);
+	}
     }
-    
-    public function purgeCache() {
+    // deletes whole storage cache, not only namespace (Nette bug)
+    protected function purgeCache() {
 	$this->getEntityCache()->clean([Cache::ALL=>true]);
     }
 }

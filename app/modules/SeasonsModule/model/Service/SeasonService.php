@@ -22,13 +22,12 @@ use \App\Model\Entities\SeasonApplication,
     \App\Model\Entities\Season,
     \App\Model\Entities\SeasonTax,
     App\SeasonsModule\Model\Service\ISeasonService,
-    \App\Services\Exceptions\NullPointerException,
+    \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\EntityManager,
     \Nette\InvalidArgumentException,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\Model\Service\IUserService,
-    \App\Services\Exceptions,
     Grido\DataSources\Doctrine,
     \Nette\DateTime,
     Nette\Caching\Cache;
@@ -46,7 +45,7 @@ class SeasonService extends BaseService implements ISeasonService {
     private $seasonDao;
 
     /**
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     private $userService;
 
@@ -65,7 +64,7 @@ class SeasonService extends BaseService implements ISeasonService {
 
     public function createSeason(Season $s) {
 	if ($s == null)
-	    throw new NullPointerException("Argument Season cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Season cannot be null", 0);
 	try {
 	    $this->seasonEditorTypeHandle($s);
 	    
@@ -127,7 +126,7 @@ class SeasonService extends BaseService implements ISeasonService {
 
     public function getSeason($id, $useCache = true) {
 	if ($id == null)
-	    throw new NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
 	if (!is_numeric($id))
 	    throw new InvalidArgumentException("Argument id has to be type of numeric, $id given", 1);
 	try {
@@ -149,18 +148,18 @@ class SeasonService extends BaseService implements ISeasonService {
 
     public function updateSeason(Season $s) {
 	if ($s == null)
-	    throw new NullPointerException("Argument Season cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Season cannot be null", 0);
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $seasonDb = $this->seasonDao->find($s->getId(), false);
 	    if ($seasonDb !== null) {
 		$seasonDb->fromArray($s->toArray());
 		// TODO check if absence of app manage do not makes any problems
 		$this->seasonEditorTypeHandle($seasonDb);
-		$this->getEntityManager()->merge($seasonDb);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($seasonDb);
+		$this->entityManager->flush();
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($seasonDb);
 	} catch (DuplicateEntryException $ex) {
 	    throw new Exceptions\DuplicateEntryException($ex);

@@ -28,7 +28,7 @@ class PublicPresenter extends BasePresenter {
     
     /**
      * @inject
-     * @var App\Model\Service\IArticleService
+     * @var \App\Model\Service\IArticleService
      */
     public $articleService;
     

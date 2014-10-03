@@ -28,7 +28,9 @@ use Doctrine\ORM\Mapping as ORM,
     \App\Model\Misc\Enum\EventVisibility,
     \App\Model\Misc\Enum\EventType,
     \App\Model\Misc\EntityMapperTrait,
-    \Nette\DateTime;
+    \Doctrine\Common\Collections\ArrayCollection,
+    \Nette\DateTime,
+    App\Model\IIdentifiable;
 
 /**
  * ORM persistable entity representing real event
@@ -36,7 +38,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class Event extends BaseEntity {
+class Event extends BaseEntity Implements IIdentifiable {
     
     use EntityMapperTrait;
 
@@ -90,7 +92,7 @@ class Event extends BaseEntity {
     protected $commentMode;
 
     /**
-     * @ManyToMany(targetEntity="SportGroup", fetch="LAZY")
+     * @ManyToMany(targetEntity="SportGroup", fetch="EAGER")
      * @JoinTable(name="Event_SportGroup",
       joinColumns={@JoinColumn(name="event_id", referencedColumnName="id")},
       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")})
@@ -112,6 +114,7 @@ class Event extends BaseEntity {
 	$this->visibility = EventVisibility::GROUP;
 	$this->commentMode = CommentMode::ALLOWED;
 	$this->updated = new DateTime();
+	//$this->groups = new ArrayCollection();
 	$this->fromArray($values);
     }
     public function getId() {

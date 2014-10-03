@@ -1,0 +1,5 @@
+admin:
+	articleAdd: "Add article"
+	articleNew: "New article"
+articleForm.errors:
+	articleAlreadyExist: "Article with given title already exist"

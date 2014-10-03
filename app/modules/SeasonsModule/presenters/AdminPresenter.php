@@ -47,31 +47,31 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var App\SeasonsModule\Model\Service\ISeasonTaxService
+     * @var \App\SeasonsModule\Model\Service\ISeasonService
+     */
+    public $seasonService;
+    
+    /**
+     * @inject
+     * @var \App\SeasonsModule\Model\Service\ISeasonTaxService
      */
     public $seasonTaxService;
 
     /**
      * @inject
-     * @var App\SeasonsModule\Model\Service\ISeasonService
-     */
-    public $seasonService;
-
-    /**
-     * @inject
-     * @var App\SeasonsModule\Model\Service\ISeasonApplicationService
+     * @var \App\SeasonsModule\Model\Service\ISeasonApplicationService
      */
     public $seasonApplicationService;
 
     /**
      * @inject
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $sportGroupsService;
 
     /**
      * @inject
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     public $usersService;
 
@@ -95,6 +95,15 @@ class AdminPresenter extends SecuredPresenter {
 	return $this->seasonService;
     }
 
+    public function actionDefault() {
+//	$app = new SeasonApplication();
+//	$app->setEditor($this->getUser());
+//	$app->setUpdated(new \Nette\Utils\DateTime);
+//	$app->setOwner($this->getUser());
+//	$app->setSeason(2);
+//	$this->seasonApplicationService->createSeasonApplication($app);
+    }
+    
     // <editor-fold desc="Administration of SPORT SEASONS">
 
     public function actionAddSeason() {

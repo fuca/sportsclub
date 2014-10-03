@@ -1,6 +1,8 @@
 {block content}
-<h1 n:block=title>Sign in</h1>
+{define title}
+    {_systemModule.loginControl.loginForm.title} / {include parent}
+{/}
 
-{control signInForm}
+<h1>{_systemModule.loginControl.loginForm.title}</h1>
 
-{* or use {include '../components/form.latte', form => signInForm} *}
+{control loginControl:form}

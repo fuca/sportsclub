@@ -2,5 +2,34 @@
 {layout ./base.latte}
 
 {block content}
-{control addRuleForm}{/}
+{snippet privilegesSnippet}
+    {form addRuleForm}
+	{label role /} {input role}
+	{label resource /} {input resource}
 
+	    {label privilege /} {input privilege}    
+	{label mode /} {input mode}
+	{input submitButton}
+    {/}
+{/snippet}
+
+
+
+<script>
+{include #jsCallback, input => resource, link => getPrivileges}
+</script>
+
+
+{define #jsCallback}
+
+$('#{$control["addRuleForm"][$input]->htmlId}').on('change', function() {
+    $.nette.ajax({
+        type: 'GET',
+        url: '{link {$link}!}',
+        data: {
+            'value': $(this).val(),
+        }
+    });
+});
+
+{/}

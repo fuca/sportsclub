@@ -13,6 +13,7 @@ sudo rm -R ./temp/cache/_*;
 
 echo "> clearing temp/cache/services/";
 sudo rm -R ./temp/cache/services/_*;
+sudo rm -R ./temp/cache/services/*/_*;
 
 echo "> deleting temp/btfj.dat";
 sudo rm ./temp/btfj.dat

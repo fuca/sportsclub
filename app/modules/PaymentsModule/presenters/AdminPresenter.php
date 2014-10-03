@@ -42,31 +42,31 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var App\SeasonsModule\Model\Service\ISeasonService
+     * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     public $seasonService;
 
     /**
      * @inject
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     public $usersService;
 
     /**
      * @inject
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $sportGroupsService;
 
     /**
      * @inject
-     * @var App\PaymentsModule\Model\Service\IPaymentService
+     * @var \App\PaymentsModule\Model\Service\IPaymentService
      */
     public $paymentService;
 
     /**
      * @inject
-     * @var App\Model\Service\IPositionService
+     * @var \App\Model\Service\IPositionService
      */
     public $positionService;
 

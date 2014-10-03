@@ -16,70 +16,207 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\ArticlesModule\Model\Service;
 
-use App\Service\Exceptions\NullPointerException,
-    App\Model\Entities\SportGroup,
-    \Doctrine\ORM\NoResultException;
+use \App\Service\Exceptions\NullPointerException,
+    \App\Model\Entities\SportGroup,
+    \Doctrine\ORM\NoResultException,
+    \App\Model\Misc\Exceptions,
+    \App\Model\Entities\Article,
+    \Nette\Utils\DateTime,
+    \Nette\Caching\Cache,
+    \Grido\DataSources\Doctrine,
+    \App\Model\Service\BaseService,
+    \Kdyby\Doctrine\EntityManager,
+    \App\SystemModule\Model\Service\ISportGroupService,
+    \App\Model\Service\IUserService,
+    \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Service for dealing with Article entities
  *
  * @author <michal.fuca.fucik(at)g.com>
  */
-class ArticleService extends \Nette\Object implements IArticleService {
+class ArticleService extends BaseService implements IArticleService {
     
-    /**
-     * @var \Kdyby\Doctrine\EntityManager
-     */
-    private $entityManager;
-
     /**
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $articleDao;
     
-    function __construct(\Kdyby\Doctrine\EntityManager $em) {
-	$this->entityManager = $em;
-	$this->articleDao = $em->getDao(\App\Model\Entities\Article::getClassName());
+    /**
+     * @var \App\SystemModule\Model\Service\ISportGroupService
+     */
+    private $sportGroupService;
+    
+    /**
+     * 
+     * @var \App\Model\Service\IUserService
+     */
+    private $userService;
+    
+    public function setUserService(IUserService $userService) {
+	$this->userService = $userService;
+    }
+    
+    public function getUserService() {
+	return $this->userService;
+    }
+    
+    public function setSportGroupService(ISportGroupService $sportGroupService) {
+	$this->sportGroupService = $sportGroupService;
+    }
+    
+    function __construct(EntityManager $em) {
+	parent::__construct($em, Article::getClassName());
+	$this->articleDao = $em->getDao(Article::getClassName());
     }
 
-    public function createArticle(\App\Model\Entities\Article $a) {
+    public function createArticle(Article $a) {
 	if ($a === NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Article was null", 0);
-	$this->articleDao->save($a);
+	    throw new Exceptions\NullPointerException("Argument Article was null", 0);
+	try {
+	    $a->setAuthor($a->getEditor());
+	    $a->setUpdated(new DateTime());
+	    $this->sportGroupsTypeHandle($a);
+	    $a->setPictureName("defaultArticleImage.png");
+	    $this->articleDao->save($a);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
-
-    public function deleteArticle(\App\Model\Entities\Article $a) {
-	if ($a === NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Article was null", 0);
-	$db = $this->articleDao->find($a->id);
-	if ($db !== NULL) {
-	    $this->articleDao->delete($db);
-	} else {
-	    throw new \App\Services\Exceptions\DataErrorException("Entity does not exist", 2);
+    
+    private function sportGroupsTypeHandle(Article $a) {
+	if ($a === null)
+	    throw new Exceptions\NullPointerException("Argument event was null");
+	try {
+	    $coll = new ArrayCollection();
+	    foreach ($a->getGroups() as $ag) {
+	    $dbG = $this->sportGroupService->getSportGroup($ag, false);
+		if ($dbG !== null) {
+		   $coll->add($dbG); 
+		}
+	    }
+	    $a->setGroups($coll);
+	} catch (\Exception $a) {
+	    throw new Exceptions\DataErrorException($a->getMessage(), $a->getCode(), $a->getPrevious());
+	}
+	return $a;
+    }
+    
+        private function editorTypeHandle(Article $a) {
+	if ($a === null)
+	    throw new NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($a->getEditor());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $a->setEditor($editor);
+	} catch (Exception $ex) {
+	    throw new DataErrorException($ex);
+	}
+    }
+    
+    private function authorTypeHandle(Article $a) {
+	if ($a === null)
+	    throw new NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $author = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($a->getAuthor());
+		if ($id !== null)
+		    $author = $this->getUserService()->getUser($id, false);
+	    }
+	    $a->setAuthor($author);
+	} catch (Exception $ex) {
+	    throw new DataErrorException($ex);
 	}
     }
 
-    public function getArticle($id) {
+    public function deleteArticle($id) {
 	if ($id === NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Id was null", 0);
-	$result = $this->articleDao->find($id);
-	return $result;
-    }
-
-    public function getArticles(\App\Model\Entities\SportGroup $g) {
-	if ($g === NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Group was null", 0);
+	    throw new Exceptions\NullPointerException("Argument id was null", 0);
+	if (!is_numerict($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given");
 	
-	$qb = $this->articleDao->findAll();
-	return $qb;
+	$db = $this->articleDao->find($id);
+	if ($db !== NULL) {
+	    $this->articleDao->delete($db);
+	} else {
+	    throw new Exceptions\DataErrorException("Entity does not exist", 2);
+	}
     }
 
-    public function updateArticle(\App\Model\Entities\Article $a) {
+    public function getArticle($id, $useCache = true) {
+	if ($id === NULL)
+	    throw new Exceptions\NullPointerException("Argument Id was null", 0);
+	try {
+	    if (!$useCache) {
+		return $this->articleDao->find($id);
+	    }
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if ($data === null) {
+		$data = $this->articleDao->find($id);
+		$opts = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
+		$cache->save($id, $data, $opts);
+	    }
+	    return $data;    
+	} catch (\Exception $ex) {
+	    $this->logger->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException("Error reading article wit id $id");
+	}
+    }
+
+    public function getArticles(SportGroup $g) {
+	if ($g === NULL)
+	    throw new Exceptions\NullPointerException("Argument Group was null", 0);
+	$qb = $this->entityManager->createQueryBuilder();
+	try {
+	$qb->select('a')
+		->from('App\Model\Entities\Article', 'a')
+		->innerJoin('a.groups', 'g')
+		->where('g.id = :gid')
+		->setParameter("gid", $g->id);
+	return $qb->getQuery()->getResult();
+	} catch (\Doctrine\ORM\NoResultException $ex) {
+	   $this->logger->addWarning("No relations article -> group $g found");
+	   throw new Exceptions\DataErrorException("No relations article -> group $g found");
+	} catch (\Exception $ex) {
+	    $this->logger->addError("Error reading articles related to group $g");
+	    throw new Exceptions\DataErrorException("Error reading articles according to related group $g");
+	}
+    }
+
+    public function updateArticle(Article $a) {
 	if ($a === NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Article was null", 0);
-	$this->articleDao->save($a);
+	    throw new Exceptions\NullPointerException("Argument Article was null", 0);
+	try {
+	    $db = $this->articleDao->find($a->getId());
+	    if ($db !== null) {
+		$db->fromArray($a->toArray());
+		$db->setUpdated(new DateTime());
+		$this->editorTypeHandle($db);
+		$this->authorTypeHandle($db);
+		$this->sportGroupsTypeHandle($db);
+		$this->entityManager->merge($db);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($db);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logger->addError("Error updating article $db");
+	    throw new Exceptions\DataErrorException("Error updating article - \n".$ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $a;
+    }
+
+    public function getArticlesDatasource() {
+	$model = new Doctrine(
+		$this->articleDao->createQueryBuilder('a'));
+	return $model;
     }
 
 }

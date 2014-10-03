@@ -16,30 +16,34 @@ services:
 	security.rolesService:
 		class:
 			App\Model\Service\RoleService
-			setup:
+		setup:
 				- setCacheStorage(@security.moduleCacheStorage)
 
 	security.resourceService:
 		class:
 			App\SecurityModule\Model\Service\ResourceService
-			setup:
+		setup:
 				- setCacheStorage(@security.moduleCacheStorage)
 				- setPresenterTree()
 
 	security.aclRulesService:
 		class:
 			App\Model\Service\AclRuleService
-			setup:
+		setup:
 				- setCacheStorage(@security.moduleCacheStorage)
 				- setRoleService()
 	security.aclService:
 		class:
-			App\SecurityModule\Model\Acl
+			App\SecurityModule\Model\Service\AclService
+		setup:
+				- setRolesService()
+				- setRulesService()
+				- setResourcesService()
 
 	security.positionsService:
 		class:
 			App\Model\Service\PositionService
-			setup:
+		setup:
 				- setCacheStorage(@security.moduleCacheStorage)
 				- setSportGroupService()
 				- setUserService()
@@ -47,11 +51,12 @@ services:
 	authenticator: 
 		class:
 			App\SecurityModule\Model\Authenticator
-			setup:
+		setup:
 				- setSalt(%models.salt%)
 				- setRolesService()
 				- setUsersService()
 factories:
+# factories jsou od 2.1 sloceny do services
 	# tady si muzu definovat tovarny na ruzny komponenty atp v ramci myho modulu
 	# viz http://doc.nette.org/cs/2.2/di-extensions
 	# a http://pla.nette.org/cs/create-components-with-autowiring

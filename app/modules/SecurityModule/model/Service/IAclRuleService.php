@@ -28,9 +28,9 @@ use \App\Model\Entities\AclRule;
 interface IAclRuleService {
     
     function getRule($id);
+    function getRules();
     function createRule(AclRule $arule);
     function deleteRule($id);
     function updateRule(AclRule $arule);
     function getRulesDatasource();
-    
 }

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\EventsModule\Model\Service;
 
 use App\Model\Entities\Event,
     App\Model\Entities\SportGroup,
@@ -29,38 +29,19 @@ use App\Model\Entities\Event,
  */
 interface IEventService {
     
-    /**
-     * 
-     */
     function createEvent(Event $e);
     
-    /**
-     * 
-     */
     function updateEvent(Event $e);
     
-    /**
-     * 
-     */
-    function deleteEvent(Event $e);
+    function deleteEvent($id);
     
-    /**
-     * 
-     */
     function getEvent($id);
     
-    /**
-     * 
-     */
     function getEvents(SportGroup $g);
     
-    /**
-     * 
-     */
+    function getEventsDataSource();
+    
     function confirmParticipation(Event $e, User $u);
     
-    /**
-     * 
-     */
     function rejectParticipation(Event $e, User $u);
 }

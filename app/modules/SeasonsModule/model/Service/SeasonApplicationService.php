@@ -30,7 +30,7 @@ use \App\Model\Entities\SeasonApplication,
     \App\Model\Service\BaseService,
     \App\SeasonsModule\Model\Service\ISeasonService,
     \App\SeasonsModule\Model\Service\ISeasonTaxService,
-    \App\PaymentsModule\Model\Service\IPaymentService,
+    App\PaymentsModule\Model\Service\IPaymentService,
     \App\SystemModule\Model\Service\ISportGroupService,
     \App\Model\Service\IUserService,
     \Grido\DataSources\Doctrine;
@@ -48,29 +48,31 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
     private $seasonApplicationDao;
 
     /**
-     * @var App\SeasonModule\Model\Service\ISeasonService
+     * @var \App\SeasonModule\Model\Service\ISeasonService
      */
     private $seasonService;
 
     /**
-     * @var App\SeasonModule\Model\Service\ISeasonTaxService
+     * @var \App\SeasonModule\Model\Service\ISeasonTaxService
      */
     private $seasonTaxService;
 
     /**
-     * @var App\PaymentModule\Model\Service\IPaymentService
+     * @var \App\PaymentModule\Model\Service\IPaymentService
      */
     private $paymentService;
 
     /**
-     * @var App\SystemModule\Model\Service\ISportGroupService
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     private $sportGroupService;
 
     /**
-     * @var App\Model\Service\IUserService
+     * @var \App\Model\Service\IUserService
      */
     private $userService;
+    
+    public $onCreate = [];
 
     public function getUserService() {
 	return $this->userService;
@@ -136,6 +138,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	} catch (Exception $ex) {
 	    throw new DataErrorException();
 	}
+	$this->onCreate(clone $app);
     }
     
     function getSeasonApplication($id, $useCache = true) {
@@ -259,7 +262,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	if ($app === null)
 	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
-	    $this->getEntityManager()->beginTransaction();
+	    $this->entityManager->beginTransaction();
 	    $appDb = $this->seasonApplicationDao->find($app->getId(), false);
 	    if ($appDb !== null) {
 		$appDb->fromArray($app->toArray());
@@ -269,10 +272,10 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		$this->applicationOwnerTypeHandle($appDb);
 		$this->applicationEditorTypeHandle($appDb);
 		$appDb->setUpdated(new DateTime());
-		$this->getEntityManager()->merge($appDb);
-		$this->getEntityManager()->flush();
+		$this->entityManager->merge($appDb);
+		$this->entityManager->flush();
 	    }
-	    $this->getEntityManager()->commit();
+	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($appDb);
 	} catch (DuplicateEntryException $ex) {
 	    throw new Exceptions\DuplicateEntryException($ex);

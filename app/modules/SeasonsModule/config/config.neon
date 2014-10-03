@@ -1,0 +1,25 @@
+services:
+	seasons.seasonService:
+		class:
+			App\SeasonsModule\Model\Service\SeasonService
+		setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
+	seasons.seasonTaxService:
+		class:	
+			App\SeasonsModule\Model\Service\SeasonTaxService
+		setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
+				- setSportGroupService()
+				- setSeasonService()
+	seasons.seasonAppService:
+		class:	
+			App\SeasonsModule\Model\Service\SeasonApplicationService
+		setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
+				- setSportGroupService()
+				- setSeasonService()
+				- setSeasonTaxService()
+				- setPaymentService()

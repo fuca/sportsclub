@@ -17,8 +17,7 @@
  */
 
 namespace App\Model\Service;
-
-use App\Model\Entities\User;
+use App\SystemModule\Model\Service\NotificationMessage;
 
 /**
  * Interface of Notification service
@@ -28,27 +27,5 @@ use App\Model\Entities\User;
  */
 interface INotificationService {
     
-    /**
-     * Sends notification about creating new account
-     * @param \App\Model\Entities\User $u
-     */
-    public function newRegistrationNotification(User $u);
-    
-    /**
-     * Sends notification about creating new season application
-     * @param \App\Model\Entities\User $u
-     */
-    public function newApplicationNotification(User $u);
-    
-    /**
-     * Sends notification about account activation
-     * @param \App\Model\Entities\User $u
-     */
-    public function activationNotification(User $u);
-    
-    /**
-     * Sends notification about account deactivation
-     * @param \App\Model\Entities\User $u
-     */
-    public function deactivationNotification(User $u);
+    function send(NotificationMessage $n);
 }

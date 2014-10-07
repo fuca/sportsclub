@@ -1,0 +1,5 @@
+admin:
+	wallPostNew: "New wallpost"
+	wallPostAdd: "Add wallpost"
+admin.wallPostForm.errors:
+	wallPostAlreadyExist: "Wallpost with given title already exist"

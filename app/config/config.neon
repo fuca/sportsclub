@@ -185,3 +185,4 @@ extensions:
 	paymentsModule: App\PaymentsModule\Config\PaymentsModuleExtension
 	eventsModule: App\EventsModule\Config\EventsModuleExtension
 	articles: App\ArticlesModule\Config\ArticlesModuleExtension
+	walls: App\WallsModule\Config\WallsModuleExtension

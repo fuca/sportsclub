@@ -16,39 +16,31 @@
  * limitations under the License.
  */
 
-namespace App\ArticlesModule\Presenters;
+namespace App\WallsModule\Presenters;
 
 use \App\SystemModule\Presenters\SecuredPresenter,
-    \App\ArticlesModule\Model\Service\IArticleService,
-    \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Model\Service\IUserService,
-    \App\Model\Misc\Exceptions,
+    \App\Model\Service\WallService,
+    \App\Model\Entities\WallPost,
+    \App\WallsModule\Forms\WallPostForm,
     \App\Model\Misc\Enum\FormMode,
-    \App\Model\Entities\Article,
-    \App\ArticlesModule\Forms\ArticleForm,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\Enum\CommentMode,
-    \Nette\Utils\ArrayHash,
     \Nette\Application\UI\Form,
+    \Nette\Utils\ArrayHash,
     \Grido\Grid;
 
 /**
- * ArticleAdminPresenter
+ * AdminPresenter of wallposts module
+ *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SecuredPresenter {
-    
+
     /**
-     * @inject 
-     * @var \App\ArticlesModule\Model\Service\IArticleService
+     * @inject
+     * @var \App\WallsModule\Model\Service\IWallService
      */
-    public $articleService;
-    
-    /**
-     * @inject 
-     * @var \App\SystemModule\Model\Service\ISportGroupService
-     */
-    public $sportGroupService;
+    public $wallService;
     
     /**
      * @inject
@@ -56,81 +48,86 @@ class AdminPresenter extends SecuredPresenter {
      */
     public $usersService;
     
-    public function actionDefault() {
+    /**
+     * @inject 
+     * @var \App\SystemModule\Model\Service\ISportGroupService
+     */
+    public $sportGroupService;
+    
+    public function actionDefault() { // grid render
     }
     
-    public function actionAddArticle() {
-	// form render
+    public function actionAddWallPost() { // form render
     }
     
-    public function actionUpdateArticle($id) {
+    public function actionUpdateWallPost($id) {
 	if (!is_numeric($id)) {
 	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
 	    $this->redirect("default");
 	}
 	try {
-	    $artDb = $this->articleService->getArticle($id);
-	    if ($artDb !== null) {
-		$form = $this->getComponent("updateArticleForm");
-		$grArr = $artDb->getGroups()->map(function($e){return $e->getId();})->toArray();
-		$artDb->setGroups($grArr);
-		$form->setDefaults($artDb->toArray());
+	    $wpDb = $this->wallService->getWallPost($id);
+	    if ($wpDb !== null) {
+		$form = $this->getComponent("updateWallPostForm");
+		$grArr = $wpDb->getGroups()->map(function($e){return $e->getId();})->toArray();
+		$wpDb->setGroups($grArr);
+		$form->setDefaults($wpDb->toArray());
 	    }
 	} catch (Exception $ex) {
 	    $this->handleException($ex);
 	}
     }
     
-    public function handleDeleteArticle($id) {
+    public function createWallPost(ArrayHash $values) {
+	try {
+	    $wp = new WallPost((array) $values);
+	    $wp->setEditor($this->getUser()->getIdentity());
+	    $this->wallService->createWallPost($wp);
+	} catch (Exception $ex) {
+	    $this->handleException($ex);
+	}
+    }
+    
+    public function updateWallPost(ArrayHash $values) {
+	try {
+	    $wp = new WallPost((array) $values);
+	    $wp->setEditor($this->getUser()->getIdentity());
+	    $this->wallService->updateWallPost($wp);
+	} catch (Exception $ex) {
+	    $this->handleException($ex);
+	}
+    }
+    
+    public function handleDeleteWallPost($id) {
 	if (!is_numeric($id)) {
 	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
 	    $this->redirect("default");
 	}
 	try {
-	    $this->articleService->deleteArticle($id);
+	    $wpDb = $this->wallService->getWallPost($id);
+	    if ($wpDb !== null) {
+		$this->wallService->removeWallPost($wpDb);
+	    }
 	} catch (Exception $ex) {
 	    $this->handleException($ex);
 	}
-	if (!$this->isAjax()) {
-	    $this->redirect("this");
-	}
     }
     
-    public function createArticle(ArrayHash $values) {
-	try {
-	    $a = new Article((array)$values);
-	    $a->setEditor($this->getUser()->getIdentity());
-	    $this->articleService->createArticle($a);
-	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
-	}
-    }
-    
-    public function updateArticle(ArrayHash $values) {
-	try {
-	    $a = new Article((array)$values);
-	    $a->setEditor($this->getUser()->getIdentity());
-	    $this->articleService->updateArticle($a);
-	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
-	}
-    }
-    
-    public function createComponentAddArticleForm($name) {
-	$form = $this->prepareArticleForm($name);
+    public function createComponentAddWallPostForm($name) {
+	$form = $this->prepareWallPostForm($name);
 	$form->initialize();
 	return $form;
     }
     
-    public function createComponentUpdateArticleForm($name) {
-	$form = $this->prepareArticleForm($name);
+    public function createComponentUpdateWallPostForm($name) {
+	$form = $this->prepareWallPostForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
     
-    private function prepareArticleForm($name) {
-	$form = new ArticleForm($this, $name, $this->getTranslator());
+    private function prepareWallPostForm($name) {
+	$form = new WallPostForm($this, $name, $this->getTranslator());
 	try {
 	    $users = $this->usersService->getSelectUsers();
 	    $form->setUsers($users);
@@ -142,24 +139,23 @@ class AdminPresenter extends SecuredPresenter {
 	return $form;
     }
     
-    public function articleFormSubmitted(Form $form) {
+    public function wallPostFormSubmitted(Form $form) {
 	$values = $form->getValues();
 	try {
-	    switch ($form->getMode()) {
+	    switch($form->getMode()) {
 		case FormMode::CREATE_MODE:
-		    $this->createArticle($values);
+		    $this->createWallPost($values);
 		    break;
 		case FormMode::UPDATE_MODE:
-		    $this->updateArticle($values);
+		    $this->updateWallPost($values);
 		    break;
 	    }
 	} catch (Exceptions\DuplicateEntryException $ex) {
-	    $form->addError("articlesModule.admin.articleForm.errors.articleAlreadyExist");
+	    $form->addError("wallsModule.admin.wallpostForm.errors.wallPostAlreadyExist");
 	}
     }
     
-    public function createComponentArticlesGrid($name) {
-	
+    public function createComponentWallPostsGrid($name) {
 	$articleStates = [null=>null]+ArticleStatus::getOptions();
 	$commentModes = [null=>null]+CommentMode::getOptions();
 	
@@ -170,7 +166,7 @@ class AdminPresenter extends SecuredPresenter {
 	}
 	
 	$grid = new Grid($this, $name);
-	$grid->setModel($this->articleService->getArticlesDataSource());
+	$grid->setModel($this->wallService->getWallPostsDatasource());
 	$grid->setPrimaryKey("id");
 	
 	$grid->addColumnNumber("id", "#")
@@ -211,14 +207,15 @@ class AdminPresenter extends SecuredPresenter {
 	$headerAuthor = $grid->getColumn('updated')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addActionHref('delete', '[Smaz]', 'deleteArticle!')
+	$grid->addActionHref('delete', '[Smaz]', 'deleteWallPost!')
 		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateArticle')
+	$grid->addActionHref('edit', '[Uprav]', 'updateWallPost')
 		->setIcon('pencil');
 
 	$grid->setFilterRenderType($this->filterRenderType);
-	$grid->setExport("admin-articles" . date("Y-m-d H:i:s", time()));
+	$grid->setExport("admin-wallposts" . date("Y-m-d H:i:s", time()));
 
 	return $grid;
     }
+    
 }

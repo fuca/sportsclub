@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace App\PaymentsModule\Forms;
+namespace App\EventsModule\Forms;
 
 use \App\Forms\BaseForm,
     \Nette\DateTime,

@@ -81,6 +81,7 @@ class ArticleService extends BaseService implements IArticleService {
 	    $this->sportGroupsTypeHandle($a);
 	    $a->setPictureName("defaultArticleImage.png");
 	    $this->articleDao->save($a);
+	    $this->invalidateEntityCache();
 	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -104,7 +105,7 @@ class ArticleService extends BaseService implements IArticleService {
 	return $a;
     }
     
-        private function editorTypeHandle(Article $a) {
+    private function editorTypeHandle(Article $a) {
 	if ($a === null)
 	    throw new NullPointerException("Argument Event cannot be null", 0);
 	try {
@@ -195,17 +196,19 @@ class ArticleService extends BaseService implements IArticleService {
 	if ($a === NULL)
 	    throw new Exceptions\NullPointerException("Argument Article was null", 0);
 	try {
+	    $this->entityManager->beginTransaction();
 	    $db = $this->articleDao->find($a->getId());
 	    if ($db !== null) {
 		$db->fromArray($a->toArray());
+		$this->sportGroupsTypeHandle($db);
 		$db->setUpdated(new DateTime());
 		$this->editorTypeHandle($db);
 		$this->authorTypeHandle($db);
-		$this->sportGroupsTypeHandle($db);
 		$this->entityManager->merge($db);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($db);
 	    }
+	     $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->logger->addError("Error updating article $db");
 	    throw new Exceptions\DataErrorException("Error updating article - \n".$ex->getMessage(), $ex->getCode(), $ex->getPrevious());

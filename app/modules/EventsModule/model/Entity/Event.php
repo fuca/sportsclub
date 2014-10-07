@@ -236,7 +236,6 @@ class Event extends BaseEntity Implements IIdentifiable {
     public function setComments($comments) {
 	$this->comments = $comments;
     }
-
     
     public function __toString() {
 	return "{$this->getTitle()} (#{$this->getId()})";

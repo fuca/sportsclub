@@ -16,42 +16,15 @@
  * limitations under the License.
  */
 
-namespace App\WallsModule\Model\Service;
+namespace App\Presenters;
 
-use \App\Model\Entities\WallPost,
-    \App\Model\Entities\SportGroup;
+use \App\SystemModule\Presenters\SecuredPresenter;
 
 /**
- * Interface of Wall service
- * @author <michal.fuca.fucik(at)gmail.com>
+ * ProtectedPresenter
+ *
+ * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-interface IWallService {
-    
-    /**
-     * 
-     */
-    function createWallPost(WallPost $w);
-    
-    /**
-     * 
-     */
-    function updateWallPost(WallPost $w);
-    
-    /**
-     * 
-     */
-    function removeWallPost($id);
-    
-    /**
-     * 
-     */
-    function getWallPost($id);
-    
-    /**
-     * 
-     */
-    function getWallPosts(SportGroup $g);
-    
-    function getWallPostsDatasource();
-    
+class ProtectedPresenter extends SecuredPresenter {
+
 }

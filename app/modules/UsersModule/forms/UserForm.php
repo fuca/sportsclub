@@ -2,10 +2,10 @@
 
 namespace App\UsersModule\Forms;
 
-use App\Forms\BaseForm,
-    App\Model\Misc\Enum\FormMode,
+use \App\Forms\BaseForm,
+    \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
-    App\Services\Exceptions\DuplicateEntryException;
+    \App\Services\Exceptions\DuplicateEntryException;
 
 /**
  * Form for creating and updating Users

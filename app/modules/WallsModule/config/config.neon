@@ -1,0 +1,11 @@
+services:
+	wallsModule.storage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/wallsModule)
+		autowired: no
+	-
+		class:
+			App\WallsModule\Model\Service\WallService
+		setup:
+			- setCacheStorage(@wallsModule.storage)
+			- setSportGroupService()
+			- setUserService()

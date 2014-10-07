@@ -18,12 +18,12 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\JoinTable,
-    Doctrine\ORM\Mapping\ManyToMany,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\OneToMany,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\JoinTable,
+    \Doctrine\ORM\Mapping\ManyToMany,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\OneToMany,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\ArticleStatus,
@@ -47,18 +47,17 @@ class WallPost extends BaseEntity implements IIdentifiable {
      */
     protected $id;
 
-//    /**
-//     * @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE}) 
-//     * @JoinColumn(nullable = true, name = "author_fk")
-//     */
-//    
-//    private User author;
+    /**
+     * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"merge"})
+     * @JoinColumn(nullable = false, name = "author_fk")
+     */
+    protected $author;
 
     /** @ORM\Column(type="datetime", nullable = false) */
     protected $updated;
 
     /**
-     * @ManyToMany(targetEntity="SportGroup", fetch = "LAZY", cascade = {"MERGE"})
+     * @ManyToMany(targetEntity="SportGroup", fetch = "EAGER")
      * @JoinTable(name="WallPost_SportGroup",
       joinColumns={@JoinColumn(name="wallpost_id", referencedColumnName="id")},
       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")})

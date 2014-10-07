@@ -16,50 +16,98 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\WallsModule\Model\Service;
 
 use \Nette\Diagnostics\Debugger,
-    App\Model\Entities\WallPost,
+    \App\Model\Entities\WallPost,
     \App\Model\Entities\SportGroup,
-    App\Services\Exceptions\NullPointerException;
+    \App\Model\Service\BaseService,
+    \Kdyby\Doctrine\EntityManager,
+    \Grido\DataSources\Doctrine,
+    \App\Model\Misc\Exceptions,
+    \Doctrine\Common\Collections\ArrayCollection,
+    \Nette\Utils\DateTime,
+    \Nette\Caching\Cache,
+    \App\Model\Service\IUserService,
+    \App\SystemModule\Model\Service\ISportGroupService,
+    \App\Services\Exceptions\NullPointerException;
 
 /**
  * Description of WallService
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class WallService extends \Nette\Object implements IWallService {
-
-    /**
-     * @var \Kdyby\Doctrine\EntityManager
-     */
-    private $entityManager;
+class WallService extends BaseService implements IWallService {
 
     /**
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $wallDao;
+    
+    /**
+     * @var \App\SystemModule\Model\Service\ISportGroupService
+     */
+    private $sportGroupService;
+    
+    /**
+     * @var \App\Model\Service\IUserService
+     */
+    private $userService;
+    
+    public function setSportGroupService(ISportGroupService $sgs) {
+	$this->sportGroupService = $sgs;
+    }
+    
+    public function setUserService(IUserService $us) {
+	$this->userService = $us;
+    }
+    
+    public function getUserService() {
+	return $this->userService;
+    }
 
-    public function __construct(\Kdyby\Doctrine\EntityManager $em) {
-	$this->entityManager = $em;
-	$this->wallDao = $em->getDao(\App\Model\Entities\WallPost::getClassName());
+    public function __construct(EntityManager $em) {
+	parent::__construct($em, WallPost::getClassName());
+	$this->wallDao = $em->getDao(WallPost::getClassName());
     }
 
     public function createWallPost(WallPost $w) {
 	if ($w == null)
-	    throw new NullPointerException("Argument WallPost cannot be null", 0);
-	$this->wallDao->save($w);
+	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
+	try {
+	    $w->setAuthor($w->getEditor());
+	    $w->setUpdated(new DateTime());
+	    $this->sportGroupsTypeHandle($w);
+	    $this->wallDao->save($w);
+	    $this->invalidateEntityCache();
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
-    public function getWallPost($id) {
+    public function getWallPost($id, $useCache = true) {
 	if (!is_numeric($id))
-	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric, '$id' given", 1);
-	return $this->wallDao->find($id);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given", 1);
+	try {
+	    if (!$useCache) {
+		return $this->wallDao->find($id);
+	    }
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if ($data === null) {
+		$data = $this->wallDao->find($id);
+		$opts = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
+		$cache->save($id, $data, $opts);
+	    }
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $data;
     }
 
     public function getWallPosts(SportGroup $g) {
 	if ($g == null)
-	    throw new NullPointerException("Argument SportGroup cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportGroup cannot be null", 0);
 	$qb = $this->entityManager->createQueryBuilder();
 	$qb->select('w')
 		->from('App\Model\Entities\WallPost', 'w')
@@ -69,16 +117,99 @@ class WallService extends \Nette\Object implements IWallService {
 	return $qb->getQuery()->getResult();
     }
 
-    public function removeWallPost(WallPost $w) {
-	if ($w == null)
-	    throw new NullPointerException("Argument WallPost cannot be null", 0);
-	$this->wallDao->delete($w);
+    public function removeWallPost($id) {
+	if ($id == null)
+	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
+	if (!is_numeric($id)) 
+	    throw new Exceptions\InvalidArgumentException();
+	try {
+	    $wpDb = $this->wallDao->find($id);
+	    if ($wpDb !== null) {
+		$this->wallDao->delete($wpDb);	
+	    }
+	    $this->invalidateEntityCache($wpDb);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function updateWallPost(WallPost $w) {
 	if ($w == null)
-	    throw new NullPointerException("Argument WallPost cannot be null", 0);
-	$this->wallDao->save($w);
+	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
+	try {
+	    $this->entityManager->beginTransaction();
+	    $wpDb = $this->wallDao->find($w->getId());
+	    if ($wpDb !== null) {
+		$wpDb->fromArray($w->toArray());
+		$this->sportGroupsTypeHandle($wpDb);
+		$wpDb->setUpdated(new DateTime());
+		$this->authorTypeHandle($wpDb);
+		$this->editorTypeHandle($wpDb);
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($wpDb);
+	    }
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $wpDb;
     }
 
+    public function getWallPostsDatasource() {
+	$model = new Doctrine(
+	    $this->wallDao->createQueryBuilder('wp'));
+	return $model;	
+    }
+    
+    private function sportGroupsTypeHandle(WallPost $wp) {
+	if ($wp === null)
+	    throw new Exceptions\NullPointerException("Argument event was null");
+	try {
+	    $coll = new ArrayCollection();
+	    foreach ($wp->getGroups() as $wpg) {
+	    $dbG = $this->sportGroupService->getSportGroup($wpg, false);
+		if ($dbG !== null) {
+		   $coll->add($dbG); 
+		}
+	    }
+	    $wp->setGroups($coll);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+	return $wp;
+    }
+    
+        private function editorTypeHandle(WallPost $a) {
+	if ($a === null)
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($a->getEditor());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $a->setEditor($editor);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
+	}
+    }
+    
+    private function authorTypeHandle(WallPost $a) {
+	if ($a === null)
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $author = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($a->getAuthor());
+		if ($id !== null)
+		    $author = $this->getUserService()->getUser($id, false);
+	    }
+	    $a->setAuthor($author);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
+	}
+    }
 }

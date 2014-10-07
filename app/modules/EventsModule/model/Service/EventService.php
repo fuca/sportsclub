@@ -176,7 +176,7 @@ class EventService extends BaseService implements IEventService {
 
     public function getEvent($id, $useCache = true) {
 	if ($id === NULL)
-	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Id was null", 0);
 	if (!is_numeric($id))
 	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
 	try {
@@ -190,7 +190,7 @@ class EventService extends BaseService implements IEventService {
 		$opt = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
+	} catch (\Exception $ex) {
 	    throw new DataErrorException($ex);
 	}
 	return $data;
@@ -220,6 +220,7 @@ class EventService extends BaseService implements IEventService {
 		$this->sportGroupsTypeHandle($eDb);
 		$this->editorTypeHandle($eDb);
 		$this->authorTypeHandle($eDb);
+		$eDb->setUpdated(new DateTime());
 		$this->entityManager->merge($eDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($eDb);

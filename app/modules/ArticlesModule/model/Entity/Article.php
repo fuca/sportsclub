@@ -48,6 +48,7 @@ class Article extends BaseEntity implements IIdentifiable {
 
     /** @ORM\Column(type="string", nullable = false, unique=true) */
     protected $alias;
+    
     /**
      * @ManyToOne(targetEntity="User", fetch="LAZY", cascade={"merge"})
      * @JoinColumn(nullable = false, name = "author_fk")

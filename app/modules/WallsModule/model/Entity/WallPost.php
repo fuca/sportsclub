@@ -69,6 +69,9 @@ class WallPost extends BaseEntity implements IIdentifiable {
 
     /** @ORM\Column(type="string", nullable = false) */
     protected $content;
+    
+    /** @ORM\Column(type="string", nullable = false) */
+    protected $highlight;
 
     /** @ORM\Column(type="ArticleStatus", nullable = false) */
     protected $status;
@@ -106,6 +109,22 @@ class WallPost extends BaseEntity implements IIdentifiable {
     
     public function getId() {
 	return $this->id;
+    }
+    
+    public function getAuthor() {
+	return $this->author;
+    }
+
+    public function getHighlight() {
+	return $this->highlight;
+    }
+
+    public function setAuthor($author) {
+	$this->author = $author;
+    }
+
+    public function setHighlight($highlight) {
+	$this->highlight = $highlight;
     }
 
     public function getUpdated() {

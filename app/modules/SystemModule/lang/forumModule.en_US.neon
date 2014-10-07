@@ -1,0 +1,6 @@
+admin:
+	forumAdd: "Add forum"
+	forumNew: "New forum"
+
+forumForm.errors:
+	forumAlreadyExist: "Forum with given title already exist"

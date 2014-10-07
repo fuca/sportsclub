@@ -16,42 +16,12 @@
  * limitations under the License.
  */
 
-namespace App\ForumModule\Model\Service;
-
-use \App\Model\Entities\Forum,
-    \App\Model\Entities\SportGroup;
+namespace App\Model\Misc\Exceptions;
 
 /**
- * Interface for Event service
- *
- * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
+ * Exception throwed from services layer
+ * @author Michal Fučík (395624) michal.fuca.fucik(at)gmail.com
  */
-interface IForumService {
+class InvalidStateException extends \Nette\InvalidStateException implements IException {
     
-    /**
-     * 
-     */
-    function createForum(Forum $f);
-    
-    /**
-     * 
-     */
-    function updateForum(Forum $f);
-    
-    /**
-     * 
-     */
-    function deleteForum($id);
-    
-    /**
-     * 
-     */
-    function getForum($id);
-    
-    /**
-     * 
-     */
-    function getForums(SportGroup $g);
-    
-    function getForumDatasource();
 }

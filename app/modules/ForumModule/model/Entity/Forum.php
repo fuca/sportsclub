@@ -46,6 +46,12 @@ class Forum extends BaseEntity {
 
     /** @ORM\Column(type="string", nullable = false, unique=true) */
     protected $alias;
+    
+    /**
+     * @ManyToOne(targetEntity="User", fetch="LAZY", cascade={"merge"})
+     * @JoinColumn(nullable = false, name = "author_fk")
+     */
+    protected $author;
 
     /**
      * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
@@ -59,7 +65,7 @@ class Forum extends BaseEntity {
     protected $updated;
 
     /**
-     * @ORM\Column(type="datetime", nullable = false)
+     * @ORM\Column(type="datetime", nullable = true)
      */
     protected $lastActivity;
 
@@ -84,7 +90,7 @@ class Forum extends BaseEntity {
     protected $description;
 
     /**
-     * @ORM\Column(type="string", nullable = false)
+     * @ORM\Column(type="string", nullable = true)
      */
     protected $imgName;
 
@@ -195,7 +201,16 @@ class Forum extends BaseEntity {
     public function setComments($comments) {
 	$this->comments = $comments;
     }
+    
+    public function getAuthor() {
+	return $this->author;
+    }
 
+    public function setAuthor($author) {
+	$this->author = $author;
+    }
+
+    
     public function __toString() {
 	return "{$this->getTitle()} (#{$this->getId()})";
     }

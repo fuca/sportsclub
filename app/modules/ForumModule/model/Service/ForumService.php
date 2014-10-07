@@ -16,62 +16,136 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\ForumModule\Model\Service;
 
 use \App\Model\Entities\Event,
     \App\Model\Entities\SportGroup,
     \App\Model\Entities\User,
-    \App\Model\Entities\Forum;
+    \Grido\DataSources\Doctrine,
+    \App\Model\Entities\Forum,
+    \Nette\Utils\DateTime,
+    \Doctrine\DBAL\DBALException,
+    \Nette\Caching\Cache,
+    \Doctrine\Common\Collections\ArrayCollection,
+    \App\Model\Misc\Exceptions,
+    \Nette\Utils\Strings,
+    \Kdyby\Doctrine\EntityManager,
+    \App\Model\Service\BaseService,
+    \App\Model\Service\IUserService,
+    \App\SystemModule\Model\Service\ISportGroupService;
 
 /**
  * Implementation of service dealing with Forum entities
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
-class ForumService extends \Nette\Object implements IForumService {
-
-    /**
-     * @var \Kdyby\Doctrine\EntityManager
-     */
-    private $entityManager;
-
+class ForumService extends BaseService implements IForumService {
+    
     /**
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $forumDao;
+    
+    /**
+     * @var \App\Model\Service\IUserService
+     */
+    private $userService;
+    
+    /**
+     * @var \App\SystemModule\Model\Service\ISportGroupService
+     */
+    private $sportGroupService;
 
-    function __construct(\Kdyby\Doctrine\EntityManager $em) {
-	$this->entityManager = $em;
+    /**
+     * @var string
+     */
+    private $defaultImgPath;
+    
+    public function setDefaultImgPath($defaultImgPath) {
+	$this->defaultImgPath = $defaultImgPath;
+    }
+    
+    public function setSportGroupService (ISportGroupService $sportGroupService) {
+	$this->sportGroupService = $sportGroupService;
+    }
+    
+    public function getUserService() {
+	return $this->userService;
+    }
+
+    public function setUserService(IUserService $userService) {
+	$this->userService = $userService;
+    }
+    
+    function __construct(EntityManager $em) {
+	parent::__construct($em, Forum::getClassName());
 	$this->forumDao = $em->getDao(Forum::getClassName());
     }
 
     public function createForum(Forum $f) {
 	if ($f == NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Forum was null", 0);
-	$this->forumDao->save($f);
-    }
-
-    public function deleteForum(Forum $f) {
-	if ($f == NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Forum was null", 0);
-	$db = $this->forumDao->find($f);
-	if ($db !== NULL) {
-	    $this->forumDao->delete($db);
-	} else {
-	    throw new \App\Services\Exceptions\DataErrorException("Entity not found", 2);
+	    throw new Exceptions\NullPointerException("Argument Forum was null", 0);
+	try {
+	    $this->entityManager->beginTransaction();
+	    $f->setUpdated(new DateTime());
+	    $f->setAuthor($f->getEditor());
+	    $this->sportGroupsTypeHandle($f);
+	    if (empty($f->getImgName())) {
+		$f->setImgName($this->defaultImgPath);
+	    }
+	    $f->setAlias(Strings::normalize($f->getTitle()));
+	    $this->forumDao->save($f);
+	    $this->entityManager->commit();
+	} catch (DBALException $ex) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious()); // previous PDOException #23000
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
-    public function getForum($id) {
+    public function deleteForum($id) {
 	if ($id == NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Id was null", 0);
-	$res = $this->forumDao->find($id);
-	return $res;
+	    throw new Exceptions\NullPointerException("Argument Forum was null", 0);
+	if (!is_numeric($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given");
+	
+	try {
+	    $db = $this->forumDao->find($id);
+	    if ($db !== NULL) {
+		$this->forumDao->delete($db);
+		$this->invalidateEntityCache();
+	    }
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function getForum($id, $useCache = true) {
+	if ($id == NULL)
+	    throw new Exceptions\NullPointerException("Argument Id was null", 0);
+	try {
+	    if (!$useCache) {
+		return $this->forumDao->find($id);
+	    }
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if ($data === null) {
+		$data = $this->forumDao->find($id);
+		$opts = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
+		$cache->save($id, $data, $opts);
+	    }
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $data;
     }
 
     public function getForums(SportGroup $g) {
 	if ($g == NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument SportGroup was null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportGroup was null", 0);
+	try {
 	$qb = $this->entityManager->createQueryBuilder();
 	$qb->select('f')
 		->from('App\Model\Entities\Forum', 'f')
@@ -79,12 +153,84 @@ class ForumService extends \Nette\Object implements IForumService {
 		->where('g.id = :gid')
 		->setParameter("gid", $g->id);
 	return $qb->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function updateForum(Forum $f) {
-	if ($f == NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Forum was null", 0);
-	$this->forumDao->save($f);
+	if ($f === NULL)
+	    throw new Exceptions\NullPointerException("Argument Forum was null", 0);
+	try {
+	    $fDb = $this->forumDao->find($f->getId());
+	    if ($fDb !== null) {
+		$fDb->fromArray($f->toArray());
+		$fDb->setUpdated(new DateTime());
+		$this->sportGroupsTypeHandle($fDb);
+		$this->editorTypeHandle($fDb);
+		$this->authorTypeHandle($fDb);
+		$this->entityManager->merge($fDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($fDb);
+	    }
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
-
+    
+    public function getForumDataSource() {
+	$model = new Doctrine(
+		$this->forumDao->createQueryBuilder('f'));
+	return $model;
+    }
+    
+    private function sportGroupsTypeHandle(Forum $e) {
+	if ($e === null)
+	    throw new Exceptions\NullPointerException("Argument event was null");
+	try {
+	    $coll = new ArrayCollection();
+	    foreach ($e->getGroups() as $eg) {
+	    $dbG = $this->sportGroupService->getSportGroup($eg, false);
+		if ($dbG !== null) {
+		   $coll->add($dbG); 
+		}
+	    }
+	    $e->setGroups($coll);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+	return $e;
+    }
+    
+    private function editorTypeHandle(Forum $e) {
+	if ($e === null)
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($e->getEditor());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $e->setEditor($editor);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
+	}
+    }
+    
+    private function authorTypeHandle(Forum $e) {
+	if ($e === null)
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($e->getAuthor());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $e->setAuthor($editor);
+	} catch (Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
+	}
+    }
 }

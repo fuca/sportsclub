@@ -1,0 +1,12 @@
+services:
+	-
+		class:
+			App\ForumModule\Model\Service\ForumService
+		setup:
+			- setCacheStorage(@serviceEntityCache)
+			- setUserService()
+			- setSportGroupService()
+
+translation:
+	dirs: 
+		- %appDir%/modules/ForumModule/lang

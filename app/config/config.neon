@@ -186,3 +186,4 @@ extensions:
 	eventsModule: App\EventsModule\Config\EventsModuleExtension
 	articles: App\ArticlesModule\Config\ArticlesModuleExtension
 	walls: App\WallsModule\Config\WallsModuleExtension
+	forum: App\ForumModule\Config\ForumModuleExtension

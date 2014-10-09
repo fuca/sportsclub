@@ -28,7 +28,8 @@ use \Doctrine\ORM\Mapping as ORM,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\EntityMapperTrait,
-    \App\Model\IIdentifiable;
+    \App\Model\IIdentifiable,
+    \App\SystemModule\Model\Service\ICommentable;
 
 /**
  * ORM persistable entity representing post at group's wall
@@ -36,7 +37,7 @@ use \Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class WallPost extends BaseEntity implements IIdentifiable {
+class WallPost extends BaseEntity implements IIdentifiable, ICommentable {
     
     use EntityMapperTrait;
 
@@ -87,7 +88,7 @@ class WallPost extends BaseEntity implements IIdentifiable {
 
     /**
      * ONE TO MANY
-     * @ManyToMany(targetEntity="Comment", cascade={"remove"})
+     * @ManyToMany(targetEntity="Comment", cascade={"all"}, fetch = "EAGER")
      * @JoinTable(name="Comment_WallPost",
      *      joinColumns={@JoinColumn(name="wallpost_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})
@@ -214,5 +215,4 @@ class WallPost extends BaseEntity implements IIdentifiable {
     public function __toString() {
 	return "{$this->getTitle()} (#{$this->getId()})";
     }
-
 }

@@ -30,7 +30,8 @@ use
     \Nette\Object,
     \Nette\Caching\IStorage,	
     \App\Model\IIdentifiable,
-    \Kdyby\Doctrine\EntityManager;
+    \Kdyby\Doctrine\EntityManager,
+    \Kdyby\Monolog\Logger;
 
 /**
  * Abstract parent of services

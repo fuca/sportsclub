@@ -165,8 +165,12 @@ services:
 			App\SystemModule\Model\Service\Localization\Translator
 		setup:
 				- setCacheStorage(@serviceEntityCache)
-	#- App\Model\Service\WallService()
-	#- App\Model\Service\ForumService()
+	-
+		class: 
+			App\SystemModule\Model\Service\CommentService
+		setup:
+				- setCacheStorage(@serviceEntityCache)
+				- setUserService()
 
 extensions:
 	annotations: Kdyby\Annotations\DI\AnnotationsExtension

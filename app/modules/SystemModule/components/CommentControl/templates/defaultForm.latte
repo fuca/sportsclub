@@ -1,0 +1,8 @@
+{* CommentControl form *}
+
+<h3>{_systemModule.commentControl.titleAdd}</h3>
+{if $allowed}
+    {control addCommentForm}
+{else}
+    {_systemModule.commentControl.commentsRestricted}
+{/}

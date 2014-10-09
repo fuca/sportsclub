@@ -17,12 +17,13 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM,
+    \App\Model\Entities\Comment;
 
 /**
  * ORM persistable entity representing real wallpost comment
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class WallpostComment extends Comment {   
+class WallPostComment extends Comment {   
 }

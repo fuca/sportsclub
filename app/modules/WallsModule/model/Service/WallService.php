@@ -28,9 +28,12 @@ use \Nette\Diagnostics\Debugger,
     \Doctrine\Common\Collections\ArrayCollection,
     \Nette\Utils\DateTime,
     \Nette\Caching\Cache,
+    \App\SystemModule\Model\Service\ICommentable,
+    \App\Model\Entities\Comment,
     \App\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Services\Exceptions\NullPointerException;
+    \App\Services\Exceptions\NullPointerException,
+    \App\SystemModule\Model\Service\ICommentService;
 
 /**
  * Description of WallService
@@ -43,25 +46,34 @@ class WallService extends BaseService implements IWallService {
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $wallDao;
-    
+
     /**
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     private $sportGroupService;
-    
+
     /**
      * @var \App\Model\Service\IUserService
      */
     private $userService;
-    
+
+    /**
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    public $commentService;
+
+    public function setCommentService(ICommentService $commentService) {
+	$this->commentService = $commentService;
+    }
+
     public function setSportGroupService(ISportGroupService $sgs) {
 	$this->sportGroupService = $sgs;
     }
-    
+
     public function setUserService(IUserService $us) {
 	$this->userService = $us;
     }
-    
+
     public function getUserService() {
 	return $this->userService;
     }
@@ -105,27 +117,33 @@ class WallService extends BaseService implements IWallService {
 	return $data;
     }
 
-    public function getWallPosts(SportGroup $g) {
-	if ($g == null)
-	    throw new Exceptions\NullPointerException("Argument SportGroup cannot be null", 0);
-	$qb = $this->entityManager->createQueryBuilder();
-	$qb->select('w')
-		->from('App\Model\Entities\WallPost', 'w')
-		->innerJoin('e.groups', 'g')
-		->where('g.id = :gid')
-		->setParameter("gid", $g->id);
-	return $qb->getQuery()->getResult();
+    public function getWallPosts(SportGroup $g = null) {
+	try {
+	    if (empty($g)) {
+		return $this->wallDao->findAll();
+	    } else {
+		$qb = $this->entityManager->createQueryBuilder();
+		$qb->select('w')
+			->from('App\Model\Entities\WallPost', 'w')
+			->innerJoin('e.groups', 'g')
+			->where('g.id = :gid')
+			->setParameter("gid", $g->id);
+		return $qb->getQuery()->getResult();
+	    }
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function removeWallPost($id) {
 	if ($id == null)
 	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
-	if (!is_numeric($id)) 
+	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException();
 	try {
 	    $wpDb = $this->wallDao->find($id);
 	    if ($wpDb !== null) {
-		$this->wallDao->delete($wpDb);	
+		$this->wallDao->delete($wpDb);
 	    }
 	    $this->invalidateEntityCache($wpDb);
 	} catch (\Exception $ex) {
@@ -159,19 +177,19 @@ class WallService extends BaseService implements IWallService {
 
     public function getWallPostsDatasource() {
 	$model = new Doctrine(
-	    $this->wallDao->createQueryBuilder('wp'));
-	return $model;	
+		$this->wallDao->createQueryBuilder('wp'));
+	return $model;
     }
-    
+
     private function sportGroupsTypeHandle(WallPost $wp) {
 	if ($wp === null)
 	    throw new Exceptions\NullPointerException("Argument event was null");
 	try {
 	    $coll = new ArrayCollection();
 	    foreach ($wp->getGroups() as $wpg) {
-	    $dbG = $this->sportGroupService->getSportGroup($wpg, false);
+		$dbG = $this->sportGroupService->getSportGroup($wpg, false);
 		if ($dbG !== null) {
-		   $coll->add($dbG); 
+		    $coll->add($dbG);
 		}
 	    }
 	    $wp->setGroups($coll);
@@ -180,8 +198,8 @@ class WallService extends BaseService implements IWallService {
 	}
 	return $wp;
     }
-    
-        private function editorTypeHandle(WallPost $a) {
+
+    private function editorTypeHandle(WallPost $a) {
 	if ($a === null)
 	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
 	try {
@@ -196,7 +214,7 @@ class WallService extends BaseService implements IWallService {
 	    throw new Exceptions\DataErrorException($ex);
 	}
     }
-    
+
     private function authorTypeHandle(WallPost $a) {
 	if ($a === null)
 	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
@@ -212,4 +230,61 @@ class WallService extends BaseService implements IWallService {
 	    throw new Exceptions\DataErrorException($ex);
 	}
     }
+
+    public function createComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->entityManager->beginTransaction();
+	    $wpDb = $this->wallDao->find($e->getId());
+	    if ($wpDb !== null) {
+		//$this->commentService->createComment($c);
+		$ccs = $wpDb->getComments();
+		//$ccs->clear(); // vymaze celou kolekci
+		$ccs->add($c);
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($wpDb);
+	    }
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->getLogger()->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException("Error occured while adding comment");
+	}
+    }
+
+    public function updateComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->entityManager->beginTransaction();
+	    //$wpDb = $this->wallDao->find($e->getId());
+	    $this->commentService->updateComment($c);
+	    $this->invalidateEntityCache($e);
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->getLogger()->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException("Error occured while adding comment");
+	}
+    }
+
+    public function deleteComment(Comment $c, ICommentable $e) {
+	try {
+	    $wpDb = $this->wallDao->find($e->getId());
+	    if ($wpDb !== null) {
+		$coll = $wpDb->getComments();
+		$id = $c->getId();
+		$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+		$index = $coll->indexOf($comment);
+		$coll->remove($index);
+
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush($wpDb);
+		$this->commentService->deleteComment($c->getId());    
+		$this->invalidateEntityCache($wpDb);
+	    }
+	} catch (Exception $ex) {
+	    
+	}
+	
+    }
+
 }

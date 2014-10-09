@@ -10,3 +10,10 @@ loginControl.loginForm:
 	email: "Email:"
 	password: "Password:"
 	submit: "Let me in"
+
+commentControl:
+	titleAdd: "Add comment"
+	allData: "Comments"
+	noDataFound: "No comments were found"
+	commentsRestricted: "Comments are restricted for you"
+	

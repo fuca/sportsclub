@@ -35,7 +35,18 @@ abstract class BaseForm extends Form {
     
     /** @var callable onSuccess handler */
     private $successHandler;
+    
+    private $showCancel;
+    
+    public function getShowCancel() {
+	return $this->showCancel;
+    }
 
+    public function setShowCancel($showCancel) {
+	$this->showCancel = $showCancel;
+    }
+
+    
     public function __construct(IContainer $parent = NULL, $name = NULL, ITranslator $translator) {
 	parent::__construct($parent, $name);
 	$this->mode = FormMode::CREATE_MODE;

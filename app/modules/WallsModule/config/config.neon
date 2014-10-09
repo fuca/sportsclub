@@ -9,3 +9,5 @@ services:
 			- setCacheStorage(@wallsModule.storage)
 			- setSportGroupService()
 			- setUserService()
+			- setCommentService()
+			- setLogger()

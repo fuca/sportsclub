@@ -17,17 +17,19 @@
  */
 
 namespace App\SystemModule\Model\Service;
-use \App\Model\IIdentifiable;
+use 
+    \App\Model\Entities\Comment;
 
 /**
- * Interface for services of dealing with Commentable entities
- *
- * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
+ * Interface for comment service
+ * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-interface ICommentable extends IIdentifiable {
+interface ICommentService {
     
-    function setComments($comments);
+    function createComment(Comment $c);
+    function updateComment(Comment $c);
+    function deleteComment($id);
+    function getComment($id);
     function getComments();
-    function getCommentMode();
-    function setCommentMode($commentMode);
+    function getCommentsDatasource();
 }

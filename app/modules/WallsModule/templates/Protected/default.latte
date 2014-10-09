@@ -1,0 +1,8 @@
+{* WallsModule Protected default *}
+{layout ./base.latte}
+
+{block content}
+
+{foreach $wallPosts as $wp}
+    <a href="{plink showWallPost $wp->getId()}">{$wp->getTitle()}</a><br/>
+{/}

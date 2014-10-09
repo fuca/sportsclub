@@ -1,0 +1,54 @@
+{* CommentControl comments *}
+
+<h3>{_systemModule.commentControl.allData}</h3>
+{snippet commentsData}
+    {if $data->isEmpty()} 
+	<strong>{_systemModule.commentControl.noDataFound}</strong>
+    {else}
+	{foreach $data as $c}
+	    <p><a id="comment-{$c->getId()}" href="#comment-{$c->getId()}">#{$c->getId()}</a>
+	    <strong>{$c->getTitle()} </strong> <a href="{link getCommentForm!, $c->getId()}" class="ajaxdialog">[E]</a><a href="{link deleteComment!, $c->getId()}">[X]</a><br/>
+	    {$c->getContent()}<br>
+	    {$c->getAuthor()} | {$c->getUpdated()|date:'%d.%m.%Y'}<br/>
+	    </p>
+	    {/}
+    {/}
+{/snippet}
+    
+{snippet simpleForm}
+    {if isset($showSimpleForm)}{control updateCommentForm}{/if}
+{/snippet}
+
+<script>
+// aktivace odkazu na zobrazeni dialogu
+jQuery(function($) {
+    $('a.ajaxdialog').live('click', function(event) {
+        event.preventDefault();
+        $.post($.nette.href = this.href, function(data) {
+            // (mimo jine) injektovani formulare do HTML
+            $.nette.success(data);
+            // aktivace ajaxoveho submitu formulare
+            activateAjaxForm();
+	    cancelButton();
+            // zobrazeni formulare v dialogu
+            $("#snippet--updateCommentForm").dialog();
+        }, "json");
+    });
+});
+
+// aktivace "ajaxoveho" formulare
+function activateAjaxForm () {
+    $("#snippet--updateCommentForm [name='submitButton']").click(function () {
+        $(this).ajaxSubmit();
+        $("#snippet--updateCommentForm").dialog( "destroy" ); // po submitnuti zavreme dialog
+        return false;
+    });
+}
+
+function cancelButton () {
+    $(":submit[name='cancelButton']").click(function () {
+        $("#snippet--updateCommentForm").dialog( "destroy" ); // po submitnuti zavreme dialog
+        return false;
+    });
+}
+</script>

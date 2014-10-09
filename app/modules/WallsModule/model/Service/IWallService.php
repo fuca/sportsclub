@@ -19,13 +19,14 @@
 namespace App\WallsModule\Model\Service;
 
 use \App\Model\Entities\WallPost,
-    \App\Model\Entities\SportGroup;
+    \App\Model\Entities\SportGroup,
+    \App\SystemModule\Model\Service\ICommenting;
 
 /**
  * Interface of Wall service
  * @author <michal.fuca.fucik(at)gmail.com>
  */
-interface IWallService {
+interface IWallService extends ICommenting {
     
     /**
      * 

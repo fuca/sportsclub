@@ -18,19 +18,18 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
+use \Doctrine\ORM\Mapping as ORM,
     \Kdyby\Doctrine\Entities\BaseEntity,
-    Doctrine\ORM\Mapping\MappedSuperclass,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\InheritanceType,
-    Doctrine\ORM\Mapping\DiscriminatorColumn,
+    \Doctrine\ORM\Mapping\MappedSuperclass,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\InheritanceType,
+    \Doctrine\ORM\Mapping\DiscriminatorColumn,
     \App\Model\IIdentifiable,
     \App\Model\Misc\EntityMapperTrait;
 
 /**
  * Abstract entity for application comments
- *
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string")
  * @ORM\Entity
@@ -60,10 +59,16 @@ abstract class Comment extends BaseEntity implements IIdentifiable {
     protected $updated;
 
     /**
-     * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
-     * @JoinColumn(nullable = true, name = "editor_fk")
+     * @ManyToOne(targetEntity="User", fetch = "LAZY")
+     * @JoinColumn(nullable = true, name = "author_fk")
      */
     protected $author;
+    
+    /**
+     * @ManyToOne(targetEntity="User", cascade = {"MERGE"})
+     * @JoinColumn(name="editor_fk", referencedColumnName="id")
+     */
+    protected $editor;
     
     public function __construct(array $values = []) {
 	parent::__construct();
@@ -117,13 +122,30 @@ abstract class Comment extends BaseEntity implements IIdentifiable {
     public function setAuthor($author) {
 	$this->author = $author;
     }
+    
+    public function getEditor() {
+	return $this->editor;
+    }
 
+    public function setEditor($editor) {
+	$this->editor = $editor;
+    }
+
+    
     public function __toString() {
 	return "{$this->getTitle()} (#{$this->getId()})";
     }
         
-    /* Kdyz to budu chtit predelat zpet na stav, kdy ma kazdy typ commentu svou tabulku, 
+    /* Jsme ve stavu, kdy je jedna tabulka Comment a ostatni se na ni napojuji
+     * Kdyz to budu chtit predelat zpet na stav, kdy ma kazdy typ commentu svou tabulku, 
      * tak pridam anotaci @MappedSuperClass a smazu tuhle @inheritanci a @discriminatorColumn 
      * a do kazde commentovane entity pripisu do targetEntity realny typ commentu, ktery se bude mapovat
      */
+    
+    /* Jsme ve stavu, kdy kazda commentovatelna entita ma svou tabulku commentu
+     * Kdyz chci do stavu spolecne tabulky, tak musim zde do anotaci pridat @InheritanceType("SINGLE_TABLE")
+     * a @DiscriminatorColumn(name="type", type="string") a smazat @MappedSuperClass.
+     * A do kazde commentovatelne entity do targetEntity dam typ Comment
+     */
+    
 }

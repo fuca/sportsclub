@@ -1,0 +1,13 @@
+{* WallsModule Protected showWallPost *}
+
+{layout ./base.latte}
+
+{block content}
+
+<h2>{$data->getTitle()}</h2>
+
+<p>{$data->getContent()}</p>
+<p>{$data->getAuthor()}</p>
+
+{control commentControl:form}
+{control commentControl:comments}

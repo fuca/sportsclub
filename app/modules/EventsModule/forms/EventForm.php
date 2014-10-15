@@ -90,15 +90,15 @@ class EventForm extends BaseForm {
 		->addRule(Form::FILLED, "Popis musí být zadán")
 		->setRequired("Popis musí být zadán");
 
-	$this->addDate("takePlaceSince", "Od", DateInput::TYPE_DATE)
+	$this->addDate("takePlaceSince", "Od", DateInput::TYPE_DATETIME_LOCAL)
 		->addRule(Form::FILLED, "Počátek akce musí být zadán")
 		->setRequired("Počátek akce musí být zadán");
 
-	$this->addDate("takePlaceTill", "Do", DateInput::TYPE_DATE)
+	$this->addDate("takePlaceTill", "Do", DateInput::TYPE_DATETIME_LOCAL)
 		->addRule(Form::FILLED, "Konec akce musí být zadán")
 		->setRequired("Konec akce musí být zadán");
 
-	$this->addDate("confirmUntil", "Potvrdit do", DateInput::TYPE_DATE)
+	$this->addDate("confirmUntil", "Potvrdit do", DateInput::TYPE_DATETIME_LOCAL)
 		->addRule(Form::FILLED, "Čas potvrzení musí být zadán")
 		->setRequired("Čas potvrzení musí být zadán");
 

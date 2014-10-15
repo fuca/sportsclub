@@ -2,14 +2,15 @@
 
 services:
 
-	eventsModule.storage: # tohle by odtud melo zmizet a kazdy modul by mel mit svoji storage
+	eventsModule.cacheStorage:
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/eventsModule)
 		autowired: no
-	-
+
+	eventsModule.eventService:
 		class:
 			App\EventsModule\Model\Service\EventService
 		setup:
-			- setCacheStorage(@eventsModule.storage)
+			- setCacheStorage(@eventsModule.cacheStorage)
 			- setGroupService()
 			- setUserService()
 

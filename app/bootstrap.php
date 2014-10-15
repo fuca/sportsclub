@@ -26,9 +26,9 @@ $robotLoader = $configurator->createRobotLoader()
 	->register();
 //$composer->addClassMap($robotLoader->getIndexedClasses());
 //$configurator->addConfig(__DIR__ . '/config/config.local.neon'); // nahrazeni includem v config.neon
-$configurator->addConfig(__DIR__ . '/config/config.neon');
+$configurator->addConfig(__DIR__ . '/modules/SystemModule/config/config.neon');
 
-// enum types register for database use
+// enum types registering for database use
 Type::addType("AclMode", "App\Model\Misc\Enum\AclMode");
 Type::addType("WebProfileStatus", "App\Model\Misc\Enum\WebProfileStatus");
 Type::addType("PrivateMessageStatus", "App\Model\Misc\Enum\PrivateMessageStatus");

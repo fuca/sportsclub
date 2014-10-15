@@ -1,23 +1,30 @@
 services:
+
+	seasonsModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/seasonsModule)
+		autowired: no
+
 	seasons.seasonService:
 		class:
 			App\SeasonsModule\Model\Service\SeasonService
 		setup:
-				- setCacheStorage(@serviceEntityCache)
+				- setCacheStorage(@seasonsModule.cacheStorage)
 				- setUserService()
+
 	seasons.seasonTaxService:
 		class:	
 			App\SeasonsModule\Model\Service\SeasonTaxService
 		setup:
-				- setCacheStorage(@serviceEntityCache)
+				- setCacheStorage(@seasonsModule.cacheStorage)
 				- setUserService()
 				- setSportGroupService()
 				- setSeasonService()
+
 	seasons.seasonAppService:
 		class:	
 			App\SeasonsModule\Model\Service\SeasonApplicationService
 		setup:
-				- setCacheStorage(@serviceEntityCache)
+				- setCacheStorage(@seasonsModule.cacheStorage)
 				- setUserService()
 				- setSportGroupService()
 				- setSeasonService()

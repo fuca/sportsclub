@@ -17,51 +17,42 @@
  */
 
 namespace App\UsersModule\Config;
+
+use \Nette\DI\CompilerExtension,
+    \Nette\PhpGenerator\ClassType,
+    \App\Config\BaseModuleExtension,
+    \Kdyby\Translation\DI\ITranslationProvider;
+
 /**
  * UsersModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class UsersModuleExtension extends  \Nette\DI\CompilerExtension {
-    
-    // defaultni nastaveni
+class UsersModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+
     private $defaults = [];
-    
-    /**
-     * Metoda je volana nad vsemi rozsirenimi, aby nacetli dodatecny konfigurace
-     */
+
     public function loadConfiguration() {
 	parent::loadConfiguration();
-	$config = $this->getConfig($this->defaults); // nactu si konfigurace odpovidajici sekce z hlavniho configu
-	
-	// vlastnik definic sluzeb
+
+	$config = $this->getConfig($this->defaults);
+
 	$builder = $this->getContainerBuilder();
-	
-	
+
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
+    }
 
-//	// počet článků na stránku v komponentě
-//	$builder->getDefinition($this->prefix('articlesList'))
-//	    ->addSetup('setPostsPerPage', $config['postsPerPage']);
-//
-//	// volitelné vypnutí komentářů
-//	if (!$config['comments']) {
-//	    $builder->getDefinition($this->prefix('comments'))
-//		->addSetup('disableComments');
-//	}
+    public function getTranslationResources() {
+	return [__DIR__ . "/../".self::LOCALE_DIR];
     }
-    
+
     public function beforeCompile() {
-	/*
-	 * V této fázi sestavování už by neměly přibývat další služby. 
-	 * Můžeme ovšem upravovat existující a doplnit některé potřebné vazby 
-	 * mezi službami, například pomocí tagů.
-	 */
+	parent::beforeCompile();
     }
-    
-    public function afterCompile(\Nette\PhpGenerator\ClassType $class) {
+
+    public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
     }
-    
+
 }

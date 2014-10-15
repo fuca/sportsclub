@@ -163,6 +163,7 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->addColumnText('commentMode', 'Komentáře')
 		->setSortable()
 		->setFilterSelect($commentModes);
+	$grid->getColumn('commentMode')->setCustomRender(callback($this, 'commentModeRenderer'));
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
@@ -172,7 +173,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerAuthor = $grid->getColumn('author')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addColumnDate('updated', 'Změna')
+	$grid->addColumnDate('updated', 'Změna', self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerAuthor = $grid->getColumn('updated')->headerPrototype;
@@ -186,6 +187,12 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-forum" . date("Y-m-d H:i:s", time()));
 	return $grid;
+    }
+    
+        
+    public function commentModeRenderer($e) {
+	$commentModes = CommentMode::getOptions();
+	return $commentModes[$e->getCommentMode()];
     }
     
     private function prepareForumForm($name) {

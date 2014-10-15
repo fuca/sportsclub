@@ -5,15 +5,7 @@
 #   @service
 #
 #
-#common:
-	#php.date.timezone = "Europe/Prague"
-	#php.iconv.internal_encoding = "UTF-8"
-	#php.mbstring.internal_encoding = "UTF-8"
-	#php.default_charset = "UTF-8"
-    #variables:
-#variable.lang = en
-	#variable.tempDir = %appDir%/temp
-	#variable.logDir = %appDir%/log
+
 includes:
 	# - nazev.neon ## nejnizsi priorita
 	# - nazev.neon ## vyssi priorita
@@ -33,7 +25,7 @@ parameters:
 		email: "michal.fuca.fucik@gmail.com"
 
 	wwwDir: %appDir%/../www/
-	cacheDir: %appDir%/temp/cache/
+	cacheDir: %tempDir%/cache/
 	modulesDir: %appDir%/modules/
 	libsDir: %appDir%/vendor/others/
 	imagesDir: %wwwDir%/img/
@@ -61,14 +53,14 @@ facebook:
 	appId: "1234567890"
 	appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
 	permissions: [email]
-
+	
 translation:
 	default: cs
 	whitelist: [cs, en, de] #....
 	fallback: [cs_CZ, cs]
 	debugger: on
 	dirs: 
-		- %appDir%/modules/SystemModule/lang
+		#- %appDir%/modules/SystemModule/locale # every module has own locale dir
 	resolvers:
 		session: on
 		request: off # checking locale from request
@@ -173,6 +165,8 @@ services:
 				- setUserService()
 
 extensions:
+
+	# 3rd party libraries
 	annotations: Kdyby\Annotations\DI\AnnotationsExtension
 	console: Kdyby\Console\DI\ConsoleExtension
 	events: Kdyby\Events\DI\EventsExtension
@@ -182,12 +176,13 @@ extensions:
 	translation: Kdyby\Translation\DI\TranslationExtension
 	monolog: Kdyby\Monolog\DI\MonologExtension
 
-
+	# Application modules
+	systemModule: App\SystemModule\Config\SystemModuleExtension
 	usersModule: App\UsersModule\Config\UsersModuleExtension
 	securityModule: App\SecurityModule\Config\SecurityModuleExtension
 	seasonsModule: App\SeasonsModule\Config\SeasonsModuleExtension
 	paymentsModule: App\PaymentsModule\Config\PaymentsModuleExtension
 	eventsModule: App\EventsModule\Config\EventsModuleExtension
-	articles: App\ArticlesModule\Config\ArticlesModuleExtension
-	walls: App\WallsModule\Config\WallsModuleExtension
-	forum: App\ForumModule\Config\ForumModuleExtension
+	articlesModule: App\ArticlesModule\Config\ArticlesModuleExtension
+	wallsModule: App\WallsModule\Config\WallsModuleExtension
+	forumModule: App\ForumModule\Config\ForumModuleExtension

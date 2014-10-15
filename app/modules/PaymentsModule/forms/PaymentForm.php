@@ -95,7 +95,6 @@ final class PaymentForm extends BaseForm {
 	if ($this->isCreate()) {
 	    $osel = $this->addSelect(self::PAYMENT_OWNER_TYPE_SELECT_ID, "Typ zadání platby", $this->getOwnersSelect());
 	
-
 	    $osel->addCondition(Form::EQUAL, "single")
 		    ->toggle("single-owner");
 	
@@ -118,7 +117,6 @@ final class PaymentForm extends BaseForm {
 		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::SINGLE)
 		->setRequired();
 
-	
 	$this->addSelect("sportGroup", "Skupina", $this->getSportGroups())
 		->setPrompt("Vyberte skupinu.. ")
 		->setOption("id", "group-owner")

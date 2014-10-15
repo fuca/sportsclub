@@ -297,10 +297,9 @@ class AdminPresenter extends SecuredPresenter {
 	$headerActive = $grid->getColumn('active')->headerPrototype;
 	$headerActive->class[] = 'center';
 
-	$grid->addColumnDate('lastLogin', 'Poslední přihlášení')
+	$grid->addColumnDate('lastLogin', 'Poslední přihlášení', self::DATETIME_FORMAT)
 		->setSortable()
 		->setReplacement(array(NULL => 'Nikdy'))
-		->setDateFormat(\Grido\Components\Columns\Date::FORMAT_DATETIME)
 		->setFilterDateRange();
 		
 		

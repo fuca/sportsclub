@@ -6,12 +6,16 @@ usersModule:
 	# tady si nastavim svoje vecicky
 
 services:
-	# tady si muzu definovat sluzby v ramci meho modulu
+	
+	usersModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/usersModule)
+		autowired: no
+
 	users.userService:
 			class:
 				App\Model\Service\UserService
 			setup:
-				- setCacheStorage(@serviceEntityCache)
+				- setCacheStorage(@usersModule.cacheStorage)
 				- setSalt(%models.salt%)
 
 	# viz http://doc.nette.org/cs/2.2/di-extensions

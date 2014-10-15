@@ -16,35 +16,24 @@
  * limitations under the License.
  */
 
-namespace App\ArticlesModule\Config;
+namespace App\SystemModule\Config;
 
-use \Nette\PhpGenerator\ClassType,
+use \Nette\DI\CompilerExtension,
+    \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
-    \App\Model\Misc\Exceptions,
-    \Nette\Utils\FileSystem,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
- * ArticlesModuleExtension
+ * SystemModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class SystemModuleExtension extends BaseModuleExtension implements ITranslationProvider {
 
     private $defaults = [];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
-
-	// nactu si konfigurace odpovidajici sekce z globalniho configu
-	$config = $this->getConfig($this->defaults);
-
-	// vytahnu si containere buildera (ten generuje kod pro konfiguraci)
-	$builder = $this->getContainerBuilder();
-
-	// načtení konfiguračního souboru pro rozšíření
-	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
-	// $translator = $builder->getDefinition("translation.default"); // for example obtaining of service // 
     }
 
     public function getTranslationResources() {

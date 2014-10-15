@@ -179,7 +179,7 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     private function preparePaymentForm($name) {
-	$form = new PaymentForm($this, $name);
+	$form = new PaymentForm($this, $name, $this->getTranslator());
 	try {
 	    $seasons = $this->getSeasonService()->getSelectSeasons();
 	    $users = $this->getUsersService()->getSelectUsers();
@@ -246,7 +246,11 @@ class AdminPresenter extends SecuredPresenter {
 	$headerLabel = $grid->getColumn('season')->headerPrototype;
 	$headerLabel->class[] = 'center';
 
-
+	$grid->addColumnDate('orderedDate', 'Zadáno', self::DATETIME_FORMAT)
+		->setSortable()
+		->setFilterDateRange();
+	$headerAuthor = $grid->getColumn('orderedDate')->headerPrototype;
+	$headerAuthor->class[] = 'center';
 
 	$grid->addActionHref('delete', '[Smaz]', 'deletePayment!')
 		->setIcon('trash');

@@ -39,6 +39,8 @@ abstract class BasePresenter extends Presenter {
     const FM_SUCCESS = "success",
 	    FM_ERROR = "error",
 	    FM_WARNING = "warning";
+    
+    const DATETIME_FORMAT = "j.n.Y H:i";
 
     /** @var string @persistent */
     public $ajax = 'on';

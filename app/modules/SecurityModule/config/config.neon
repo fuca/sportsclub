@@ -4,35 +4,34 @@
 
 parameters:
 	# tady si nastavim svoje vecicky
-	security.cacheDir: 
 
 services:
-	# tady si muzu definovat sluzby v ramci meho modulu
 
-	security.moduleCacheStorage: 
+
+	securityModule.cacheStorage: 
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/securityModule/)
 		autowired: false
 
-	security.rolesService:
+	securityModule.rolesService:
 		class:
 			App\Model\Service\RoleService
 		setup:
-				- setCacheStorage(@security.moduleCacheStorage)
+				- setCacheStorage(@securityModule.cacheStorage)
 
-	security.resourceService:
+	securityModule.resourceService:
 		class:
 			App\SecurityModule\Model\Service\ResourceService
 		setup:
-				- setCacheStorage(@security.moduleCacheStorage)
+				- setCacheStorage(@securityModule.cacheStorage)
 				- setPresenterTree()
 
-	security.aclRulesService:
+	securityModule.aclRulesService:
 		class:
 			App\Model\Service\AclRuleService
 		setup:
-				- setCacheStorage(@security.moduleCacheStorage)
+				- setCacheStorage(@securityModule.cacheStorage)
 				- setRoleService()
-	security.aclService:
+	securityModule.aclService:
 		class:
 			App\SecurityModule\Model\Service\AclService
 		setup:
@@ -40,11 +39,11 @@ services:
 				- setRulesService()
 				- setResourcesService()
 
-	security.positionsService:
+	securityModule.positionsService:
 		class:
 			App\Model\Service\PositionService
 		setup:
-				- setCacheStorage(@security.moduleCacheStorage)
+				- setCacheStorage(@securityModule.cacheStorage)
 				- setSportGroupService()
 				- setUserService()
 				- setRoleService()

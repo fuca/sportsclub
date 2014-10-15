@@ -1,14 +1,21 @@
+# Config file for Payments module
+
 services:
-	applicationsListener:
+
+	paymentsModule.applicationsListener:
 		class:
 			App\PaymentsModule\Model\Listeners\ApplicationsListener
 		tags: [kdyby.subscriber]
 
-	-
+	paymentsModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/paymentsModule)
+		autowired: no
+
+	paymentsModule.paymentService:
 		class:
 			App\PaymentsModule\Model\Service\PaymentService
 		setup:
-			- setCacheStorage(@serviceEntityCache)
+			- setCacheStorage(@paymentsModule.cacheStorage)
 			- setUsersService()
 			- setSeasonService()
 

@@ -1,9 +1,14 @@
 services:
-	-
+
+	forumModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/forumModule)
+		autowired: no
+
+	forumModule.forumService:
 		class:
 			App\ForumModule\Model\Service\ForumService
 		setup:
-			- setCacheStorage(@serviceEntityCache)
+			- setCacheStorage(@forumModule.cacheStorage)
 			- setUserService()
 			- setSportGroupService()
 

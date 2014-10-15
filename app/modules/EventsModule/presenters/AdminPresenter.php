@@ -183,23 +183,23 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->addColumnText('eventType', 'Typ')
 		->setSortable()
 		->setFilterSelect($eventTypes);
-	//$grid->getColumn('role')->setCustomRender(callback($this, 'roleParColToString'));
+	$grid->getColumn('eventType')->setCustomRender(callback($this, 'eventTypesRenderer'));
 	$headerType = $grid->getColumn('eventType')->headerPrototype;
 	$headerType->class[] = 'center';
 
-	$grid->addColumnDate('takePlaceSince', 'Od')
+	$grid->addColumnDate('takePlaceSince', 'Od', self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerSince = $grid->getColumn('takePlaceSince')->headerPrototype;
 	$headerSince->class[] = 'center';
 
-	$grid->addColumnDate('takePlaceTill', 'Do')
+	$grid->addColumnDate('takePlaceTill', 'Do', self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerTill = $grid->getColumn('takePlaceTill')->headerPrototype;
 	$headerTill->class[] = 'center';
 
-	$grid->addColumnDate('confirmUntil', 'Potvrdit')
+	$grid->addColumnDate('confirmUntil', 'Potvrdit', self::DATETIME_FORMAT)
 		->setSortable();
 	$headerDead = $grid->getColumn('confirmUntil')->headerPrototype;
 	$headerDead->class[] = 'center';
@@ -211,6 +211,11 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-events" . date("Y-m-d H:i:s", time()));
+    }
+    
+    public function eventTypesRenderer($e) {
+	$types = EventType::getOptions();
+	return $types[$e->getEventType()];
     }
 
 }

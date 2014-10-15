@@ -190,12 +190,14 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->addColumnText('status', 'Stav')
 		->setSortable()
 		->setFilterSelect($articleStates);
+	$grid->getColumn('status')->setCustomRender(callback($this, 'statusRenderer'));
 	$headerStatus = $grid->getColumn('status')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
 	$grid->addColumnText('commentMode', 'Komentáře')
 		->setSortable()
 		->setFilterSelect($commentModes);
+	$grid->getColumn('commentMode')->setCustomRender(callback($this, 'commentModeRenderer'));
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
@@ -205,7 +207,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerAuthor = $grid->getColumn('author')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addColumnDate('updated', 'Změna')
+	$grid->addColumnDate('updated', 'Změna', self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerAuthor = $grid->getColumn('updated')->headerPrototype;
@@ -220,5 +222,15 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->setExport("admin-articles" . date("Y-m-d H:i:s", time()));
 
 	return $grid;
+    }
+    
+    public function statusRenderer($e) {
+	$articleStates = ArticleStatus::getOptions();
+	return $articleStates[$e->getStatus()];
+    }
+    
+    public function commentModeRenderer($e) {
+	$commentModes = CommentMode::getOptions();
+	return $commentModes[$e->getCommentMode()];
     }
 }

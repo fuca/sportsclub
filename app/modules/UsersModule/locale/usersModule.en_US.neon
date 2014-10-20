@@ -1,0 +1,26 @@
+
+
+messages:
+	badArgumentFormat: "Bad format of user id, '%id%' given"
+	
+admin:
+	userNew: "New user"
+	userAdd: "Create new user"
+	userEdit: "User update"
+	profileEdit: "Users web profile update"
+
+admin.messages:
+	dependencyErrorDelete: "You cannot delete entity, which is still in use"
+	newPwSuccess: "New password for user with id '%id%' was generated"
+	newPwFailed: "Generating of new password for user '%id%' failed"
+	createUserFailed: "Saving of new user failed"
+
+admin.grid:
+	never: "Never"
+	reallyDeleteItems: "Are you sure you want to delete %i items?"
+
+webProfForm:
+	personalLikes.label: "Personal likes"
+	personalLikes.desc: "My personal likes"
+	
+	

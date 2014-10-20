@@ -33,15 +33,11 @@ abstract class BaseModuleExtension extends CompilerExtension {
 	    LOCALE_DIR	= "locale";
     
     public function getModuleName() {
-	return $this->name."Module";
+	return $this->name;
     }
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
-    }
-    
-    public function beforeCompile() {
-	parent::beforeCompile();
 	
 	$builder = $this->getContainerBuilder();
 	
@@ -64,6 +60,11 @@ abstract class BaseModuleExtension extends CompilerExtension {
 		throw new Exceptions\InsufficientPermissionException("Permission denied while creating $moduleCacheDir directory");
 	    }
 	}
+    }
+    
+    public function beforeCompile() {
+	parent::beforeCompile();
+	
     }
     
     public function afterCompile(ClassType $class) {

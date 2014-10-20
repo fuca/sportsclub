@@ -32,7 +32,7 @@ use \App\Model\Entities\SeasonApplication,
     \App\SeasonsModule\Model\Service\ISeasonTaxService,
     App\PaymentsModule\Model\Service\IPaymentService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \Grido\DataSources\Doctrine;
 
 /**
@@ -68,7 +68,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
     private $sportGroupService;
 
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
     

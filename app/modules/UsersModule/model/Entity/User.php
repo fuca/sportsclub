@@ -18,15 +18,15 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\OneToOne,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\JoinTable,
-    Doctrine\ORM\Mapping\ManyToMany,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\OneToOne,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\JoinTable,
+    \Doctrine\ORM\Mapping\ManyToMany,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\WebProfileStatus,
-    Nette\Security\IIdentity,
+    \Nette\Security\IIdentity,
     \Nette\DateTime,
     \App\Model\IIdentifiable,
     \App\Model\Misc\EntityMapperTrait;

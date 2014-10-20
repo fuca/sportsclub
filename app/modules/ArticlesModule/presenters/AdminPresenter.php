@@ -21,10 +21,10 @@ namespace App\ArticlesModule\Presenters;
 use \App\SystemModule\Presenters\SecuredPresenter,
     \App\ArticlesModule\Model\Service\IArticleService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \App\Model\Misc\Exceptions,
     \App\Model\Misc\Enum\FormMode,
-    \App\Model\Entities\Article,
+    \App\ArticlesModule\Model\Entities\Article,
     \App\ArticlesModule\Forms\ArticleForm,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\Enum\CommentMode,
@@ -52,7 +52,7 @@ class AdminPresenter extends SecuredPresenter {
     
     /**
      * @inject
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     public $usersService;
     
@@ -218,10 +218,29 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->addActionHref('edit', '[Uprav]', 'updateArticle')
 		->setIcon('pencil');
 
+	$grid->setOperation(["delete" => "Delete"], $this->articlesGridOperationHandler);
+	
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-articles" . date("Y-m-d H:i:s", time()));
 
 	return $grid;
+    }
+    
+    public function articlesGridOperationHandler($operation, $ids) {
+	switch($operation) {
+	    case "delete":
+		foreach ($ids as $id) {
+		try {
+			$this->articleService->deleteArticle($id);
+		    } catch (Exceptions\DataErrorException $ex) {
+			$this->handleException($ex);
+		    }
+		}
+		$this->redirect("this");
+		break;
+	    default:
+		$this->redirect("this");
+	}
     }
     
     public function statusRenderer($e) {

@@ -32,7 +32,7 @@ class PublicPresenter extends BasePresenter {
      */
     public $articleService;
     
-    public function renderDefault() {
+    public function renderDefault($alias = "") {
 	
     }
     

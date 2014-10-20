@@ -77,12 +77,15 @@ class ArticleForm extends BaseForm {
 	$this->addHidden("id");
 	$this->addHidden("alias");
 	$this->addHidden("counter");
+	
 	$this->addText("title", "Titulek")
-		->addRule(Form::FILLED, "Titulek musí být zadán")
-		->setRequired("Titulek musí být zadán");
+	    ->addRule(Form::FILLED, "Titulek musí být zadán")
+	    ->setRequired("Titulek musí být zadán");
+	
 	$this->addTextArea("content", "Obsah")
-		->addRule(Form::FILLED, "Obsah musí být zadán")
-		->setRequired("Obsah musí být zadán");
+	    ->addRule(Form::FILLED, "Obsah musí být zadán")
+	    ->setRequired("Obsah musí být zadán");
+	
 	$this->addCheckbox("highlight", "Zvýraznit");
 	$this->addSelect("status", "Stav", $this->getStates());
 	$this->addSelect("commentMode", "Komentáře", $this->getCommentModes());

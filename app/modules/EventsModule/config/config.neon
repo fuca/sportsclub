@@ -13,7 +13,3 @@ services:
 			- setCacheStorage(@eventsModule.cacheStorage)
 			- setGroupService()
 			- setUserService()
-
-translation:
-	dirs: 
-		- %appDir%/modules/EventsModule/lang

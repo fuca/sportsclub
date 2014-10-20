@@ -21,7 +21,10 @@ namespace App\SystemModule\Config;
 use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \Kdyby\Translation\DI\ITranslationProvider,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IPublicMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
 
 /**
  * SystemModuleExtension
@@ -34,6 +37,8 @@ class SystemModuleExtension extends BaseModuleExtension implements ITranslationP
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
+	$builder = $this->getContainerBuilder();
+	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
     }
 
     public function getTranslationResources() {
@@ -42,6 +47,41 @@ class SystemModuleExtension extends BaseModuleExtension implements ITranslationP
 
     public function beforeCompile() {
 	parent::beforeCompile();
+	
+	$builder = $this->getContainerBuilder();
+	
+	foreach ($this->compiler->getExtensions() as $extension) {
+	    
+			if ($extension instanceof IAdminMenuDataProvider) {
+	    		    $adminFact = $builder->getDefinition("adminMenuControlFactory");
+			    $dataArray = $extension->getItemsResources();
+			    
+			    foreach($dataArray as $item) {
+				$adminFact->addSetup("addItem", $item);
+			    }
+			    continue;
+			}
+			
+			if ($extension instanceof IProtectedMenuDataProvider) {
+	    		    $protFact = $builder->getDefinition("protectedMenuControlFactory");
+			    $dataArray = $extension->getItemsResources();
+			    
+			    foreach($dataArray as $item) {
+				$protFact->addSetup("addItem", $item);
+			    }
+			    continue;
+			}
+			
+			if ($extension instanceof IPublicMenuDataProvider) {
+	    		    $publicFact = $builder->getDefinition("publicMenuControlFactory");
+			    $dataArray = $extension->getItemsResources();
+			    
+			    foreach($dataArray as $item) {
+				$publicFact->addSetup("addItem", $item);
+			    }
+			    continue;
+			}
+		}
     }
 
     public function afterCompile(ClassType $class) {

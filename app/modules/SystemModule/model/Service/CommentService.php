@@ -24,7 +24,7 @@ use
     \Kdyby\Doctrine\EntityManager,
     \Nette\Utils\DateTime,
     \App\Model\Entities\Comment,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ICommentService;
 
 /**
@@ -40,7 +40,7 @@ class CommentService extends BaseService implements ICommentService {
     private $commentDao;
     
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
     

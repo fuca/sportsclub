@@ -27,7 +27,7 @@ use \App\Model\Entities\SeasonApplication,
     \Nette\InvalidArgumentException,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\DuplicateEntryException,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     Grido\DataSources\Doctrine,
     \Nette\DateTime,
     Nette\Caching\Cache;
@@ -45,7 +45,7 @@ class SeasonService extends BaseService implements ISeasonService {
     private $seasonDao;
 
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
 

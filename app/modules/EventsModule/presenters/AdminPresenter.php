@@ -21,7 +21,7 @@ namespace App\EventsModule\Presenters;
 use \App\SystemModule\Presenters\SecuredPresenter,
     \App\EventsModule\Model\Service\EventService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \Nette\Utils\ArrayHash,
     \App\Model\Entities\Event,
     \App\EventsModule\Forms\EventForm,
@@ -49,10 +49,10 @@ class AdminPresenter extends SecuredPresenter {
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $sportGroupsService;
-    
+
     /**
      * @inject
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     public $userService;
 
@@ -69,7 +69,9 @@ class AdminPresenter extends SecuredPresenter {
 	    $e = $this->eventsService->getEvent($id);
 	    if ($e !== null) {
 		$form = $this->getComponent("updateEventForm");
-		$grArr = $e->getGroups()->map(function($e){return $e->getId();})->toArray();
+		$grArr = $e->getGroups()->map(function($e) {
+			    return $e->getId();
+			})->toArray();
 		$e->setGroups($grArr);
 		$form->setDefaults($e->toArray());
 	    }
@@ -181,6 +183,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerTitle->class[] = 'center';
 
 	$grid->addColumnText('eventType', 'Typ')
+		//->setEditableControl(new \Nette\Forms\Controls\SelectBox(NULL, $eventTypes), $this->updateEventHandler)
 		->setSortable()
 		->setFilterSelect($eventTypes);
 	$grid->getColumn('eventType')->setCustomRender(callback($this, 'eventTypesRenderer'));
@@ -193,7 +196,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerSince = $grid->getColumn('takePlaceSince')->headerPrototype;
 	$headerSince->class[] = 'center';
 
-	$grid->addColumnDate('takePlaceTill', 'Do', self::DATETIME_FORMAT)
+	$grid->addColumnDate('takePlaceTill', 'Do', self::DATETIME_FORMAT)		
 		->setSortable()
 		->setFilterDateRange();
 	$headerTill = $grid->getColumn('takePlaceTill')->headerPrototype;
@@ -204,18 +207,39 @@ class AdminPresenter extends SecuredPresenter {
 	$headerDead = $grid->getColumn('confirmUntil')->headerPrototype;
 	$headerDead->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deleteEvent!')
+	$grid->addActionHref('delete', 'Smaz', 'deleteEvent!')
 		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateEvent')
+	$grid->addActionHref('edit', 'Uprav', 'updateEvent')
 		->setIcon('pencil');
 
+	$grid->setOperation(["delete" => "Delete"], $this->eventsGridOperationHandler)
+		->setConfirm('delete', 'Are you sure you want to delete %i items?');
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-events" . date("Y-m-d H:i:s", time()));
     }
     
+//    public function updateEventHandler($id, $newValue, $oldValue, $column) { 
+//	$this->flashMessage("OK", self::FM_SUCCESS);
+//	//$vcalues = new ArrayHash("id"=>$id, $);
+//	//$this->updateEvent($values);
+//    }
+
+    public function eventsGridOperationHandler($operation, $id) {
+	switch ($operation) {
+	    case "delete":
+		try {
+		    $this->eventsService->deleteEvent($id);
+		} catch (Exceptions\DataErrorException $ex) {
+		    $this->flashMessage("Nepodařilo se smazat událost $id", self::FM_ERROR);
+		}
+		break;
+	    default:
+		$this->redirect("this");
+	}
+    }
+
     public function eventTypesRenderer($e) {
 	$types = EventType::getOptions();
 	return $types[$e->getEventType()];
     }
-
 }

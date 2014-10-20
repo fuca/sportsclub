@@ -51,7 +51,7 @@ abstract class BasePresenter extends Presenter {
     /** @vat actual managinng entity id from parameter */
     private $entityId;
     
-    /** @var actual managing entity entity*/
+    /** @var \Kdyby\Doctrine\Entities\BaseEntity actual managing entity*/
     private $entity;
 
     /**
@@ -66,24 +66,55 @@ abstract class BasePresenter extends Presenter {
      */
     public $logger;
 
+    /**
+     * Recently managed entity id
+     * @return mixed
+     * @throws Exceptions\InvalidStateException
+     */
     public function getEntityId() {
 	if (!isset($this->entityId))
 	    throw new Exceptions\InvalidStateException("EntityId is not set, it seems it wasn't passed as request '".self::NUM_IDENTIFIER."' parameter");
 	return $this->entityId;
     }
     
+    /**
+     * Recently managed entity
+     * @return \Kdyby\Doctrine\Entities\BaseEntity
+     * @throws Exceptions\InvalidStateException
+     */
     public function getEntity() {
 	if (!isset($this->entity))
 	    throw new Exceptions\InvalidStateException("Actual entity is not set, please use appropriate setter first");
 	return $this->entity;
     }
 
-    public function setEntity($entity) {
+    public function setEntity(BaseEntity $entity) {
 	$this->entity = $entity;
     }
     
     public function getTranslator() {
 	return $this->translator;
+    }
+    
+    /**
+     * Shortcut for translate given message via Translator service
+     * @param string $message
+     * @param int $count
+     * @param array $parameters
+     * @param string $domain
+     * @param string $locale
+     * @return string
+     */
+    protected function tt($message, $count = null, $parameters = [], $domain = null, $locale = null) {
+	return $this->getTranslator()->translate($message, $count, $parameters, $domain, $locale);
+    }
+    
+    /**
+     * Returns application locale detected by translator
+     * @return string
+     */
+    public function getLocale() {
+	return $this->getTranslator()->getLocale();
     }
 
     /** @var string */
@@ -110,10 +141,6 @@ abstract class BasePresenter extends Presenter {
 	$appDir = $this->context->parameters['appDir'];
 	$this->template->layoutsPath = $appDir . "/modules/SystemModule/templates/";
     }
-    
-    protected function handleException( $ex) {
-	dd($ex);
-    }
 
     // <editor-fold desc="COMMON COMPONENT FACTORIES">
 
@@ -132,6 +159,29 @@ abstract class BasePresenter extends Presenter {
     }
 
     // </editor-fold>
+    
+    // <editor-fold desc="LOGGING SUPPORT"> 
+    
+    private function prefixMessage($message, $type) {
+	return "###   ".$type."   ### ".$this->getName()." -->  \n".$message;
+    }
+    
+    protected function logError($message, array $context = []) {
+	$this->logger->addError($this->prefixMessage($message, "ERROR"), $context);
+    }
+    
+    protected function logWarning($message, array $context = []) {
+	$this->logger->addWarning($this->prefixMessage($message, "WARNING"), $context);
+    }
+    
+    protected function logInfo($message, array $context = []) {
+	$this->logger->addInfo($this->prefixMessage($message, "INFO"), $context);
+    }
+    
+    protected function logDebug($message, array $context = []) {
+	$this->logger->addDebug($this->prefixMessage($message, "DEBUG"), $context);
+    }
+    //</editor-fold>
     
 //    private function isAllowedToComment(ICommentable $e) {
 //	// maybe this should be within authorizator or commentControl with given user instance

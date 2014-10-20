@@ -18,7 +18,3 @@ services:
 			- setCacheStorage(@paymentsModule.cacheStorage)
 			- setUsersService()
 			- setSeasonService()
-
-translation:
-	dirs: 
-		- %appDir%/modules/PaymentsModule/lang

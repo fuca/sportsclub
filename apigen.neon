@@ -1,0 +1,91 @@
+destination ./doc
+
+source:
+	- ./app/modules/
+
+exclude: "*/tests/*"
+
+# list of scanned file extensions (e.g. php5, phpt...)
+extensions:
+    - php # default
+
+# directories and files matching this file mask will not be parsed
+exclude:
+    - */tests/*
+    - */vendor/*
+    - *Factory.php*
+
+# this files will be included in class tree, but will not create a link to their documentation
+# either files
+skipDocPath:
+    - "./app/vendor/*"
+
+# or with certain name prefix
+skipDocPrefix:
+    - Nette
+
+# character set of source files; if you use only one across your files, we recommend you name it
+charset:
+    # default
+    - auto # will choose from all supported (starting with UTF-8), slow and not 100% reliable
+    # e.g.
+    - UTF-8
+    - Windows-1252
+
+# elements with this name prefix will be considered as the "main project" (the rest will be considered as libraries)
+main: ApiGen
+
+# title of generated documentation
+title: "SportsClub"
+
+# base url used for sitemap (useful for public doc)
+baseUrl: http://api.apigen.org
+
+# custom search engine id, will be used by search box
+googleCseId: 011549293477758430224
+
+# Google Analytics tracking code
+googleAnalytics: UA-35236-5
+
+# path to template config file
+templateConfig: .. # default @todo
+
+# the way elements are grouped in menu
+groups: auto # default [other options: namespace, packages, none], auto will detect namespace first, than packages
+
+# element supported by autocomplete in search input
+autocomplete:
+    # default
+    - classes
+    - constants
+    - functions
+    # other
+    - methods
+    - properties
+    - classconstants
+
+# access levels of included method and properties
+accessLevels:
+    # default
+    - public
+    - protected
+    # other
+    - private
+
+# include elements marked as @internal/{@internal}
+internal: false # default [true]
+
+# generate documentation for PHP internal classes
+php: true # default [false]
+
+# generate tree view of classes, interfaces, traits and exceptions
+tree: true # default [false]
+
+# generate documentation for deprecated elements
+deprecated: false # default [false]
+
+# generate list of tasks with @todo annotation
+todo: false # default [true]
+
+# add link to ZIP archive of documentation
+download: false # default [true]

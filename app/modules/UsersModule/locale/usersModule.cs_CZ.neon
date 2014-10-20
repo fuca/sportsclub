@@ -1,0 +1,13 @@
+messages:
+	badArgumentFormat: "Bad format of user id, '%id%' given"
+	
+
+admin.messages:
+	reallyDeleteItem: "Are you sure you want to delete %i items?"
+	dependencyErrorDelete: "You cannot delete entity, which is still in use"
+	newPwSuccess: "New password for user with id '%id%' was generated"
+	newPwFailed: "Generating of new password for user '%id%' failed"
+	createUserFailed: "Saving of new user failed"
+	deleteUserFailed: "Deleting user with id '%id%' failed"
+	updateUserFailed: "Update user with id '%id%' failed"
+	toggleUserFailed: "User with id '%id' activity toggle operation failed"

@@ -28,6 +28,7 @@ use
     \Kdyby\Doctrine\Entities\BaseEntity,
     \Nette\Caching\Cache,
     \Nette\Object,
+    \App\Model\Misc\Exceptions,
     \Nette\Caching\IStorage,	
     \App\Model\IIdentifiable,
     \Kdyby\Doctrine\EntityManager,
@@ -65,11 +66,11 @@ abstract class BaseService extends Object {
      */
     protected $logger;
     
-    // TODO SET NOTIFICATION SERVICE
-    
     private $className;
     
     private $entityClassName;
+    
+    
     
     protected function getCacheStorage() {
 	return $this->cacheStorage;
@@ -98,6 +99,8 @@ abstract class BaseService extends Object {
     }
     
     protected function getLogger() {
+	if (!isset($this->logger))
+	    throw new Exceptions\InvalidStateException("Property Logger is not correctly set, please use appropriate setter first");
 	return $this->logger;
     }
     
@@ -136,8 +139,35 @@ abstract class BaseService extends Object {
 	    $cache->clean([Cache::TAGS => $tags]);
 	}
     }
-    // deletes whole storage cache, not only namespace (Nette bug)
+    
+    /**
+     * Deletes whole storage cache, not only namespace (Nette bug)
+     */
     protected function purgeCache() {
 	$this->getEntityCache()->clean([Cache::ALL=>true]);
     }
+    
+    // <editor-fold desc="LOGGING SUPPORT"> 
+    
+    private function prefixMessage($message, $type) {
+	return "###   ".$type."   ### ".$this->className." -->  \n".$message;
+    }
+    
+    protected function logError($message, array $context = []) {
+	$this->logger->addError($this->prefixMessage($message, "ERROR"), $context);
+    }
+    
+    protected function logWarning($message, array $context = []) {
+	$this->logger->addWarning($this->prefixMessage($message, "WARNING"), $context);
+    }
+    
+    protected function logInfo($message, array $context = []) {
+	$this->logger->addInfo($this->prefixMessage($message, "INFO"), $context);
+    }
+    
+    protected function logDebug($message, array $context = []) {
+	$this->logger->addDebug($this->prefixMessage($message, "DEBUG"), $context);
+    }
+    //</editor-fold>
+    
 }

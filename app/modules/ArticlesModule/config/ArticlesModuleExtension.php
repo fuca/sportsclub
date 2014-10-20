@@ -22,6 +22,7 @@ use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \App\Model\Misc\Exceptions,
     \Nette\Utils\FileSystem,
+    \App\ArticlesModule\Model\Service\ArticleService,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
@@ -31,7 +32,10 @@ use \Nette\PhpGenerator\ClassType,
  */
 final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider {
 
-    private $defaults = [];
+    private $defaults = [
+	ArticleService::DEFAULT_IMAGE_PATH => "img/article",
+	ArticleService::DEFAULT_THUMBNAIL => "articleThumbDefault.png",
+	ArticleService::DEFAULT_IMAGE => "articleImageDefault.png"];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -45,6 +49,9 @@ final class ArticlesModuleExtension extends BaseModuleExtension implements ITran
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
 	// $translator = $builder->getDefinition("translation.default"); // for example obtaining of service // 
+	
+	$artService = $builder->getDefinition("articlesModule.articleService");
+	$artService->addSetup("setConfig", [$config]);
     }
 
     public function getTranslationResources() {

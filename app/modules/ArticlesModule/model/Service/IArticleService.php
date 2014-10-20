@@ -18,8 +18,8 @@
 
 namespace App\ArticlesModule\Model\Service;
 
-use App\Model\Entities\Article,
-    App\Model\Entities\SportGroup;
+use \App\Model\Entities\SportGroup,
+    \App\Model\Entities\Article;
 
 /**
  * Interface for Article service
@@ -27,16 +27,40 @@ use App\Model\Entities\Article,
  */
 interface IArticleService {
     
+    /**
+     * Saves article entity into database
+     */
     function createArticle(Article $a);
     
+    /**
+     * Updates existing article entry within database
+     */
     function updateArticle(Article $a);
     
+    /**
+     * Deletes existing entry from database
+     */
     function deleteArticle($id);
 
+    /**
+     * Returns article entry from database/cache
+     * @param \App\Model\Entities\SportGroup $g
+     * @return Article
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function getArticle($id);
     
+    /**
+     * Returns article associated with given sportGroup
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     function getArticles(SportGroup $g);
     
+    /**
+     * Returns articles datasource
+     * @return \Grido\DataSources\Doctrine
+     */
     function getArticlesDatasource();
     
 }

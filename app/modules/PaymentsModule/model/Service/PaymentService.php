@@ -33,7 +33,7 @@ use App\Model\Entities\Payment,
     \App\SeasonsModule\Model\Service\ISeasonTaxService,
     \App\PaymentsModule\Model\Service\IPaymentService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \Grido\DataSources\Doctrine,
     \App\Model\Entities\SportGroup;
 
@@ -50,7 +50,7 @@ class PaymentService extends BaseService implements IPaymentService {
     private $paymentDao;
 
     /**
-     * @var \App\Model\Service\IUserService,
+     * @var \App\UsersModule\Model\Service\IUserService,
      */
     private $usersService;
 

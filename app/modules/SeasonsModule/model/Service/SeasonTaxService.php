@@ -31,7 +31,7 @@ use \Nette\DateTime,
     \App\Services\Exceptions,
     \Grido\DataSources\Doctrine,
     \App\Model\Service\BaseService,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \App\SeasonsModule\Model\Service\ISeasonService,
     \App\SystemModule\Model\Service\ISportGroupService,
     \Kdyby\Doctrine\EntityManager,
@@ -55,7 +55,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
     private $sportGroupService;
 
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
 

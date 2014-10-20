@@ -42,7 +42,7 @@ class AdminPresenter extends SecuredPresenter {
     
     /**
      * @inject
-     * @var \App\Model\Service\UserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     public $userService;
     

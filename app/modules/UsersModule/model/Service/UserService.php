@@ -16,30 +16,25 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\UsersModule\Model\Service;
 
-use \App\Services\Exceptions\NullPointerException,
-    \App\Model\Service\IUserService,
+use \App\UsersModule\Model\Service\IUserService,
     \Kdyby\Doctrine\EntityManager,
-    \Doctrine\ORM\NoResultException,
     \Kdyby\Doctrine\DBALException,
     \App\Model\Service\BaseService,
-    Kdyby\Doctrine\DuplicateEntryException,
-    \Nette\InvalidArgumentException,
-    \App\Model\Misc\Exceptions\EntityNotFoundException,
+    \Kdyby\Doctrine\DuplicateEntryException,
     \App\Model\Misc\Exceptions,
     \Nette\DateTime,
     \App\Misc\Passwords,
     \Nette\Utils\Strings,
     \Nette\Caching\Cache,
     \Grido\DataSources\Doctrine,
-    \App\Services\Exceptions\DataErrorException,
     \App\Model\Misc\Enum\WebProfileStatus,
     \App\Model\Entities\User,
     \App\Model\Entities\Address,
     \App\Model\Entities\Contact,
     \App\Model\Entities\WebProfile,
-    App\Model\Service\INotificationService;
+    \App\Model\Service\INotificationService;
 
 /**
  * Service for dealing with User related entities
@@ -78,6 +73,7 @@ class UserService extends BaseService implements IUserService {
      */
     private $salt;
     
+    
     public function setSalt($salt) {
 	if (empty($salt))
 	    throw new Exceptions\InvalidArgumentException("Argument salt has to be non empty string", 1);
@@ -98,12 +94,17 @@ class UserService extends BaseService implements IUserService {
 
     public function createUser(User $user) {
 	if ($user == null)
-	    throw new NullPointerException("Argument User cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
 
 	$this->entityManager->beginTransaction();
-
+	
+	$newPassword = Strings::random();
 	$now = new DateTime();
+	
+	$hashedPassword = Passwords::hash($newPassword, ['salt' => $this->salt]);
+	$user->setPassword($hashedPassword);
 	$user->setCreated($now);
+	$user->setWebProfile(new WebProfile());
 	$user->contact->setUpdated($now);
 	$user->getWebProfile()->setUpdated($now);
 	$user->setProfileStatus(WebProfileStatus::BAD);
@@ -111,23 +112,28 @@ class UserService extends BaseService implements IUserService {
 	try {
 	    $this->contactDao->save($user->getContact());
 	} catch (DuplicateEntryException $e) {
-	    throw new DataErrorException($e->getMessage(), 21, $e);
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 
 	try {
 	    $this->userDao->save($user);
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $e) {
-	    throw new DataErrorException($e->getMessage(), 22, $e);
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	} catch (\Exception $e) {
-// TODO
-	    dd($e);
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
+	$this->logInfo("User %user was successfully created", ["user"=>$user]);
+	$this->notifService->newAccountNotification($user);
     }
 
     public function updateUser(User $formUser) {
 	if ($formUser == null)
-	    throw new NullPointerException("Argument User cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
+	
 	$this->entityManager->beginTransaction();
 
 	$uDb = $this->getUser($formUser->id);
@@ -142,8 +148,8 @@ class UserService extends BaseService implements IUserService {
 		$this->entityManager->merge($formUser->getContact());
 		$this->entityManager->flush();
 	    } catch (DuplicateEntryException $e) {
-		//dd([21,$e]);
-		throw new DataErrorException($e->getMessage(), 21, $e);
+		$this->entityManager->rollback();
+		throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	    }
 
 	    try {
@@ -155,66 +161,54 @@ class UserService extends BaseService implements IUserService {
 		$this->entityManager->merge($uDb);
 		$this->entityManager->flush();
 	    } catch (DuplicateEntryException $e) {
-		//dd([22,$e]);
-		throw new DataErrorException($e->getMessage(), 22, $e);
+		$this->entityManager->rollback();
+		throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	    } catch (\Exception $e) {
-		// TODO
-		dd(["UserService 136", $e]);
+		$this->entityManager->rollback();
+		throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	    }
+	    $this->entityManager->commit();
 	}
-	$this->entityManager->commit();
+	
     }
 
     public function deleteUser($id) {
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument Id must be type of numeric, '$id' given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument Id must be type of numeric, '$id' given", 1);
 
 	$this->entityManager->beginTransaction();
 	try {
 	    $db = $this->getUser($id);
 	    if ($db !== null) {
 		$this->userDao->delete($db);
-//	    $count = $this->getAddressReferencesCount($db->contact->address);
-//	    if ($count <= 1) {
-//		$this->addressDao->delete($db->getContact()->getAddress());
-//	    }
 	    } else {
 		throw new EntityNotFoundException("User with id '$id' does not exist", 2);
 	    }
 	    $this->entityManager->commit();
 	} catch (DBALException $ex) {
 	    throw new Exceptions\DependencyException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
-//    private function getAddressReferencesCount(Address $a) {
-//	$qb = $this->addressDao->createQueryBuilder();
-//	$qb->select("COUNT(c.id)")
-//		->from("App\Model\Entities\Contact", "c")
-//		->where("c.address = :id")
-//		->setParameter("id", $a->id);
-//	return $qb->getQuery()->getSingleScalarResult();
-//    }
-
     public function getUser($id) {
 	if ($id == NULL)
-	    throw new NullPointerException("Argument Id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Id cannot be null", 0);
 	if (!is_numeric($id))
 	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric, '$id' given", 1);
 	try {
 	    return $this->userDao->find($id);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
     public function getUsers() {
 	try {
 	    return $this->userDao->findAll();
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
@@ -237,8 +231,8 @@ class UserService extends BaseService implements IUserService {
 		->setParameter("email", $email);
 	try {
 	    return $qb->getQuery()->getSingleResult();
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
@@ -247,7 +241,7 @@ class UserService extends BaseService implements IUserService {
 	$data = $cache->load(self::SELECT_COLLECTION);
 	try {
 	    if ($data === null) {
-		$data = $this->userDao->findPairs([], 'surname'); // TODO CONCAT
+		$data = $this->userDao->findPairs(["active"=>1], 'surname'); // TODO CONCAT
 		$opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
@@ -256,8 +250,7 @@ class UserService extends BaseService implements IUserService {
 	    }
 	    return $data;
 	} catch (\Exception $e) {
-	    // TODO LOG
-	    dd($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
@@ -275,12 +268,32 @@ class UserService extends BaseService implements IUserService {
 	    $user->setPasswordChangeRequired(true);
 	    $this->entityManager->merge($user);
 	    $this->entityManager->flush();
+	    $this->invalidateEntityCache($user);
 	    $this->entityManager->commit();
-	} catch (Exception $e) {
-	    throw new Exceptions\DataErrorException("Renerating password failed");
+	} catch (\Exception $e) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	
-	// TODO NOTIFICATION
+	$this->notifService->sendPasswordNotification($user);
 	return $hash;
+    }
+    
+    public function toggleUser($id) {
+	if (!is_numeric($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    try {
+		$this->entityManager->beginTransaction();
+		$user = $this->getUser($id, false);
+		$user->setActive($result = !$user->getActive());
+		$this->entityManager->merge($user);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($user);
+		$this->entityManager->commit();
+	    } catch (\Exception $e) {
+		$this->entityManager->rollback();
+		throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	    }    
+	$this->notifService->sendToggleNotification($user);
     }
 }

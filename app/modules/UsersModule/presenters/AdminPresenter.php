@@ -19,7 +19,7 @@
 namespace App\UsersModule\Presenters;
 
 use 
-    App\UsersModule\Forms\UserForm,
+    \App\UsersModule\Forms\UserForm,
     \Grido\Grid,
     \Nette\Utils\Strings,
     \Grido\Components\Actions\Action,
@@ -27,19 +27,18 @@ use
     \Grido\Components\Columns\Column,
     \Grido\Components\Columns\Date,
     \Nette\Mail\SendmailMailer,
-    App\Misc\Passwords,
-    App\Model\Entities\User,
+    \App\Misc\Passwords,
+    \App\Model\Entities\User,
     \App\Model\Entities\WebProfile,
-    App\Model\Entities\Address,
-    App\Model\Entities\Contact,
+    \App\Model\Entities\Address,
+    \App\Model\Entities\Contact,
     \Nette\Mail\Message,
     \App\Model\Misc\Exceptions,
-    \App\Model\Misc\Exceptions\DataErrorException,
-    \App\Model\Misc\Exceptions\DuplicateEntryException,
     \App\Model\Misc\Enum\FormMode,
     \Nette\DateTime,
-    \Nette\ArrayHash,  
-    App\SystemModule\Presenters\SecuredPresenter;
+    \Nette\ArrayHash,
+    \App\UsersModule\Forms\WebProfileForm,
+    \App\SystemModule\Presenters\SecuredPresenter;
 
 /**
  * UserPresenter
@@ -50,7 +49,7 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     public $userService;
 
@@ -58,7 +57,7 @@ class AdminPresenter extends SecuredPresenter {
      * User admin presenter action of Default request
      */
     public function actionDefault() {
-	// vykreslujeme grid
+	// grid
     }
 
     // <editor-fold desc="ADD USER">
@@ -67,20 +66,9 @@ class AdminPresenter extends SecuredPresenter {
      * User admin presenter action of New user request
      */
     public function actionNewUser() {
-	// vykreslujeme formular
+	// form
     }
-
-    /**
-     * Component factory for lazy initialize of newUserForm
-     * @param string $name
-     * @return \App\UsersModule\Forms\UserForm
-     */
-    public function createComponentNewUserForm($name) {
-	$form = new UserForm($this, $name);
-	$form->initialize();
-	return $form;
-    }
-
+    
     /**
      * Create new user handler (topdown)
      * @param \Nette\ArrayHash $values
@@ -88,7 +76,7 @@ class AdminPresenter extends SecuredPresenter {
      */
     public function createUser(ArrayHash $values) {
 
-	$newPassword = Strings::random();
+	
 	// SEND NOTIFICATION
 //	$mailer = new SendmailMailer();
 //	$mail = new Message();
@@ -99,71 +87,83 @@ class AdminPresenter extends SecuredPresenter {
 //	$mail->addTo("misan.128@seznam.cz");
 //	$mailer->send($mail);
 
-	$hashedPassword = Passwords::hash($newPassword, ['salt' => $this->getSalt()]);
 	$nu = $this->hydrateUserFromUserForm($values);
-	$nu->setPassword($hashedPassword);
-	$nu->setWebProfile(new WebProfile());
-	//$nu->getWebProfile()->setEditor($this->getUser);
-
 	try {
 	    $this->userService->createUser($nu);
-	} catch (DataErrorException $e) {
-	    switch ($e->getCode()) {
-		case 21:
-		case 22:
-		    throw new DuplicateEntryException($e->getMessage(), $e->getCode(), $e);
-	    }
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex->getMessage());
+	    $m = $this->getTranslator()->tt("usersModule.messages.createUserFailed");
+	    $this->flashMessag($m, self::FM_ERROR);
 	}
-	$this->flashMessage("User {$nu->name} {$nu->surname} was successfully created with id {$nu->getId()}", self::FM_SUCCESS);
 	$this->redirect("Admin:default");
     }
-
+    
     // </editor-fold>
+    
     // <editor-fold desc="REMOVE USER">
+    
     /**
      * Delete user handler (topdown)
      * @param numeric $id
      */
     public function handleDeleteUser($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Bad format of user id", self::FM_ERROR);
-	    // TODO LOG SECURITY VIOLATION
+	    $prefix = "UserService - AdminPresenter - handleDeleteUser - ";
+	    $m = $this->getTranslator()->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_WARNING);
+	    $this->logWarning($prefix.$m);
 	    return;
 	}
-
+	$this->doDeleteUser($id);
+	if (!$this->isAjax()) {
+	    $this->redirect("this");
+	}
+    }
+    
+    private function doDeleteUser($id) {
 	try {
 	    $this->userService->deleteUser($id);
-	} catch (Exceptions\DependencyException $e) {
-	    $this->flashMessage("Nemůžete smazat entitu která figuruje v rámci jiných entit v systému", self::FM_ERROR);
-	} catch(\Exception $e) {
-	    dd($e);
+	} catch (Exceptions\DependencyException $ex) {
+	    $this->logInfo($ex->getMessage());
+	    $m = $this->getTranslator()->tt("usersModule.messages.dependencyErrorDelete");
+	    $this->flashMessage($m, self::FM_WARNING);
+	} catch(\Exception $ex) {
+	    $this->logError($ex);
+	    $m = $this->getTranslator()->tt("usersModule.admin.messages.deleteUserFailed", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_ERROR);
 	}
     }
 
     // </editor-fold>
+    
     // <editor-fold desc="UPDATE USER">
 
     /**
      * Action for filling updateUserForm control by values from database
+     * @Secured
      * @param numeric $id
      */
     public function actionUpdateUser($id) {
-	if ($id === null) {
-	    $this->flashMessage("Given user id was null", "error");
-	    // TODO SECURITY VILOATION LOG
+	if ($id === null || !is_numeric($id)) {
+	    $prefix = "UserService - AdminPresenter - handleDeleteUser - ";
+	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_WARNING);
+	    $this->logWarning($prefix.$m);
 	    return;
 	}
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Given user id must be type of numeric", "error");
-	    // TODO SECURITY VILOATION LOG
-	    return;
+	try {
+	    $uUser = $this->userService->getUser($id);
+	    $form = $this->getComponent('updateUserForm');
+
+	    $data = $uUser->toArray() 
+		    + $uUser->getContact()->toArray() 
+		    + $uUser->getContact()->getAddress()->toArray();
+	    $form->setDefaults($data);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.messages.updateUserFailed", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_ERROR);
 	}
-
-	$uUser = $this->userService->getUser($id);
-	$form = $this->getComponent('updateUserForm');
-
-	$data = $uUser->toArray() + $uUser->getContact()->toArray() + $uUser->getContact()->getAddress()->toArray();
-	$form->setDefaults($data);
     }
 
     /**
@@ -194,12 +194,9 @@ class AdminPresenter extends SecuredPresenter {
     public function updateUser(ArrayHash $values) {
 	try {
 	    $this->userService->updateUser($this->hydrateUserFromUserForm($values));
-	} catch (DataErrorException $e) {
-	    switch ($e->getCode()) {
-		case 21:
-		case 22:
-		    throw new DuplicateEntryException($e->getMessage(), $e->getCode(), $e);
-	    }
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex->getMessage());
+	    $this->handleException($ex);
 	}
 	$this->redirect("Admin:default");
     }
@@ -210,32 +207,108 @@ class AdminPresenter extends SecuredPresenter {
      * @return \App\UsersModule\Forms\UserForm
      */
     public function createComponentUpdateUserForm($name) {
-	$form = new UserForm($this, $name);
+	$form = $this->prepareUserForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
     
+    /**
+     * Component factory for lazy initialize of newUserForm
+     * @param string $name
+     * @return \App\UsersModule\Forms\UserForm
+     */
+    public function createComponentNewUserForm($name) {
+	$form = $this->prepareUserForm($name);
+	$form->initialize();
+	return $form;
+    }
+    
+    private function prepareUserForm($name) {
+	$form = new UserForm($this, $name, $this->getTranslator());
+	return $form;
+    }
+    
     public function handleRegenPassword($id) {
 	if(!is_numeric($id)) {
-	    $this->flashMessage("Bad format of user id", self::FM_WARNING);
-	    // TODO LOG SECURITY VIOLATION
+	    $prefix = "UserService - AdminPresenter - handleRegenPassword - ";
+	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_WARNING);
+	    $this->logWarning($prefix.$m);
 	    return;
 	}
 	try {
 	    if ($this->userService->regeneratePassword($id) != null) {
-		$this->flashMessage("Nové heslo pro uživatele s id {$id} bylo vygenerováno");   
+		$m = $this->tt("usersModule.messages.newPwSuccess", ["id"=>$id]);
+		$this->flashMessage($m);   
 	    }
-	} catch (App\Model\Misc\Exceptions\DataErrorException $e) {
-	    $this->flashMessage("Nepodařilo se vygenerovat nové heslo pro uživatele s id {$id}.", self::FM_ERROR);
-	    // TODO LOG 
+	} catch (Exceptions\DataErrorException $ex) {
+	    $m = $this->tt("usersModule.messages.newPwFailed", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	    $this->logError($ex->getMessage());
 	    return;
 	}
 	$this->redirect('this');
     }
+    
+    private function doActiveToggle($id) {
+	if(!is_numeric($id)) {
+	    $prefix = "UserService - AdminPresenter - doActiveToggle - ";
+	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_WARNING);
+	    $this->logWarning($prefix.$m);
+	    return;
+	}
+	try {
+	    $this->userService->toggleUser($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.toggleUserFailed", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	}
+    }
 
     // </editor-fold>
+    
+    // <editor-fold desc="Web profile manage">
+    
+    public function actionUpdateWebProfile($id) {
+	if(!is_numeric($id)) {
+	    $prefix = "UserService - AdminPresenter - doActiveToggle - ";
+	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_WARNING);
+	    $this->logWarning($prefix.$m);
+	    return;
+	}
+	try {
+	    $user = $this->userService->getUser($id);
+	    $wp = $user->getWebProfile();
+	    $form = $this->getComponent("updateWebProfileForm");
+	    $form->setDefaults($wp->toArray());
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.cannotReadData", ["id"=>$id]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	}
+    }
+    
+    public function createComponentUpdateWebProfileForm($name) {
+	$form = new WebProfileForm($this, $name, $this->getTranslator());
+	$form->setShowCancel();
+	$form->initialize();
+	return $form;
+    }
+    
+    public function webProfileFormSuccess(Form $form) {
+	$values = $form->getValues();
+	$this->userService->
+    }
+    
+    
+    // </editor-fold>
+    
     // <editor-fold desc="Users grid">
+    
     /**
      * Component factory of UsersGrid
      * @param string $name
@@ -245,16 +318,8 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->userService->getUsersDatasource());
-
-//	$grid->setEditableColumns(function($id, $newValue, $oldValue, $column) {
-////            dd($id);
-////	    dd($newValue);
-////	    dd($oldValue);
-////	    dd($column);
-//            return TRUE;
-//        });
 	
-	$grid->translator->lang = 'cs';
+	$grid->translator->lang = $this->getLocale();
 	$grid->setDefaultPerPage(30);
 	$grid->setPrimaryKey('id');
 	
@@ -267,17 +332,15 @@ class AdminPresenter extends SecuredPresenter {
 	
 	$grid->addColumnText('surname', 'Příjmení')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
-	$grid->getColumn('surname')->getEditableControl()->setRequired('Surname is required.');
+		->setFilterText();
+	//$grid->getColumn('surname')->getEditableControl()->setRequired('Surname is required.');
 	$headerSurname = $grid->getColumn('surname')->headerPrototype;
 	$headerSurname->class[] = 'center';
 
 	$grid->addColumnText('name', 'Jméno')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
-	$grid->getColumn('name')->getEditableControl()->setRequired('Name is required.');
+		->setFilterText();
+	//$grid->getColumn('name')->getEditableControl()->setRequired('Name is required.');
 	$headerName = $grid->getColumn('name')->headerPrototype;
 	$headerName->class[] = 'center';
 
@@ -292,25 +355,23 @@ class AdminPresenter extends SecuredPresenter {
 	$activeList = [true=>'Ano', null=>'Ne'];
 	$grid->addColumnNumber('active', 'Aktivní')
 		->setReplacement($activeList)
-		->setSortable();
-	   // ->setEditableControl(new \Nette\Forms\Controls\SelectBox(NULL, $activeList));
+		->setSortable()
+		->setFilterSelect($activeList);
+	   
 	$headerActive = $grid->getColumn('active')->headerPrototype;
 	$headerActive->class[] = 'center';
 
-	$grid->addColumnDate('lastLogin', 'Poslední přihlášení', self::DATETIME_FORMAT)
+	$grid->addColumnDate('lastLogin', 'Posl. přihl.', self::DATETIME_FORMAT)
 		->setSortable()
-		->setReplacement(array(NULL => 'Nikdy'))
+		->setReplacement([NULL => $this->tt("usersModule.admin.grid.never")])
 		->setFilterDateRange();
-		
-		
-
 	$headerLast = $grid->getColumn('lastLogin')->headerPrototype;
 	$headerLast->class[] = 'center';
+	
 	$grid->addColumnDate('created', 'Registrován')
 		->setSortable();
 	$headerCreated = $grid->getColumn('created')->headerPrototype;
 	$headerCreated->class[] = 'center';
-	
 
 	//$grid->getColumn('lastLogin')->getCellPrototype()->class('textsmall');
 //	$seas = $this->getActualSeasonId();
@@ -334,19 +395,27 @@ class AdminPresenter extends SecuredPresenter {
 //	    $grid->addAction('show', '[Zobraz] ', Action::TYPE_HREF, 'showUser');
 //	}
 	//$grid->addActionHref('application', '[Prihl]', 'userApplications');
-	$grid->addActionHref('application', '[Uprav]', 'updateUser')
-		->setIcon('pencil');
+	
 	// setDisable() - nastavi callback, kdy ma byt vypnuto - vhodne pri overovani opravneni
-	$grid->addActionHref("regenPassword", "[NPW]", 'regenPassword!');
-	$grid->addActionHref('delete', '[Smaz]', "deleteUser!")
+	$grid->addActionHref("regenPassword", "R", 'regenPassword!')
+		->setIcon('lock')
+		->setConfirm(function($u) {
+		    return "Are you sure you want to regenerate password for user {$u->surname} {$u->name} ({$u->id})?";
+		});
+	$grid->addActionHref('delete', 'D', "deleteUser!")
 		->setIcon('trash')
 		->setConfirm(function($u) {
-		    return "Are you sure you want to delete user {$u->id} {$u->name} {$u->surname}?";
+		    return "Are you sure you want to delete user {$u->surname} {$u->name} ({$u->id})?";
 		});
-//
-	$operation = array('print' => 'Print', 'delete' => 'Delete', 'activeToggle' => 'ActiveToggle');
+	$grid->addActionHref('update', 'U', 'updateUser')
+		->setIcon('pencil');
+	
+	$grid->addActionHref('webProfile', 'W', 'updateWebProfile')
+		->setIcon('th-list');
+	
+	$operation = array('delete' => 'Delete', 'activeToggle' => 'ActiveToggle');
         $grid->setOperation($operation, $this->gridOperationsHandler)
-            ->setConfirm('delete', 'Are you sure you want to delete %i items?');
+            ->setConfirm('delete', $this->tt("usersModule.admin.grid.reallyDeleteItems"));
 		
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-users " . date("Y-m-d H:i:s", time()));
@@ -363,8 +432,7 @@ class AdminPresenter extends SecuredPresenter {
 	switch ($operation) {
 	    case 'deactivate':
 		foreach ($id as $i) {
-		    //$this->toggleActivity($i);
-		    dd("Not implemented yet");
+		    $this->doToggleActivity($i);
 		}
 		break;
 	    case 'application':
@@ -376,12 +444,11 @@ class AdminPresenter extends SecuredPresenter {
 		break;
 	    case 'delete':
 		foreach ($id as $i) {
-		    dd("Not implemented yet");
+		    $this->doDeleteUser($id);
 		}
 		$this->redirect('this');
 		break;
 	}
     }
-    
     // </editor-fold>
 }

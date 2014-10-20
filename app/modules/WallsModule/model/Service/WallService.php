@@ -30,7 +30,7 @@ use \Nette\Diagnostics\Debugger,
     \Nette\Caching\Cache,
     \App\SystemModule\Model\Service\ICommentable,
     \App\Model\Entities\Comment,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ISportGroupService,
     \App\Services\Exceptions\NullPointerException,
     \App\SystemModule\Model\Service\ICommentService;
@@ -53,7 +53,7 @@ class WallService extends BaseService implements IWallService {
     private $sportGroupService;
 
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
 

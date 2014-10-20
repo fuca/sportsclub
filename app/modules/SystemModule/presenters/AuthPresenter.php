@@ -32,7 +32,7 @@ class AuthPresenter extends BasePresenter {
     
     /**
      * @inject 
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     public $users;
     

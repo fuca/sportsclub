@@ -1,6 +1,5 @@
 {layout ./base.latte}
 
 {block content}
-<h2>UsersModule AdminPresenter actionDefault </h2>
-<a href="{plink :Users:Admin:newUser}">Novy uzivatel</a>
+<a href="{plink :Users:Admin:newUser}">{_ usersModule.admin.userNew}</a>
 {control usersGrid}

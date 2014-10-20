@@ -31,7 +31,7 @@ use \App\Model\Entities\Event,
     \Nette\Utils\Strings,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Service\BaseService,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ISportGroupService;
 
 /**
@@ -47,7 +47,7 @@ class ForumService extends BaseService implements IForumService {
     private $forumDao;
     
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
     

@@ -22,15 +22,17 @@ use \App\Service\Exceptions\NullPointerException,
     \App\Model\Entities\SportGroup,
     \Doctrine\ORM\NoResultException,
     \App\Model\Misc\Exceptions,
-    \App\Model\Entities\Article,
     \Nette\Utils\DateTime,
     \Nette\Caching\Cache,
+    \Nette\Utils\Strings,
+    \Kdyby\Doctrine\DBALException,
     \Grido\DataSources\Doctrine,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Model\Service\IUserService,
-    \Doctrine\Common\Collections\ArrayCollection;
+    \App\UsersModule\Model\Service\IUserService,
+    \Doctrine\Common\Collections\ArrayCollection,
+    \App\Model\Entities\Article;
 
 /**
  * Service for dealing with Article entities
@@ -38,6 +40,10 @@ use \App\Service\Exceptions\NullPointerException,
  * @author <michal.fuca.fucik(at)g.com>
  */
 class ArticleService extends BaseService implements IArticleService {
+    
+    const   DEFAULT_IMAGE_PATH = "defaultImagePath",
+	    DEFAULT_THUMBNAIL = "defafaultThumbnail",
+	    DEFAULT_IMAGE = "defaultImage";
     
     /**
      * @var \Kdyby\Doctrine\EntityDao
@@ -50,10 +56,22 @@ class ArticleService extends BaseService implements IArticleService {
     private $sportGroupService;
     
     /**
-     * 
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
+    
+    /**
+     * @var array config parameters
+     */
+    private $config;
+    
+    public function getConfig() {
+	return $this->config;
+    }
+
+    public function setConfig(array $config) {
+	$this->config = $config;
+    }
     
     public function setUserService(IUserService $userService) {
 	$this->userService = $userService;
@@ -74,19 +92,31 @@ class ArticleService extends BaseService implements IArticleService {
 
     public function createArticle(Article $a) {
 	if ($a === NULL)
-	    throw new Exceptions\NullPointerException("Argument Article was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Article was null");
 	try {
+	    $this->entityManager->beginTransaction();
+	    
 	    $a->setAuthor($a->getEditor());
 	    $a->setUpdated(new DateTime());
 	    $this->sportGroupsTypeHandle($a);
-	    $a->setPictureName("defaultArticleImage.png");
+	    $a->setPictureName($this->config[self::DEFAULT_IMAGE]); // az bude img storage, tak mi vrati nazev
+	    $a->setThumbnail($this->config[self::DEFAULT_THUMBNAIL]); // az bude img storage, tak mi vrati nazev
 	    $this->articleDao->save($a);
+	    
 	    $this->invalidateEntityCache();
+	    $this->entityManager->commit();
+	} catch (DBALException $ex) {
+	    $this->entityManager->rollback();
+	    $this->logger->addWarning($ex->getMessage());
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logger->addError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
     
+
     private function sportGroupsTypeHandle(Article $a) {
 	if ($a === null)
 	    throw new Exceptions\NullPointerException("Argument event was null");
@@ -99,15 +129,16 @@ class ArticleService extends BaseService implements IArticleService {
 		}
 	    }
 	    $a->setGroups($coll);
-	} catch (\Exception $a) {
+	    return $a;
+	} catch (\Exception $ex) {
+	    $this->logger->addError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($a->getMessage(), $a->getCode(), $a->getPrevious());
 	}
-	return $a;
     }
     
     private function editorTypeHandle(Article $a) {
 	if ($a === null)
-	    throw new NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -116,14 +147,16 @@ class ArticleService extends BaseService implements IArticleService {
 		    $editor = $this->getUserService()->getUser($id, false);
 	    }
 	    $a->setEditor($editor);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    return $a;
+	} catch (\Exception $ex) {
+	    $this->logger->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($a->getMessage(), $a->getCode(), $a->getPrevious());
 	}
     }
     
     private function authorTypeHandle(Article $a) {
 	if ($a === null)
-	    throw new NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
 	try {
 	    $author = null;
 	    if ($this->getUserService() !== null) {
@@ -132,22 +165,25 @@ class ArticleService extends BaseService implements IArticleService {
 		    $author = $this->getUserService()->getUser($id, false);
 	    }
 	    $a->setAuthor($author);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logger->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex);
 	}
     }
 
     public function deleteArticle($id) {
 	if ($id === NULL)
 	    throw new Exceptions\NullPointerException("Argument id was null", 0);
-	if (!is_numerict($id))
+	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given");
-	
+	try {
 	$db = $this->articleDao->find($id);
-	if ($db !== NULL) {
-	    $this->articleDao->delete($db);
-	} else {
-	    throw new Exceptions\DataErrorException("Entity does not exist", 2);
+	    if ($db !== NULL) {
+		$this->articleDao->delete($db);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logger->addError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($a->getMessage(), $a->getCode(), $a->getPrevious());
 	}
     }
 
@@ -172,17 +208,18 @@ class ArticleService extends BaseService implements IArticleService {
 	}
     }
 
+
     public function getArticles(SportGroup $g) {
 	if ($g === NULL)
 	    throw new Exceptions\NullPointerException("Argument Group was null", 0);
-	$qb = $this->entityManager->createQueryBuilder();
 	try {
-	$qb->select('a')
-		->from('App\Model\Entities\Article', 'a')
+	    $qb = $this->entityManager->createQueryBuilder();
+	    $qb->select('a')
+		->from('App\ArticlesModule\Model\Entities\Article', 'a')
 		->innerJoin('a.groups', 'g')
 		->where('g.id = :gid')
 		->setParameter("gid", $g->id);
-	return $qb->getQuery()->getResult();
+	    return $qb->getQuery()->getResult();
 	} catch (\Doctrine\ORM\NoResultException $ex) {
 	   $this->logger->addWarning("No relations article -> group $g found");
 	   throw new Exceptions\DataErrorException("No relations article -> group $g found");
@@ -204,14 +241,22 @@ class ArticleService extends BaseService implements IArticleService {
 		$db->setUpdated(new DateTime());
 		$this->editorTypeHandle($db);
 		$this->authorTypeHandle($db);
+		$db->setPictureName($this->config[self::DEFAULT_IMAGE]); // az bude img storage, tak mi vrati nazev
+		$db->setThumbnail($this->config[self::DEFAULT_THUMBNAIL]); // az bude img storage, tak mi vrati nazev
 		$this->entityManager->merge($db);
 		$this->entityManager->flush();
+		
 		$this->invalidateEntityCache($db);
+		$this->entityManager->commit();
 	    }
-	     $this->entityManager->commit();
+	} catch (DBALException $ex) {
+	    $this->entityManager->rollback();
+	    $this->logger->addWarning($ex->getMessage());
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logger->addError("Error updating article $db");
-	    throw new Exceptions\DataErrorException("Error updating article - \n".$ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	    $this->entityManager->rollback();
+	    $this->logger->addError("Error updating article $a");
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $a;
     }
@@ -221,5 +266,4 @@ class ArticleService extends BaseService implements IArticleService {
 		$this->articleDao->createQueryBuilder('a'));
 	return $model;
     }
-
 }

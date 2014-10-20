@@ -18,12 +18,12 @@
 
 namespace App\SystemModule\Model\Service;
 
-use App\Model\Entities\SportType,
-    \App\Services\Exceptions\DataErrorException,
-    App\Model\Service\BaseService,
+use \App\Model\Entities\SportType,
+    \App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
-    \App\Services\Exceptions,
-    Nette\Caching\Cache,
+    \App\Model\Misc\Exceptions,
+    \Kdyby\Doctrine\DBALException,
+    \Nette\Caching\Cache,
     \Kdyby\Doctrine\DuplicateEntryException;
 
 /**
@@ -45,38 +45,42 @@ class SportTypeService extends BaseService implements ISportTypeService {
 
     
     // <editor-fold desc="Administration of SPORT TYPES">
+    
     public function createSportType(SportType $type) {
 	if ($type == null)
-	    throw new NullPointerException("Argument SportType cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportType cannot be null", 0);
 	try {
 	    $this->sportTypeDao->save($type);
 	    $this->invalidateEntityCache($type);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function deleteSportType($id) {
 	if ($id == null)
-	    throw new NullPointerException("Argument SportType cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportType cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
 	try {
 	    $db = $this->sportTypeDao->find($id);
 	    if ($db !== null) {
 		$this->sportTypeDao->delete($db);
 	    }
 	    $this->invalidateEntityCache($db);
-	} catch (\Kdyby\Doctrine\DBALException $ex) {
-	    throw new DataErrorException($ex->getMessage(), 1000, $ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (DBALException $ex) {
+	    $this->logError($ex->getMessage);
+	    throw new Exceptions\DependencyException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function getSportType($id, $useCache = true) {
 	if ($id === null)
-	    throw new NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
 	if (!is_numeric($id))
 	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric, $id given", 1);
 	try {
@@ -91,8 +95,9 @@ class SportTypeService extends BaseService implements ISportTypeService {
 		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
@@ -105,7 +110,7 @@ class SportTypeService extends BaseService implements ISportTypeService {
 
     public function updateSportType(SportType $type) {
 	if ($type === null)
-	    throw new NullPointerException("Argument SportType cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportType cannot be null", 0);
 
 	try {
 	    $dbType = $this->sportTypeDao->find($type->getId());
@@ -116,11 +121,11 @@ class SportTypeService extends BaseService implements ISportTypeService {
 		$this->invalidateEntityCache($dbType);
 	    }
 	} catch (DuplicateEntryException $ex) {
+	    $this->logWarning($ex->getMessage());
 	    throw new Exceptions\DuplicateEntryException($ex);
-	    // TODO LOG?
-	} catch (Exception $ex) {
-	    // TODO LOG?
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -134,9 +139,9 @@ class SportTypeService extends BaseService implements ISportTypeService {
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
 	    return $data;
-	} catch (\Exception $e) {
-	    // TODO LOG
-	    dd($e);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
     // </editor-fold>

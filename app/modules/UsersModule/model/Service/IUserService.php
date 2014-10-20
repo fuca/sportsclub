@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\UsersModule\Model\Service;
 
 use App\Model\Entities\User;
 
@@ -63,6 +63,8 @@ interface IUserService {
     function getUsersDatasource();
     
     function regeneratePassword($id);
+    
+    function toggleUser($id);
     
     /**
      * Returns collection of Users according to given SportGroup

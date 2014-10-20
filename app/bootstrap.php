@@ -26,7 +26,7 @@ $robotLoader = $configurator->createRobotLoader()
 	->register();
 //$composer->addClassMap($robotLoader->getIndexedClasses());
 //$configurator->addConfig(__DIR__ . '/config/config.local.neon'); // nahrazeni includem v config.neon
-$configurator->addConfig(__DIR__ . '/modules/SystemModule/config/config.neon');
+$configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConfig.neon');
 
 // enum types registering for database use
 Type::addType("AclMode", "App\Model\Misc\Enum\AclMode");

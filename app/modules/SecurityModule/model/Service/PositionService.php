@@ -33,7 +33,7 @@ use \App\Model\Entities\User,
     \Nette\Utils\Strings,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Service\BaseService,
-    \App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     \App\Model\Service\IRoleService,
     \App\SystemModule\Model\Service\ISportGroupService;
 
@@ -60,7 +60,7 @@ class PositionService extends BaseService implements IPositionService {
     private $sportGroupService;
 
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
 

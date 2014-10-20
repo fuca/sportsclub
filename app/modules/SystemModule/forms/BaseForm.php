@@ -42,7 +42,7 @@ abstract class BaseForm extends Form {
 	return $this->showCancel;
     }
 
-    public function setShowCancel($showCancel) {
+    public function setShowCancel($showCancel = true) {
 	$this->showCancel = $showCancel;
     }
 
@@ -86,6 +86,10 @@ abstract class BaseForm extends Form {
     /**
      * Method initializes inner components
      */
-    abstract function initialize();
-
+    protected function initialize() {
+	if ($this->showCancel)
+	    $this->addButton("cancel", "system.forms.cancelButton.label")
+		->setAttribute("onclick", "history.go(-1);");
+	//$this->addSubmit("submitButton", "system.forms.submitButton.label");
+    }
 }

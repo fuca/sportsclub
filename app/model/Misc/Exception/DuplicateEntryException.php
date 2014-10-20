@@ -24,7 +24,7 @@ namespace App\Model\Misc\Exceptions;
  *
  * @author <michal.fuca.fucik(at)gmail.com>
  */
-class DuplicateEntryException extends \Kdyby\Doctrine\DuplicateEntryException implements IException {
+class DuplicateEntryException extends \Exception implements IException {
 
     public function __construct($message = null, $code = 0, \Exception $previous = NULL) {
 	parent::__construct($message, $code, $previous);

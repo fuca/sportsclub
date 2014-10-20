@@ -1,3 +1,7 @@
+#
+# Articles module config file
+# 
+    
 services:
 
 	articlesModule.cacheStorage: 

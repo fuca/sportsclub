@@ -17,9 +17,9 @@
  */
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\JoinColumn,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\JoinColumn,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\EntityMapperTrait;
 
@@ -82,9 +82,9 @@ class WebProfile extends BaseEntity {
     protected $signature;
     
     public function __construct(array $values = []) {
-     parent::__construct();
-     $this->fromArray($values);
- }
+	parent::__construct();
+	$this->fromArray($values);
+    }
     
     public function getId() {
 	return $this->id;

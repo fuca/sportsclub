@@ -11,7 +11,3 @@ services:
 			- setCacheStorage(@forumModule.cacheStorage)
 			- setUserService()
 			- setSportGroupService()
-
-translation:
-	dirs: 
-		- %appDir%/modules/ForumModule/lang

@@ -26,7 +26,7 @@ use Nette\Object,
     Nette\Utils\Strings,
     \App\Misc\Passwords,
     \Doctrine\ORM\NoResultException,
-    App\Model\Service\IUserService,
+    \App\UsersModule\Model\Service\IUserService,
     App\Model\Service\IRoleService;
     
 
@@ -43,7 +43,7 @@ final class Authenticator extends Object implements IAuthenticator {
     private $rolesService;
     
     /**
-     * @var \App\Model\Service\IUserService 
+     * @var \App\UsersModule\Model\Service\IUserService 
      */
     private $usersService;
 

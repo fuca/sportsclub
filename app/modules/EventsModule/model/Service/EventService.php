@@ -33,7 +33,7 @@ use \App\Model\Entities\Event,
     \Grido\DataSources\Doctrine,
     \Doctrine\Common\Collections\ArrayCollection,
     \App\SystemModule\Model\Service\ISportGroupService,
-    App\Model\Service\IUserService;
+    \App\UsersModule\Model\Service\IUserService;
 
 /**
  * Service for dealing with Event related entities
@@ -53,7 +53,7 @@ class EventService extends BaseService implements IEventService {
     private $sportGroupService;
     
     /**
-     * @var \App\Model\Service\IUserService
+     * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
     

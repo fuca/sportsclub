@@ -1,0 +1,3 @@
+forms:
+	cancelButton.label: "Cancel"
+	submitBytton.label: "Save"

@@ -1,188 +1,25 @@
 #
-# ENSURE NOT EXPOSURING THIS FILE TO CLIENT SIDE USERS
+# SystemModule config file
 #
-#   %field from paramaters%
-#   @service
-#
-#
-
-includes:
-	# - nazev.neon ## nejnizsi priorita
-	# - nazev.neon ## vyssi priorita
-	- config.local.neon
 
 parameters:
-	database:
-		dsn: 'mysql:host=127.0.0.1;dbname=sportsclub'
-		user: root
-		password: pw
-		options: 
-			lazy: true
-	models:
-		salt: $2a06$05IKqFG8iuPts/cr0.
-		
-	debugger: 
-		email: "michal.fuca.fucik@gmail.com"
+	# tady si nastavim svoje vecicky
 
-	wwwDir: %appDir%/../www/
-	cacheDir: %tempDir%/cache/
-	modulesDir: %appDir%/modules/
-	libsDir: %appDir%/vendor/others/
-	imagesDir: %wwwDir%/img/
-
-	appName: sportsclub
-
-doctrine:
-	# doctrine configuration
-	#host:	    127.0.0.1
-	#user:	    root
-	#dbname:	    sportsclub
-	#password:   880609Fuca
-	metadata:
-		App: %appDir%
-		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
-
-annotations: # configure of annotations extension
-	ignore:	[hideInTree, Secured, Resource] # array of ignored annotations
-
-php:
-	date.timezone: Europe/Prague
-	# zlib.output_compression: yes
-
-facebook:
-	appId: "1234567890"
-	appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
-	permissions: [email]
-	
-translation:
-	default: cs
-	whitelist: [cs, en, de] #....
-	fallback: [cs_CZ, cs]
-	debugger: on
-	dirs: 
-		#- %appDir%/modules/SystemModule/locale # every module has own locale dir
-	resolvers:
-		session: on
-		request: off # checking locale from request
-		header: on # accept language header preferred locales 
-
-nette:
-	application:
-		errorPresenter: Public:Error
-		debugger: true
-		catchExceptions: false
-
-		mapping:
-			*: App\*Module\Presenters\*Presenter
-
-	session:
-		expiration: 14 days
-		#autoStart: smart ## default smart on
-		name: %appName%
-
-	database:
-		connection: %database%
-
-	routing:
-		debugger: true
-		
-	security:
-		#frames: yes ## default no (SAMEORIGIN)
-		
-	#mailer: smtp ## default je sendMailer
-
-	forms:
-		#EQUAL: 'Please enter %s' ## we can change default messages here
-	container:
-		debugger: false #dumps whole DI container
-	debugger:
-		email: %debugger.email%
-		strictMode: true
-		editor: sublime
-		browser: chromium-browser
-		bar:
-			#- Nette\DI\Diagnostics\ContainerPanel ## already on from container:debugger:true
-			
-		blueScreen: # panely do Laděnky
-			#- DoctrinePanel::renderException
-monolog:
-	name: %appName%
-	registerFallback: yes # zapne logovani do souboru
-
-	handlers:
-		- Monolog\Handler\SyslogHandler(%appName%, 'local4') # unix syslog handler
-	
-		
 services:
-	#- App\Model\UserManager
 
-	# tohle uz neni treba je to nahrazeno 
-	#robotLoader:
-	#	class: Nette\Loaders\RobotLoader
-	#	setup:
-	#		- setCacheStorage
+	systemModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/systemModule/)
+		autowired: false
 
-	presenterTree:	Kdyby\PresenterTree
-
-	#- Nette\Caching\Storages\MemcachedStorage()
-	
-	- App\RouterFactory
-	router: @App\RouterFactory::createRouter
-
-	cacheStorage: # redefinovani cache pro system, at je v tom poradek
-		class: Nette\Caching\Storages\FileStorage(%tempDir%)
-
-	serviceEntityCache: # tohle by odtud melo zmizet a kazdy modul by mel mit svoji storage
-		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/)
-		autowired: no
-
-	-
+	systemModule.sportTypeService:
 		class:
 			App\SystemModule\Model\Service\SportTypeService
 		setup:
-		    		- setCacheStorage(@serviceEntityCache)
-	-
+		    		- setCacheStorage(@systemModule.cacheStorage)
+
+	systemModule.sportGroupService:
 		class:
 			App\SystemModule\Model\Service\SportGroupService
 		setup:
-				- setCacheStorage(@serviceEntityCache)
+				- setCacheStorage(@systemModule.cacheStorage)
 				- setSportTypeService()
-	-
-		class:
-			App\SystemModule\Model\Service\EmailNotificationService
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-	-
-		class: 
-			App\SystemModule\Model\Service\Localization\Translator
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-	-
-		class: 
-			App\SystemModule\Model\Service\CommentService
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-				- setUserService()
-
-extensions:
-
-	# 3rd party libraries
-	annotations: Kdyby\Annotations\DI\AnnotationsExtension
-	console: Kdyby\Console\DI\ConsoleExtension
-	events: Kdyby\Events\DI\EventsExtension
-	doctrine: Kdyby\Doctrine\DI\OrmExtension
-	doctrine2identity: Majkl578\NetteAddons\Doctrine2Identity\DI\IdentityExtension
-	facebook: Kdyby\Facebook\DI\FacebookExtension
-	translation: Kdyby\Translation\DI\TranslationExtension
-	monolog: Kdyby\Monolog\DI\MonologExtension
-
-	# Application modules
-	systemModule: App\SystemModule\Config\SystemModuleExtension
-	usersModule: App\UsersModule\Config\UsersModuleExtension
-	securityModule: App\SecurityModule\Config\SecurityModuleExtension
-	seasonsModule: App\SeasonsModule\Config\SeasonsModuleExtension
-	paymentsModule: App\PaymentsModule\Config\PaymentsModuleExtension
-	eventsModule: App\EventsModule\Config\EventsModuleExtension
-	articlesModule: App\ArticlesModule\Config\ArticlesModuleExtension
-	wallsModule: App\WallsModule\Config\WallsModuleExtension
-	forumModule: App\ForumModule\Config\ForumModuleExtension

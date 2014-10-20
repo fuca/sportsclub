@@ -21,12 +21,12 @@ namespace App\SystemModule\Presenters;
 use \App\SystemModule\Forms\SportTypeForm,
     \App\SystemModule\Forms\SportGroupForm,
     \Grido\Grid,
+    \App\Model\Entities\SportGroup,
     \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\SportType,
-    \App\Model\Entities\SportGroup,
     \Nette\ArrayHash,
     \App\SystemModule\Presenters\SecuredPresenter,
-    \App\Services\Exceptions\DataErrorException,
+    \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Form,
     \App\SystemModule\Model\Service\ISportGroupService;
 
@@ -75,8 +75,8 @@ class AdminPresenter extends SecuredPresenter {
 	$type->fromArray((array) $values);
 	try {
 	    $this->sportTypeService->createSportType($type);
-	} catch (DataErrorException $ex) {
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleException($ex);
 	}
 	$this->redirect("default");
     }
@@ -92,7 +92,7 @@ class AdminPresenter extends SecuredPresenter {
 		$form = $this->getComponent('updateSportTypeForm');
 		$form->setDefaults($dbType->toArray());
 	    }
-	} catch (DataErrorException $ex) {
+	} catch (Exceptions\DataErrorException $ex) {
 	    $this->flashMessage("Nepodařilo se načíst požadovaná data", self::FM_ERROR);
 	    $this->redirect("default");
 	}
@@ -103,8 +103,8 @@ class AdminPresenter extends SecuredPresenter {
 	$type->fromArray((array) $values);
 	try {
 	    $this->sportTypeService->updateSportType($type);
-	} catch (DataErrorException $ex) {
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleException($ex);
 	}
 	$this->redirect("default");
     }
@@ -116,15 +116,11 @@ class AdminPresenter extends SecuredPresenter {
 	}
 	try {
 	    $this->sportTypeService->deleteSportType($id);
-	} catch (DataErrorException $ex) {
-	    switch ($ex->getCode()) {
-		case 1000:
-		    $sport = $this->getSportTypeService()->getSportType($id)->getName();
-		    $this->flashMessage("Nemůžete smazat sport '{$sport}', který je užíván alespoň jednou skupinou", self::FM_ERROR);
-		    break;
-	    }
-	} catch (Exception $ex) {
-	    dd($ex);
+	} catch (Exceptions\DependencyException $ex) {
+	    $this->flashMessage("Nemůžete smazat sport, který je používán", self::FM_ERROR);
+		    
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleException($ex);
 	}
 	$this->redirect("this");
     }
@@ -168,20 +164,25 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function createComponentAddSportTypeForm($name) {
-	$form = new SportTypeForm($this, $name);
+	$form = $this->prepareSportTypeForm($name);
 	//$form->setImages(); // pro tohle si udelat imagesStorageService, ci tak neco
 	$form->initialize();
 	return $form;
     }
 
     public function createComponentUpdateSportTypeForm($name) {
-	$form = new SportTypeForm($this, $name);
+	$form = $this->prepareSportTypeForm($name);
 	//$form->setImages();
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
-
+    
+    public function prepareSportTypeForm($name) {
+	$form = $form = new SportTypeForm($this, $name, $this->getTranslator());
+	return $form;
+    }
+		
     // </editor-fold>
     // <editor-fold desc="Administration of GROUPS">
 
@@ -190,8 +191,8 @@ class AdminPresenter extends SecuredPresenter {
 	$type->fromArray((array) $values);
 	try {
 	    $this->sportGroupService->createSportGroup($type);
-	} catch (DataErrorException $ex) {
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleException($ex);
 	}
 	$this->redirect("default");
     }
@@ -208,18 +209,18 @@ class AdminPresenter extends SecuredPresenter {
 
 		$form->setDefaults($dbGroup->toArray());
 	    }
-	} catch (DataErrorException $ex) {
-	    dd($e);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleException($ex);
 	}
     }
 
     public function updateSportGroup(ArrayHash $values) {
-	$type = new \App\Model\Entities\SportGroup();
+	$type = new SportGroup();
 	$type->fromArray((array) $values);
 	try {
 	    $this->sportGroupService->updateSportGroup($type);
-	} catch (DataErrorException $ex) {
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleException($ex);
 	}
 	$this->redirect("default");
     }
@@ -231,7 +232,7 @@ class AdminPresenter extends SecuredPresenter {
 	}
 	try {
 	    $this->sportGroupService->deleteSportGroup($id);
-	} catch (DataErrorException $ex) {
+	} catch (Exceptions\DataErrorException $ex) {
 	    switch ($ex->getCode()) {
 		case 1000:
 		    $this->flashMessage("Nemůžete smazat skupinu, která je něčím rodičem", self::FM_ERROR);
@@ -284,28 +285,27 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function createComponentAddSportGroupForm($name) {
-	$form = new SportGroupForm($this, $name);
-	$this->prepareSportGroupForm($form);
+	$form = $this->prepareSportGroupForm($name);
 	$form->initialize();
 	return $form;
     }
 
     public function createComponentUpdateSportGroupForm($name) {
-	$form = new SportGroupForm($this, $name);
-	$this->prepareSportGroupForm($form, $this->getEntityId());
+	$form = $this->prepareSportGroupForm($name, $this->getEntityId());
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
 
-    private function prepareSportGroupForm(Form $form, $selfId = null) {
+    private function prepareSportGroupForm($name, $selfId = null) {
+	$form = new SportGroupForm($this, $name, $this->getTranslator());
 	$form->setPriorities($this->sportGroupService->getPriorities());
 	try {
 	    $sportGroups = $this->sportGroupService->getSelectSportGroups($selfId);
 	    $form->setSportGroups($sportGroups);
 	    $sportTypes = $this->sportTypeService->getSelectSportTypes();
 	    $form->setSportTypes($sportTypes);
-	} catch (Exception $ex) {
+	} catch (Exceptions\DataErrorException $ex) {
 	    $this->flashMessage($ex->getMessage(), self::FM_ERROR);
 	}
 	return $form;

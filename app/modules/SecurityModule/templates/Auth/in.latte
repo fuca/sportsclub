@@ -1,0 +1,10 @@
+{layout ./base.latte}
+{block content}
+
+{define title}
+    {_securityModule.loginControl.loginForm.title} / {include parent}
+{/}
+
+<h1>{_securityModule.loginControl.loginForm.title}</h1>
+
+{control loginControl:form}

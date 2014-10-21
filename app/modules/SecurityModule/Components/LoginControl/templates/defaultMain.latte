@@ -1,0 +1,4 @@
+{* Latte template *}
+
+<a n:if="$isLoggedIn" href="{$logOutLink}">{_securityModule.loginControl.userLogOut}</a>
+<a n:if="!$isLoggedIn" href="{$logInLink}">{_securityModule.loginControl.userLogIn}</a>

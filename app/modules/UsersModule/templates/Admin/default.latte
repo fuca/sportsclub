@@ -1,5 +1,10 @@
 {layout ./base.latte}
 
 {block content}
+
 <a href="{plink :Users:Admin:newUser}">{_ usersModule.admin.userNew}</a>
+<h3>{_ usersModule.admin.usersGrid}</h3>
 {control usersGrid}
+
+<h3>{_ usersModule.admin.wpPermitGrid}</h3>
+{control webProfilesPermitGrid}

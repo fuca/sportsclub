@@ -23,6 +23,7 @@ use \Nette,
     \Nette\Application\UI\Presenter,
     \Grido\Components\Filters\Filter,
     \App\Model\Misc\Enum\CommentMode,
+    \Kdyby\Doctrine\Entities\BaseEntity,
     \App\SystemModule\Model\Service\ICommentable;
 
 /**
@@ -39,7 +40,6 @@ abstract class BasePresenter extends Presenter {
     const FM_SUCCESS = "success",
 	    FM_ERROR = "error",
 	    FM_WARNING = "warning";
-    
     const DATETIME_FORMAT = "j.n.Y H:i";
 
     /** @var string @persistent */
@@ -47,11 +47,11 @@ abstract class BasePresenter extends Presenter {
 
     /** @persistent */
     protected $lang = 'cz';
-    
+
     /** @vat actual managinng entity id from parameter */
     private $entityId;
-    
-    /** @var \Kdyby\Doctrine\Entities\BaseEntity actual managing entity*/
+
+    /** @var \Kdyby\Doctrine\Entities\BaseEntity actual managing entity */
     private $entity;
 
     /**
@@ -59,7 +59,7 @@ abstract class BasePresenter extends Presenter {
      * @var \Kdyby\Translation\Translator
      */
     public $translator;
-    
+
     /**
      * @inject
      * @var \Kdyby\Monolog\Logger
@@ -73,10 +73,10 @@ abstract class BasePresenter extends Presenter {
      */
     public function getEntityId() {
 	if (!isset($this->entityId))
-	    throw new Exceptions\InvalidStateException("EntityId is not set, it seems it wasn't passed as request '".self::NUM_IDENTIFIER."' parameter");
+	    throw new Exceptions\InvalidStateException("EntityId is not set, it seems it wasn't passed as request '" . self::NUM_IDENTIFIER . "' parameter");
 	return $this->entityId;
     }
-    
+
     /**
      * Recently managed entity
      * @return \Kdyby\Doctrine\Entities\BaseEntity
@@ -91,11 +91,11 @@ abstract class BasePresenter extends Presenter {
     public function setEntity(BaseEntity $entity) {
 	$this->entity = $entity;
     }
-    
+
     public function getTranslator() {
 	return $this->translator;
     }
-    
+
     /**
      * Shortcut for translate given message via Translator service
      * @param string $message
@@ -108,7 +108,7 @@ abstract class BasePresenter extends Presenter {
     protected function tt($message, $count = null, $parameters = [], $domain = null, $locale = null) {
 	return $this->getTranslator()->translate($message, $count, $parameters, $domain, $locale);
     }
-    
+
     /**
      * Returns application locale detected by translator
      * @return string
@@ -145,11 +145,11 @@ abstract class BasePresenter extends Presenter {
     // <editor-fold desc="COMMON COMPONENT FACTORIES">
 
     public function createComponentLoginControl($name) {
-	$c = new \App\SystemModule\Components\LogInControl($this, $name);
+	$c = new \App\SecurityModule\Components\LogInControl($this, $name);
 	$c->setLogInTarget(":System:Public:default");
 	return $c;
     }
-    
+
     public function createComponentCommentControl($name) {
 	$c = new \App\SystemModule\Components\CommentControl($this, $name);
 	$c->setEntity($this->getEntity());
@@ -159,30 +159,59 @@ abstract class BasePresenter extends Presenter {
     }
 
     // </editor-fold>
-    
     // <editor-fold desc="LOGGING SUPPORT"> 
-    
+
     private function prefixMessage($message, $type) {
-	return "###   ".$type."   ### ".$this->getName()." -->  \n".$message;
+	return "###   " . $type . "   ### " . $this->getName() . " -->  \n" . $message;
     }
-    
+
     protected function logError($message, array $context = []) {
 	$this->logger->addError($this->prefixMessage($message, "ERROR"), $context);
     }
-    
+
     protected function logWarning($message, array $context = []) {
 	$this->logger->addWarning($this->prefixMessage($message, "WARNING"), $context);
     }
-    
+
     protected function logInfo($message, array $context = []) {
 	$this->logger->addInfo($this->prefixMessage($message, "INFO"), $context);
     }
-    
+
     protected function logDebug($message, array $context = []) {
 	$this->logger->addDebug($this->prefixMessage($message, "DEBUG"), $context);
     }
+
     //</editor-fold>
+    // <editor-fold desc="COMMON FLASH MESSAGES SUPPORT">
+
+    protected function handleBadArgument($id, $redirect) {
+	$sig = $this->signal;
+	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "!";
+	$m = $this->tt("system.messages.badArgumentFormat", null, ["id" => $id]);
+	$this->flashMessage($m, self::FM_WARNING);
+	$this->logWarning($prefix . $m);
+	$this->redirect($redirect);
+    }
     
+    protected function handleDataLoad($id, $redirect, $exception = null) {
+	$sig = $this->signal;
+	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "!";
+	$m = $this->tt("system.messages.couldNotLoadData", null, ["id" => $id]);
+	$this->flashMessage($m, self::FM_ERROR);
+	$this->logError($exception ? $exception : $prefix . $m);
+	$this->redirect($redirect);
+    }
+    
+    protected function handleDataSave($id, $redirect, $exception) {
+	$sig = $this->signal;
+	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "!";
+	$m = $this->tt("system.messages.couldNotSaveData", null, ["id" => $id]);
+	$this->flashMessage($m, self::FM_ERROR);
+	$this->logError($exception ? $exception : $prefix . $m);
+	$this->redirect($redirect);
+    }
+
+    // </editor-fold>
 //    private function isAllowedToComment(ICommentable $e) {
 //	// maybe this should be within authorizator or commentControl with given user instance
 //	$mode = $e->getCommentMode();

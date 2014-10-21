@@ -1,0 +1,19 @@
+messages:
+	givenPasswordsDontMatch: "Given new passwords do not match"
+
+loginControl:
+	userLogIn: "Log in"
+	userLogOut: "Log out"
+	userLoggedOut: "Logged out"
+	userLoggedIn: "Logged in as %name%"
+
+loginControl.messages:
+	userInactive: "Inactive account. If you feel this information is invalid, feel free to contact our office."
+	invalidCredentials: "Wrong username or password"
+
+loginControl.loginForm:
+	title: "Log in"
+	remember: "   Remember me"
+	email: "Email:"
+	password: "Password:"
+	submit: "         Let me in         "

@@ -18,16 +18,17 @@
 
 namespace App\SecurityModule\Model;
 
-use Nette\Object,
-    Nette\DateTime,
-    Nette\Security\Identity,
-    Nette\Security\IAuthenticator,
-    Nette\Security\AuthenticationException,
-    Nette\Utils\Strings,
-    \App\Misc\Passwords,
-    \Doctrine\ORM\NoResultException,
+use \Nette\Object,
+    \Nette\DateTime,
+    \Nette\Security\Identity,
+    \Nette\Security\IAuthenticator,
+    \Nette\Security\AuthenticationException,
+    \Nette\Utils\Strings,
+    \Kdyby\Monolog\Logger,
+    \Nette\Security\Passwords,
+    \App\Model\Misc\Exceptions,
     \App\UsersModule\Model\Service\IUserService,
-    App\Model\Service\IRoleService;
+    \App\Model\Service\IRoleService;
     
 
 /**
@@ -49,6 +50,19 @@ final class Authenticator extends Object implements IAuthenticator {
 
     /** @var Salt */
     private $salt;
+    
+    /**
+     * @var \Kdyby\Monolog\Logger
+     */
+    private $logger;
+    
+    public function getLogger() {
+	return $this->logger;
+    }
+
+    public function setLogger(Logger $logger) {
+	$this->logger = $logger;
+    }
     
     public function setSalt($salt) {
 	$this->salt = $salt;
@@ -72,16 +86,19 @@ final class Authenticator extends Object implements IAuthenticator {
 
 	try {
 	    $user = $this->usersService->getUserEmail($username);
-	} catch (NoResultException $ex) {		////// tohle doctrina urcite nevyhazuje.... otestovat a predelat
-	    throw new AuthenticationException("Špatné jméno nebo heslo", self::IDENTITY_NOT_FOUND);
+	} catch (Exceptions\NoResultException $ex) {
+	    $this->getLogger()->addAlert("### ATTEMPT TO LOG IN WITH INVALID EMAIL ### - exception = ".$ex);
+	    throw new AuthenticationException("securityModule.loginControl.messages.invalidCredentials", self::IDENTITY_NOT_FOUND);
 	}
 	    
-	if (!Passwords::verify($password, $user->password))
-	    throw new AuthenticationException("Špatné jméno nebo heslo", self::INVALID_CREDENTIAL);
+	if (!Passwords::verify($password, $user->password)) {
+	    $this->getLogger()->addAlert("### ATTEMPT TO LOG IN WITH INVALID PASSWORD ### - tried password = ".$password);
+	    throw new AuthenticationException("securityModule.loginControl.messages.invalidCredentials", self::INVALID_CREDENTIAL);
+	}
 	
 	if (!$user->active) {
-	    $name = "(" . $user->id . ")";
-	    throw new AuthenticationException("Uživatel se zadaným emailem není aktivním členem této organizace. Pokud máte pocit, že je tato informace chybná, prosím kontaktujte sekretariát.");
+	    $this->getLogger()->addAlert("### ATTEMPT TO LOG TO INACTIVE ACCOUNT ### - account id = ".$user->getId());
+	    throw new AuthenticationException("securityModule.loginControl.messages.userUnactive");
 	}
 
 	$user->lastLogin = new DateTime();

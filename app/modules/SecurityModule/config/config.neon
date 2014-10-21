@@ -54,6 +54,7 @@ services:
 				- setSalt(%models.salt%)
 				- setRolesService()
 				- setUsersService()
+				- setLogger()
 factories:
 # factories jsou od 2.1 sloceny do services
 	# tady si muzu definovat tovarny na ruzny komponenty atp v ramci myho modulu

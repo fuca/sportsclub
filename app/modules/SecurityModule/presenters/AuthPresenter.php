@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Presenters;
+namespace App\SecurityModule\Presenters;
 
-use Nette\Application\UI\Form,
-    Nette\Security\AuthenticationException,
+use \Nette\Application\UI\Form,
+    \Nette\Security\AuthenticationException,
     \App\SystemModule\Presenters\BasePresenter,
-    App\SystemModule\Forms\LogInForm,
-    Kdyby\Monolog\Logger;
+    \App\SystemModule\Forms\LogInForm,
+    \Kdyby\Monolog\Logger;
 
 /**
  * AuthPresenter
@@ -37,7 +37,6 @@ class AuthPresenter extends BasePresenter {
     public $users;
     
     public function actionDefault() {
-	$this->logger->addInfo("Jsme v AUTH IN");
 	$this->redirect("in");
     }
     

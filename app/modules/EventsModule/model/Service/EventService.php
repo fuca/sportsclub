@@ -21,7 +21,7 @@ namespace App\EventsModule\Model\Service;
 use \App\Model\Entities\Event,
     \App\Model\Entities\User,
     \App\Model\Entities\SportGroup,
-    \App\Services\Exceptions,
+    \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\DuplicateEntryException,
     \Doctrine\ORM\NoResultException,
     \Kdyby\Doctrine\DBALException,
@@ -101,10 +101,9 @@ class EventService extends BaseService implements IEventService {
 	    $this->sportGroupsTypeHandle($e);
 	    $this->eventDao->save($e);
 	    $this->invalidateEntityCache($e);
-	} catch (\Kdyby\Doctrine\DBALException $ex) {
-	    dd($ex);
-	    //throw new Exceptions\DuplicateEntryException("Event with this title already exists");
-	} catch (Exception $ex) {
+	} catch (DBALException $ex) {
+	    throw new Exceptions\DuplicateEntryException("Event with this title already exist");
+	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex->getMessage());
 	}
     }
@@ -121,7 +120,7 @@ class EventService extends BaseService implements IEventService {
 		}
 	    }
 	    $e->setGroups($coll);
-	} catch (Exception $e) {
+	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	return $e;
@@ -129,7 +128,7 @@ class EventService extends BaseService implements IEventService {
     
     private function editorTypeHandle(Event $e) {
 	if ($e === null)
-	    throw new NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -138,14 +137,14 @@ class EventService extends BaseService implements IEventService {
 		    $editor = $this->getUserService()->getUser($id, false);
 	    }
 	    $e->setEditor($editor);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
 	}
     }
     
     private function authorTypeHandle(Event $e) {
 	if ($e === null)
-	    throw new NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -154,8 +153,8 @@ class EventService extends BaseService implements IEventService {
 		    $editor = $this->getUserService()->getUser($id, false);
 	    }
 	    $e->setAuthor($editor);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
 	}
     }
      
@@ -178,7 +177,7 @@ class EventService extends BaseService implements IEventService {
 	if ($id === NULL)
 	    throw new Exceptions\NullPointerException("Argument Id was null", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
 	try {
 	    if (!$useCache) {
 		return $this->eventDao->find($id);
@@ -191,7 +190,7 @@ class EventService extends BaseService implements IEventService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    throw new DataErrorException($ex);
+	    throw new Exceptions\DataErrorException($ex);
 	}
 	return $data;
     }

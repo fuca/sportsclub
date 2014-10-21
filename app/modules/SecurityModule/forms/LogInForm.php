@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Forms;
+namespace App\SecurityModule\Forms;
 
 use \App\Forms\BaseForm;
 
@@ -27,15 +27,15 @@ use \App\Forms\BaseForm;
 class LogInForm extends BaseForm {
     
     public function initialize() {
-	$this->addText('username', 'systemModule.loginControl.loginForm.email')
+	$this->addText('username', 'securityModule.loginControl.loginForm.email')
 		->setRequired('Prosím zadejte email');
 
-	$this->addPassword('password', 'systemModule.loginControl.loginForm.password')
+	$this->addPassword('password', 'securityModule.loginControl.loginForm.password')
 		->setRequired('Prosím zadejte heslo.');
 
-	$this->addCheckbox('remember', 'systemModule.loginControl.loginForm.remember');
+	$this->addCheckbox('remember', 'securityModule.loginControl.loginForm.remember');
 
-	$this->addSubmit('send', 'systemModule.loginControl.loginForm.submit');
+	$this->addSubmit('send', 'securityModule.loginControl.loginForm.submit');
 	
 	// TODO hodit to do BaseFormu
 	$this->onSuccess[] = ($h = $this->getSuccessHandler() == null)? callback($this->parent, "loginFormSuccessHandle"): $h;

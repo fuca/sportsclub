@@ -18,16 +18,10 @@
 
 namespace App\UsersModule\Presenters;
 
-use 
-    \App\UsersModule\Forms\UserForm,
+use \App\UsersModule\Forms\UserForm,
     \Grido\Grid,
     \Nette\Utils\Strings,
-    \Grido\Components\Actions\Action,
-    \Grido\Components\Filters\Filter,
-    \Grido\Components\Columns\Column,
-    \Grido\Components\Columns\Date,
     \Nette\Mail\SendmailMailer,
-    \App\Misc\Passwords,
     \App\Model\Entities\User,
     \App\Model\Entities\WebProfile,
     \App\Model\Entities\Address,
@@ -38,7 +32,8 @@ use
     \Nette\DateTime,
     \Nette\ArrayHash,
     \App\UsersModule\Forms\WebProfileForm,
-    \App\SystemModule\Presenters\SecuredPresenter;
+    \App\SystemModule\Presenters\SecuredPresenter,
+    \App\UsersModule\Model\Misc\Utils\UserEntityManageHelper;
 
 /**
  * UserPresenter
@@ -68,7 +63,7 @@ class AdminPresenter extends SecuredPresenter {
     public function actionNewUser() {
 	// form
     }
-    
+
     /**
      * Create new user handler (topdown)
      * @param \Nette\ArrayHash $values
@@ -76,7 +71,7 @@ class AdminPresenter extends SecuredPresenter {
      */
     public function createUser(ArrayHash $values) {
 
-	
+
 	// SEND NOTIFICATION
 //	$mailer = new SendmailMailer();
 //	$mail = new Message();
@@ -97,29 +92,22 @@ class AdminPresenter extends SecuredPresenter {
 	}
 	$this->redirect("Admin:default");
     }
-    
+
     // </editor-fold>
-    
     // <editor-fold desc="REMOVE USER">
-    
+
     /**
      * Delete user handler (topdown)
      * @param numeric $id
      */
     public function handleDeleteUser($id) {
-	if (!is_numeric($id)) {
-	    $prefix = "UserService - AdminPresenter - handleDeleteUser - ";
-	    $m = $this->getTranslator()->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
-	    $this->flashMessage($m, self::FM_WARNING);
-	    $this->logWarning($prefix.$m);
-	    return;
-	}
+	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	$this->doDeleteUser($id);
 	if (!$this->isAjax()) {
 	    $this->redirect("this");
 	}
     }
-    
+
     private function doDeleteUser($id) {
 	try {
 	    $this->userService->deleteUser($id);
@@ -127,15 +115,14 @@ class AdminPresenter extends SecuredPresenter {
 	    $this->logInfo($ex->getMessage());
 	    $m = $this->getTranslator()->tt("usersModule.messages.dependencyErrorDelete");
 	    $this->flashMessage($m, self::FM_WARNING);
-	} catch(\Exception $ex) {
+	} catch (\Exception $ex) {
 	    $this->logError($ex);
-	    $m = $this->getTranslator()->tt("usersModule.admin.messages.deleteUserFailed", ["id"=>$id]);
+	    $m = $this->getTranslator()->tt("usersModule.admin.messages.deleteUserFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
     }
 
     // </editor-fold>
-    
     // <editor-fold desc="UPDATE USER">
 
     /**
@@ -144,59 +131,31 @@ class AdminPresenter extends SecuredPresenter {
      * @param numeric $id
      */
     public function actionUpdateUser($id) {
-	if ($id === null || !is_numeric($id)) {
-	    $prefix = "UserService - AdminPresenter - handleDeleteUser - ";
-	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
-	    $this->flashMessage($m, self::FM_WARNING);
-	    $this->logWarning($prefix.$m);
-	    return;
-	}
+	if ($id === null || !is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	try {
 	    $uUser = $this->userService->getUser($id);
 	    $form = $this->getComponent('updateUserForm');
 
-	    $data = $uUser->toArray() 
-		    + $uUser->getContact()->toArray() 
-		    + $uUser->getContact()->getAddress()->toArray();
+	    $data = $uUser->toArray() + $uUser->getContact()->toArray() + $uUser->getContact()->getAddress()->toArray();
 	    $form->setDefaults($data);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->logError($ex);
-	    $m = $this->tt("usersModule.admin.messages.updateUserFailed", ["id"=>$id]);
+	    $m = $this->tt("usersModule.admin.messages.updateUserFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
     }
 
     /**
-     * Hydrate User entity from UserForm
-     * @param \Nette\ArrayHash $values
-     * @return \App\Model\Entities\User
-     */
-    private function hydrateUserFromUserForm(ArrayHash $values) {
-	$nu = new User();
-	$nu->fromArray((array) $values);
-
-	$na = new Address();
-	$na->fromArray((array) $values);
-
-	$nc = new Contact();
-	$nc->fromArray((array) $values);
-
-	$nc->setAddress($na);
-	$nu->setContact($nc);
-	return $nu;
-    }
-
-    /**
      * Update user handler (topdown)
      * @param \Nette\ArrayHash $values
-     * @throws DuplicateEntryException
      */
     public function updateUser(ArrayHash $values) {
 	try {
-	    $this->userService->updateUser($this->hydrateUserFromUserForm($values));
+	    $this->userService->updateUser(UserEntityManageHelper::hydrateUserFromHash($values));
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex->getMessage());
-	    $this->handleException($ex);
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.messages.updateUserFailed", ["id" => $values->id]);
+	    $this->flashMessage($m, self::FM_ERROR);
 	}
 	$this->redirect("Admin:default");
     }
@@ -212,7 +171,7 @@ class AdminPresenter extends SecuredPresenter {
 	$form->initialize();
 	return $form;
     }
-    
+
     /**
      * Component factory for lazy initialize of newUserForm
      * @param string $name
@@ -223,92 +182,83 @@ class AdminPresenter extends SecuredPresenter {
 	$form->initialize();
 	return $form;
     }
-    
+
     private function prepareUserForm($name) {
 	$form = new UserForm($this, $name, $this->getTranslator());
 	return $form;
     }
-    
+
     public function handleRegenPassword($id) {
-	if(!is_numeric($id)) {
-	    $prefix = "UserService - AdminPresenter - handleRegenPassword - ";
-	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
-	    $this->flashMessage($m, self::FM_WARNING);
-	    $this->logWarning($prefix.$m);
-	    return;
-	}
+	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	try {
 	    if ($this->userService->regeneratePassword($id) != null) {
-		$m = $this->tt("usersModule.messages.newPwSuccess", ["id"=>$id]);
-		$this->flashMessage($m);   
+		$m = $this->tt("usersModule.messages.newPwSuccess", ["id" => $id]);
+		$this->flashMessage($m);
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $m = $this->tt("usersModule.messages.newPwFailed", ["id"=>$id]);
+	    $m = $this->tt("usersModule.messages.newPwFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	    $this->logError($ex->getMessage());
-	    return;
 	}
 	$this->redirect('this');
     }
-    
+
     private function doActiveToggle($id) {
-	if(!is_numeric($id)) {
-	    $prefix = "UserService - AdminPresenter - doActiveToggle - ";
-	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
-	    $this->flashMessage($m, self::FM_WARNING);
-	    $this->logWarning($prefix.$m);
-	    return;
-	}
+	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	try {
 	    $this->userService->toggleUser($id);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->logError($ex);
-	    $m = $this->tt("usersModule.admin.toggleUserFailed", ["id"=>$id]);
+	    $m = $this->tt("usersModule.admin.toggleUserFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
     }
 
     // </editor-fold>
-    
     // <editor-fold desc="Web profile manage">
-    
+
     public function actionUpdateWebProfile($id) {
-	if(!is_numeric($id)) {
-	    $prefix = "UserService - AdminPresenter - doActiveToggle - ";
-	    $m = $this->tt("usersModule.messages.badArgumentFormat", ["id"=>$id]);
-	    $this->flashMessage($m, self::FM_WARNING);
-	    $this->logWarning($prefix.$m);
-	    return;
-	}
+	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	try {
 	    $user = $this->userService->getUser($id);
+	    $this->setEntity($user);
 	    $wp = $user->getWebProfile();
 	    $form = $this->getComponent("updateWebProfileForm");
 	    $form->setDefaults($wp->toArray());
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->logError($ex);
-	    $m = $this->tt("usersModule.admin.cannotReadData", ["id"=>$id]);
+	    $m = $this->tt("usersModule.admin.cannotReadData", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
     }
-    
+
     public function createComponentUpdateWebProfileForm($name) {
 	$form = new WebProfileForm($this, $name, $this->getTranslator());
 	$form->setShowCancel();
 	$form->initialize();
 	return $form;
     }
-    
-    public function webProfileFormSuccess(Form $form) {
+
+    public function webProfileFormSuccess(WebProfileForm $form) {
 	$values = $form->getValues();
-	$this->userService->
+	try {
+	    $dbUser = $this->userService->getUser($this->getEntity()->getId());
+	    $wp = new WebProfile((array) $values);
+	    $wp->setUpdated(new \Nette\Utils\DateTime());
+	    $wp->setEditor($this->getUser()->getIdentity());
+	    $dbUser->setWebProfile($wp);
+	    $this->userService->updateUser($dbUser);
+	} catch (Exceptions\DataErrorException $e) {
+	    $this->logError($e);
+	    $m = $this->tt("usersModule.admin.webProfileUpdateFailed", ["id" => $values["id"]]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	}
+	$this->redirect("Admin:default");
     }
-    
-    
+
     // </editor-fold>
-    
     // <editor-fold desc="Users grid">
-    
+
     /**
      * Component factory of UsersGrid
      * @param string $name
@@ -318,18 +268,18 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->userService->getUsersDatasource());
-	
+
 	$grid->translator->lang = $this->getLocale();
 	$grid->setDefaultPerPage(30);
 	$grid->setPrimaryKey('id');
-	
+
 	$grid->addColumnNumber('id', '#')
 		->cellPrototype->class[] = 'center';
 	$headerId = $grid->getColumn('id')->headerPrototype;
 	$headerId->class[] = 'center';
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
-	
+
 	$grid->addColumnText('surname', 'Příjmení')
 		->setSortable()
 		->setFilterText();
@@ -349,15 +299,18 @@ class AdminPresenter extends SecuredPresenter {
 //		->setColumn('surname', \Grido\Components\Filters\Condition::OPERATOR_OR)
 //		->setCondition('LIKE ?')
 //		->setFormatValue('%%value%');
-
 	//$grid->getColumn('name')->getCellPrototype()->class('textleft');
 
-	$activeList = [true=>'Ano', null=>'Ne'];
+	$y = $this->tt("system.common.yes");
+	$n = $this->tt("system.common.no");
+	$activeList = [null => null, true => $y, false => $n];
 	$grid->addColumnNumber('active', 'Aktivní')
-		->setReplacement($activeList)
+		->setReplacement(
+		    [true => $y, 
+		    null => $n])
 		->setSortable()
 		->setFilterSelect($activeList);
-	   
+
 	$headerActive = $grid->getColumn('active')->headerPrototype;
 	$headerActive->class[] = 'center';
 
@@ -367,7 +320,7 @@ class AdminPresenter extends SecuredPresenter {
 		->setFilterDateRange();
 	$headerLast = $grid->getColumn('lastLogin')->headerPrototype;
 	$headerLast->class[] = 'center';
-	
+
 	$grid->addColumnDate('created', 'Registrován')
 		->setSortable();
 	$headerCreated = $grid->getColumn('created')->headerPrototype;
@@ -395,31 +348,30 @@ class AdminPresenter extends SecuredPresenter {
 //	    $grid->addAction('show', '[Zobraz] ', Action::TYPE_HREF, 'showUser');
 //	}
 	//$grid->addActionHref('application', '[Prihl]', 'userApplications');
-	
 	// setDisable() - nastavi callback, kdy ma byt vypnuto - vhodne pri overovani opravneni
-	$grid->addActionHref("regenPassword", "R", 'regenPassword!')
+	$grid->addActionHref("regenPassword", "", 'regenPassword!')
 		->setIcon('lock')
 		->setConfirm(function($u) {
 		    return "Are you sure you want to regenerate password for user {$u->surname} {$u->name} ({$u->id})?";
 		});
-	$grid->addActionHref('delete', 'D', "deleteUser!")
+	$grid->addActionHref('delete', '', "deleteUser!")
 		->setIcon('trash')
 		->setConfirm(function($u) {
 		    return "Are you sure you want to delete user {$u->surname} {$u->name} ({$u->id})?";
 		});
-	$grid->addActionHref('update', 'U', 'updateUser')
+	$grid->addActionHref('update', '', 'updateUser')
 		->setIcon('pencil');
-	
-	$grid->addActionHref('webProfile', 'W', 'updateWebProfile')
+
+	$grid->addActionHref('webProfile', '', 'updateWebProfile')
 		->setIcon('th-list');
-	
+
 	$operation = array('delete' => 'Delete', 'activeToggle' => 'ActiveToggle');
-        $grid->setOperation($operation, $this->gridOperationsHandler)
-            ->setConfirm('delete', $this->tt("usersModule.admin.grid.reallyDeleteItems"));
-		
+	$grid->setOperation($operation, $this->gridOperationsHandler)
+		->setConfirm('delete', $this->tt("usersModule.admin.grid.reallyDeleteItems"));
+
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-users " . date("Y-m-d H:i:s", time()));
-	
+
 	return $grid;
     }
 
@@ -448,6 +400,126 @@ class AdminPresenter extends SecuredPresenter {
 		}
 		$this->redirect('this');
 		break;
+	}
+    }
+
+    // </editor-fold>
+    // <editor-fold desc="WEB PROFILE CHECK">
+
+    public function createComponentWebProfilesPermitGrid($name) {
+
+	$grid = new Grid($this, $name);
+	$grid->setModel($this->userService->getWebProfilesToPermitDatasource());
+
+	$grid->translator->lang = $this->getLocale();
+	$grid->setDefaultPerPage(30);
+	$grid->setPrimaryKey('id');
+
+	$grid->addColumnNumber('id', '#')
+		->cellPrototype->class[] = 'center';
+	$headerId = $grid->getColumn('id')->headerPrototype;
+	$headerId->class[] = 'center';
+	$headerId->rowspan = "2";
+	$headerId->style['width'] = '0.1%';
+
+	$grid->addColumnText("personalLikes", "Content")
+			->setTruncate(100)
+			->setCustomRender($this->wpDataRender)
+		->cellPrototype->class[] = 'center';
+
+	$headerData = $grid->getColumn('personalLikes')->headerPrototype;
+	$headerData->class[] = 'center';
+	$headerData->rowspan = "2";
+	$headerData->style['width'] = '40%';
+
+	$grid->addActionHref('yes', '', "permitProfile!")
+		->setIcon('ok')
+		->setConfirm(function($u) {
+		    return "Are you sure you really want to PERMIT profile #{$u->getId()}?";
+		});
+
+	$grid->addActionHref('no', '', "denyProfile!")
+		->setIcon('remove')
+		->setConfirm(function($u) {
+		    return "Are you sure you really want to DENY profile #{$u->getId()}?";
+		});
+
+	$operation = array('yes' => 'Permit', 'no' => 'Deny');
+	$grid->setOperation($operation, $this->wppGridOperationsHandler)
+		->setConfirm("yes", $this->tt("usersModule.admin.wpGrid.reallyPermitItems"))
+		->setConfirm("no", $this->tt("usersModule.admin.wpGrid.reallyDenyItems"));
+
+	$grid->setFilterRenderType($this->filterRenderType);
+	$grid->setExport("admin-users " . date("Y-m-d H:i:s", time()));
+
+	return $grid;
+    }
+
+    public function wpDataRender($e) {
+	$res = $e->getFavouriteBrand() . ", " .
+		$e->getFavouriteClub() . ", " .
+		$e->getEquipment() . ", " .
+		$e->getHowGotThere() . ", " .
+		$e->getPersonalDislikes() . ", " .
+		$e->getPersonalLikes() . ", " .
+		$e->getPersonalInterests() . ", " .
+		$e->getSportExperience() . ", " .
+		$e->getSignature();
+	return \Nette\Utils\Html::el("span")->setText($res)->addAttributes(["title" => $res]);
+    }
+
+    public function handleDenyProfile($id) {
+	$this->doDenyProfile($id);
+	$this->redirect("this");
+    }
+
+    public function handlePermitProfile($id) {
+	$this->doPermitProfile($id);
+	$this->redirect("this");
+    }
+
+    public function wppGridOperationsHandler($operation, $id) {
+	switch ($operation) {
+	    case "yes":
+		foreach ($id as $i) {
+		    $this->doPermitProfile($id);
+		}
+		break;
+	    case "no":
+		foreach ($id as $i) {
+		    $this->doDenyProfile($id);
+		}
+	}
+	$this->redirect("this");
+    }
+
+    private function doPermitProfile($id) {
+	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
+	try {
+	    $this->userService->permitWebProfile($id, $this->getUser()->getIdentity());
+	} catch (Exceptions\InvalidArgumentException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.badArgumentFormat", ["id" => $id]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.webProfilePermitFailed", ["id" => $id]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	}
+    }
+
+    private function doDenyProfile($id) {
+	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
+	try {
+	    $this->userService->denyWebProfile($id, $this->getUser()->getIdentity());
+	} catch (Exceptions\InvalidArgumentException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.badArgumentFormat", ["id" => $id]);
+	    $this->flashMessage($m, self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex);
+	    $m = $this->tt("usersModule.admin.webProfileDenyFailed", ["id" => $id]);
+	    $this->flashMessage($m, self::FM_ERROR);
 	}
     }
     // </editor-fold>

@@ -1,6 +1,5 @@
 <?php
 
-
 /*
  * Copyright 2014 Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  *
@@ -20,20 +19,17 @@
 namespace App\Model\Misc\Exceptions;
 
 /**
- * Description of DuplicateEntryException
- *
- * @author <michal.fuca.fucik(at)gmail.com>
+ * Exception throwed from services layer
+ * @author Michal Fučík (395624) michal.fuca.fucik(at)gmail.com
  */
-class DuplicateEntryException extends \Exception implements IException {
-    
-    const EMAIL_EXISTS = 105,
-	  BIRTH_NUM_EXISTS = 102;
+class NoResultException extends \Exception implements IException {
 
     public function __construct($message = null, $code = 0, \Exception $previous = NULL) {
 	parent::__construct($message, $code, $previous);
     }
     
     public function __toString() {
-	return "### PRESENTERS LAYER ### - ". parent::__toString();
+	return "### SERVICE LAYER ### - ". parent::__toString();
     }
+
 }

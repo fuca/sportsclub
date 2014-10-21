@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Components;
+namespace App\SecurityModule\Components;
+
 use \Nette\Application\UI\Control,
-	App\SystemModule\Forms\LoginForm,
-	\Nette\ComponentModel\IContainer,
-	Nette\Security\User,
-	Nette\Security\AuthenticationException,
-	Nette\Application\UI\Link;
+    \App\SecurityModule\Forms\LoginForm,
+    \Nette\ComponentModel\IContainer,
+    \Nette\Security\User,
+    \Nette\Security\AuthenticationException,
+    \Nette\Application\UI\Link;
 
 /**
  * Description of LoginControl
@@ -30,10 +31,10 @@ use \Nette\Application\UI\Control,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 final class LogInControl extends Control {
-    
+
     /** @var string templates dir */
     private $templatesDir;
-    
+
     /** log in link target */
     private $logInTarget;
 
@@ -45,13 +46,13 @@ final class LogInControl extends Control {
 
     /** @var string user dara template file */
     private $templateUser;
-    
+
     /** @var string form template file */
     private $templateForm;
-    
+
     /** @var Nette\Security\User */
     private $user;
-    
+
     public function getUser() {
 	if (!isset($this->user))
 	    $this->user = $this->presenter->getUser();
@@ -69,29 +70,29 @@ final class LogInControl extends Control {
 //    }
 
     public function setTemplateMain($templateMain) {
-	if (!file_exists($this->templatesDir.$templateMain))
-		throw new \Nette\FileNotFoundException("Template file with specified name does not exist");
+	if (!file_exists($this->templatesDir . $templateMain))
+	    throw new \Nette\FileNotFoundException("Template file with specified name does not exist");
 	$this->templateMain = $templateMain;
     }
 
     public function setTemplateUser($templateUser) {
-	if (!file_exists($this->templatesDir.$templateUser))
-		throw new \Nette\FileNotFoundException("Template file with specified name does not exist");
+	if (!file_exists($this->templatesDir . $templateUser))
+	    throw new \Nette\FileNotFoundException("Template file with specified name does not exist");
 	$this->templateUser = $templateUser;
     }
 
     public function setTemplateForm($templateForm) {
-	if (!file_exists($this->templatesDir.$templateForm))
-		throw new \Nette\FileNotFoundException("Template file with specified name does not exist");
+	if (!file_exists($this->templatesDir . $templateForm))
+	    throw new \Nette\FileNotFoundException("Template file with specified name does not exist");
 	$this->templateForm = $templateForm;
     }
-    
+
     public function __construct(IContainer $parent = NULL, $name = NULL) {
 	parent::__construct($parent, $name);
-	$this->templatesDir = __DIR__."/templates/";
-	$this->templateMain = $this->templatesDir."defaultMain.latte";
-	$this->templateUser = $this->templatesDir."defaultUser.latte";
-	$this->templateForm = $this->templatesDir."defaultForm.latte";
+	$this->templatesDir = __DIR__ . "/templates/";
+	$this->templateMain = $this->templatesDir . "defaultMain.latte";
+	$this->templateUser = $this->templatesDir . "defaultUser.latte";
+	$this->templateForm = $this->templatesDir . "defaultForm.latte";
     }
 
     public function createComponentLoginForm($name) {
@@ -99,7 +100,7 @@ final class LogInControl extends Control {
 	$form->initialize();
 	return $form;
     }
-    
+
     public function loginFormSuccessHandle($form) {
 	$values = $form->getValues();
 
@@ -112,33 +113,33 @@ final class LogInControl extends Control {
 	    $this->presenter->getUser()->login($values->username, $values->password);
 	    $this->presenter->redirect($this->logInTarget);
 	} catch (AuthenticationException $e) {
-	    $form->addError($e->getMessage());
+	    $form->addError($this->getPresenter()->getTranslator()->translate($e->getMessage()));
 	}
     }
-    
+
     public function render() {
 	$this->template->setFile($this->templateMain);
-	$this->template->logInLink = $this->presenter->link(":System:Auth:in");
-	$this->template->logOutLink = $this->presenter->link(":System:Auth:out");
+	$this->template->logInLink = $this->presenter->link(":Security:Auth:in");
+	$this->template->logOutLink = $this->presenter->link(":Security:Auth:out");
 	$this->template->isLoggedIn = $this->getUser()->isLoggedIn();
 	$this->template->render();
     }
-    
+
     public function renderForm() {
 	$this->template->setFile($this->templateForm);
-	
+
 	$this->template->render();
     }
-    
+
     public function renderUser() {
 	$loggedIn = $this->getUser()->isLoggedIn();
 	$this->template->setFile($this->templateUser);
 	$this->template->isLoggedIn = $loggedIn;
-	$this->template->user = $loggedIn?$this->getUser()->getIdentity():null;
-	//$this->template->userProfileLink = $this->presenter->link(":Users:Protected:profile");
+	$this->template->user = $loggedIn ? $this->getUser()->getIdentity() : null;
+	$this->template->userProfileLink = $this->presenter->link(":Users:Protected:profile");
 	$this->template->render();
     }
-    
+
 //    public function createComponentUserMenu($name) {
 //	$res = $this->presenter->createComponentUserMenu($name);
 //	return $res;

@@ -6,39 +6,14 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
     \App\Model\Misc\Exceptions;
+
 /**
  * Form for creating and updating Users
  *
  * @author Michal Fučík <michal.fuca.fucik@gmail.com>
  * @package sportsclub
  */
-final class UserForm extends BaseForm {
-
-    /** @var available roles */
-//    private $roles;
-
-    /* @var available categories */
-//    private $categories;
-//
-//    public function setRoles(array $r) {
-//	if (sizeof($r) == 0)
-//	    throw new \Nette\InvalidStateException('There are none roles for select');
-//	$this->roles = $r;
-//    }
-//
-//    protected function getRoles() {
-//	return $this->roles;
-//    }
-//
-//    protected function getCategories() {
-//	return $this->categories;
-//    }
-//
-//    public function setCategories(array $cats) {
-//	if (sizeof($cats) == 0)
-//	    throw new \Nette\InvalidStateException('There are none categories for select');
-//	$this->categories = $cats;
-//    }
+final class PersonalUserForm extends BaseForm {
 
     public function initialize() {
 
@@ -48,16 +23,11 @@ final class UserForm extends BaseForm {
 	$surnameLength = 32;
 
 	$this->addHidden('id');
-	//$this->addHidden('created');
-	//$this->addHidden('lastLogin');
-	$this->addHidden('profileStatus');
 	$this->addHidden("password");
 
 	$this->addSubmit('submitButton', 'Uložit');
-	if ($this->getMode() == FormMode::CREATE_MODE)
-	    $this->addGroup('Nový uživatel');
-	else
-	    $this->addGroup('Editace uživatele');
+	
+	$this->addGroup('Osobní údaje');
 
 	$this->addText('nick', 'Přezdívka', 16, 16)
 		->addRule(Form::FILLED, 'Není zadáno příjmení')
@@ -110,7 +80,7 @@ final class UserForm extends BaseForm {
 		->addRule(Form::LENGTH, 'PSČ musí být dlouhé 5 znaků', 5)
 		->setRequired(TRUE);
 
-	$this->addGroup('Kontakt na člena');
+	$this->addGroup('Kontakt');
 	$this->addText('phone', 'Telefon', $phoneNoLength, $phoneNoLength)
 		->addRule(Form::FILLED, 'Není zadáno telefonní číslo')
 		->addRule(Form::NUMERIC, 'Telefonní číslo musí obsahovat pouze čísla')
@@ -137,35 +107,6 @@ final class UserForm extends BaseForm {
 	$this->addText('contPersonMail', 'E-mail', $emailLength, $emailLength)
 		->addCondition(Form::FILLED)
 		->addRule(Form::EMAIL, 'Špatný formát emailu');
-	$this->onSuccess[] = callback($this, 'userFormSubmitted');
+	$this->onSuccess[] = callback($this->presenter, 'userFormSuccess');
     }
-
-    /**
-     * Form success submission handler
-     * @param \Nette\Application\UI\Form $form
-     */
-    public function userFormSubmitted(Form $form) {
-
-	$values = $form->getValues();
-	try {
-	    switch ($this->getMode()) {
-		case FormMode::CREATE_MODE:
-		    $this->presenter->createUser($values);
-		    break;
-		case FormMode::UPDATE_MODE:
-		    $this->presenter->updateUser($values);
-		    break;
-	    }
-	} catch (Exceptions\DuplicateEntryException $e) {
-	    switch ($e->getCode()) {
-		case Exceptions\DuplicateEntryException::EMAIL_EXISTS:
-		    $form['email']->addError("User with specified email '$values->email' already exists");
-		    break;
-		case Exceptions\DuplicateEntryException::BIRTH_NUM_EXISTS:
-		    $form['birthNumber']->addError("User with specified birth number '$values->birthNumber' already exists");
-		    break;
-	    }
-	}
-    }
-
 }

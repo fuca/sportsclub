@@ -1,3 +1,10 @@
+common:
+	yes: "Yes"
+	no: "No"
+
 forms:
-	cancelButton.label: "Cancel"
-	submitBytton.label: "Save"
+	cancelButton.label: "       Cancel      "
+	submitButton.label: "       Save       "
+
+messages:
+	badArgumentFormat: "Bad argument format, '%id%' given"

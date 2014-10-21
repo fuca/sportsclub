@@ -107,7 +107,7 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $wpDb = $this->wallService->getWallPost($id);
 	    if ($wpDb !== null) {
-		$this->wallService->removeWallPost($wpDb);
+		$this->wallService->removeWallPost($wpDb->getId());
 	    }
 	} catch (Exception $ex) {
 	    $this->handleException($ex);

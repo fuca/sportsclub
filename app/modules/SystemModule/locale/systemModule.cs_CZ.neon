@@ -1,19 +1,1 @@
-loginControl:
-	userLogIn: "Log in"
-	userLogOut: "Log out"
-	userLoggedOut: "Logged out"
-	userLoggedIn: "Logged in as %name%"
-
-loginControl.loginForm:
-	title: "Log in"
-	remember: "Remember me"
-	email: "Email:"
-	password: "Password:"
-	submit: "Let me in"
-
-commentControl:
-	titleAdd: "Add comment"
-	allData: "Comments"
-	noDataFound: "No comments were found"
-	commentsRestricted: "Comments are restricted for you"
 	

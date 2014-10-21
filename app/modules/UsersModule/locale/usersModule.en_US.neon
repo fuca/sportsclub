@@ -1,7 +1,16 @@
 
+common:
+
+passwordChangeForm:
+	group: "Password change"
+	oldPwDoesntMatch: "Old password does not match"
+	newPwsDontMatch: "New passwords do not match"
+	
+
 
 messages:
 	badArgumentFormat: "Bad format of user id, '%id%' given"
+	passwordChanged: "Your password has been successfully changed"
 	
 admin:
 	userNew: "New user"

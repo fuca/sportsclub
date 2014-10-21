@@ -23,17 +23,20 @@ use \App\UsersModule\Model\Service\IUserService,
     \Kdyby\Doctrine\DBALException,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\DuplicateEntryException,
+    \Doctrine\ORM\NoResultException,
     \App\Model\Misc\Exceptions,
     \Nette\DateTime,
-    \App\Misc\Passwords,
+    \Nette\Security\Passwords,
     \Nette\Utils\Strings,
     \Nette\Caching\Cache,
     \Grido\DataSources\Doctrine,
     \App\Model\Misc\Enum\WebProfileStatus,
     \App\Model\Entities\User,
+    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities,
     \App\Model\Entities\Address,
     \App\Model\Entities\Contact,
     \App\Model\Entities\WebProfile,
+    \Doctrine\Common\Collections\Criteria,
     \App\Model\Service\INotificationService;
 
 /**
@@ -62,24 +65,27 @@ class UserService extends BaseService implements IUserService {
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $webProfileDao;
-    
+
     /**
      * @var \App\Model\Service\INotificationService
      */
     private $notifService;
-    
+
     /**
      * @var string
      */
     private $salt;
     
-    
+    public function getSalt() {
+	return $this->salt;
+    }
+
     public function setSalt($salt) {
 	if (empty($salt))
 	    throw new Exceptions\InvalidArgumentException("Argument salt has to be non empty string", 1);
 	$this->salt = $salt;
     }
-    
+
     public function setNotifService(INotificationService $ns) {
 	$this->notifService = $ns;
     }
@@ -91,19 +97,24 @@ class UserService extends BaseService implements IUserService {
 	$this->contactDao = $em->getDao(Contact::getClassName());
 	$this->webProfileDao = $em->getDao(WebProfile::getClassName());
     }
+    
+    public function generateNewPassword($word = null) {
+	$word = $word? $word: Strings::random();
+	$o = ['salt'=>$this->salt, 'cost'=>4];
+	$hashedPassword = Passwords::hash($word, $o);
+	return $hashedPassword;
+    }
 
     public function createUser(User $user) {
 	if ($user == null)
 	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
 
 	$this->entityManager->beginTransaction();
-	
-	$newPassword = Strings::random();
 	$now = new DateTime();
 	
-	$hashedPassword = Passwords::hash($newPassword, ['salt' => $this->salt]);
-	$user->setPassword($hashedPassword);
+	$user->setPassword($this->generateNewPassword());
 	$user->setCreated($now);
+	$user->setUpdated($now);
 	$user->setWebProfile(new WebProfile());
 	$user->contact->setUpdated($now);
 	$user->getWebProfile()->setUpdated($now);
@@ -113,7 +124,10 @@ class UserService extends BaseService implements IUserService {
 	    $this->contactDao->save($user->getContact());
 	} catch (DuplicateEntryException $e) {
 	    $this->entityManager->rollback();
-	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	    throw new Exceptions\DuplicateEntryException(
+			$e->getMessage(), 
+			Exceptions\DuplicateEntryException::EMAIL_EXISTS, 
+			$e->getPrevious());
 	}
 
 	try {
@@ -121,55 +135,86 @@ class UserService extends BaseService implements IUserService {
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $e) {
 	    $this->entityManager->rollback();
-	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	    throw new Exceptions\DuplicateEntryException(
+			$e->getMessage(), 
+			Exceptions\DuplicateEntryException::BIRTH_NUM_EXISTS, 
+			$e->getPrevious());
 	} catch (\Exception $e) {
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
-	$this->logInfo("User %user was successfully created", ["user"=>$user]);
+	$this->logInfo("User %user was successfully created", ["user" => $user]);
 	$this->notifService->newAccountNotification($user);
     }
 
     public function updateUser(User $formUser) {
 	if ($formUser == null)
 	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
-	
+
 	$this->entityManager->beginTransaction();
 
 	$uDb = $this->getUser($formUser->id);
 	if ($uDb !== null) {
 
-	    try {
-		$uDbContact = $uDb->getContact();
+	    $this->handleUpdateContact($uDb, $formUser);
+	    $this->handleUpdateUser($uDb, $formUser);
 
-		$formUser->getContact()->setUpdated(new DateTime());
-		$formUser->getContact()->setId($uDbContact->getId());
-
-		$this->entityManager->merge($formUser->getContact());
-		$this->entityManager->flush();
-	    } catch (DuplicateEntryException $e) {
-		$this->entityManager->rollback();
-		throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
-	    }
-
-	    try {
-		$formUser->setWebProfile($uDb->getWebProfile());
-		$formUser->setCreated($uDb->getCreated());
-		$formUser->setLastLogin($uDb->getLastLogin());
-		$uArray = $formUser->toArray();
-		$uDb->fromArray($uArray);
-		$this->entityManager->merge($uDb);
-		$this->entityManager->flush();
-	    } catch (DuplicateEntryException $e) {
-		$this->entityManager->rollback();
-		throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
-	    } catch (\Exception $e) {
-		$this->entityManager->rollback();
-		throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
-	    }
 	    $this->entityManager->commit();
 	}
-	
+    }
+
+    /**
+     * Calls rollback
+     * @param \App\Model\Entities\User $uDb
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
+    private function handleUpdateContact(User $uDb, User $formUser) {
+	try {
+	    $now = new DateTime();
+	    $formUser->getContact()->setUpdated($now);
+	    $uDb->getContact()->fromArray($formUser->getContact()->toArray());
+	    $this->entityManager->merge($uDb->getContact());
+	    $this->entityManager->flush();
+	} catch (DuplicateEntryException $e) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+    }
+
+    /**
+     * Calls rollback
+     * @param \App\Model\Entities\User $uDb
+     * @param \App\Model\Entities\User $formUser
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
+    private function handleUpdateUser(User $uDb, User $formUser) {
+	try {
+	    $now = new DateTime();
+	    if($formUser->getWebProfile() === null) {
+		$formUser->setWebProfile($uDb->getWebProfile());	
+	    } else {
+		$uDb->getWebProfile()->fromArray($formUser->getWebProfile()->toArray());
+	    }
+	    $formUser->getWebProfile()->setUpdated($now);
+	    $formUser->setCreated($uDb->getCreated());
+	    $formUser->setUpdated($now);
+	    $formUser->setLastLogin($uDb->getLastLogin());
+	    $formUser->setContact($uDb->getContact());
+
+	    $uDb->fromArray($formUser->toArray());
+	    $this->entityManager->merge($uDb);
+	    $this->entityManager->flush();
+	} catch (DuplicateEntryException $e) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $e) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
     }
 
     public function deleteUser($id) {
@@ -222,6 +267,15 @@ class UserService extends BaseService implements IUserService {
 	return $model;
     }
 
+    public function getWebProfilesToPermitDatasource() {
+	$c = new Criteria();
+	$c->where(Criteria::expr()->eq("status", WebProfileStatus::UPDATED));
+	$model = new Doctrine(
+		$this->webProfileDao->createQueryBuilder('u')
+			->addCriteria($c));
+	return $model;
+    }
+
     public function getUserEmail($email) {
 	$qb = $this->entityManager->createQueryBuilder();
 	$qb->select('u')
@@ -231,8 +285,8 @@ class UserService extends BaseService implements IUserService {
 		->setParameter("email", $email);
 	try {
 	    return $qb->getQuery()->getSingleResult();
-	} catch (\Exception $e) {
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (NoResultException $e) {
+	    throw new Exceptions\NoResultException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
@@ -241,7 +295,7 @@ class UserService extends BaseService implements IUserService {
 	$data = $cache->load(self::SELECT_COLLECTION);
 	try {
 	    if ($data === null) {
-		$data = $this->userDao->findPairs(["active"=>1], 'surname'); // TODO CONCAT
+		$data = $this->userDao->findPairs(["active" => 1], 'surname'); // TODO CONCAT
 		$opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
@@ -257,7 +311,7 @@ class UserService extends BaseService implements IUserService {
     public function regeneratePassword($id) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
-	
+
 	try {
 	    $this->entityManager->beginTransaction();
 	    $user = $this->getUser($id, false);
@@ -274,26 +328,79 @@ class UserService extends BaseService implements IUserService {
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
-	
+
 	$this->notifService->sendPasswordNotification($user);
 	return $hash;
     }
-    
+
     public function toggleUser($id) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
-	    try {
-		$this->entityManager->beginTransaction();
-		$user = $this->getUser($id, false);
-		$user->setActive($result = !$user->getActive());
-		$this->entityManager->merge($user);
-		$this->entityManager->flush();
-		$this->invalidateEntityCache($user);
-		$this->entityManager->commit();
-	    } catch (\Exception $e) {
-		$this->entityManager->rollback();
-		throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
-	    }    
+	try {
+	    $this->entityManager->beginTransaction();
+	    $user = $this->getUser($id, false);
+	    $user->setActive($result = !$user->getActive());
+	    $this->entityManager->merge($user);
+	    $this->entityManager->flush();
+	    $this->invalidateEntityCache($user);
+	    $this->entityManager->commit();
+	} catch (\Exception $e) {
+	    $this->entityManager->rollback();
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
 	$this->notifService->sendToggleNotification($user);
     }
+
+    public function permitWebProfile($id, Entities\User $u) {
+	if (!is_numeric($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	try {
+	    $wpDb = $this->webProfileDao->find($id);
+	    if ($wpDb !== null) {
+		$wpDb->setStatus(WebProfileStatus::OK);
+		$wpDb->setUpdated(new \Nette\Utils\DateTime());
+		$wpDb->setEditor($u);
+		$this->editorTypeHandle($wpDb);
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+	    }
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+    }
+
+    public function denyWebProfile($id, Entities\User $u) {
+	if (!is_numeric($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	try {
+	    $wpDb = $this->webProfileDao->find($id);
+	    if ($wpDb !== null) {
+		$wpDb->setStatus(WebProfileStatus::BAD);
+		$wpDb->setUpdated(new \Nette\Utils\DateTime());
+		$wpDb->setEditor($u);
+		$this->editorTypeHandle($wpDb);
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+	    }
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+    }
+
+    private function editorTypeHandle(WebProfile $e) {
+	if ($e === null)
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $editor = null;
+
+	    $id = $this->getMixId($e->getEditor());
+	    if ($id !== null)
+		$editor = $this->getUser($id, false);
+
+	    $e->setEditor($editor);
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException($ex);
+	}
+    }
+
 }

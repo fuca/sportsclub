@@ -90,9 +90,11 @@ class AdminPresenter extends SecuredPresenter {
 	    $e = new Event((array) $values);
 	    $e->setAuthor($this->getUser()->getIdentity());
 	    $this->eventsService->createEvent($e);
-	} catch (Exception $ex) {
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    $this->flashMessage("Nepodařilo se provést požadovanou změnu", self::FM_ERROR);
 	}
+	$this->redirect("Admin:default");
     }
 
     public function updateEvent(ArrayHash $values) {
@@ -103,6 +105,7 @@ class AdminPresenter extends SecuredPresenter {
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->flashMessage("Nepodařilo se uložit požadované změny", self::FM_ERROR);
 	}
+	$this->redirect("Admin:default");
     }
 
     public function handleDeleteEvent($id) {
@@ -110,12 +113,18 @@ class AdminPresenter extends SecuredPresenter {
 	    $this->flashMessage("Bad argument format", self::FM_WARNING);
 	    $this->redirect("this");
 	}
+	$this->doDeleteEvent($id);
+    }
+    
+    private function doDeleteEvent($id) {
 	try {
 	    $this->eventsService->deleteEvent($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se uložit požadované změny", self::FM_ERROR);
+	    $this->logError($ex);
+	    $this->flashMessage("Nepodařilo se smazat záznam $id", self::FM_ERROR);
+	    return false;
 	}
-    }
+    } 
 
     public function eventFormSubmittedHandle(BaseForm $form) {
 	$values = $form->getValues();
@@ -153,7 +162,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $form->setSportGroups($groups);
 	    $users = $this->userService->getSelectUsers();
 	    $form->setUsers($users);
-	} catch (Exception $ex) {
+	} catch (\Exception $ex) {
 	    $this->flashMessage("Nepodarilo se nacist potrebna data", self::FM_ERROR);
 	    // TODO LOG
 	    $this->redirect("default");
@@ -207,9 +216,9 @@ class AdminPresenter extends SecuredPresenter {
 	$headerDead = $grid->getColumn('confirmUntil')->headerPrototype;
 	$headerDead->class[] = 'center';
 
-	$grid->addActionHref('delete', 'Smaz', 'deleteEvent!')
+	$grid->addActionHref('delete', '', 'deleteEvent!')
 		->setIcon('trash');
-	$grid->addActionHref('edit', 'Uprav', 'updateEvent')
+	$grid->addActionHref('edit', '', 'updateEvent')
 		->setIcon('pencil');
 
 	$grid->setOperation(["delete" => "Delete"], $this->eventsGridOperationHandler)
@@ -227,14 +236,13 @@ class AdminPresenter extends SecuredPresenter {
     public function eventsGridOperationHandler($operation, $id) {
 	switch ($operation) {
 	    case "delete":
-		try {
-		    $this->eventsService->deleteEvent($id);
-		} catch (Exceptions\DataErrorException $ex) {
-		    $this->flashMessage("Nepodařilo se smazat událost $id", self::FM_ERROR);
-		}
+		    foreach ($id as $i) {
+			$this->doDeleteEvent($i);
+		    }
+		    $this->redirect("this");
 		break;
 	    default:
-		$this->redirect("this");
+		    $this->redirect("this");
 	}
     }
 

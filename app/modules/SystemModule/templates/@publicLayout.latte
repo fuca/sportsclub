@@ -38,24 +38,23 @@
     <body>
 	{* vygenerovano, nevim proc to tu je *}
 	<!--script> document.documentElement.className += ' js';</script-->
-	{* JAKMILE ZAPNU AJAX NA ON U GRIDA, TAK GRID PRI VOLANI NEJAKE AKCE ZASEKA CELY SERVER *}
 	
 	{block scripts}
 	    {var ajax = $presenter->getParameter('ajax') == 'on'}
 	    
 	    <script src="{$basePath}/js/jquery.min.js"></script>{* has to be there*}
-	    
+	    <script src="{$basePath}/js/bootstrap-dropdown.js"></script>
+	    <script src="{$basePath}/js/bootstrap-alert.js"></script>
 	    <script src='{$basePath}/js/jquery-ui-timepicker-addon.js'></script> {* has to be there *}
-	    
 	    <script src="{$basePath}/js/jquery-ui.min.js"></script> {* has to be there *}
 	    
 	    <script src="{$basePath}/js/timepicker.js"></script> 
 	    <script src="{$basePath}/js/netteForms.js"></script>
-	    <script src="{$basePath}/js/bootstrap-dropdown.js"></script>
 	    
-	    <script src="{$basePath}/js/jquery.nette.js"></script>
-	    <script n:if="$ajax" src="{$basePath}/js/nette.ajax.js"></script> {* has to be there *}
-	    <script n:if="$ajax" src="{$basePath}/js/grido/grido.ajax.js"></script> {* has to be there *}
+	    
+	    <!--script src="{*$basePath*}/js/jquery.nette.js"></script--> {* tohle tady vadi GRIDU, nefakaji pak filtry bez kliku na search*}
+	    <script src="{$basePath}/js/nette.ajax.js"></script> {* has to be there *}
+	    <script src="{$basePath}/js/grido/grido.ajax.js"></script> {* has to be there *}
 	    
 	    <script src='{$basePath}/js/dateInput.js'></script> {* has to be there *}
 	    <script src="{$basePath}/js/date-input-settings.js"></script> {* has to be there *}

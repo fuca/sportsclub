@@ -77,14 +77,14 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
     /** @ORM\Column(type="string") */
     protected $nick;
 
-    /** @ORM\Column(type="WebProfileStatus") */
-    protected $profileStatus;
-
     /** @ORM\Column(type="string", nullable=true) */
     protected $leagueId;
 
     /** @ORM\Column(type="datetime", nullable=true) */
     protected $created;
+    
+    /** @ORM\Column(type="datetime", nullable=true) */
+    protected $updated;
 
     /**
      * @OneToOne(targetEntity = "Contact", cascade={"all"}, orphanRemoval=true, fetch="EAGER")
@@ -113,7 +113,6 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
     public function __construct(array $values = []) {
 	parent::__construct();
 	$this->created = new DateTime();
-	$this->profileStatus = WebProfileStatus::BAD;
 	$this->commentMode = CommentMode::ALLOWED;
 	$this->active = false;
 	$this->passwordChangeRequired = true;
@@ -166,10 +165,6 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
 
     public function getNick() {
 	return $this->nick;
-    }
-
-    public function getProfileStatus() {
-	return $this->profileStatus;
     }
 
     public function getLeagueId() {
@@ -225,10 +220,6 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
 	$this->nick = $nick;
     }
 
-    public function setProfileStatus($profileStatus) {
-	$this->profileStatus = $profileStatus;
-    }
-
     public function setLeagueId($leagueId) {
 	$this->leagueId = $leagueId;
     }
@@ -259,6 +250,14 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
     
     public function setId($id) {
 	$this->id = $id;
+    }
+    
+    public function getUpdated() {
+	return $this->updated;
+    }
+
+    public function setUpdated($updated) {
+	$this->updated = $updated;
     }
 
     public function __toString() {

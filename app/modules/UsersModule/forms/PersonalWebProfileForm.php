@@ -3,24 +3,23 @@
 namespace App\UsersModule\Forms;
 
 use \App\Forms\BaseForm,
-    \App\Model\Misc\Enum\WebProfileStatus,
     \Nette\Application\UI\Form;
 
 /**
- * Form for updating WebProfiles
+ * Form for updating WebProfiles by owning user
  *
  * @author Michal Fučík <michal.fuca.fucik@gmail.com>
  * @package sportsclub
  */
-final class WebProfileForm extends BaseForm {
+final class PersonalWebProfileForm extends BaseForm {
 
     public function initialize() {
 	parent::initialize();
 	
-	$wpStates = WebProfileStatus::getOptions();
 	$rows = 2;
 	$cols = 50;
 	$this->addHidden('id');
+	$this->addHidden("status");
 	
 	$this->addSubmit('submitButton', 'Uložit');
 	
@@ -49,7 +48,6 @@ final class WebProfileForm extends BaseForm {
 	$this->addTextArea('aditionalInfo', 'Více o mně', $cols, $rows);
 	
 	$this->addTextArea('signature', 'Podpis', $cols, $rows);
-	$this->addSelect("status", "Stav", $wpStates);
 	
 	$this->onSuccess[] = callback($this->presenter, 'webProfileFormSuccess');
     }

@@ -21,6 +21,7 @@ use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\ManyToOne,
     \Doctrine\ORM\Mapping\JoinColumn,
     \Kdyby\Doctrine\Entities\BaseEntity,
+    \App\Model\Misc\Enum\WebProfileStatus,
     \App\Model\Misc\EntityMapperTrait;
 
 /**
@@ -42,7 +43,7 @@ class WebProfile extends BaseEntity {
     /** @ORM\Column(type="string", nullable=true) */
     protected $personalLikes;
     
-    /** \(type="string", nullable=true) */
+    /** @ORM\Column(type="string", nullable=true) */
     protected $personalDislikes;
     
     /** @ORM\Column(type="string", nullable=true) */
@@ -72,6 +73,9 @@ class WebProfile extends BaseEntity {
     /** @ORM\Column(type="datetime", nullable=false) */
     protected $updated;
     
+    /** @ORM\Column(type="WebProfileStatus") */
+    protected $status;
+    
     /** 
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="editor_id", referencedColumnName = "id", nullable=true)
@@ -83,6 +87,7 @@ class WebProfile extends BaseEntity {
     
     public function __construct(array $values = []) {
 	parent::__construct();
+	$this->status = WebProfileStatus::BAD;
 	$this->fromArray($values);
     }
     
@@ -188,6 +193,14 @@ class WebProfile extends BaseEntity {
 
     public function setEditor($editor) {
 	$this->editor = $editor;
+    }
+    
+    public function getStatus() {
+	return $this->status;
+    }
+
+    public function setStatus($status) {
+	$this->status = $status;
     }
 
     public function setSignature($signature) {

@@ -18,7 +18,8 @@
 
 namespace App\UsersModule\Model\Service;
 
-use App\Model\Entities\User;
+use \App\Model\Entities\User,
+    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities;
 
 /**
  * Interface for User service
@@ -62,9 +63,17 @@ interface IUserService {
     
     function getUsersDatasource();
     
+    function getWebProfilesToPermitDatasource();
+    
     function regeneratePassword($id);
     
     function toggleUser($id);
+    
+    function permitWebProfile($id, Entities\User $user);
+    
+    function denyWebProfile($id, Entities\User $user);
+    
+    function generateNewPassword($word = null);
     
     /**
      * Returns collection of Users according to given SportGroup

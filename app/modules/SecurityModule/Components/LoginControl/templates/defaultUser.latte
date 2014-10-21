@@ -1,0 +1,4 @@
+{* Latte template *}
+
+<span n:if="$isLoggedIn">{_securityModule.loginControl.userLoggedIn, [name => $user->getName()." ".$user->getSurname()]}</span>
+<span n:if="!$isLoggedIn">{_securityModule.loginControl.userLoggedOut}</span>

@@ -18,7 +18,7 @@
 
 namespace App\SecurityModule\Presenters;
 
-use App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SecuredPresenter,
     \Nette\ArrayHash,
     \Grido\Grid,
     \App\SecurityModule\Forms\RoleForm,

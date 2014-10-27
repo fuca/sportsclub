@@ -18,15 +18,14 @@
 
 namespace App\SystemModule\Model\Service;
 
-use App\Model\Entities\SportGroup,
-    App\Model\Entities\User,
-    \App\Services\Exceptions\DataErrorException,
-    App\Model\Service\BaseService,
+use \App\Model\Entities\SportGroup,
+    \App\Model\Entities\User,
+    \App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
-    App\Model\Misc\Exceptions,
-    Nette\Caching\Cache,
+    \App\Model\Misc\Exceptions,
+    \Nette\Caching\Cache,
     \Kdyby\Doctrine\DuplicateEntryException,
-    App\SystemModule\Model\Service\ISportGroupService;
+    \App\SystemModule\Model\Service\ISportGroupService;
 
 /**
  * Service for managing sport types
@@ -34,6 +33,8 @@ use App\Model\Entities\SportGroup,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 class SportGroupService extends BaseService implements ISportGroupService {
+    
+    const APPLICABLE_SELECT_COLLECTION = "ApplicableSelectList";
 
     /**
      * @var \Kdyby\Doctrine\EntityDao
@@ -75,16 +76,20 @@ class SportGroupService extends BaseService implements ISportGroupService {
     // <editor-fold desc="Administration of GROUPS">
     public function createSportGroup(SportGroup $g) {
 	if ($g == null)
-	    throw new NullPointerException("Argument SportGroup cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportGroup cannot be null", 0);
 	try {
 	    $this->groupParentHandle($g);
 	    $this->groupSportTypeHandle($g);
 	    $this->groupDao->save($g);
 	    $this->invalidateEntityCache($g);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException();
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -99,8 +104,10 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		    $g->setParent($parDb);
 		}
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $g;
     }
@@ -109,20 +116,31 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	if ($g === null)
 	    throw new Exceptions\NullPointerException("Argument SportType was null", 0);
 	try {
+	    
+	    $parent = $g->getParent();
+	    if ($parent) {
+		$parent = $this->groupDao->find($parent);
+		if ($parent->getSportType() != null) {
+		    $g->setSportType($parent->getSportType());
+		    return $g;
+		}
+	    }
 	    $typeId = $g->getSportType();
 	    $typeDb = $this->sportTypeService->getSportType($typeId, false);
 	    if ($typeDb !== null) {
 		$g->setSportType($typeDb);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $g;
     }
     
     public function updateSportGroup(SportGroup $g) {
 	if ($g == null)
-	    throw new NullPointerException("Argument SportGroup cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportGroup cannot be null", 0);
 	try {
 	    $this->entityManager->beginTransaction();
 	    $dbGroup = $this->getSportGroup($g->getId(), false);
@@ -136,19 +154,21 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($dbGroup);
-	} catch (DuplicateEntryException $e) {
-	    throw new Exceptions\DuplicateEntryException($e->getMessage(), 20, $e);
+	} catch (DuplicateEntryException $ex) {
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (Exception $ex) {
-	    // TODO LOG?
-	    throw new DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function deleteSportGroup($id) {
 	if ($id == null)
-	    throw new NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
 	try {
 	    $db = $this->groupDao->find($id);
 	    if ($db !== null) {
@@ -156,9 +176,12 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$this->invalidateEntityCache($db);
 	    }
 	} catch (\Kdyby\Doctrine\DBALException $ex) {
-	    throw new DataErrorException($ex->getMessage(), 1000, $ex);
+	    $this->logWarning($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), 1000, $ex);
 	} catch (\Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -166,7 +189,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	if ($id === null)
 	    throw new Exceptions\NullPointerException("Arument id was null", 0);
 	if (!is_numeric($id))
-	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric, $id given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, $id given", 1);
 	try {
 	    if (!$useCache) {
 		return $this->groupDao->find($id);
@@ -179,8 +202,10 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
@@ -191,18 +216,46 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	return $model;
     }
 
-    public function getUserGroups(User $user) {
+    public function getGroupsWithUser(User $user) { // TODO tohle by logicky melo vratit vsechny skupiny, ve kterych tento uzivatel figuruje, coz by nemelo mit smysl !
 	if ($user == null)
-	    throw new NullPointerException("Argument User was null", 0);
+	    throw new Exceptions\NullPointerException("Argument User was null", 0);
 	try {
-	    $res = $this->groupDao->findBy(array("owner" => $user->id));
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    //$res = $this->groupDao->findBy(array("owner" => $user->id));
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $res;
     }
+    
+    public function getSelectApplicableGroups($id = null) {
+	$cache = $this->getEntityCache();
+	$data = $cache->load(self::APPLICABLE_SELECT_COLLECTION);
+	try {
+	    if ($data === null) {
+		$all = $this->groupDao->findAll();
+		$data = [];
+		foreach ($all as $g) {
+		    if ($g->getChildren()->isEmpty()) {
+			$data = $data+[$g->getId()=>$g->getName()." (".$g->getSportType()->getName().")"];
+		    }
+		}
+		$opt = [Cache::TAGS => [self::SELECT_COLLECTION, self::APPLICABLE_SELECT_COLLECTION]];
+		$cache->save(self::APPLICABLE_SELECT_COLLECTION, $data, $opt);
+	    }
+	    if ($id != null) {
+		unset($data[$id]);
+	    }
+	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 
-    public function getSelectSportGroups($id = null) {
+    public function getSelectAllSportGroups($id = null) {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
 	try {
@@ -215,9 +268,29 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		unset($data[$id]);
 	    }
 	    return $data;
-	} catch (\Exception $e) {
-	    // TODO LOG
-	    dd($e);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function getAllSportGroups($root = null) {
+	try {
+	    if ($root !== null) {
+		$qb = $this->entityManager->createQueryBuilder();
+		$qb->select("g")
+		    ->from("App\Model\Entities\SportGroup", "g")
+		    ->where("g.parent = :parent")
+			->orderBy("ASC", "g.priority, g.name")
+		    ->setParameter("parent", $root);
+		return $qb->getQuery()->getResult();
+	    }  
+	    return $this->groupDao->findAll();
+	} catch (\Exceptions $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
     // </editor-fold>

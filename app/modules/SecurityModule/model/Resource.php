@@ -2,7 +2,8 @@
 
 namespace App\SecurityModule\Model;
 
-use Nette\Object;
+use \Nette\Object,
+    \App\Model\Misc\Exceptions;
 
 /**
  * Description of Resource
@@ -69,7 +70,7 @@ abstract class Resource extends Object {
     public function addResource(Resource &$r) {
 	$id = $r->getId();
 	if (isset($this->subResources[$id]))
-	    throw new Nette\InvalidStateException("Resource with id '{$id}' already exist");
+	    throw new Exceptions\InvalidStateException("Resource with id '{$id}' already exist");
 	$this->subResources[$id] = $r;
     }
 

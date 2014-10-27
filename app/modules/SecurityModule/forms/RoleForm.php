@@ -2,10 +2,10 @@
 
 namespace App\SecurityModule\Forms;
 
-use App\Forms\BaseForm,
-    App\Model\Misc\Enum\FormMode,
+use \App\Forms\BaseForm,
+    \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
-    \App\Services\Exceptions\DuplicateEntryException;
+    \App\Model\Misc\Exceptions\DuplicateEntryException;
 
 /**
  * Form for creating and updating Roles
@@ -26,19 +26,19 @@ class RoleForm extends BaseForm {
 	$this->addHidden('id');
 
 	if ($this->isCreate())
-	    $this->addGroup('Nová role');
+	    $this->addGroup('securityModule.roleForm.newRoleGroup');
 	else
-	    $this->addGroup('Editace role');
+	    $this->addGroup('securityModule.roleForm.editRoleGroup');
 
-	$this->addText('name', 'Název')
-		->addRule(Form::FILLED, "Pole Název je povinné")
+	$this->addText('name', 'securityModule.roleForm.name')
+		->addRule(Form::FILLED, "securityModule.roleForm.nameRequired")
 		->setRequired(TRUE);
 
-	$this->addCheckboxList('parents', 'Předci', $this->roles);
+	$this->addCheckboxList('parents', 'securityModule.roleForm.parents', $this->roles);
 
-	$this->addTextArea('note', 'Poznámka');
+	$this->addTextArea('note', 'securityModule.roleForm.note');
 
-	$this->addSubmit('submitButton', 'Uložit');
+	$this->addSubmit('submitButton', 'system.forms.submitButton.label');
 
 	$this->onSuccess[] = callback($this->presenter, 'roleFormSubmitted');
     }

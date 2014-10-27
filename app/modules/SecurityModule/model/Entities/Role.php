@@ -17,15 +17,17 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\JoinTable,
-    Doctrine\ORM\Mapping\ManyToMany,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\JoinTable,
+    \Doctrine\ORM\Mapping\ManyToMany,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \Doctrine\Common\Collections\ArrayCollection,
     \Doctrine\ORM\PersistentCollection,
     \App\Model\Misc\EntityMapperTrait,
-    \Nette\DateTime;
+    \App\Model\Misc\Exceptions,
+    \Nette\DateTime,
+    \App\Model\IIdentifiable;
 
 /**
  * ORM persistable entity representing role
@@ -34,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @ORM\Entity
  */
 
-class Role extends BaseEntity {
+class Role extends BaseEntity implements IIdentifiable {
 
     use EntityMapperTrait;
     
@@ -60,7 +62,7 @@ class Role extends BaseEntity {
      *      joinColumns={@JoinColumn(name="rol_parent_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="rol_child_id", referencedColumnName="id")}
      *      )
-     **/
+     */
     private $parents;
 
     /** @ORM\Column(type="string", nullable = false) */
@@ -78,10 +80,6 @@ class Role extends BaseEntity {
 	$this->children = new ArrayCollection();
 	$this->fromArray($values);
     }
-
-//    public function __toString() {
-//	return "Role{" . "id=" . $this->id . ", name=" . $this->name . ", note=" . $this->note . ", added=" . $this->added->format("d.m.Y") . '}';
-//    }
     
     public function __toString() {
 	return "{$this->getName()}";
@@ -113,7 +111,7 @@ class Role extends BaseEntity {
 		    return $r->getName();
 		})->toArray();
 	    } else {
-		throw new \Nette\InvalidStateException("Property parents is not properly initialized", 3);
+		throw new Exceptions\InvalidStateException("Property parents is not properly initialized", 3);
 	    }
 	}
 	return $this->parentNames;

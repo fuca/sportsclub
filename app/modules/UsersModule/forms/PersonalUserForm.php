@@ -25,7 +25,7 @@ final class PersonalUserForm extends BaseForm {
 	$this->addHidden('id');
 	$this->addHidden("password");
 
-	$this->addSubmit('submitButton', 'Uložit');
+	$this->addSubmit('submitButton', "system.forms.submitButton.label");
 	
 	$this->addGroup('Osobní údaje');
 

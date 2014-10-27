@@ -22,7 +22,7 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
     \App\Services\Exceptions\DuplicateEntryException,
-    Vodacek\Forms\Controls\DateInput;
+    \Vodacek\Forms\Controls\DateInput;
 
 /**
  * Form for creating and updating seasons
@@ -40,28 +40,6 @@ final class SeasonApplicationForm extends BaseForm {
     
     /** @var array of users seasons */
     private $users;
-    
-    /** @var boolean */
-    private $creditsActivated;
-    
-    /** @var boolean */
-    private $memberShip;
-    
-    public function isCredit() {
-	return $this->creditsActivated;
-    }
-    
-    public function isMembership() {
-	return $this->memberShip;
-    }
-    
-    public function setCreditsActivated($creditsActivated) {
-	$this->creditsActivated = $creditsActivated;
-    }
-
-    public function setMemberShip($memberShip) {
-	$this->memberShip = $memberShip;
-    }
 
     public function getUsers() {
 	return $this->users;
@@ -96,11 +74,17 @@ final class SeasonApplicationForm extends BaseForm {
 	} else {
 	    $this->addGroup("Úprava přihlášky k sezóně");
 	}
-
-	$this->addSelect("owner", "Člen", $this->getUsers())
-		->setPrompt("Vyberte člena.. ")
-		->addRule(Form::FILLED, "Člen musí být vybrána")
-		->setRequired(true);
+	
+	$m = null;
+	
+	if ($this->isCreate()) {
+	   $m = $this->addMultiSelect("owner", "Člen", $this->getUsers(), 15);
+	} else {
+	    $m = $this->addSelect("owner", "Člen", $this->getUsers())
+		    ->setPrompt("Vyberte člena .. ");
+	}
+	$m->addRule(Form::FILLED, "Musí být vybrán alespoň jeden člen")
+	    ->setRequired(true);
 	
 	$this->addSelect("season", "Sezóna", $this->getSeasons())
 		->setPrompt("Vyberte sezónu.. ")
@@ -110,19 +94,7 @@ final class SeasonApplicationForm extends BaseForm {
 	$this->addSelect("sportGroup", "Skupina", $this->getSportGroups())
 		->setPrompt("Vyberte skupinu.. ")
 		->addRule(Form::FILLED, "Skupina musí být vybrána")
-		->setRequired(true);
-
-	if ($this->isCredit()) {
-	    $this->addText('creditsRatio', "Podíl reditů")
-		    ->addRule(Form::FILLED, "Výše kreditů musí být zadána")
-		    ->setRequired(TRUE);
-	}
-
-	if ($this->isMemberShip()) {
-	    $this->addText('membershipRatio', "Podíl členského příspěvku")
-		    ->addRule(Form::FILLED, "Výše členského příspěvku musí být zadána")
-		    ->setRequired(TRUE);
-	}
+		->setRequired(true);	
 
 	$this->addTextArea("comment", "Poznámka");
 

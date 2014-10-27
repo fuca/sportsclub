@@ -33,5 +33,6 @@ interface ISportTypeService {
     function deleteSportType($id);
     function getSportType($id);
     function getSportTypeDataSource();
+    function getSelectSportTypes($useCache = true);
     
 }

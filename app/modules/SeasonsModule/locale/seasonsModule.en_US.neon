@@ -1,0 +1,16 @@
+admin.grid:
+	delete: "Delete"
+	update: "Update"
+	
+	reallyDeleteAppId: "Are you sure you want to delete application #%id%?"
+	reallyDeleteTaxId: "Are you sure you want to delete season tax #%id%?"
+	reallyDeleteSeasonId: "Are you sure you want to delete season #%id%?"
+
+admin.error:
+	seasonGroupExist: "Entry for this season and sport group already exist"
+	seasonTaxIdDoesntExist: "Season tax #%id% does not exist"
+	seasonAppIdDoesntExist: "Season applicaton #%id% does not exist"
+	seasonAppUniqueExist: "Season application for this user and group and season already exist"
+
+seasonForm.errors:
+	labelAlreadyExist: "Season with label '%label%' already exist"

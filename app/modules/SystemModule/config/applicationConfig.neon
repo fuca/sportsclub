@@ -38,7 +38,8 @@ doctrine:
 		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
 
 annotations: # configure of annotations extension
-	ignore:	[hideInTree, Secured, Resource] # array of ignored annotations
+	ignore:	[hideInTree] # array of ignored annotations
+	debug: yes
 
 php:
 	date.timezone: Europe/Prague
@@ -50,7 +51,7 @@ facebook:
 	permissions: [email]
 	
 translation:
-	default: cs
+	default: en
 	whitelist: [cs, en, de] #....
 	fallback: [cs_CZ, cs]
 	debugger: on
@@ -61,6 +62,44 @@ translation:
 		request: off # checking locale from request
 		header: on # accept language header preferred locales 
 
+seasonsModule:
+	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem
+
+systemModule:
+	init:
+		group:
+			name: Club
+			description: "Root group"
+			abbr: root 
+			children: null #hide
+			appDate: null #hide
+			parent: null #hide 
+			priority: 10 #hide
+			activity: true #hide
+		user:
+			name: Information
+			surname: System
+			password: admin
+			contact:
+				address: 
+					city: XXX
+					postCode: 78985
+					street: xxx
+					number: 111
+					accountNumber: 111
+				phone: x
+				email: x
+			
+		role: 
+			name: administrator
+			children: null
+			parents: null
+			note: "Default system administrator"
+			added: null
+
+paymentsModule:
+	dueDate: "1 month"
+			
 nette:
 	application:
 		errorPresenter: Public:Error
@@ -72,9 +111,10 @@ nette:
 
 	session:
 		expiration: 14 days
-		#autoStart: smart ## default smart on
+		save_path: %tempDir%/sessions
 		name: %appName%
-
+		#autoStart: smart ## default smart on
+		
 	database:
 		connection: %database%
 

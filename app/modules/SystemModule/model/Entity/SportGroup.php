@@ -18,10 +18,10 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\OneToMany,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\JoinColumn,    
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\OneToMany,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\JoinColumn,    
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\IIdentifiable,
     \App\Model\Misc\EntityMapperTrait;
@@ -33,7 +33,6 @@ use Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-
 class SportGroup extends BaseEntity implements IIdentifiable {
     
     use EntityMapperTrait;
@@ -56,16 +55,13 @@ class SportGroup extends BaseEntity implements IIdentifiable {
     protected $abbr;
     
     /**
-     * @OneToMany(targetEntity="SportGroup", mappedBy="parent")
+     * @OneToMany(targetEntity="SportGroup", mappedBy="parent", cascade={"remove"})
      */
     protected $children;
     
-    /** @ORM\Column(type="datetime", nullable = false) */
-    protected $appDate;
-    
     /**
      * @ManyToOne(targetEntity="SportGroup", inversedBy="children")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
      */
     protected $parent;
     
@@ -77,7 +73,7 @@ class SportGroup extends BaseEntity implements IIdentifiable {
     
     /**
      * @ManyToOne(targetEntity="SportType")
-     * @JoinColumn(name="sportType_id", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="sportType_id", referencedColumnName="id", nullable=true)
      */
     protected $sportType;
     
@@ -158,14 +154,6 @@ class SportGroup extends BaseEntity implements IIdentifiable {
     public function setSportType($sportType) {
 	$this->sportType = $sportType;
     }
-    public function getAppDate() {
-	return $this->appDate;
-    }
-
-    public function setAppDate($appDate) {
-	$this->appDate = $appDate;
-    }
-
     
     public function __toString() {
 	return "{$this->getName()} ({$this->getId()})";

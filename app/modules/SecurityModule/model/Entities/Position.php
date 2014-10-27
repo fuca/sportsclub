@@ -18,12 +18,12 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\UniqueConstraint,
-    Doctrine\ORM\Mapping\Id,
-    Doctrine\ORM\Mapping\GeneratedValue,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\UniqueConstraint,
+    \Doctrine\ORM\Mapping\Id,
+    \Doctrine\ORM\Mapping\GeneratedValue,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\EntityMapperTrait;
 
@@ -45,6 +45,9 @@ class Position extends BaseEntity {
      */
     protected $id;
     
+    /** @ORM\Column(type="string", nullable=true) */
+    protected $name;
+    
     /**
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(nullable = false, name = "owner_fk")
@@ -63,6 +66,9 @@ class Position extends BaseEntity {
      */
     protected $role;
     
+    /** @ORM\Column(type="boolean", nullable=false) */
+    protected $publishContact;
+    
     /**
      * @ORM\Column(type="string")
      * @var string
@@ -71,6 +77,7 @@ class Position extends BaseEntity {
     
     public function __construct(array $values = []) {
 	parent::__construct();
+	$this->publishContact = false;
 	$this->fromArray($values);
     }
 
@@ -113,7 +120,23 @@ class Position extends BaseEntity {
     public function setComment($comment) {
 	$this->comment = $comment;
     }
+    
+    public function getPublishContact() {
+	return $this->publishContact;
+    }
 
+    public function setPublishContact($publishContact) {
+	$this->publishContact = $publishContact;
+    }
+    
+    public function getName() {
+	return $this->name;
+    }
+
+    public function setName($name) {
+	$this->name = $name;
+    }
+    
     public function __toString() {
 	return "{$this->getId()}";
     }

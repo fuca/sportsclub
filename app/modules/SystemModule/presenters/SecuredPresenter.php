@@ -18,7 +18,7 @@
 
 namespace App\SystemModule\Presenters;
 
-use App\SystemModule\Presenters\BasePresenter;
+use \App\SystemModule\Presenters\BasePresenter;
 
 /**
  * SecuredPresenter (Base presenter for secured section)
@@ -26,22 +26,28 @@ use App\SystemModule\Presenters\BasePresenter;
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 abstract class SecuredPresenter extends BasePresenter {
-    
+
     public function checkRequirements($element) {
 	parent::checkRequirements($element);
 	$user = $this->getUser();
 	if (!$user->isLoggedIn()) {
-		if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
-                $this->flashMessage('Uplynula maximální doba neaktivity! Systém vás z bezpečnostních důvodů odhlásil.', 'warning');
-            }
-
-            $backlink = $this->storeRequest();
-            $this->redirect(':System:Auth:in', array('backlink' => $backlink));
+	    if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
+		$this->flashMessage('Uplynula maximální doba neaktivity! Systém vás z bezpečnostních důvodů odhlásil.', 'warning');
 	    }
-	    
-	if ($element->hasAnnotation(self::SECURED_ANNOTATION_ID)) {
-	    $secAnn = $element->getAnnotation(self::SECURED_ANNOTATION_ID);
-	    
+
+	    $backlink = $this->storeRequest();
+	    $this->redirect(':Security:Auth:in', ['backlink' => $backlink]);
+	}
+
+	if ($element instanceof \Nette\Reflection\Method) {
+	    $secAnn = $this->annotationReader->getMethodAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
+	}
+	if ($element instanceof \Nette\Application\UI\PresenterComponentReflection) {
+	    $secAnn = $this->annotationReader->getClassAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
+	}
+
+	if ($secAnn) {
+
 //	    if (!$user->isAllowed($element->getName(), $secAnn->getPrivileges())) {
 //		$this->flashMessage('Na vstup do této sekce nemáte dostatečné oprávnění!', self::FM_WARNING);
 //                $this->redirect('Homepage:default');
@@ -49,13 +55,13 @@ abstract class SecuredPresenter extends BasePresenter {
 	    // asi by se tu mely proverovat ty skupinovy a vlastnicky prava, ci co..
 	}
     }
-    
+
     protected function beforeRender() {
 	parent::beforeRender();
+    }
+
+    public function actionDefault() {
 	
     }
-    
-    public function actionDefault() {
-    }
-    
+
 }

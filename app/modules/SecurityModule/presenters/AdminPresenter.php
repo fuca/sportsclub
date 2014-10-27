@@ -24,17 +24,18 @@ use \App\SystemModule\Presenters\SecuredPresenter,
     \App\SecurityModule\Forms\RoleForm,
     \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\Role,
-    \App\Services\Exceptions\DataErrorException,
+    \App\Model\Misc\Exceptions,
     \App\SecurityModule\Forms\AclRuleForm,
     \App\Model\Entities\AclRule,
     \App\Model\Entities\Position,
     \App\SecurityModule\Forms\PositionForm,
     \App\Model\Misc\Enum\AclMode,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Misc\Enum\AclPrivilege;
 
 /**
  * AdminSecurityPresenter
- * @Secured resource={Bezpecnostni.modul} privileges={nejaka, properta}
+ * @Secured(resource="SecurityAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SecuredPresenter {
@@ -44,31 +45,31 @@ class AdminPresenter extends SecuredPresenter {
      * @var \App\Model\Service\IRoleService
      */
     public $roleService;
-    
+
     /**
      * @inject
      * @var \App\Model\Service\IAclRuleService
      */
     public $ruleService;
-    
+
     /**
      * @inject
      * @var \App\Model\Service\IPositionService
      */
     public $positionService;
-    
+
     /**
      * @inject
      * @var \App\UsersModule\Model\Service\IUserService
      */
-    public $userService;   
-    
+    public $userService;
+
     /**
      * @inject
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
-    public $sportGroupService; 
-    
+    public $sportGroupService;
+
     /**
      * @inject
      * @var \App\SecurityModule\Model\Service\IResourceService
@@ -78,46 +79,38 @@ class AdminPresenter extends SecuredPresenter {
     public function startup() {
 	parent::startup();
     }
-    
+
     public function beforeRender() {
 	parent::beforeRender();
-	//$this->template->_form = $this['addRuleForm'];
-	//$this->template->_form = $this['updateRuleForm'];
     }
 
     /**
      * Default presenter action
-     * @Secured resource={Bezpecnostni.modul} privileges={view, prdel}
+     * @Secured(resource="SecurityAdminDefault", privileges={"viewAll"})
      */
     public function actionDefault() {
 	
-	//dd($this->userService);
-	//dd($this->roleService->getRole(10));
-	//dd($this->roleService->getRole(11));
-	//dd($this->roleService->getRole(12));
-//	dd($this->roleService->getClassName());
-//	dd($this->ruleService->getClassName());
     }
 
     // <editor-fold desc="Administration of ROLES">
-    
+
     /**
-     * Handler for creating new roles
+     * Method for creating new roles (called top-down)
      * @param \Nette\ArrayHash $values
      */
     public function createRole(ArrayHash $values) {
 	$r = new Role((array) $values);
 	try {
 	    $this->roleService->createRole($r);
-	} catch (DataErrorException $e) {
-	    // TODO LOG ??
-	    dd(['Role admin presenter 53', $e]);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave(null, null, $ex);
 	}
 	$this->redirect('default');
     }
 
     /**
-     * Presenter action for creating role page
+     * Action for creating role page
+     * @Secured(resource="CreateRole", privileges={"createRole"})
      */
     public function actionAddRole() {
 	
@@ -125,13 +118,13 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * Presenter action for role update page
+     * @Secured(resource="UpdateRole", privileges={"updateRole"})
      * @param integer $id
      */
     public function actionUpdateRole($id) {
-	if (!$id) {
-	    $this->flashMessage("Identifier of updated role has to be specified, '{$id}' given.", self::FM_WARNING);
-	    $this->redirect("default");
-	}
+	if (!$id)
+	    $this->handleBadArgument($id);
+
 	try {
 	    $dbRole = $this->roleService->getRole((integer) $id);
 	    if ($dbRole !== null) {
@@ -140,17 +133,13 @@ class AdminPresenter extends SecuredPresenter {
 				->map(
 					function(Role $e) {
 				    return $e->getId();
-				}
-				)
-				->toArray());
+				})->toArray());
 		$form->setDefaults($dbRole->toArray());
 	    } else {
-		$this->flashMessage("Role with given id does not exist", self::FM_WARNING);
-		// TODO LOG SECURITY VIOLANCE
+		$this->handleEntityNotExists($id);
 	    }
-	} catch (DataErrorException $e) {
-	    dd($e);
-	    // LOG 
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
     }
 
@@ -162,30 +151,31 @@ class AdminPresenter extends SecuredPresenter {
 	$role = new Role((array) $values);
 	try {
 	    $this->roleService->updateRole($role);
-	} catch (DataErrorException $e) {
-	    dd($e);
-	    // LOG
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($role->getId(), "this", $ex);
 	}
 	$this->redirect('default');
     }
 
     /**
      * Delete role signal handler
+     * @Secured(resource="DeleteRole", privileges={"delete"})
      * @param integer $id
      */
     public function handleDeleteRole($id) {
-	if (!$id) {
-	    $this->flashMessage("Identifier of role has to be specified, '{$id}' given", self::FM_ERROR);
-	    $this->redirect("default");
-	}
-	try {
-	    $this->roleService->deleteRole($id);
-	} catch (DataErrorException $e) {
-	    dd($e);
-	}
+	if (!$id) $this->handleBadArgument($id);
+	$this->doDeleteRole($id);
 	$this->redirect('this');
     }
     
+    public function doDeleteRole($id) {
+	try {
+	    $this->roleService->deleteRole($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
+	}
+    }
+
     /**
      * Component factory of RoleForm for creating roles
      * @param string $name
@@ -208,13 +198,12 @@ class AdminPresenter extends SecuredPresenter {
 	$form->initialize();
 	return $form;
     }
-    
+
     /**
      * Form success submission handler
      * @param \Nette\Application\UI\Form $form
      */
     public function roleFormSubmitted(RoleForm $form) {
-
 	$values = $form->getValues();
 	try {
 	    switch ($form->getMode()) {
@@ -225,18 +214,18 @@ class AdminPresenter extends SecuredPresenter {
 		    $this->updateRole($values);
 		    break;
 	    }
-	} catch (DuplicateEntryException $e) {
-	    $form->addError("Role with name '{$values->name}' already exists");
-	    dd($e);
+	} catch (Exceptions\DuplicateEntryException $e) {
+	    $form->addError(
+		    $this->t("securityModule.admin.messages.roleNameExists", null, ["name" => $values->name]));
 	}
     }
-    
+
     private function prepareRoleForm($name, $id = null) {
-	$form = new RoleForm($this, $name);
+	$form = new RoleForm($this, $name, $this->getTranslator());
 	try {
-	    $roles = $this->roleService->getSelectRoles($id!==null?$id:null);
-	} catch (\Exception $e) {
-	    dd($e);
+	    $roles = $this->roleService->getSelectRoles($id !== null ? $id : null);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
 	$form->setRoles($roles);
 	return $form;
@@ -260,16 +249,16 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid->addColumnText('name', 'Jméno')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
+		->setFilterText();
+	
 	$grid->getColumn('name')->getEditableControl()->setRequired('Name is required.');
 	$headerName = $grid->getColumn('name')->headerPrototype;
 	$headerName->class[] = 'center';
 
 	$grid->addColumnText('parents', 'Rodiče')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
+		->setFilterText();
+	
 	$grid->getColumn('parents')->setCustomRender(callback($this, 'roleParColToString'));
 
 	$headerParent = $grid->getColumn('parents')->headerPrototype;
@@ -281,19 +270,42 @@ class AdminPresenter extends SecuredPresenter {
 	$headerAdded->class[] = 'center';
 
 	$grid->addColumnText('note', 'Poznámka')
+		->setCustomRender($this->noteGridRender)
 		->setSortable()
 		->setTruncate(20)
 		->setFilterText();
 	$headerNote = $grid->getColumn('note')->headerPrototype;
 	$headerNote->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deleteRole!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateRole')
+	$grid->addActionHref('delete', '', 'deleteRole!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("securityModule.admin.grid.rlyDeleteRole", null, ["pos" => $u]);
+		});
+	
+	$grid->addActionHref('edit', '', 'updateRole')
 		->setIcon('pencil');
-
+	
+	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->roleGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-roles " . date("Y-m-d H:i:s", time()));
+    }
+    
+    public function noteGridRender($e) {
+	return \Nette\Utils\Html::el("span")
+			->setText($e->getNote())
+			->addAttributes(["title" => $e->getNote()]);
+    }
+    
+    public function roleGridOpsHandler($op, $ids) {
+	switch ($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteRole($id);
+		}
+		break;
+	}
+	$this->redirect("this");
     }
 
     /**
@@ -312,6 +324,7 @@ class AdminPresenter extends SecuredPresenter {
 	}
 	return $res;
     }
+
     // </editor-fold >
     // <editor-fold desc="Administration of RULES">
 
@@ -320,70 +333,84 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function actionUpdateRule($id) {
-	if (!$id) {
-	    $this->flashMessage("Identifier of updated rule has to be specified, '{$id}' given", self::FM_ERROR);
-	    $this->redirect("default");
-	}
+	if (!$id) $this->handleBadArgument($id);
 	try {
 	    $dbRule = $this->ruleService->getRule((integer) $id);
 	    if ($dbRule !== null) {
 		$form = $this->getComponent('updateRuleForm');
 		$form->setDefaults($dbRule->toArray());
 	    } else {
-		$this->flashMessage("Rule with given id does not exist", self::FM_ERROR);
-		// TODO LOG SECURITY VIOLANCE
+		$this->handleEntityNotExists($id);
 	    }
-	} catch (DataErrorException $e) {
-	    dd($e);
-	    // LOG 
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
     }
-    
+
     public function handleGetPrivileges($value) {
-	$resource = $this->resourcesService->getResource($value);
-	$privileges = $resource->getPrivileges();
-	$this['addRuleForm']['privilege']
-		->setPrompt("Vyber si")
-		->setItems($privileges);
-	$this->invalidateControl("privilegesSnippet");
+	$resourcesSelect = $this->resourcesService->getSelectResources();
+	
+	if ($value) {
+	    $resource = $this->resourcesService->getResource($value);
+	    $privileges = $resource->getPrivileges();
+	    
+	    $this['addRuleForm']['resource']->setValue($value);
+	    
+	    if ($privileges) {
+		$this['addRuleForm']['privilege']
+			->setPrompt(AclRuleForm::SLCT_ACTION)
+			->setItems($privileges);
+		$this->payload->message = 'Success';
+	    }
+	    
+	} else {
+	    $this['addRuleForm']['resource']
+		    ->setPrompt(AclRuleForm::SLCT_RESOURCE)
+		    ->setItems($resourcesSelect);
+
+	    $this['addRuleForm']['privilege']
+		    ->setPrompt(AclRuleForm::SLCT_RESOURCE)
+		    ->setItems([]);
+	}
+	
+	$this->redrawControl("flash");
+	$this->redrawControl("privilegesSnippet");
     }
-    
+
     public function handleDeleteRule($id) {
-	if (!$id) {
-	    $this->flashMessage("Identifier of rule has to be specified, '{$id}' given", self::FM_ERROR);
-	    $this->redirect("default");
-	}
-	try {
-	    $this->ruleService->deleteRule((integer) $id);
-	} catch (DataErrorException $e) {
-	    dd($e);
-	}
+	if (!$id) $this->handleBadArgument($id);
+	$this->doDeleteRule($id);
 	$this->redirect('this');
     }
     
-    public function updateRule(ArrayHash $rule) {
-	
-	$role = new AclRule((array) $rule);
+    public function doDeleteRule($id) {
 	try {
-	    $this->ruleService->updateRule($role);
-	} catch (DataErrorException $e) {
-	    dd($e);
-	    // LOG
+	    $this->ruleService->deleteRule((integer) $id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
+	}
+    }
+
+    public function updateRule(ArrayHash $rule) {
+	$r = new AclRule((array) $rule);
+	try {
+	    $this->ruleService->updateRule($r);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($r->getId(), "default", $ex);
 	}
 	$this->redirect('default');
     }
-    
+
     public function createRule(ArrayHash $values) {
 	$r = new AclRule((array) $values);
 	try {
 	    $this->ruleService->createRule($r);
-	} catch (DataErrorException $e) {
-	    // TODO LOG ??
-	    dd(['Rule admin presenter create', $e]);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($r->getId(), null, $ex);
 	}
 	$this->redirect('default');
     }
-    
+
     public function createComponentRulesGrid($name) {
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->ruleService->getRulesDatasource());
@@ -397,15 +424,14 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid->addColumnText('role', 'Role')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
-	//$grid->getColumn('role')->setCustomRender(callback($this, 'roleParColToString'));
+		->setFilterText();
 
 	$headerParent = $grid->getColumn('role')->headerPrototype;
 	$headerParent->class[] = 'center';
 
 	$grid->addColumnText('resource', 'Zdroj')
-		->setSortable();
+		->setSortable()
+		->setFilterText();
 	$headerAdded = $grid->getColumn('resource')->headerPrototype;
 	$headerAdded->class[] = 'center';
 
@@ -415,7 +441,7 @@ class AdminPresenter extends SecuredPresenter {
 		->setFilterText();
 	$headerNote = $grid->getColumn('privilege')->headerPrototype;
 	$headerNote->class[] = 'center';
-	
+
 	$grid->addColumnText('mode', 'Mód')
 		->setSortable()
 		->setTruncate(15)
@@ -423,13 +449,27 @@ class AdminPresenter extends SecuredPresenter {
 	$headerNote = $grid->getColumn('mode')->headerPrototype;
 	$headerNote->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deleteRule!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateRule')
+	$grid->addActionHref('delete', '', 'deleteRule!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("securityModule.admin.grid.rlyDeleteRule", null, ["pos" => $u]);
+		});
+	$grid->addActionHref('edit', '', 'updateRule')
 		->setIcon('pencil');
-
+	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->ruleGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-rules " . date("Y-m-d H:i:s", time()));
+    }
+
+    public function ruleGridOpsHandler($op, $ids) {
+	switch ($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteAclRule($id);
+		}
+		break;
+	}
+	$this->redirect("this");
     }
 
     public function createComponentAddRuleForm($name) {
@@ -444,73 +484,68 @@ class AdminPresenter extends SecuredPresenter {
 	$form->initialize();
 	return $form;
     }
-    
-    
+
     private function prepareAclRuleForm($name) {
-	$form = new AclRuleForm($this, $name);
+	$form = new AclRuleForm($this, $name, $this->getTranslator());
 	$form->setModes(AclMode::getOptions());
 	$form->setResources($this->resourcesService->getSelectResources());
-	$form->setPrivileges([]);//AclPrivilege::getOptions());
+	$form->setPrivileges([]);
 	try {
-	    $roles = $this->roleService->getSelectRoles(); 
-	} catch (\Exception $e) {
-	    dd($e);
+	    $roles = $this->roleService->getSelectRoles();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	$form->setRoles($roles);
 	return $form;
     }
+
     // </editor-fold>
     // <editor-fold desc="Administration of POSITIONS">
-    
+
     public function actionAddPosition() {
 	
     }
-    
+
     public function renderAddPosition() {
 	
     }
-    
+
     public function createPosition(ArrayHash $values) {
 	$p = new Position((array) $values);
 	try {
 	    $this->positionService->createPosition($p);
-	} catch (DataErrorException $ex) {
-	    // TODO LOG ??
-	    dd(['Position admin presenter create', $ex]);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($p->getId(), "this", $ex);
 	}
 	$this->redirect("default");
-    }   
-    
-    public function actionEditPosition($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Identifier of position has to be type of numeric, '{$id}' given", self::FM_ERROR);
-	    $this->redirect("default");
-	}
+    }
+
+    public function actionUpdatePosition($id) {
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	try {
-	    $dbPosition = $this->positionService->getPosition((integer) $id);
+	    $dbPosition = $this->positionService->getPosition($id);
 	    if ($dbPosition !== null) {
-		$form = $this->getComponent("updatePositionForm");	
+		$form = $this->getComponent("updatePositionForm");
 		$form->setDefaults($dbPosition->toArray());
 	    } else {
-		$this->flashMessage("Position with given id does not exist", self::FM_ERROR);
-		// TODO LOG SECURITY VIOLANCE
+		$this->handleEntityNotExists($id);
 	    }
-	} catch (Exception $ex) {
-
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
-    
+
     public function updatePosition(ArrayHash $values) {
 	$pos = new Position((array) $values);
 	try {
-	    $this->positionService->updateRule($pos);
-	} catch (DataErrorException $e) {
-	    dd($e);
-	    // LOG
+	    $this->positionService->updatePosition($pos);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect('default');
     }
-    
+
     public function createComponentPositionsGrid($name) {
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->positionService->getPositionsDatasource());
@@ -524,74 +559,99 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid->addColumnText('owner', 'Uživatel')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
-	
+		->setFilterText();
+
 	$grid->addColumnText('group', 'Skupina')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
-	
+		->setFilterText();
+
 	$grid->addColumnText('role', 'Role')
 		->setSortable()
-		->setFilterText()
-		->setSuggestion();
-	//$grid->getColumn('role')->setCustomRender(callback($this, 'roleParColToString'));
+		->setFilterText();
+
+	$grid->addColumnText('comment', 'Komentář')
+		->setCustomRender($this->commentGridRender)
+		->setTruncate(20)
+		->setSortable()
+		->setFilterText();
 
 	$headerOwner = $grid->getColumn('owner')->headerPrototype;
 	$headerOwner->class[] = 'center';
-	
+
 	$headerGroup = $grid->getColumn('group')->headerPrototype;
 	$headerGroup->class[] = 'center';
-	
+
 	$headerRole = $grid->getColumn('role')->headerPrototype;
 	$headerRole->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deletePosition!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updatePosition')
+	$grid->addActionHref('delete', '', 'deletePosition!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("securityModule.admin.grid.rlyDeletePosition", null, ["pos" => $u]);
+		});
+	$grid->addActionHref('edit', '', 'updatePosition')
 		->setIcon('pencil');
 
+	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->positionGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-positions " . date("Y-m-d H:i:s", time()));
-	
     }
-    
+
+    public function commentGridRender($e) {
+	return \Nette\Utils\Html::el("span")
+			->setText($e->getComment())
+			->addAttributes(["title" => $e->getComment()]);
+    }
+
+    public function positionGridOpsHandler($ops, $ids) {
+	switch ($ops) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeletePosition($id);
+		}
+		break;
+	}
+	$this->redirect("this");
+    }
+
     public function createComponentAddPositionForm($name) {
 	$form = $this->preparePositionForm($name);
 	$form->initialize();
 	return $form;
     }
-	
-    public function createComponentEditPositionForm($name) {
+
+    public function createComponentUpdatePositionForm($name) {
 	$form = $this->preparePositionForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
-    
+
     private function preparePositionForm($name) {
-	$form = new PositionForm($this, $name);
+	$form = new PositionForm($this, $name, $this->getTranslator());
 	$roles = $this->roleService->getSelectRoles();
 	$users = $this->userService->getSelectUsers();
-	$groups = $this->sportGroupService->getSelectSportGroups();
+	$groups = $this->sportGroupService->getSelectAllSportGroups();
 	$form->setSportGroups($groups);
 	$form->setRoles($roles);
 	$form->setUsers($users);
 	return $form;
     }
-    
-    public function handleDeletePosition($id) {
-	if (!$id) {
-	    $this->flashMessage("Identifier of position has to be type of numeric, '{$id}' given", self::FM_ERROR);
-	    $this->redirect("default");
-	}
+
+    public function doDeletePosition($id) {
 	try {
 	    $this->positionService->deletePosition((integer) $id);
-	} catch (DataErrorException $e) {
-	    dd($e);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
 	}
+    }
+
+    public function handleDeletePosition($id) {
+	if (!$id)
+	    $this->handleBadArgument($id);
+	$this->doDeletePosition($id);
 	$this->redirect('this');
     }
+
     // </editor-fold>
 }

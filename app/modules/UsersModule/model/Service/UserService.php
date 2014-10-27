@@ -290,12 +290,27 @@ class UserService extends BaseService implements IUserService {
 	}
     }
 
-    public function getSelectUsers($id = null) {
+    /**
+     * 
+     * @param inteter $id
+     * @param bool|null $active
+     * @return array of pairs
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    public function getSelectUsers($id = null, $active = true) {
+	if (!is_bool($active) && !is_null($active)) 
+	    throw new Exceptions\InvalidArgumentException("Argument active has to be type of boolean or null, '$active' given");
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
 	try {
 	    if ($data === null) {
-		$data = $this->userDao->findPairs(["active" => 1], 'surname'); // TODO CONCAT
+		$data = [];
+		$all = $this->userDao->findAll(["active" => $active]);
+		foreach ($all as $u) {
+		    if (!is_null($active) && $active !== $u->getActive()) continue;
+		    $data = $data+[$u->getId() => $u->getName()." ".$u->getSurname()." (".$u->getId().")"];
+		}
 		$opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
@@ -392,11 +407,8 @@ class UserService extends BaseService implements IUserService {
 	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
 	try {
 	    $editor = null;
-
 	    $id = $this->getMixId($e->getEditor());
-	    if ($id !== null)
-		$editor = $this->getUser($id, false);
-
+	    if ($id !== null) $editor = $this->userDao->find($id);
 	    $e->setEditor($editor);
 	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex);

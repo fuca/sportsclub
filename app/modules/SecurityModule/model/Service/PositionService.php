@@ -22,15 +22,16 @@ use \App\Model\Entities\User,
     \App\Model\Entities\Position,
     \App\Model\Entities\Role,
     \App\Model\Entities\SportGroup,
-    Kdyby\Doctrine\DuplicateEntryException,
+    \Kdyby\Doctrine\DuplicateEntryException,
     \App\Services\Exceptions\DataErrorException,
-    \App\Services\Exceptions,
+    \App\Model\Misc\Exceptions,
     \Nette\InvalidArgumentException,
     \Nette\DateTime,
     \Grido\DataSources\Doctrine,
     \Doctrine\Common\Collections\ArrayCollection,
     \Nette\Caching\Cache,
     \Nette\Utils\Strings,
+    \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Service\BaseService,
     \App\UsersModule\Model\Service\IUserService,
@@ -76,118 +77,135 @@ class PositionService extends BaseService implements IPositionService {
 	$this->userService = $us;
     }
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, Position::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Position::getClassName(), $logger);
 	$this->positionDao = $em->getDao(Position::getClassName());
     }
 
     public function createPosition(Position $p) {
 	if ($p === null)
-	    throw new NullPointerException("Argument Position cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
 	    $this->posGroupTypeHandle($p);
 	    $this->posOwnerTypeHandle($p);
 	    $this->posRoleTypeHandle($p);
-	    //$owner = $this->userService->getUser($p->getOwner(), false);
-	    //$p->setOwner($owner);
 	    $this->positionDao->save($p);
 	    $this->invalidateEntityCache($p);
-	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    
+	} catch (DuplicateEntryException $e) {
+	    $this->logWarning($e);
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
     public function getPosition($id) {
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    throw new InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
 	try {
 	    $cache = $this->getEntityCache();
 	    $data = $cache->load($id);
 
 	    if ($data === null) {
 		$data = $this->positionDao->find($id);
-		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
+		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id, self::ENTITY_COLLECTION]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	return $data;
     }
 
     private function posGroupTypeHandle(Position $p) {
 	if ($p === null)
-	    throw new Exceptions\NullPointerException("Argument Position was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Position was null");
 	try {
 	    $sgDb = $this->sportGroupService->getSportGroup($p->getGroup(), false);
 	    if ($sgDb !== null) {
 		$p->setGroup($sgDb);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
+	return $p;
     }
 
     private function posOwnerTypeHandle(Position $p) {
 	if ($p === null)
-	    throw new NullPointerException("Argument Position cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
 	    $oDb = $this->userService->getUser($p->getOwner(), false);
 	    if ($oDb !== null) {
 		$p->setOwner($oDb);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
+	return $p;
     }
 
     private function posRoleTypeHandle(Position $p) {
 	if ($p === null)
-	    throw new NullPointerException("Argument Position cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
 	    $rDb = $this->roleService->getRole($p->getRole(), false);
 	    if ($rDb !== null) {
 		$p->setRole($rDb);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
     public function deletePosition(Position $p) {
 	if ($p == null)
-	    throw new NullPointerException("Argument Position cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
 	    $db = $this->positionDao->find($p->id);
 	    if ($db !== null) {
 		$this->positionDao->delete($db);
 	    }
 	    $this->invalidateEntityCache($p);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
-    public function getUserPositions(User $user) {
+    public function getUserPositions(User $user, $useCache = true) {
 	if ($user === null)
-	    throw new NullPointerException("Argument User cannot be null", 0);
+	    throw new NullPointerException("Argument User cannot be null");
 	try {
-	    //$c = \Doctrine\Common\Collections\Criteria::create();
-	    //$c->where(Criteria::expr()->eq("owner", $user->getId()));
-	    
-	    //$res = $this->positionDao->matching($c)->getValues();
-	    $res = $this->positionDao->findBy(array("owner" => $user->getId()));
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $id = User::getClassName()."-".$user->getId();
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if (!$useCache) {
+		return $this->positionDao->findBy(array("owner" => $user->getId()));
+	    }
+	    if ($data == null) {
+		$data = $this->positionDao->findBy(array("owner" => $user->getId()));
+		$opts = [Cache::TAGS => [self::ENTITY_COLLECTION, $id],
+			Cache::SLIDING => true];
+		$cache->save($id, $data, $opts);
+	    }
+	    return $data;
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException(
+		    $e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
-	return $res;
     }
 
     public function updatePosition(Position $p) {
-	if ($p == null)
-	    throw new NullPointerException("Argument Position cannot be null", 0);
+	if ($p === null)
+	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $pDb = $this->positionDao->find($p->getId());
@@ -201,8 +219,10 @@ class PositionService extends BaseService implements IPositionService {
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($pDb);
-	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
+	} catch (DuplicateEntryException $e) {
+	    $this->entityManager->rollback();
+	    $this->logError($e);
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
@@ -212,17 +232,44 @@ class PositionService extends BaseService implements IPositionService {
 	return $model;
     }
     
-    public function getUsersWithinGroup($gid) {
-	if ($gid === null) 
-	    throw new Exceptions\NullPointerException("Argument SportGroup was null", 0);
+    public function getPositionsWithinGroup($gid, $useCache = true) {
+	if (empty($gid) && !is_numeric($gid)) 
+	    throw new Exceptions\InvalidArgumentException("Argument gid was bad shaped, '{$gid}' given");
 	try {
-	    $qb = $this->positionDao->createQueryBuilder("p");
+	    $qb = $this->positionDao->createQueryBuilder();
 	    $sg = $this->sportGroupService->getSportGroup($gid, false);
-	    $qb->select("p.owner.id")->from("Position p")->where("group = :group")->setParameter("group",$sg);
-	    return $qb->getQuery()->getResult();
-	} catch (\Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $qb->select("p")
+		    ->from("App\Model\Entities\Position","p")->where("p.group = :group")
+		    ->setParameter("group", $sg);
+	    $q = $qb->getQuery();
+	    if (!$useCache) {
+		return $q->getResult();
+	    }
+	    $id = User::getClassName()."in".SportGroup::getClassName()."-".$gid;
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if ($data == null) {
+		$data = $q->getResult();
+		$opts = [Cache::TAGS => [self::ENTITY_COLLECTION, self::STRANGER_COLLECTION,$id],
+			Cache::SLIDING => true];
+		$cache->save($id, $data, $opts);
+	    }
+	    return $data;
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
-
+    
+//        public function getPositionsOfGroup(SportGroup $g) {
+//	if ($g === null) 
+//	    throw new Exceptions\NullPointerException("Argument SportGroup was null");
+//	try {
+//	    return $this->positionDao->findAll(["group"=>$g->getId()]);
+//	} catch (\Exception $e) {
+//	    $this->logError($e);
+//	    throw new Exceptions\DataErrorException(
+//		    $e->getMessage(), $e->getCode(), $e->getPrevious());
+//	}
+//    }
 }

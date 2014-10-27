@@ -18,8 +18,8 @@
 
 namespace App\SystemModule\Model\Service;
 
-use App\Model\Entities\User,
-    App\Model\Entities\SportGroup;
+use \App\Model\Entities\User,
+    \App\Model\Entities\SportGroup;
 
 /**
  * Interface for Sport group service
@@ -33,6 +33,8 @@ interface ISportGroupService {
     function deleteSportGroup($id);
     function getSportGroup($id);
     function getSportGroupsDatasource();
-    function getUserGroups(User $u);
-    function getSelectSportGroups($id = null);
+    function getGroupsWithUser(User $u);
+    function getSelectAllSportGroups($id = null);
+    function getSelectApplicablegroups($id = null);
+    function getAllSportGroups($root = null);
 }

@@ -39,4 +39,8 @@ interface ISeasonService {
     function getSeasonsDataSource();
     
     function getSelectSeasons();
+    
+    function setSeasonCurrent($id);
+    
+    function getCurrentSeason();
 }

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Model\Misc\Annotation;
+namespace App\SystemModule\Misc\Annotations;
 
-use Nette\Object,
-    Nette\Reflection\IAnnotation,
-    Nette\Utils\Strings;
+use \Nette\Object,
+    \Nette\Reflection\IAnnotation,
+    \App\Model\Misc\Exceptions,
+    \Nette\Utils\Strings;
 
 /**
  * Description of Annotation
@@ -18,11 +19,13 @@ abstract class Annotation extends Object implements IAnnotation {
     private $values;
 
     public function __construct(array $values) {
+	
+	throw new \Exception("Do not use this annotations, use Doctrine\Annotations instead");
 	$res = [];
 	$matches = [];
 	$val = $values[self::VALUE_ID];
 	if (0 == preg_match("/(?:\b[a-z]+\b\s*\=\s*\{\s*\b[a-z]+(?:(?:\_|\.|\s*\,\s*)[a-z]+\b)*\s*\}\s*)/i", $val))
-	    throw new \Nette\InvalidArgumentException("Syntax error within annotation parameters '{$val}'");
+	    throw new Exceptions\InvalidArgumentException("Syntax error within annotation parameters '{$val}'");
 	preg_match_all('/\b[a-z]+\b\s*\=\s*\{\s*\b[a-z]+(?:(?:\_|\.|\s*\,\s*)[a-z]+\b)*\s*\}/mi', $val, $matches);
 	foreach ($matches[0] as $param) {
 	    list($k, $vs) = explode('=', $param);

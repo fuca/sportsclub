@@ -6,7 +6,11 @@ services:
 		class:
 			App\PaymentsModule\Model\Listeners\ApplicationsListener
 		tags: [kdyby.subscriber]
-
+		setup:	
+			- setPaymentService()
+			- setSeasonTaxService()
+			- setSeasonApplicationService()
+		    
 	paymentsModule.cacheStorage: 
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/paymentsModule)
 		autowired: no

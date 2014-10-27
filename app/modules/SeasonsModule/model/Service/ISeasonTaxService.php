@@ -18,10 +18,12 @@
 
 namespace App\SeasonsModule\Model\Service;
 
-use App\Model\Entities\SeasonTax;
+use \App\Model\Entities\SeasonTax,
+    \App\Model\Entities\SportGroup,
+    \App\Model\Entities\Season;
 
 /**
- * Interface for Event service
+ * Interface for Season tax service
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
@@ -31,6 +33,7 @@ interface ISeasonTaxService {
     function updateSeasonTax(SeasonTax $t);
     function deleteSeasonTax($id);
     function getSeasonTax($id);
+    function getSeasonTaxSG(Season $s, SportGroup $sg);
     function getSeasonTaxesDataSource();
    
 }

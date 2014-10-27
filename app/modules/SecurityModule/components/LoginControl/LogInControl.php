@@ -111,6 +111,10 @@ final class LogInControl extends Control {
 	}
 	try {
 	    $this->presenter->getUser()->login($values->username, $values->password);
+	    $bl = $this->presenter->getParameter("backlink");
+	    if ($bl) {
+		$this->presenter->restoreRequest($bl);
+	    }
 	    $this->presenter->redirect($this->logInTarget);
 	} catch (AuthenticationException $e) {
 	    $form->addError($this->getPresenter()->getTranslator()->translate($e->getMessage()));

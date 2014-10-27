@@ -18,7 +18,7 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
+use \Doctrine\ORM\Mapping as ORM,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\EntityMapperTrait;
 
@@ -50,6 +50,9 @@ class Address extends BaseEntity {
 
     /** @ORM\Column(nullable = false) */
     protected $number;
+    
+    /** @ORM\Column(type="string", nullable=true) */
+    protected $accountNumber;
     
     public function __construct(array $values = []) {
 	parent::__construct();

@@ -1,15 +1,20 @@
 {* Latte template *}
 {layout ./base.latte}
 
+{block scripts}
+{include parent}
+
+    
+{/}
+
 {block content}
 {snippet privilegesSnippet}
     {form addRuleForm}
-	{label role /} {input role}
-	{label resource /} {input resource}
-
-	    {label privilege /} {input privilege}    
-	{label mode /} {input mode}
-	{input submitButton}
+	{label resource /} {input resource}<br/>
+	{label privilege /} {input privilege}<br/>
+	{label role /} {input role} <br/>
+	{label mode /} {input mode}<br/>
+	{input submitButton}<br/>
     {/}
 {/snippet}
 
@@ -20,14 +25,19 @@
 
 {define #jsCallback}
 
-$('#{$control["addRuleForm"][$input]->htmlId}').on('change', function() {
+$(document).on('change', '#{$control["addRuleForm"][$input]->htmlId}', function() {
     $.nette.ajax({
         type: 'GET',
         url: '{link {$link}!}',
         data: {
             'value': $(this).val(),
-        }
+        },
+	success: function(payload) {
+       $('#snippet--privilegesSnippet').html(payload.snippets['snippet--privilegesSnippet']);
+    }
     });
 });
 
 {/}
+
+

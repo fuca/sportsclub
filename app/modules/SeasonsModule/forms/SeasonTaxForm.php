@@ -22,7 +22,7 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
     \App\Services\Exceptions\DuplicateEntryException,
-    Vodacek\Forms\Controls\DateInput;
+    \Vodacek\Forms\Controls\DateInput;
 
 /**
  * Form for creating and updating seasons
@@ -38,30 +38,17 @@ final class SeasonTaxForm extends BaseForm {
     /** @var array of available seasons */
     private $seasons;
     
-    
-    /** @var boolean */
-    private $creditsActivated;
-    
     /** @var boolean */
     private $memberShip;
-    
-    public function isCredit() {
-	return $this->creditsActivated;
-    }
     
     public function isMembership() {
 	return $this->memberShip;
     }
-    
-    public function setCreditsActivated($creditsActivated) {
-	$this->creditsActivated = $creditsActivated;
-    }
 
-    public function setMemberShip($memberShip) {
+    public function setMemberShip($memberShip = true) {
 	$this->memberShip = $memberShip;
     }
 
-    
     public function getSportGroups() {
 	return $this->sportGroups;
     }
@@ -81,6 +68,7 @@ final class SeasonTaxForm extends BaseForm {
     public function initialize() {
 
 	$this->addHidden("id");
+	
 	if ($this->getMode() == FormMode::CREATE_MODE) {
 	    $this->addGroup("Nové plnění");
 	} else {
@@ -96,16 +84,14 @@ final class SeasonTaxForm extends BaseForm {
 		->setPrompt("Vyberte skupinu.. ")
 		->addRule(Form::FILLED, "Skupina musí být vybrána")
 		->setRequired(true);
-
-	if ($this->isCredit()) {
-	    $this->addText('credit', "Výše kreditů")
-		    ->addRule(Form::FILLED, "Výše kreditů musí být zadána")
-		    ->setRequired(TRUE);
-	}
+	
+	$this->addDate("appDate", "Deadline přihlášek", DateInput::TYPE_DATE)
+		->addRule(Form::FILLED, "Datum deadlinu přihlášek musí být vybrán");
 
 	if ($this->isMemberShip()) {
 	    $this->addText('memberShip', "Výše členského příspěvku")
 		    ->addRule(Form::FILLED, "Výše členského příspěvku musí být zadána")
+		    ->addRule(Form::NUMERIC, "Výše členského příspěvku musí být číslo")
 		    ->setRequired(TRUE);
 	}
 

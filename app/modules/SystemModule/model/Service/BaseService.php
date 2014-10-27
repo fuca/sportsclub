@@ -42,6 +42,7 @@ use
 abstract class BaseService extends Object {
     
     const ENTITY_COLLECTION = "collection",
+	  STRANGER_COLLECTION = "stranger",
 	  SELECT_COLLECTION = "selectList";
     
     const MAX_PRIORITY = 10;
@@ -70,7 +71,11 @@ abstract class BaseService extends Object {
     
     private $entityClassName;
     
+    private $onCreate;
     
+    private $onDelete;
+    
+    private $onUpdate;
     
     protected function getCacheStorage() {
 	return $this->cacheStorage;
@@ -121,7 +126,8 @@ abstract class BaseService extends Object {
 	return $this->entityCache;
     }
     
-    protected function __construct(EntityManager $em, $entityClassName) {
+    protected function __construct(EntityManager $em, $entityClassName, Logger $logger = null) {
+	if ($logger !== null) $this->logger = $logger;
 	$this->entityManager = $em;
 	$this->setEntityClassName($entityClassName);
     }

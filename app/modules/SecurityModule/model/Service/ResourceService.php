@@ -18,15 +18,17 @@
 
 namespace App\SecurityModule\Model\Service;
 
-use Kdyby\PresenterTree,
+use \Kdyby\PresenterTree,
     \App\Model\Service\BaseService,
     \App\SecurityModule\Model\Resource,
-    Nette\Caching\Cache,
+    \Nette\Caching\Cache,
+    \Kdyby\Monolog\Logger,
     \App\SecurityModule\Model\PresenterResource,
     \Nette\Reflection\Method,
     \App\SecurityModule\Model\MethodResource,
     \App\SecurityModule\Model\Service\IResourceService,
-    \Kdyby\Doctrine\EntityManager;
+    \Kdyby\Doctrine\EntityManager,
+    \Doctrine\Common\Annotations\Reader;
 
 /**
  * ResourceService
@@ -34,41 +36,45 @@ use Kdyby\PresenterTree,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class ResourceService extends BaseService implements IResourceService {
+    
+    const SECURED_AN_NAME = "\App\SecurityModule\Model\Misc\Annotations\Secured";
 
     /**
      * @var Kdyby\PresenterTree
      */
     private $presenterTree;
-
-//    /**
-//     * @var \App\Model\IModuleCacheService
-//     */
-//    private $cacheService;
+    
+    /**
+     * @var \Doctrine\Common\Annotations\Reader
+     */
+    public $annReader;
 
     /** @var array resources tree */
     private $tree;
 
     /** @var string class name */
     private $className;
-
-//    public function getClassName() {
-//	if (!isset($this->className)) {
-//	    $this->className = self::getReflection()->name;
-//	}
-//	return $this->className;
-//    }
+    
+    public function setAnnotationsReader(Reader $reader) {
+	$this->annReader = $reader;
+    }
+    
+    public function getAnnotationsReader() {
+	return $this->annReader;
+    }
 
     public function setPresenterTree(PresenterTree $pt) {
 	$this->presenterTree = $pt;
     }
 
-//    public function setCacheService(App\Model\IModuleCacheService $cacheService) {
-//	$this->cacheService = $cacheService;
-//    }
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, Resource::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Resource::getClassName(), $logger);
     }
 
+    /**
+     * Returns array tree of all resources
+     * @return array
+     */
     public function getResources() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::ENTITY_COLLECTION);
@@ -79,36 +85,18 @@ class ResourceService extends BaseService implements IResourceService {
 	}
 	return $data;
     }
-
-    private function buildTree() {
-	$pt = $this->presenterTree;
-	$data = [];
-	foreach ($pt->presenters as $p) {
-	    $refPre = $p->getPresenterReflection();
-	    if ($refPre->hasAnnotation(\SecuredAnnotation::ANNOTATION_NAME)) {
-		$sA = $refPre->getAnnotation(\SecuredAnnotation::ANNOTATION_NAME);
-		$pRes = new PresenterResource($p->getClass(), $sA->getResource(), 
-			null, [], $sA->getPrivileges());
-		foreach ($p->getActions() as $key => $a) {
-		    $actionName = substr(preg_replace("/:/", '\\', $key), 1);
-		    $refMeth = new Method($p->getClass(), "action" . ucfirst($a));
-		    if ($refMeth->hasAnnotation(\SecuredAnnotation::ANNOTATION_NAME)) {
-			$msa = $refMeth->getAnnotation(\SecuredAnnotation::ANNOTATION_NAME);
-			$aRes = new MethodResource($actionName, $msa->getResource(), 
-				$pRes->getId(), [], $msa->getPrivileges());
-			$pRes->addResource($aRes);
-		    }
-		}
-		$data[$p->getClass()] = $pRes;
-	    }
+    
+    public function getSelectResources() {
+	$cache = $this->getEntityCache();
+	$data = $cache->load(self::SELECT_COLLECTION);
+	if ($data == null) {
+	    $tree = $this->getResources();
+	    $data = $this->deepFlatten($tree);
+	    $opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
+	    $cache->save(self::SELECT_COLLECTION, $data, $opt);
 	}
 	return $data;
     }
-
-//    public function getPrivileges($id) {
-//	$res = $this->getResource($id);
-//	return $ret = $res->getPrivileges() !== null? $ret: [];
-//    }
 
     public function getResource($id) {
 	$cache = $this->getEntityCache();
@@ -118,6 +106,35 @@ class ResourceService extends BaseService implements IResourceService {
 	    $data = $this->deepSearch($id, $tree);
 	    $opt = [Cache::TAGS => [self::ENTITY_COLLECTION, $id, self::SELECT_COLLECTION]];
 	    $cache->save($id, $data, $opt);
+	}
+	return $data;
+    }
+    
+    private function buildTree() {
+	$pt = $this->presenterTree;
+	$data = [];
+	foreach ($pt->presenters as $p) {
+	    $refPre = $p->getPresenterReflection();
+	    $secAnn = $this->getAnnotationsReader()
+		    ->getClassAnnotation($refPre, self::SECURED_AN_NAME);
+	    if ($secAnn) {
+		$pRes = new PresenterResource($p->getClass(), $secAnn->getResource(), 
+			null, [], $secAnn->getPrivileges());
+		foreach ($p->getActions() as $key => $a) {
+		    $actionName = substr(preg_replace("/:/", '\\', $key), 1);
+		    
+		    $refMeth = new Method($p->getClass(), "action" . ucfirst($a));
+		    
+		    $secAnnMeth = $this->getAnnotationsReader()->getMethodAnnotation($refMeth, self::SECURED_AN_NAME);
+		    if ($secAnnMeth) {
+			$aRes = new MethodResource($actionName, $secAnnMeth->getResource(), 
+				$pRes->getId(), [], $secAnnMeth->getPrivileges());
+			$pRes->addResource($aRes);
+			
+		    }
+		}
+		$data[$p->getClass()] = $pRes;
+	    }
 	}
 	return $data;
     }
@@ -135,18 +152,6 @@ class ResourceService extends BaseService implements IResourceService {
 	return $res;
     }
 
-    public function getSelectResources() {
-	$cache = $this->getEntityCache();
-	$data = $cache->load(self::SELECT_COLLECTION);
-	if ($data == null) {
-	    $tree = $this->getResources();
-	    $data = $this->deepFlatten($tree);
-	    $opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
-	    $cache->save(self::SELECT_COLLECTION, $data, $opt);
-	}
-	return $data;
-    }
-
     private function deepFlatten($tree) {
 	$selList = [];
 	foreach ($tree as $r) {
@@ -157,5 +162,4 @@ class ResourceService extends BaseService implements IResourceService {
 	}
 	return $selList;
     }
-
 }

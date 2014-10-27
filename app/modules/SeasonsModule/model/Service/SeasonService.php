@@ -18,19 +18,17 @@
 
 namespace App\SeasonsModule\Model\Service;
 
-use \App\Model\Entities\SeasonApplication,
-    \App\Model\Entities\Season,
-    \App\Model\Entities\SeasonTax,
-    App\SeasonsModule\Model\Service\ISeasonService,
+use \App\Model\Entities\Season,
+    \App\SeasonsModule\Model\Service\ISeasonService,
     \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\EntityManager,
-    \Nette\InvalidArgumentException,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\UsersModule\Model\Service\IUserService,
-    Grido\DataSources\Doctrine,
+    \Grido\DataSources\Doctrine,
     \Nette\DateTime,
-    Nette\Caching\Cache;
+    \Kdyby\Monolog\Logger,
+    \Nette\Caching\Cache;
 
 /**
  * Service for managing season related entities
@@ -57,25 +55,31 @@ class SeasonService extends BaseService implements ISeasonService {
 	$this->userService = $userService;
     }
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, Season::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Season::getClassName(), $logger);
 	$this->seasonDao = $em->getDao(Season::getClassName());
     }
 
     public function createSeason(Season $s) {
-	if ($s == null)
+	if ($s === null)
 	    throw new Exceptions\NullPointerException("Argument Season cannot be null", 0);
 	try {
+	    if ($s->getCurrent()) {
+		$this->setAllSeasonsAsInactive();   
+	    }
 	    $this->seasonEditorTypeHandle($s);
-	    
 	    $s->setUpdated(new DateTime());
 	    //$s->setApplications([]);
 	    $this->seasonDao->save($s);
 	    $this->invalidateEntityCache($s);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+	    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_LABEL, $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		$ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -94,7 +98,7 @@ class SeasonService extends BaseService implements ISeasonService {
 
     private function seasonEditorTypeHandle(Season $s) {
 	if ($s === null)
-	    throw new NullPointerException("Argument Season cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Season cannot be null");
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -103,16 +107,18 @@ class SeasonService extends BaseService implements ISeasonService {
 		    $editor = $this->getUserService()->getUser($id, false);
 	    }
 	    $s->setEditor($editor);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function deleteSeason($id) {
 	if ($id == null)
-	    throw new NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null");
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument is has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument is has to be type of numeric");
 	try {
 	    $db = $this->seasonDao->find($id);
 	    if ($db !== null) {
@@ -120,15 +126,17 @@ class SeasonService extends BaseService implements ISeasonService {
 		$this->invalidateEntityCache($db);
 	    }
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function getSeason($id, $useCache = true) {
 	if ($id == null)
-	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null");
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric, $id given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, $id given");
 	try {
 	    if (!$useCache) {
 		return $this->seasonDao->find($id);
@@ -141,20 +149,24 @@ class SeasonService extends BaseService implements ISeasonService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
 
     public function updateSeason(Season $s) {
-	if ($s == null)
-	    throw new Exceptions\NullPointerException("Argument Season cannot be null", 0);
+	if ($s === null)
+	    throw new Exceptions\NullPointerException("Argument Season cannot be null");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $seasonDb = $this->seasonDao->find($s->getId(), false);
 	    if ($seasonDb !== null) {
+		if ($s->getCurrent()) {
+		    $this->setAllSeasonsAsInactive();   
+		}
 		$seasonDb->fromArray($s->toArray());
-		// TODO check if absence of app manage do not makes any problems
 		$this->seasonEditorTypeHandle($seasonDb);
 		$this->entityManager->merge($seasonDb);
 		$this->entityManager->flush();
@@ -162,12 +174,42 @@ class SeasonService extends BaseService implements ISeasonService {
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($seasonDb);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+	    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_LABEL, $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
+
+    public function setSeasonCurrent($id) {
+	$this->setAllSeasonsAsInactive();
+	$qb = $this->seasonDao->createQueryBuilder();
+	try {
+	    $qb->update("App\Model\Entities\Season s")
+		    ->set("s.current", 1)->where("s.id = :id")
+		    ->setParameter("id", $id)
+		    ->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    private function setAllSeasonsAsInactive() {
+	$qb = $this->seasonDao->createQueryBuilder();
+	try {
+	    $qb->update("App\Model\Entities\Season s")
+		    ->set("s.current", 0)
+		    ->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
     public function getSelectSeasons() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
@@ -178,9 +220,10 @@ class SeasonService extends BaseService implements ISeasonService {
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
 	    return $data;
-	} catch (\Exception $e) {
-	    // TODO LOG
-	    throw new Exceptions\DataErrorException($e);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -188,6 +231,18 @@ class SeasonService extends BaseService implements ISeasonService {
 	$model = new Doctrine(
 		$this->seasonDao->createQueryBuilder('s'));
 	return $model;
+    }
+    
+    public function getCurrentSeason() {
+	try {
+	    return $this->seasonDao->createQueryBuilder("s")
+			->where("s.current = true")
+			->getQuery()->getSingleResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
 }

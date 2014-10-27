@@ -1,0 +1,18 @@
+{* Latte template *}
+{layout ./base.latte}
+{block content}
+{if $data}
+<h3>{_paymentsModule.protected.paymentDetailId}</h3>
+    {$data->getId()}<br/>
+    {$data->getAmount()}<br/>
+    {$data->getSubject()}<br/>
+    {$data->getDueDate()|date:'%d.%m.%Y'}<br/>
+    {$data->getOrderedDate()|date:'%d.%m.%Y'}<br/>
+    {$data->getSeason()}<br/>
+    {$data->getVs()}<br/>
+    {$data->getStatus()}<br/>
+    {$data->getPublicNote()}<br/>
+    {$data->getEditor()}<br/>
+    {$data->getSeason()}<br/>
+    
+{/if}

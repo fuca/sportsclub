@@ -49,23 +49,23 @@ final class SportTypeForm extends BaseForm {
     public function initialize() {
 
 	if ($this->getMode() == FormMode::CREATE_MODE) {
-	    $this->addGroup('Nový druh sportu');    
+	    $this->addGroup("systemModule.sportTypeForm.newGroup");    
 	} else {
-	    $this->addGroup('Editace druhu sportu');
+	    $this->addGroup("systemModule.sportTypeForm.editGroup");
 	}
 	
 	$this->addHidden('id');
-	$this->addText('name', 'Název')
-		->addRule(Form::FILLED, "Název musí výt vyplněn")
+	$this->addText('name', "systemModule.sportTypeForm.name")
+		->addRule(Form::FILLED, "systemModule.sportTypeForm.nameMustFill")
 		->setRequired(true);
 
-	$this->addImageSelectBox('image', 'Ikona', $this->getImages())
-		//->addRule(Form::FILLED, "Ikona musí být vybrána")
-		->setPrompt("Vyberte ikonu..");
+//	$this->addImageSelectBox('image', 'Ikona', $this->getImages())
+//		//->addRule(Form::FILLED, "Ikona musí být vybrána")
+//		->setPrompt("Vyberte ikonu..");
 
-	$this->addTextArea('note', 'Poznámka', 30, 4);
+	$this->addTextArea('note', "systemModule.sportTypeForm.note", 30, 4);
 
-	$this->addSubmit('submit', 'Uložit');
+	$this->addSubmit('submit', "system.forms.submitButton.label");
 
 	$this->onSuccess[] = callback($this, 'sportTypeFormSubmitted');
     }

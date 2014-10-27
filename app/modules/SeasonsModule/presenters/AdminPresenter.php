@@ -28,19 +28,17 @@ use \App\UsersModule\Forms\SportTypeForm,
     \App\Model\Entities\SportGroup,
     \Nette\ArrayHash,
     \App\SystemModule\Presenters\SecuredPresenter,
-    \App\Services\Exceptions\DataErrorException,
-    \App\Services\Exceptions\DuplicateEntryException,
-    \App\Services\Exceptions,
+    \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Form,
-    \App\SystemModule\Model\Service\ISportGroupService,
     \App\Model\Entities\SeasonTax,
     \App\SeasonModule\Forms\SeasonTaxForm,
     \App\Model\Entities\SeasonApplication,
-    \App\SeasonModule\Forms\SeasonApplicationForm;
+    \App\SeasonModule\Forms\SeasonApplicationForm,
+    \App\SecurityModule\Model\Misc\Annotations\Secured;
 
 /**
  * Season module admin presenter
- *
+ * @Secured(resource="SeasonsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SecuredPresenter {
@@ -50,7 +48,7 @@ class AdminPresenter extends SecuredPresenter {
      * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     public $seasonService;
-    
+
     /**
      * @inject
      * @var \App\SeasonsModule\Model\Service\ISeasonTaxService
@@ -74,6 +72,20 @@ class AdminPresenter extends SecuredPresenter {
      * @var \App\UsersModule\Model\Service\IUserService
      */
     public $usersService;
+    
+    /**
+     * Array of configuration bindings
+     * @var array 
+     */
+    private $config;
+    
+    public function setConfig(array $c) {
+	$this->config = $c;
+    }
+    
+    private function isMemberShip() {
+	return $this->config["memberShip"];
+    }
 
     public function getUsersService() {
 	return $this->usersService;
@@ -96,6 +108,9 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function actionDefault() {
+	// pak do protected sekce pridat asi prehled prihlasek ci tak neco, nad tim se zamyslet
+	// projit servisy tohodle modulu a to je asi vse
+	//throw new \Exception();
 //	$app = new SeasonApplication();
 //	$app->setEditor($this->getUser());
 //	$app->setUpdated(new \Nette\Utils\DateTime);
@@ -103,11 +118,11 @@ class AdminPresenter extends SecuredPresenter {
 //	$app->setSeason(2);
 //	$this->seasonApplicationService->createSeasonApplication($app);
     }
-    
-    // <editor-fold desc="Administration of SPORT SEASONS">
+
+// <editor-fold desc="Administration of SPORT SEASONS">
 
     public function actionAddSeason() {
-	// form render
+// form render
     }
 
     public function seasonFormSubmitHandle(Form $form) {
@@ -122,27 +137,24 @@ class AdminPresenter extends SecuredPresenter {
 		    break;
 	    }
 	} catch (Exceptions\DuplicateEntryException $ex) {
-	    $form->addError("Season with given label already exist");
+	    $form->addError($this->tt("seasonsModule.seasonForm.errors.labelAlreadyExist", null, ["label" => $values->label]));
 	}
     }
 
     public function createSeasonHandle(ArrayHash $values) {
-	$season = new Season();
-	$season->fromArray((array) $values);
+	$season = new Season((array) $values);
 	try {
-	    // TODO set editor
+	    $season->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonService()->createSeason($season);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Season could not be created", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave(null, null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function actionUpdateSeason($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu id", self::FM_ERROR);
-	    $this->redirect("default");
+	    $this->handleBadArgument($id);
 	}
 	try {
 	    $dbSeason = $this->seasonService->getSeason($id);
@@ -150,52 +162,45 @@ class AdminPresenter extends SecuredPresenter {
 		$form = $this->getComponent('updateSeasonForm');
 		$form->setDefaults($dbSeason->toArray());
 	    }
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se načíst požadovaná data", self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
     }
 
     public function updateSeasonHandle(ArrayHash $values) {
-	$season = new Season();
-	$season->fromArray((array) $values);
+	$season = new Season((array) $values);
 	try {
+	    $season->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonService()->updateSeason($season);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se uložit požadované změny", self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($season->getId(), null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function handleDeleteSeason($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát arugmentu id", self::FM_ERROR);
-	    $this->redirect("default");
+	    $this->handleBadArgument($id);
 	}
-	try {
-	    $this->getSeasonService()->deleteSeason($id);
-	} catch (DataErrorException $ex) {
-	    switch ($ex->getCode()) {
-		case 1000:
-		    $season = $this->getSeasonService()->getSeason($id)->getLabel();
-		    $this->flashMessage("Nemůžete smazat sezónu '{$season}', která je užívána jinými entitami systému", self::FM_ERROR);
-		    break;
-	    }
-	} catch (Exception $ex) {
-	    dd($ex);
-	}
+	$this->doDeleteSeason($id);
 	$this->redirect("this");
     }
 
     public function createComponentAddSeasonForm($name) {
-	$form = new SeasonForm($this, $name);
+	$form = $this->prepareSeasonForm($name);
 	$form->initialize();
 	return $form;
     }
 
     public function createComponentUpdateSeasonForm($name) {
-	$form = new SeasonForm($this, $name);
+	$form = $this->prepareSeasonForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
+	return $form;
+    }
+
+    private function prepareSeasonForm($name) {
+	$form = new SeasonForm($this, $name, $this->getTranslator());
 	return $form;
     }
 
@@ -212,7 +217,8 @@ class AdminPresenter extends SecuredPresenter {
 	$headerId->style['width'] = '0.1%';
 
 	$grid->addColumnText('label', 'Název')
-		->setSortable();
+		->setSortable()
+		->setFilterText();
 	$headerLabel = $grid->getColumn('label')->headerPrototype;
 	$headerLabel->class[] = 'center';
 
@@ -228,19 +234,38 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid->addColumnText('comment', 'Poznámka')
 		->setSortable()
-		->setTruncate(15);
+		->setTruncate(15)
+		->setFilterText();
 	$headerNote = $grid->getColumn('comment')->headerPrototype;
 	$headerNote->class[] = 'center';
 
-	$grid->addColumnText('current', 'Aktivní')
-		->setSortable();
+	$y = $this->tt("system.common.yes");
+	$n = $this->tt("system.common.no");
+	$activeList = [null => null, true => $y, false => $n];
+	$grid->addColumnNumber('current', 'Aktivní')
+		->setReplacement(
+			[true => $y,
+			    null => $n])
+		->setSortable()
+		->setFilterSelect($activeList);
 	$headerCurrent = $grid->getColumn('current')->headerPrototype;
 	$headerCurrent->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deleteSeason!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateSeason')
+	$grid->addActionHref('delete', '', 'deleteSeason!')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("seasonsModule.admin.grid.reallyDeleteSeasonId", null, ["id" => $u->getId()]);
+		});
+	$grid->addActionHref('edit', '', 'updateSeason')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('pencil');
+
+	$grid->addActionHref('current', '', 'setSeasonCurrent!')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
+		->setIcon('check');
+
+	$grid->setOperation(["delete" => $this->tt("seasonsModule.admin.grid.delete")], null, $this->seasonsGridOperationsHandler);
 
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-seasons " . date("Y-m-d H:i:s", time()));
@@ -248,8 +273,41 @@ class AdminPresenter extends SecuredPresenter {
 	return $grid;
     }
 
-    // </editor-fold>
-    // <editor-fold desc="Administration of SEASON TAXES">
+    public function handleSetSeasonCurrent($id) {
+	if (!is_numeric($id)) {
+	    $this->handleBadArgument($id);
+	}
+	try {
+	    $this->seasonService->setSeasonCurrent($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($id, null, $ex);
+	}
+	$this->redirect("this");
+    }
+
+    public function seasonsGridOperationsHandler($op, $ids) {
+	switch ($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteSeason($id);
+		}
+		break;
+	}
+	$this->redirect("this");
+    }
+
+    private function doDeleteSeason($id) {
+	try {
+	    $this->getSeasonService()->deleteSeason($id);
+	} catch (Exceptions\DependencyException $ex) {
+	    $this->handleDependencyDelete($id, null, $ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, null, $ex);
+	}
+    }
+
+// </editor-fold>
+// <editor-fold desc="Administration of SEASON TAXES">
 
     public function actionCreateSeasonTax() {
 	// render form
@@ -266,26 +324,27 @@ class AdminPresenter extends SecuredPresenter {
 		    $this->updateSeasonTaxHandle($values);
 		    break;
 	    }
-	} catch (DuplicateEntryException $ex) {
-	    $this->flashMessage("Season tax for this season and group already exist", self::FM_ERROR);
+	} catch (Exceptions\DuplicateEntryException $ex) {
+	    $this->logError($ex);
+	    $form->addError(
+		    $this->tt("seasonsModule.admin.errors.seasonGroupExists"), self::FM_WARNING);
 	}
     }
 
     public function createSeasonTaxHandle(ArrayHash $values) {
 	$tax = new SeasonTax((array) $values);
 	try {
-	    $this->getSeasonTaxService()->createSeasonTax($tax);
-	} catch (Exception $ex) {
-	    $this->flashMessage("Season tax could not be saved", self::FM_ERROR);
-	    dd($ex);
+	    $tax->setEditor($this->getUser()->getIdentity());	
+    $this->getSeasonTaxService()->createSeasonTax($tax);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleError(null, null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function actionUpdateSeasonTax($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu, '{$id}' předáno.", self::FM_WARNING);
-	    $this->redirect("default");
+	    $this->handleBadArgument($id);
 	}
 	try {
 	    $tax = $this->getSeasonTaxService()->getSeasonTax($id);
@@ -293,36 +352,30 @@ class AdminPresenter extends SecuredPresenter {
 		$form = $this->getComponent("updateSeasonTaxForm");
 		$form->setDefaults($tax->toArray());
 	    } else {
-		$this->flashMessage("Season tax with given id does not exist", self::FM_WARNING);
+		$this->flashMessage(
+			$this->tt("seasonsModule.admin.errors.seasonTaxIdDoesntExist", null, ["id" => $id]), self::FM_WARNING);
 	    }
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Data se nepodařilo načíst", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
     }
 
     public function updateSeasonTaxHandle(ArrayHash $values) {
 	$tax = new SeasonTax((array) $values);
 	try {
+	    $tax->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonTaxService()->updateSeasonTax($tax);
-	} catch (DataErrorException $e) {
-	    $this->flashMessage("Požadovaná změna nemohla být uložena", self::FM_ERROR);
-	    dd($e);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function handleDeleteSeasonTax($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu, '{$id}' předáno.", self::FM_WARNING);
-	    $this->redirect("default");
+	    $this->handleBadArgument($id);
 	}
-	try {
-	    $this->getSeasonTaxService()->deleteSeasonTax($id);
-	} catch (Exception $ex) {
-	    $this->flashMessage("Požadovaná data nemohla být smazána", self::FM_ERROR);
-	    dd($ex);
-	}
+	$this->doDeleteSeasonTax($id);
 	$this->redirect("this");
     }
 
@@ -340,18 +393,17 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     private function prepareSeasonTaxForm($name) {
-	$form = new SeasonTaxForm($this, $name);
+	$form = new SeasonTaxForm($this, $name, $this->getTranslator());
 	try {
-	    $sportGroups = $this->getSportGroupsService()->getSelectSportGroups();
+	    $sportGroups = $this->getSportGroupsService()->getSelectApplicableGroups();
 	    $seasons = $this->getSeasonService()->getSelectSeasons();
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se načíst potřebná data", self::FM_ERROR);
-	    $this->redirect("default");
+	    
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, null, $ex);
 	}
 	$form->setSportGroups($sportGroups);
 	$form->setSeasons($seasons);
-	$form->setMemberShip(true); // TODO MODULE CONFIG
-	$form->setCreditsActivated(true); // TODO MODULE CONFIG
+	if ($this->isMemberShip()) $form->setMemberShip();
 	return $form;
     }
 
@@ -381,6 +433,13 @@ class AdminPresenter extends SecuredPresenter {
 		->setSortable();
 	$headerTill = $grid->getColumn('changed')->headerPrototype;
 	$headerTill->class[] = 'center';
+	
+	if ($this->isMemberShip()) {
+	    $grid->addColumnText('memberShip', 'Člp')
+		    ->setSortable();
+	    $headerMship = $grid->getColumn('memberShip')->headerPrototype;
+	    $headerMship->class[] = 'center';
+	}
 
 	$grid->addColumnText('comment', 'Poznámka')
 		->setSortable()
@@ -388,117 +447,139 @@ class AdminPresenter extends SecuredPresenter {
 	$headerNote = $grid->getColumn('comment')->headerPrototype;
 	$headerNote->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deleteSeasonTax!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateSeasonTax')
+	$grid->addActionHref('delete', '', 'deleteSeasonTax!')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("seasonsModule.admin.grid.reallyDeleteTaxId", null, ["id" => $u->getId()]);
+		});
+	$grid->addActionHref('edit', '', 'updateSeasonTax')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('pencil');
 
+	$grid->setOperation(
+		["delete" => $this->tt("seasonsModule.admin.grid.delete")], $this->taxOperationsGridHandle);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-seasons " . date("Y-m-d H:i:s", time()));
 
 	return $grid;
     }
+    
+    private function doDeleteSeasonTax($id) {
+	try {
+	    $this->getSeasonTaxService()->deleteSeasonTax($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
+	}
+    }
+    
+    public function taxOperationsGridHandle($ops, $ids) {
+	switch($ops) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteSeasonTax($id);
+		}
+		break;
+	}
+	$this->redirect("this");
+    }
 
-    // </editor-fold>
-    // <editor-fold desc="Administration of SEASON APPLICATIONS">
+// </editor-fold>
+// <editor-fold desc="Administration of SEASON APPLICATIONS">
 
     public function actionCreateSeasonApplication() {
-	// render form
+// render form
     }
 
     public function createSeasonApplicationHandle(ArrayHash $values) {
-	dd($values);
 	$app = new SeasonApplication((array) $values);
-	dd($app);
 	try {
 	    $this->getSeasonApplicationService()->createSeasonApplication($app);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Přihláška nemohla být uložena", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($app->getId(), null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function actionUpdateSeasonApplication($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu, '{$id}' předáno.", self::FM_WARNING);
-	    $this->redirect("default");
+	    $this->handleBadArgument($id);
 	}
 	try {
 	    $app = $this->getSeasonApplicationService()->getSeasonApplication($id);
 	    if ($app !== null) {
 		$form = $this->getComponent("updateSeasonApplicationForm");
-
 		$form->setDefaults($app->toArray());
 	    } else {
-		$this->flashMessage("Pokoušíte se upravit entitu s neplatným id");
+		$this->flashMessage(
+			$this->tt("seasonsModule.admin.error.seasonAppIdDoesntExist", null, ["id" => $id]));
 	    }
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Data nemohla být načtena", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
     }
 
     public function updateSeasonApplicationHandle(ArrayHash $values) {
 	$app = new SeasonApplication((array) $values);
 	try {
+	    $app->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonApplicationService()->updateSeasonApplication($app);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Požadované změny nemohly být uloženy", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($app->getId(), null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function handleDeleteSeasonApplication($id) {
 	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu, '{$id}' předáno.", self::FM_WARNING);
-	    $this->redirect("default");
+	    $this->handleBadArgument($id);
 	}
-	try {
-	    $this->getSeasonApplicationService()->deleteSeasonApplication($id);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Požadovaná přihláška nemohla být smazána", self::FM_ERROR);
-	}
+	$this->doDeleteSeasonApplication($id);
 	$this->redirect("this");
     }
-    
+
     public function seasonApplicationFormSubmitHandle(Form $form) {
 	$values = $form->getValues();
 	try {
 	    switch ($form->getMode()) {
 		case FormMode::CREATE_MODE:
-		    $this->createSeasonApplicationHandle($values);
+		    $users = $values->owner;
+		    $values->offsetUnset("owner");
+		    foreach ($users as $u) {
+			$values["owner"] = $u;
+			$this->createSeasonApplicationHandle($values);
+		    }
 		    break;
 		case FormMode::UPDATE_MODE:
 		    $this->updateSeasonApplicationHandle($values);
 		    break;
 	    }
-	} catch (DuplicateEntryException $ex) {
-	    $this->flashMessage("Season application for this combination of season - group - user already exist", self::FM_ERROR);
+	} catch (Exceptions\InvalidStateException $ex) {
+	    $this->logWarning($ex);
+	    $form->addError($this->tt("seasonsModule.admin.error.appDeadlineExpired"));
+	} catch (Exceptions\DuplicateEntryException $ex) {
+	    $this->logWarning($ex);
+	    $form->addError($this->tt("seasonsModule.admin.error.seasonAppUniqueExist"), self::FM_ERROR);
 	}
     }
 
     public function prepareSeasonApplicationForm($name) {
-	$form = new SeasonApplicationForm($this, $name);
+	$form = new SeasonApplicationForm($this, $name, $this->getTranslator());
 	try {
 	    $seasons = $this->getSeasonService()->getSelectSeasons();
 	    $users = $this->getUsersService()->getSelectUsers();
-	    $groups = $this->getSportGroupsService()->getSelectSportGroups();
+	    $groups = $this->getSportGroupsService()->getSelectApplicableGroups();
 	    $form->setSeasons($seasons);
 	    $form->setUsers($users);
 	    $form->setSportGroups($groups);
-	    $form->setMemberShip(true);
-	    $form->setCreditsActivated(true);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se načíst potřebná data", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, null, $ex);
 	}
 
-	// TODO 
-	// AJAX po vyberu uzivatele vyjet selectbox s dokumentama k nemu prilozenejma
-	// pokud se budou vyuzivat dokumenty, tak by se hodila reuse tech prihlasek
-	// nebo zavest prihlasku do klubu jeste ze by byla prihlaska do klubu a s tim paralelne do kazde sezony zvlast
+// TODO 
+// AJAX po vyberu uzivatele vyjet selectbox s dokumentama k nemu prilozenejma
+// pokud se budou vyuzivat dokumenty, tak by se hodila reuse tech prihlasek
+// nebo zavest prihlasku do klubu jeste ze by byla prihlaska do klubu a s tim paralelne do kazde sezony zvlast
 	return $form;
     }
 
@@ -516,8 +597,11 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function createComponentSeasonApplicationGrid($name) {
+
 	$grid = new Grid($this, $name);
-	$grid->setModel($this->getSeasonApplicationService()->getSeasonApplicationsDataSource());
+	$grid->setModel(
+		$this->getSeasonApplicationService()
+			->getSeasonApplicationsDataSource());
 
 	$grid->addColumnNumber('id', '#')
 		->cellPrototype->class[] = 'center';
@@ -541,13 +625,15 @@ class AdminPresenter extends SecuredPresenter {
 	$headerSince = $grid->getColumn('sportGroup')->headerPrototype;
 	$headerSince->class[] = 'center';
 
-	$grid->addColumnDate('enrolledTime', 'Podáno')
-		->setSortable();
+	$grid->addColumnDate('enrolledTime', 'Podáno', self::DATETIME_FORMAT)
+		->setSortable()
+		->setCustomRender($this->appGridUpdatedRender);
 	$headerTill = $grid->getColumn('enrolledTime')->headerPrototype;
 	$headerTill->class[] = 'center';
 
 	$grid->addColumnDate('updated', 'Změněno')
-		->setSortable();
+		->setSortable()
+		->setCustomRender($this->appGridUpdatedRender);
 	$headerTill = $grid->getColumn('updated')->headerPrototype;
 	$headerTill->class[] = 'center';
 
@@ -557,14 +643,51 @@ class AdminPresenter extends SecuredPresenter {
 	$headerNote = $grid->getColumn('comment')->headerPrototype;
 	$headerNote->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deleteSeasonApplication!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateSeasonApplication')
+	$grid->addActionHref('delete', '', 'deleteSeasonApplication!')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("seasonsModule.admin.grid.reallyDeleteAppId", null, ["id" => $u->getId()]);
+		});
+
+	$grid->addActionHref('edit', '', 'updateSeasonApplication')
+//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('pencil');
+
+	$grid->setOperation(
+			["delete" => $this->tt("seasonsModule.admin.grid.delete")], null, $this->seasonAppOperationsHandler)
+		->setConfirm('delete', $this->tt("usersModule.admin.grid.reallyDeleteItems"));
 
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-season-applications " . date("Y-m-d H:i:s", time()));
     }
+    
+    public function appGridUpdatedRender($e) {
+	$ed = $e->getEditor();
+	return \Nette\Utils\Html::el("span")
+		->setText($e->getUpdated()->format(self::DATETIME_FORMAT))
+		->addAttributes(["title"=>"Editor: ".$ed]);
+    }
 
-    // </editor-fold>
+    public function seasonAppOperationsHandler($op, $ids) {
+	switch ($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteSeasonApplication($id);
+		}
+		break;
+	}
+	$this->redirect("this");
+    }
+
+    private function doDeleteSeasonApplication($id) {
+	try {
+	    $this->getSeasonApplicationService()
+		    ->deleteSeasonApplication($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
+	}
+    }
+
+// </editor-fold>
 }

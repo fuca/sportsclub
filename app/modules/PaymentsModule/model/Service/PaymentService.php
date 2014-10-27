@@ -18,12 +18,16 @@
 
 namespace App\PaymentsModule\Model\Service;
 
-use App\Model\Entities\Payment,
+use \App\Model\Entities\Payment,
+    \App\Model\Misc\Enum\PaymentStatus,
+    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities,
     \Nette\DateTime,
-    App\Model\Entities\SeasonApplication,
+    \Nette\Caching\Cache,
+    \Kdyby\Monolog\Logger,
+    \App\Model\Entities\SeasonApplication,
     \Kdyby\Doctrine\EntityManager,
     \App\Services\Exceptions\NullPointerException,
-    \App\Services\Exceptions,
+    \App\Model\Misc\Exceptions,
     \App\Services\Exceptions\DataErrorException,
     \Kdyby\Doctrine\DuplicateEntryException,
     \Nette\InvalidArgumentException,
@@ -58,6 +62,23 @@ class PaymentService extends BaseService implements IPaymentService {
      * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     private $seasonService;
+    
+    /**
+     * Default due date DateTime modifier
+     * @var string
+     */
+    private $dueDate;
+    
+    public function getDefaultDueDate() {
+	return new DateTime($this->dueDate);
+    }
+
+    public function setDefaultDueDate($dueDate) {
+	if (!\Nette\Utils\Strings::contains($dueDate, "+")) {
+	   $dueDate = "+ ".$dueDate;
+	}
+	$this->dueDate = $dueDate;
+    }
 
     public function getUsersService() {
 	return $this->usersService;
@@ -75,14 +96,14 @@ class PaymentService extends BaseService implements IPaymentService {
 	$this->seasonService = $seasonService;
     }
 
-    function __construct(EntityManager $em) {
-	parent::__construct($em, Payment::getClassName());
+    function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Payment::getClassName(), $logger);
 	$this->paymentDao = $em->getDao(Payment::getClassName());
     }
 
     public function createPayment(Payment $p) {
 	if ($p === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
+	    throw new Exceptions\NullPointerException("Argument Payment was null.");
 	try {
 	    $now = new DateTime();
 	    $this->entityManager->beginTransaction();
@@ -90,66 +111,72 @@ class PaymentService extends BaseService implements IPaymentService {
 	    $this->paymentSeasonTypeHandle($p);
 	    $this->paymentEditorTypeHandle($p);
 	    $p->setOrderedDate($now);
+	    if ($p->getVs() === null) $p->setVs($p->getOwner()->getBirthNumber());
 	    $this->paymentDao->save($p);
 	    $this->invalidateEntityCache($p);
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $this->entityManager->rollback();
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function paymentOwnerTypeHandle(Payment $p) {
 	if ($p === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
+	    throw new Exceptions\NullPointerException("Argument Payment was null.", 0);
 	try {
 	    $oId = $this->getMixId($p->getOwner());
 	    if ($oId !== null) {
 		$owner = $this->getUsersService()->getUser($oId, false);
 		$p->setOwner($owner);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $p;
     }
 
     private function paymentEditorTypeHandle(Payment $p) {
 	if ($p === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
+	    throw new Exceptions\NullPointerException("Argument Payment was null.", 0);
 	try {
 	    $rId = $this->getMixId($p->getEditor());
 	    if ($this->getUsersService() !== null && $rId !== null) {
 		$editor = $this->getUsersService()->getUser($rId, false);
 		$p->setEditor($editor);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $p;
     }
 
     private function paymentSeasonTypeHandle(Payment $p) {
 	if ($p === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
+	    throw new Exceptions\NullPointerException("Argument Payment was null.", 0);
 	try {
 	    $sId = $this->getMixId($p->getSeason());
 	    if ($this->getSeasonService() !== null && $sId !== null) {
 		$season = $this->getSeasonService()->getSeason($sId, false);
 		$p->setSeason($season);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $p;
     }
 
     public function getPayment($id, $useCache = true) {
-	if ($id === NULL)
-	    throw new NullPointerException("Argument id was null.", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
 	try {
 	    if (!$useCache) {
 		return $this->paymentDao->find($id);
@@ -162,42 +189,34 @@ class PaymentService extends BaseService implements IPaymentService {
 		$opt = [Cache::TAGS => [self::ENTITY_COLLECTION, self::SELECT_COLLECTION, $id]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
 
     public function deletePayment($id) {
-	if ($id === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	try {
 	    $payment = $this->paymentDao->find($id, false);
-	    if ($payment !== null) {
+	    if ($payment !== null && $payment->getStatus() !== PaymentStatus::SENT) {
 		$this->paymentDao->delete($payment);
 		$this->invalidateEntityCache($payment);
 	    }
 	} catch (DBALException $ex) {
-	    throw new DataErrorException($ex->getMessage(), 1000, $ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $this->logWarning($ex);
+	    throw new DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
-    }
-
-    public function markAsDone(Payment $p) {
-	if ($p === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
-	throw new \Nette\NotImplementedException("How should this method work? Update payment is not enough?");
-//TODO
     }
 
     public function updatePayment(Payment $p) {
 	if ($p === NULL)
-	    throw new \App\Services\Exceptions\NullPointerException("Argument Payment was null.", 0);
-	if ($p === NULL)
-	    throw new NullPointerException("Argument Payment was null.", 0);
+	    throw new Exceptions\NullPointerException("Argument Payment was null.");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $paymentDb = $this->paymentDao->find($p->getId(), false);
@@ -211,17 +230,63 @@ class PaymentService extends BaseService implements IPaymentService {
 	    }
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $this->entityManager->rollback();
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logError($ex);
+	    throw new DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
-    public function getPaymentsDatasource() {
-	$model = new Doctrine(
-		$this->paymentDao->createQueryBuilder('pa'));
-	return $model;
+    public function getPaymentsDatasource(Entities\User $u = null) {
+	
+	$model = $this->paymentDao->createQueryBuilder('pa');
+	if ($u !== null) {
+	    $model->where("pa.owner = :id")->setParameter("id", $u->getId());
+	}
+	return new Doctrine($model);
     }
 
-// plan functionality of users payments
+    public function markAsDoneSent($id, Entities\User $user) {
+	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
+	$this->markAs($id, $user, PaymentStatus::SENT);
+    }
+    
+    public function markAsDoneAcc($id, Entities\User $user) {
+	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
+	$this->markAs($id, $user, PaymentStatus::YES_ACCOUNT);
+    }
+    
+    public function markAsDoneCash($id, Entities\User $user) {
+	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
+	$this->markAs($id, $user, PaymentStatus::YES_CASH);
+    }
+    
+    public function generateVs(Payment $p) {
+	if ($p == null) return rand (1000, 99999);
+	if (empty($p->getVs())) return $p->getOwner()->getBirthNumber();
+	return $p->getVs();
+    }
+   
+    private function markAs($id, Entities\User $user, $as) {
+	try {
+	    $db = $this->paymentDao->find($id);
+	    if ($db !== null) {
+		$db->setStatus($as);
+		$db->setEditor($user);
+		$this->paymentEditorTypeHandle($db);
+		$this->entityManager->merge($db);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($db);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
 }

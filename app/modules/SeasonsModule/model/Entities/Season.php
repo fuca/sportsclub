@@ -16,10 +16,10 @@
  */
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\OneToMany,
-    Doctrine\ORM\Mapping\ManyToOne,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\OneToMany,
+    \Doctrine\ORM\Mapping\ManyToOne,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\ArticleStatus,

@@ -19,16 +19,13 @@
 namespace App\SeasonsModule\Model\Service;
 
 use \Nette\DateTime,
-    \Nette\Object,
-    Nette\Caching\Cache,
-    \App\SeasonModule\Model\Entities\SeasonApplication,
-    \App\SeasonModule\Model\Entities\Season,
+    \Nette\Caching\Cache,
     \App\Model\Entities\SeasonTax,
-    \Nette\InvalidArgumentException,
-    \App\Services\Exceptions\NullPointerException,
-    \App\Services\Exceptions\DataErrorException,
+    \App\Model\Entities\SportGroup,
+    \App\Model\Entities\Season,
+    \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\DuplicateEntryException,
-    \App\Services\Exceptions,
+    \App\Model\Misc\Exceptions,
     \Grido\DataSources\Doctrine,
     \App\Model\Service\BaseService,
     \App\UsersModule\Model\Service\IUserService,
@@ -88,14 +85,14 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	$this->userService = $userService;
     }
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, SeasonTax::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, SeasonTax::getClassName(), $logger);
 	$this->seasonTaxDao = $em->getDao(SeasonTax::getClassName());
     }
 
     public function createSeasonTax(SeasonTax $t) {
 	if ($t === null)
-	    throw new NullPointerException("Argument SeasonTax cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonTax cannot be null", 0);
 	try {
 	    $this->taxSeasonTypeHandle($t);
 	    $this->taxSportGroupTypeHandle($t);
@@ -105,72 +102,80 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	    $this->seasonTaxDao->save($t);
 	    $this->invalidateEntityCache($t);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_TAX, $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function taxSeasonTypeHandle(SeasonTax $t) {
 	if ($t == null)
-	    throw new NullPointerException("Argument SeasonTax cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonTax cannot be null", 0);
 	try {
 	    $season = $this->getMixId($t->getSeason());
 	    $sportGroup = $this->getSeasonService()->getSeason($season, false);
 	    $t->setSeason($sportGroup);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    return $t;
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
-	return $t;
     }
 
     private function taxSportGroupTypeHandle(SeasonTax $t) {
 	if ($t == null)
-	    throw new NullPointerException("Argument SeasonTax cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonTax cannot be null", 0);
 	try {
 	    $group = $this->getMixId($t->getSportGroup());
-	    $sportGroup = $this->getSportGroupService()->getSportGroup((integer) $group, false);
+	    $sportGroup = $this->getSportGroupService()
+		    ->getSportGroup((integer) $group, false);
 	    $t->setSportGroup($sportGroup);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $t;
     }
 
     private function taxEditorTypeHandle(SeasonTax $t) {
 	if ($t == null)
-	    throw new NullPointerException("Argument SeasonTax cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonTax cannot be null", 0);
 	try {
 	    $u = $this->getMixId($t->getEditor());
 	    if ($u !== null) {
 		$editor = $this->getUserService()->getUser($u, false);
 		$t->setEditor($editor);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $t;
     }
 
     public function deleteSeasonTax($id) {
 	if ($id == null)
-	    throw new NullPointerException("Argumen id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argumen id cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
 	try {
 	    $db = $this->seasonTaxDao->find($id);
 	    if ($db !== null) {
 		$this->seasonTaxDao->delete($db);
 		$this->invalidateEntityCache($db);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function updateSeasonTax(SeasonTax $t) {
 	if ($t == null)
-	    throw new NullPointerException("Argumen SeasonTax cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonTax cannot be null", 0);
 	try {
 	    $this->entityManager->beginTransaction();
 	    $tDb = $this->seasonTaxDao->find($t->getId());
@@ -180,15 +185,19 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		$this->taxSportGroupTypeHandle($tDb);
 		$this->taxEditorTypeHandle($tDb);
 		$tDb->setChanged(new DateTime());
+		
 		$this->entityManager->merge($tDb);
 		$this->entityManager->flush();
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($t);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_TAX, $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -200,7 +209,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 
     public function getSeasonTax($id) {
 	if (!is_numeric($id))
-	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
 	try {
 	    $cache = $this->getEntityCache();
 	    $data = $cache->load($id);
@@ -210,10 +219,23 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
-
+    
+    public function getSeasonTaxSG(Season $s, SportGroup $sg) {
+	try {
+	    return $this->seasonTaxDao->createQueryBuilder("st")
+			->where("st.season = :season AND st.sportGroup = :group")
+			->setParameter("season", $s)->setParameter("group", $sg)
+			->getQuery()->getSingleResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 }

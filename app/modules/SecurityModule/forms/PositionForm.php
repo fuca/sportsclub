@@ -2,10 +2,10 @@
 
 namespace App\SecurityModule\Forms;
 
-use App\Forms\BaseForm,
-    App\Model\Misc\Enum\FormMode,
+use \App\Forms\BaseForm,
+    \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
-    \App\Services\Exceptions\DuplicateEntryException;
+    \App\Model\Misc\Exceptions\DuplicateEntryException;
 
 /**
  * Form for creating and updating Positions
@@ -52,28 +52,37 @@ class PositionForm extends BaseForm {
 	$this->addHidden('id');
 
 	if ($this->getMode() == FormMode::CREATE_MODE)
-	    $this->addGroup('Nová pozice');
+	    $this->addGroup('securityModule.posForm.newPosGroup');
 	else
-	    $this->addGroup('Editace pozice');
+	    $this->addGroup('securityModule.posForm.editPosGroup');
 
-	$this->addSelect("owner", "Uživatel", $this->getUsers())
-		->setPrompt("Vyberte uživatele..")
-		->addRule(Form::FILLED, "Uživatel musí být vybrán")
+	$this->addSelect("owner", "securityModule.posForm.user", $this->getUsers())
+		->setPrompt("securityModule.posForm.userSelect")
+		->addRule(Form::FILLED, "securityModule.posForm.userMustSelect")
 		->setRequired(true);
 	
-	$this->addSelect("role", "Role", $this->getRoles())
-		->setPrompt("Vyberte roli..")
-		->addRule(Form::FILLED, "Role musí být vybrána")
+	$this->addSelect("role", "securityModule.posForm.role", $this->getRoles())
+		->setPrompt("securityModule.posForm.roleSelect")
+		->addRule(Form::FILLED, "securityModule.posForm.roleMustSelect")
 		->setRequired(true);
 	
-	$this->addSelect("group", "Skupina", $this->getSportGroups())
-		->setPrompt("Vyberte skupinu..")
-		->addRule(Form::FILLED, "Skupina musí být vybrána")
+	$this->addSelect("group", "securityModule.posForm.group", $this->getSportGroups())
+		->setPrompt("securityModule.posForm.groupSelect")
+		->addRule(Form::FILLED, "securityModule.posForm.groupMustSelect")
 		->setRequired(true);
+	
+	$this->addCheckbox("publishContact", "securityModule.posForm.publishContact")
+		->addCondition(Form::EQUAL, true)
+		->toggle("position-name");
+	
+	$this->addText("name", "securityModule.posForm.name")
+		->setOption("id", "position-name")
+		->addCondition(Form::EQUAL, $this["publishContact"]->value, true)
+		->addRule(Form::FILLED, "securityModule.posForm.nameMustFill");
 
-	$this->addTextArea('comment', 'Poznámka');
+	$this->addTextArea('comment', 'securityModule.posForm.note');
 
-	$this->addSubmit('submitButton', 'Uložit');
+	$this->addSubmit('submitButton', 'system.forms.submitButton.label');
 
 	$this->onSuccess[] = callback($this, 'positionFormSubmitted');
     }
@@ -95,7 +104,7 @@ class PositionForm extends BaseForm {
 		    break;
 	    }
 	} catch (DuplicateEntryException $e) {
-	    $this->addError("This of Position already exists");
+	    $this->addError("securityModule.posForm.posExist");
 	}
     }
 

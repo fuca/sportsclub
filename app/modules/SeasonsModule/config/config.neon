@@ -1,3 +1,4 @@
+
 services:
 
 	seasonsModule.cacheStorage: 
@@ -30,3 +31,7 @@ services:
 				- setSeasonService()
 				- setSeasonTaxService()
 				- setPaymentService()
+
+	seasons.adminPresenter:
+		class:	
+			App\SeasonsModule\Presenters\AdminPresenter

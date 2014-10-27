@@ -17,22 +17,32 @@
  */
 
 namespace App\SystemModule\Presenters;
-use App\SystemModule\Presenters\BasePresenter;
+use \App\SystemModule\Presenters\BasePresenter;
 
 /**
  * PublicPresenter
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class  PublicPresenter extends  BasePresenter {
+class PublicPresenter extends BasePresenter {
     
     /**
      * @inject
-     * @var \Kdyby\Monolog\Logger
+     * @var \App\Model\Service\IPositionService
      */
-    public $logger;
+    public $positionService;
     
     public function renderDefault() {
+    }
+    
+    public function actionShowContacts($gid = 5) {
+	$data = false;
+	try {
+	    $data = $this->positionService->getPositionsWithinGroup($gid);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($gid, "default", $ex);
+	}
+	$this->template->data = $data;
     }
 
 }

@@ -3,13 +3,10 @@
 
 {block content}
 
-<a href="{plink :System:Admin:addSportType}">Novy druh sportu</a>
-
-{control sportTypeGrid}
-
-
-<a href="{plink :System:Admin:addSportGroup}">Nova skupina</a>
+<a href="{plink :System:Admin:addSportGroup}">{_ systemModule.admin.groupAdd}</a>
 
 {control sportGroupGrid}
 
+<a href="{plink :System:Admin:addSportType}">{_ systemModule.admin.sportAdd}</a>
 
+{control sportTypeGrid}

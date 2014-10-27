@@ -26,6 +26,12 @@ admin.messages:
 
 admin.grid:
 	never: "Never"
+	update: "Update"
+	delete: "Delete"
+	pwRegen: "Regenerate new password"
+	updateWp: "Update user's web profile"
+	denyProfile: "Deny web profile changes"
+	permitProfile: "Permit web profile changes"
 	reallyDeleteItems: "Are you sure you want to delete %i items?"
 
 webProfForm:

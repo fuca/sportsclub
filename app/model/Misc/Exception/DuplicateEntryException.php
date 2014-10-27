@@ -26,8 +26,11 @@ namespace App\Model\Misc\Exceptions;
  */
 class DuplicateEntryException extends \Exception implements IException {
     
-    const EMAIL_EXISTS = 105,
-	  BIRTH_NUM_EXISTS = 102;
+    const EMAIL_EXISTS = 101,
+	  BIRTH_NUM_EXISTS = 102,
+	  SEASON_LABEL = 103,
+	  SEASON_TAX = 104,
+	  SEASON_APPLICATION = 105;
 
     public function __construct($message = null, $code = 0, \Exception $previous = NULL) {
 	parent::__construct($message, $code, $previous);

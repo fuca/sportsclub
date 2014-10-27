@@ -131,7 +131,7 @@ class AdminPresenter extends SecuredPresenter {
      * @param numeric $id
      */
     public function actionUpdateUser($id) {
-	if ($id === null || !is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
+	if ($id === null || !is_numeric($id)) $this->handleBadArgument($id, "default");
 	try {
 	    $uUser = $this->userService->getUser($id);
 	    $form = $this->getComponent('updateUserForm');
@@ -350,23 +350,28 @@ class AdminPresenter extends SecuredPresenter {
 	//$grid->addActionHref('application', '[Prihl]', 'userApplications');
 	// setDisable() - nastavi callback, kdy ma byt vypnuto - vhodne pri overovani opravneni
 	$grid->addActionHref("regenPassword", "", 'regenPassword!')
+		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.pwRegen")]))
 		->setIcon('lock')
 		->setConfirm(function($u) {
 		    return "Are you sure you want to regenerate password for user {$u->surname} {$u->name} ({$u->id})?";
 		});
 	$grid->addActionHref('delete', '', "deleteUser!")
+		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.delete")]))
 		->setIcon('trash')
 		->setConfirm(function($u) {
 		    return "Are you sure you want to delete user {$u->surname} {$u->name} ({$u->id})?";
 		});
 	$grid->addActionHref('update', '', 'updateUser')
+		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.update")]))
 		->setIcon('pencil');
+	
 
 	$grid->addActionHref('webProfile', '', 'updateWebProfile')
+		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.updateWp")]))
 		->setIcon('th-list');
 
 	$operation = array('delete' => 'Delete', 'activeToggle' => 'ActiveToggle');
-	$grid->setOperation($operation, $this->gridOperationsHandler)
+	$grid->setOperation($operation, $this->usersGridOperationsHandler)
 		->setConfirm('delete', $this->tt("usersModule.admin.grid.reallyDeleteItems"));
 
 	$grid->setFilterRenderType($this->filterRenderType);
@@ -376,31 +381,24 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     /**
-     * Grid operations handler
+     * Users grid operations handler
      * @param string $operation name
      * @param string $id Array of identifier
      */
-    public function gridOperationsHandler($operation, $id) {
+    public function usersGridOperationsHandler($operation, $id) {
 	switch ($operation) {
 	    case 'deactivate':
 		foreach ($id as $i) {
 		    $this->doToggleActivity($i);
 		}
 		break;
-	    case 'application':
-		foreach ($id as $i) {
-		    //$this->_semiAutomaticApplication($i);
-		}
-		dd("Not implemented yet");
-		$this->redirect('this');
-		break;
 	    case 'delete':
 		foreach ($id as $i) {
 		    $this->doDeleteUser($id);
 		}
-		$this->redirect('this');
 		break;
 	}
+	$this->redirect('this');
     }
 
     // </editor-fold>
@@ -433,12 +431,14 @@ class AdminPresenter extends SecuredPresenter {
 	$headerData->style['width'] = '40%';
 
 	$grid->addActionHref('yes', '', "permitProfile!")
+		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.permitProfile")]))
 		->setIcon('ok')
 		->setConfirm(function($u) {
 		    return "Are you sure you really want to PERMIT profile #{$u->getId()}?";
 		});
 
 	$grid->addActionHref('no', '', "denyProfile!")
+		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.denyProfile")]))
 		->setIcon('remove')
 		->setConfirm(function($u) {
 		    return "Are you sure you really want to DENY profile #{$u->getId()}?";

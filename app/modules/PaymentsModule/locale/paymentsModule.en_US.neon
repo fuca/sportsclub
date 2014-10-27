@@ -1,0 +1,26 @@
+admin.grid.messages:
+    rlyDelPayment: "Do you really delete payment #%id%?"
+    rlyDelPaymentItems: "Do you really delete %i payments?"
+admin.grid:
+    user: "User"
+    season: "Season"
+    ordered: "Ordered"
+    amount: "Amount"
+    status: "State"
+    dueDate: "Due date"
+    subject: "Subject"
+    markDoneAcc: "Set as payed acc"
+    markDoneCash: "Set as payed cash"
+    markSent: "Set as sent"
+
+admin:
+    paymentNew: "New payment"
+    paymentAdd: "Add new payment"
+
+
+protected:
+    myPayments: "My payments"
+    paymentDetailId: "Payment detail"
+
+protected.grid.messages:
+    rlyMarkAsSent: "Do you really want to mark payment #%id% as SENT"

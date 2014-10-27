@@ -36,7 +36,7 @@ interface IPositionService {
     
     function getUserPositions(User $u);
     
-    function getUsersWithinGroup($id);
+    function getPositionsWithinGroup($id);
     
     function getPosition($id);
     

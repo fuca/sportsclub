@@ -19,12 +19,12 @@ namespace App\SecurityModule\Model\Service;
 
 use 
     \App\Model\Service\BaseService,
-    Nette\Caching\Cache,
+    \Nette\Caching\Cache,
     \App\SecurityModule\Model\Service\IResourceService,
     \Kdyby\Doctrine\EntityManager,
     \Nette\Security\IAuthorizator,
-    App\Model\Service\IRoleService,
-    App\Model\Service\IAclRuleService,
+    \App\Model\Service\IRoleService,
+    \App\Model\Service\IAclRuleService,
     \Nette\Security\Permission;
 
 /**

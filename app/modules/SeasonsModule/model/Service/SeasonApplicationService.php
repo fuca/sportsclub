@@ -19,18 +19,16 @@
 namespace App\SeasonsModule\Model\Service;
 
 use \App\Model\Entities\SeasonApplication,
-	\Nette\DateTime,
-	Nette\Caching\Cache,
+    \Nette\DateTime,
+    \Nette\Caching\Cache,
     \Kdyby\Doctrine\EntityManager,
-    \App\Services\Exceptions\NullPointerException,
-    \App\Services\Exceptions,
-    \App\Services\Exceptions\DataErrorException,
+    \App\Model\Misc\Exceptions,
+    \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\DuplicateEntryException,
-    \Nette\InvalidArgumentException,
     \App\Model\Service\BaseService,
     \App\SeasonsModule\Model\Service\ISeasonService,
     \App\SeasonsModule\Model\Service\ISeasonTaxService,
-    App\PaymentsModule\Model\Service\IPaymentService,
+    \App\PaymentsModule\Model\Service\IPaymentService,
     \App\SystemModule\Model\Service\ISportGroupService,
     \App\UsersModule\Model\Service\IUserService,
     \Grido\DataSources\Doctrine;
@@ -72,8 +70,11 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
      */
     private $userService;
     
+    /** @var Event dispatched every time after create of SeasonApplication */
     public $onCreate = [];
 
+    // <editor-fold desc="GETTERS AND SETTERS">
+    
     public function getUserService() {
 	return $this->userService;
     }
@@ -113,20 +114,24 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
     public function setSportGroupService(ISportGroupService $sportGroupService) {
 	$this->sportGroupService = $sportGroupService;
     }
+    
+    // </editor-fold>
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, SeasonApplication::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, SeasonApplication::getClassName(), $logger);
 	$this->seasonApplicationDao = $em->getDao(SeasonApplication::getClassName());
     }
 
     public function createSeasonApplication(SeasonApplication $app) {
 	if ($app == null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $now = new DateTime();
 	    $this->applicationSeasonTypeHandle($app);
-	    //$this->applicationPaymentTypeHandle($app); // TODO create new payment
 	    $this->applicationGroupTypeHandle($app);
+	    if (!$this->isApplicationTime($app)) 
+		throw new Exceptions\InvalidStateException("Deadline expired");
+	    $this->applicationPaymentTypeHandle($app);
 	    $this->applicationOwnerTypeHandle($app);
 	    $this->applicationEditorTypeHandle($app);
 	    $app->setUpdated($now);
@@ -134,18 +139,37 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    $this->seasonApplicationDao->save($app);
 	    $this->invalidateEntityCache($app);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException();
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_APPLICATION);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	$this->onCreate(clone $app);
     }
     
-    function getSeasonApplication($id, $useCache = true) {
+    public function isApplicationTime(SeasonApplication $app) {
+	try {
+	    $sTax = $this->seasonTaxService->getSeasonTaxSG($app->getSeason(), $app->getSportGroup());
+	    $appDate = $sTax->getAppDate();
+	    if ($appDate !== null) {
+		$now = new DateTime();
+		if ($now > $appDate)
+		    return false;
+	    }
+	    return true;
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function getSeasonApplication($id, $useCache = true) {
 	if ($id === null)
-	    throw new NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
 	try {
 	    if (!$useCache) {
 		return $this->seasonApplicationDao->find($id);
@@ -157,28 +181,29 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
-    
 
     private function applicationSeasonTypeHandle(SeasonApplication $app) {
 	if ($app === null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $id = $this->getMixId($app->getSeason());
 	    $season = $this->getSeasonService()->getSeason($id, false);
 	    $app->setSeason($season);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function applicationPaymentTypeHandle(SeasonApplication $app) {
 	if ($app === null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $payment = null;
 	    if ($this->getPaymentService() !== null) {
@@ -188,14 +213,15 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		}
 	    }
 	    $app->setPayment($payment);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function applicationGroupTypeHandle(SeasonApplication $app) {
 	if ($app === null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $group = null;
 	    if ($this->getSportGroupService() !== null) {
@@ -203,14 +229,15 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		$group = $this->getSportGroupService()->getSportGroup($id, false);
 	    }
 	    $app->setSportGroup($group);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function applicationOwnerTypeHandle(SeasonApplication $app) {
 	if ($app === null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $owner = null;
 	    if ($this->getUserService() !== null) {
@@ -220,14 +247,15 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		}
 	    }
 	    $app->setOwner($owner);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function applicationEditorTypeHandle(SeasonApplication $app) {
 	if ($app === null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -237,34 +265,37 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		}
 	    }
 	    $app->setEditor($editor);
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function deleteSeasonApplication($id) {
 	if ($id === null)
-	    throw new NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    throw new Exeptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
 	try {
 	    $appDb = $this->seasonApplicationDao->find($id);
 	    if ($appDb !== null) {
 		$this->seasonApplicationDao->delete($appDb);
 		$this->invalidateEntityCache($appDb);
 	    }
-	} catch (Exception $ex) {
-	    throw new DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function updateSeasonApplication(SeasonApplication $app) {
 	if ($app === null)
-	    throw new NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
 	try {
 	    $this->entityManager->beginTransaction();
 	    $appDb = $this->seasonApplicationDao->find($app->getId(), false);
 	    if ($appDb !== null) {
+		$app->setEnrolledTime($appDb->getEnrolledTime());
 		$appDb->fromArray($app->toArray());
 		$this->applicationSeasonTypeHandle($appDb);
 		$this->applicationPaymentTypeHandle($appDb);
@@ -278,9 +309,12 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($appDb);
 	} catch (DuplicateEntryException $ex) {
-	    throw new Exceptions\DuplicateEntryException($ex);
-	} catch (Exception $ex) {
-	    throw new DataErrorException();
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException(
+		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_APPLICATION, $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -288,7 +322,6 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	$model = new Doctrine(
 		$this->seasonApplicationDao->createQueryBuilder('sa'));
 	return $model;
-	// TODO pripadne pridelat where season id id ....
     }
 
 }

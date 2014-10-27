@@ -1,8 +1,8 @@
 <?php
 
-use Nette\Forms\Form,
-    Vodacek\Forms\Controls\DateInput,
-    Doctrine\DBAL\Types\Type;
+use \Nette\Forms\Form,
+    \Vodacek\Forms\Controls\DateInput,
+    \Doctrine\DBAL\Types\Type;
 	
 
 //if (!class_exists('Tester\Assert')) {

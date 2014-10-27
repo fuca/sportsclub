@@ -37,4 +37,6 @@ interface ISeasonApplicationService {
     
     function getSeasonApplication($id);
     
+    function isApplicationTime(SeasonApplication $app);
+    
 }

@@ -22,7 +22,7 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
     \App\Services\Exceptions\DuplicateEntryException,
-    Vodacek\Forms\Controls\DateInput;
+    \Vodacek\Forms\Controls\DateInput;
 
 /**
  * Form for creating and updating sport types
@@ -36,7 +36,6 @@ final class SportGroupForm extends BaseForm {
      * @var array of sport groups
      */
     private $sportGroups;
-    
     
     /**
      * @var array of sport types
@@ -76,42 +75,39 @@ final class SportGroupForm extends BaseForm {
     public function initialize() {
 
 	if ($this->getMode() == FormMode::CREATE_MODE) {
-	    $this->addGroup('Nová skupina');
+	    $this->addGroup("systemModule.sportGroupForm.newGroup");
 	} else {
-	    $this->addGroup('Editace skupiny');
+	    $this->addGroup("systemModule.sportGroupForm.editGroup");
 	}
-	
 
 	$this->addHidden('id');
-	$this->addText('name', 'Název')
-		->addRule(Form::FILLED, "Název musí výt vyplněn")
+	$this->addText('name', "systemModule.sportGroupForm.name")
+		->addRule(Form::FILLED, "systemModule.sportGroupForm.nameMustFill")
 		->setRequired(true);
 
-	$this->addTextArea('description', "Popis", 30, 4)
-		->addRule(Form::FILLED, "Pole popis je povinné")
-		->setRequired(TRUE);
+	$this->addTextArea('description', "systemModule.sportGroupForm.desc", 30, 4);
 	
-	$this->addText('abbr', "Zkratka")
-		->addRule(Form::FILLED, "Pole zkratka nesmí být prázdné");
+	$this->addText('abbr', "systemModule.sportGroupForm.abbr")
+		->addRule(Form::FILLED, "systemModule.sportGroupForm.abbrMustFill")
+		->setRequired();
 	
-	$this->addSelect('parent', 'Nadřazená skupina', $this->getSportGroups())
-		->setPrompt("Vyberte skupinu..");
-	
-	$this->addDate("appDate", "Deadline přihlášek", DateInput::TYPE_DATE)
-		->addRule(Form::FILLED, "Datum deadlinu přihlášek musí být vybrán");
+	$this->addSelect('parent', "systemModule.sportGroupForm.parent", $this->getSportGroups())
+		->setPrompt("systemModule.sportGroupForm.groupSel")
+		->addRule(Form::FILLED, "systemModule.sportGroupForm.parentMustFill")
+		->setRequired();
 
-	$this->addSelect('priority', 'Priorita', $this->getPriorities())
-		->addRule(Form::FILLED, "Priorita musí být vybrána")
-		->setPrompt("Vyberte prioritu..");
+	$this->addSelect('priority', "systemModule.sportGroupForm.priority", $this->getPriorities())
+		->addRule(Form::FILLED, "systemModule.sportGroupForm.priorityMustFill")
+		->setPrompt("systemModule.sportGroupForm.prioritySel");
 	
-	$this->addSelect('sportType', 'Druh sportu', $this->getSportTypes())
-		->setPrompt("Vyberte sport..")
-		->addRule(Form::FILLED, "Typ sportu musí být vyplněn")
+	$this->addSelect('sportType', "systemModule.sportGroupForm.sport", $this->getSportTypes())
+		->setPrompt("systemModule.sportGroupForm.sportSel")
+		->addRule(Form::FILLED, "systemModule.sportGroupForm.sportMustFill")
 		->setRequired(true);
 		
-	$this->addCheckbox('activity', 'Aktivní');
+	$this->addCheckbox('activity', "systemModule.sportGroupForm.active");
 	
-	$this->addSubmit('submit', 'Uložit');
+	$this->addSubmit('submit', "system.forms.submitButton.label");
 
 	$this->onSuccess[] = callback($this, 'sportTypeFormSubmitted');
     }
@@ -129,9 +125,7 @@ final class SportGroupForm extends BaseForm {
 		    break;
 	    }
 	} catch (DuplicateEntryException $ex) {
-	    $name = $values->name;
-	    // TODO LOG
-	    $this->addError("Sport type with name {$name} already exists");
+	    $this->addError($this->presenter->tt("systemModule.sportGroupForm.groupNameExists", null, ["name"=>$values->name]));
 	}
     }
 

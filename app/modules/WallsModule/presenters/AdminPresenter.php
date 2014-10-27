@@ -132,7 +132,7 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $users = $this->usersService->getSelectUsers();
 	    $form->setUsers($users);
-	    $sGroups = $this->sportGroupService->getSelectSportGroups();
+	    $sGroups = $this->sportGroupService->getSelectAllSportGroups();
 	    $form->setSportGroups($sGroups);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleException($ex);

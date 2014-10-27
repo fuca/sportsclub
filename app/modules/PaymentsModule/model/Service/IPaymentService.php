@@ -18,7 +18,8 @@
 
 namespace App\PaymentsModule\Model\Service;
 
-use App\Model\Entities\Payment;
+use \App\Model\Entities\Payment,
+    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities;
 
 /**
  * Interface  for Payment Service
@@ -44,11 +45,14 @@ interface IPaymentService {
     
     function getPayment($id);
     
-    function getPaymentsDatasource();
+    function getPaymentsDatasource(Entities\User $u = null);
     
-    /**
-     * Marks payment as done
-     */
-    function markAsDone(Payment $p);
+    function generateVs(Payment $p);
+    
+    function getDefaultDueDate();
+    
+    function markAsDoneAcc($id, Entities\User $user);
+    function markAsDoneCash($id, Entities\User $user);
+    function markAsDoneSent($id, Entities\User $user);
     
 }

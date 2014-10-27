@@ -34,7 +34,6 @@ use \App\SystemModule\Presenters\SecuredPresenter,
 /**
  * AdminEventPresenter
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
- * @Secured
  */
 class AdminPresenter extends SecuredPresenter {
 
@@ -158,7 +157,7 @@ class AdminPresenter extends SecuredPresenter {
     public function prepareEventForm($name) {
 	$form = new EventForm($this, $name, $this->getTranslator());
 	try {
-	    $groups = $this->sportGroupsService->getSelectSportGroups();
+	    $groups = $this->sportGroupsService->getSelectAllSportGroups();
 	    $form->setSportGroups($groups);
 	    $users = $this->userService->getSelectUsers();
 	    $form->setUsers($users);

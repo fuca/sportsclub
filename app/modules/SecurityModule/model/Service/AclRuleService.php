@@ -19,14 +19,15 @@
 namespace App\Model\Service;
 
 use \App\Model\Entities\AclRule,
-    Kdyby\Doctrine\DuplicateEntryException,
+    \Kdyby\Doctrine\DuplicateEntryException,
     \App\Model\Misc\Exceptions,
     \Nette\DateTime,
     \Doctrine\Common\Collections\ArrayCollection,
-    Nette\Caching\Cache,
-    \Nette\Utils\Strings,
-    App\Model\Service\BaseService,
-    App\Model\Service\IRoleService,
+    \Nette\Caching\Cache,
+    \Kdyby\Monolog\Logger,
+    \Grido\DataSources\Doctrine,
+    \App\Model\Service\BaseService,
+    \App\Model\Service\IRoleService,
     \Kdyby\Doctrine\EntityManager;
 
 /**
@@ -52,9 +53,9 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	$this->roleService = $roleService;
     }
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, AclRule::getClassName());
-	$this->aclRuleDao = $em->getDao(\App\Model\Entities\AclRule::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, AclRule::getClassName(), $logger);
+	$this->aclRuleDao = $em->getDao(AclRule::getClassName());
     }
 
     /**
@@ -62,41 +63,46 @@ class AclRuleService extends BaseService implements IAclRuleService {
      * @return \Grido\DataSources\Doctrine
      */
     public function getRulesDatasource() {
-	$model = new \Grido\DataSources\Doctrine(
+	$model = new Doctrine(
 		$this->aclRuleDao->createQueryBuilder('rule'));
 	return $model;
     }
 
     public function createRule(AclRule $arule) {
-	if ($arule == null)
-	    throw new Exceptions\NullPointerException("Argument AclRule cannot be null", 0);
+	if ($arule === null)
+	    throw new Exceptions\NullPointerException("Argument AclRule cannot be null");
 	try {
-	    // TODO think about that 
-	    $roleDb = $this->roleService->getRole($arule->getRole(), false);
-	    //$roleDb = $this->entityManager->getDao(\App\Model\Entities\Role::getClassName())->find($arule->getRole());
-	    if ($roleDb !== null) {
-		$arule->setRole($roleDb);
-	    } else {
-		throw new Exceptions\DataErrorException("Attribute Role of AclRule does not exist within database,{$arule->getRole()} given.", 2);
-	    }
+	    $this->roleTypeHandle($arule);
 	    $this->aclRuleDao->save($arule);
 	    $this->invalidateEntityCache($arule);
-	} catch (DuplicateEntryException $e) {
-	    throw new Exceptions\DuplicateEntryException($e->getMessage(), 20, $e);
-	} catch (\Nette\InvalidArgumentException $e) {
-	    throw new Exceptions\InvalidArgumentException($e);
-	} catch (\Exception $e) {
-	    // TODO LOG ??
-	    throw new Exceptions\DataErrorException($e);
 	    
+	} catch (DuplicateEntryException $e) {
+	    $this->logWarning($e);
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+    }
+    
+    private function roleTypeHandle(AclRule $e) {
+	if ($e === null)
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	try {
+	    $role = null;
+	    $id = $this->getMixId($e->getRole());
+	    if ($id !== null) $role = $this->roleService->getRole($id, false);
+	    $e->setRole($role);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
     public function getRule($id, $useCache = true) {
 	if ($id === null)
-	    throw new Exceptions\NullPointerException("Argument id cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument id cannot be null");
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument if has to be type of numeric, {$id} given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument if has to be type of numeric, {$id} given");
 	try {
 	    if (!$useCache) {
 		return $this->aclRuleDao->find($id);
@@ -106,11 +112,12 @@ class AclRuleService extends BaseService implements IAclRuleService {
 
 	    if (empty($data)) {
 		$data = $this->aclRuleDao->find($id);
-		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id]];
+		$opt = [Cache::TAGS => [$this->getEntityClassName(), $id, self::ENTITY_COLLECTION]];
 		$cache->save($id, $data, $opt);
 	    }
-	} catch (Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	return $data;
     }
@@ -118,70 +125,56 @@ class AclRuleService extends BaseService implements IAclRuleService {
     public function getRules() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::ENTITY_COLLECTION);
-	if ($data === null) {
-	    $data = $this->aclRuleDao->findAll();
-	    $opt = [
-		Cache::TAGS => [self::ENTITY_COLLECTION],
-		Cache::SLIDING => true];
-	    $cache->save(self::ENTITY_COLLECTION, $data, $opt);
+	try {
+	    if ($data === null) {
+		$data = $this->aclRuleDao->findAll();
+		$opt = [
+		    Cache::TAGS => [self::ENTITY_COLLECTION],
+		    Cache::SLIDING => true];
+		$cache->save(self::ENTITY_COLLECTION, $data, $opt);
+	    }
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	return $data;
     }
 
     public function deleteRule($id) {
-	if ($id === null)
-	    throw new Exceptions\NullPointerException("Argument AclRule cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
-
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
 	try {
 	    $db = $this->aclRuleDao->find($id);
-	    if ($db !== null) {
+	    if ($db !== null) 
 		$this->aclRuleDao->delete($db);
-	    }
 	    $this->invalidateEntityCache($db);
-	} catch (Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
 
     public function updateRule(AclRule $arule) {
-	if ($arule == null)
-	    throw new Exceptions\NullPointerException("Argument AclRule cannot be null", 0);
-
+	if ($arule === null)
+	    throw new Exceptions\NullPointerException("Argument AclRule cannot be null");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $dbRule = $this->aclRuleDao->find($arule->getId());
 	    if ($dbRule !== null) {
 		$dbRule->fromArray($arule->toArray());
-		$dbRole = $this->roleService->getRole($arule->getRole(), false);
-		$dbRule->setRole($dbRole);
+		$this->roleTypeHandle($dbRule);
 		$this->entityManager->merge($dbRule);
 		$this->entityManager->flush();
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($dbRule);
 	} catch (DuplicateEntryException $e) {
-	    throw new Exceptions\DuplicateEntryException($e->getMessage(), 20, $e);
+	    $this->entityManager->rollback();
+	    $this->logWarning($e);
+	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	} catch (\Exception $e) {
-	    // TODO LOG ??
-	    throw new Exceptions\DataErrorException($e);
+	    $this->entityManager->rollback();
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
-
-    public function deleteResource(Resource $r) {
-	if ($r == null)
-	    throw new Exceptions\NullPointerException("Argument Resource cannot be null", 0);
-	$db = $this->resourceDao->find($r->id);
-	if ($db !== null) {
-	    return $this->resourceDao->delete($db);
-	}
-    }
-
-    public function updateResource(Resource $r) {
-	if ($r == null)
-	    throw new Exceptions\NullPointerException("Argument Resource cannot be null", 0);
-	$this->resourceDao->save($r);
-    }
-
 }

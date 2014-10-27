@@ -23,7 +23,9 @@ use \Nette,
     \Nette\Application\UI\Presenter,
     \Grido\Components\Filters\Filter,
     \App\Model\Misc\Enum\CommentMode,
+    \App\SystemModule\Components\CommentControl,
     \Kdyby\Doctrine\Entities\BaseEntity,
+    \App\SecurityModule\Components\LogInControl,
     \App\SystemModule\Model\Service\ICommentable;
 
 /**
@@ -32,7 +34,6 @@ use \Nette,
 abstract class BasePresenter extends Presenter {
 
     const NUM_IDENTIFIER = 'id';
-    const SECURED_ANNOTATION_ID = "Secured";
 
     /**
      * @const string Flash messages type
@@ -40,13 +41,14 @@ abstract class BasePresenter extends Presenter {
     const FM_SUCCESS = "success",
 	    FM_ERROR = "error",
 	    FM_WARNING = "warning";
-    const DATETIME_FORMAT = "j.n.Y H:i";
+    const DATETIME_FORMAT = "j.n.Y H:i",
+	  DATE_FORMAT = "j.n.Y";
 
     /** @var string @persistent */
     public $ajax = 'on';
 
     /** @persistent */
-    protected $lang = 'cz';
+    public $locale = 'en';
 
     /** @vat actual managinng entity id from parameter */
     private $entityId;
@@ -65,6 +67,16 @@ abstract class BasePresenter extends Presenter {
      * @var \Kdyby\Monolog\Logger
      */
     public $logger;
+    
+    /**
+     * @inject
+     * @var \Doctrine\Common\Annotations\Reader
+     */
+    public $annotationReader;
+    
+    protected function getAnnotReader() {
+	return $this->annotationReader;
+    }
 
     /**
      * Recently managed entity id
@@ -123,6 +135,7 @@ abstract class BasePresenter extends Presenter {
     public function startup() {
 	parent::startup();
 	$this->entityId = $this->getParameter(self::NUM_IDENTIFIER);
+	$this->locale = $this->getTranslator()->getLocale();
     }
 
     protected function createTemplate($class = NULL) {
@@ -145,13 +158,13 @@ abstract class BasePresenter extends Presenter {
     // <editor-fold desc="COMMON COMPONENT FACTORIES">
 
     public function createComponentLoginControl($name) {
-	$c = new \App\SecurityModule\Components\LogInControl($this, $name);
+	$c = new LogInControl($this, $name);
 	$c->setLogInTarget(":System:Public:default");
 	return $c;
     }
 
     public function createComponentCommentControl($name) {
-	$c = new \App\SystemModule\Components\CommentControl($this, $name);
+	$c = new CommentControl($this, $name);
 	$c->setEntity($this->getEntity());
 	$c->setUser($this->getUser()->getIdentity());
 	//$c->setIsCommenting($this->isAllowedToComment($this->getEntity()));
@@ -184,32 +197,60 @@ abstract class BasePresenter extends Presenter {
     //</editor-fold>
     // <editor-fold desc="COMMON FLASH MESSAGES SUPPORT">
 
-    protected function handleBadArgument($id, $redirect) {
-	$sig = $this->signal;
-	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "!";
-	$m = $this->tt("system.messages.badArgumentFormat", null, ["id" => $id]);
-	$this->flashMessage($m, self::FM_WARNING);
-	$this->logWarning($prefix . $m);
-	$this->redirect($redirect);
+    protected function handleBadArgument($id, $redirect = null, $ex = null) {
+	$this->handleError($id, $redirect, "system.messages.badArgumentFormat", $ex);
     }
     
-    protected function handleDataLoad($id, $redirect, $exception = null) {
-	$sig = $this->signal;
-	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "!";
-	$m = $this->tt("system.messages.couldNotLoadData", null, ["id" => $id]);
-	$this->flashMessage($m, self::FM_ERROR);
-	$this->logError($exception ? $exception : $prefix . $m);
-	$this->redirect($redirect);
+    protected function handleDataLoad($id, $redirect = null, $ex = null) {
+	$this->handleError($id, $redirect, "system.messages.couldNotLoadData", $ex);
     }
     
-    protected function handleDataSave($id, $redirect, $exception) {
-	$sig = $this->signal;
-	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "!";
-	$m = $this->tt("system.messages.couldNotSaveData", null, ["id" => $id]);
-	$this->flashMessage($m, self::FM_ERROR);
-	$this->logError($exception ? $exception : $prefix . $m);
-	$this->redirect($redirect);
+    protected function handleDataSave($id, $redirect = null, $ex = null) {
+	$this->handleError($id, $redirect == null?"this":$redirect, "system.messages.couldNotSaveData", $ex);
     }
+    
+    protected function handleDataDelete($id, $redirect = null, $ex = null) {
+	$this->handleError($id, $redirect == null?"this":$redirect, "system.messages.couldNotDeleteData", $ex);
+    }
+    
+    protected function handleDependencyDelete($id, $redirect = null, $ex = null) {
+	$this->handleError($id, $redirect, "system.admin.messages.dependencyErrorDelete", $ex);
+    }
+    
+    protected function handleEntityNotExists($id, $redirect = null, $ex = null) {
+	$this->handleWarning($id, $redirect, "system.admin.messages.entityNotExist", $ex);
+    }
+    
+    private function handleError($id, $redirect, $message, \Exception $exception) {
+	$this->handleProblem($id, $redirect, $message, $exception, self::FM_ERROR);
+    }
+    
+    private function handleWarning($id, $redirect, $message, \Exception $exception) {
+	$this->handleProblem($id, $redirect, $message, $exception, self::FM_WARNING);
+    }
+    
+    private function handleProblem($id, $redirect, $message, \Exception $exception, $fmType) {
+	$sig = $this->signal;
+	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "! ";
+	$m = $this->tt($message, null, ["id" => $id]);
+	$this->flashMessage($m, $fmType);
+	
+	switch($fmType) {
+	    case self::FM_ERROR:
+		$this->logError($exception ? $exception : $prefix . $m);
+		break;
+	    case self::FM_WARNING:
+		$this->logWarning($exception ? $exception : $prefix . $m);
+		break;
+	    case self::FM_SUCCESS:
+		$this->logInfo($exception ? $exception : $prefix . $m);
+		break;
+	    default:
+		$this->logDebug($exception ? $exception : $prefix . $m);
+	}
+	$this->redirect($redirect? $redirect: "default");
+    }
+    
 
     // </editor-fold>
 //    private function isAllowedToComment(ICommentable $e) {

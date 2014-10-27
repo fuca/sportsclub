@@ -30,7 +30,8 @@ use \Nette\DI\CompilerExtension,
  */
 class PaymentsModuleExtension extends BaseModuleExtension implements ITranslationProvider {
 
-    private $defaults = [];
+    private $defaults = [
+	"dueDate"=>"1 month"];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -38,9 +39,12 @@ class PaymentsModuleExtension extends BaseModuleExtension implements ITranslatio
 	$config = $this->getConfig($this->defaults);
 
 	$builder = $this->getContainerBuilder();
-
+	
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
+	
+	$builder->getDefinition($this->prefix("paymentService"))
+		->addSetup("setDefaultDueDate", [$config["dueDate"]]);
     }
 
     public function getTranslationResources() {

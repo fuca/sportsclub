@@ -18,12 +18,12 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\UniqueConstraint,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\Id,
-    Doctrine\ORM\Mapping\GeneratedValue,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\UniqueConstraint,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\Id,
+    \Doctrine\ORM\Mapping\GeneratedValue,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\AclMode,
     \App\Model\Misc\EntityMapperTrait,
@@ -135,5 +135,8 @@ class AclRule extends BaseEntity {
 	    return !empty($ps);
 	}
     }
-
+    
+    public function __toString() {
+	return $this->getRole()." is ".($this->getMode()?"allowed":"denied")." for ".$this->getResource();
+    }
 }

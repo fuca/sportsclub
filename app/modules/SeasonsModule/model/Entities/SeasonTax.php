@@ -18,11 +18,11 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\Id,
-    Doctrine\ORM\Mapping\UniqueConstraint,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\Id,
+    \Doctrine\ORM\Mapping\UniqueConstraint,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\IIdentifiable,
     \App\Model\Misc\EntityMapperTrait;
@@ -59,13 +59,13 @@ class SeasonTax extends BaseEntity implements IIdentifiable {
     protected $sportGroup;
 
     /** @ORM\Column(type="integer", nullable = true) */
-    protected $credit;
-
-    /** @ORM\Column(type="integer", nullable = true) */
     protected $memberShip;
+    
+    /** @ORM\Column(type="datetime", nullable = true) */
+    protected $appDate;
 
     /**
-     * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
+     * @ManyToOne(targetEntity="User", fetch = "LAZY")
      * @JoinColumn(nullable = true, name = "editor_fk")
      */
     protected $editor;
@@ -91,10 +91,6 @@ class SeasonTax extends BaseEntity implements IIdentifiable {
 
     public function getSportGroup() {
 	return $this->sportGroup;
-    }
-
-    public function getCredit() {
-	return $this->credit;
     }
 
     public function getMemberShip() {
@@ -125,10 +121,6 @@ class SeasonTax extends BaseEntity implements IIdentifiable {
 	$this->sportGroup = $sportGroup;
     }
 
-    public function setCredit($credit) {
-	$this->credit = $credit;
-    }
-
     public function setMemberShip($memberShip) {
 	$this->memberShip = $memberShip;
     }
@@ -143,6 +135,14 @@ class SeasonTax extends BaseEntity implements IIdentifiable {
 
     public function setComment($comment) {
 	$this->comment = $comment;
+    }
+    
+    public function getAppDate() {
+	return $this->appDate;
+    }
+
+    public function setAppDate($appDate) {
+	$this->appDate = $appDate;
     }
 
     public function __toString() {

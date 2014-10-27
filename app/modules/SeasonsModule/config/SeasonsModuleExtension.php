@@ -30,7 +30,8 @@ use \Nette\DI\CompilerExtension,
  */
 class SeasonsModuleExtension extends BaseModuleExtension implements ITranslationProvider {
 
-    private $defaults = [];
+    private $defaults = [
+	"memberShip" => true];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -41,6 +42,8 @@ class SeasonsModuleExtension extends BaseModuleExtension implements ITranslation
 
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
+	$builder->getDefinition("seasons.adminPresenter")
+		->addSetup("setConfig", [$config]);
     }
 
     public function getTranslationResources() {

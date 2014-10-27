@@ -23,9 +23,9 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
     \App\Services\Exceptions\DuplicateEntryException,
-    Vodacek\Forms\Controls\DateInput,
-    App\Model\Misc\PaymentStatus,
-    App\Model\Misc\Enum\PaymentOwnerType;
+    \Vodacek\Forms\Controls\DateInput,
+    \App\Model\Misc\Enum\PaymentStatus,
+    \App\Model\Misc\Enum\PaymentOwnerType;
 
 /**
  * Form for creating and updating seasons
@@ -138,9 +138,7 @@ final class PaymentForm extends BaseForm {
 		->addRule(Form::FILLED, "Částka musí být zadána")
 		->setRequired(true);
 
-	$this->addText("vs", "Variabilní symbol")
-		->addRule(Form::FILLED, "Variabilní symbol musí být zadán")
-		->setRequired(true);
+	$this->addText("vs", "Variabilní symbol");
 
 	$this->addDate("dueDate", "Datum splatnosti", DateInput::TYPE_DATE)
 		->setDefaultValue(new DateTime("+ 1 month"))

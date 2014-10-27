@@ -42,22 +42,23 @@
 	{block scripts}
 	    {var ajax = $presenter->getParameter('ajax') == 'on'}
 	    
-	    <script src="{$basePath}/js/jquery.min.js"></script>{* has to be there*}
+	    <script src="{$basePath}/js/jquery.min.js"></script>{**}
 	    <script src="{$basePath}/js/bootstrap-dropdown.js"></script>
 	    <script src="{$basePath}/js/bootstrap-alert.js"></script>
-	    <script src='{$basePath}/js/jquery-ui-timepicker-addon.js'></script> {* has to be there *}
-	    <script src="{$basePath}/js/jquery-ui.min.js"></script> {* has to be there *}
+	    <script src='{$basePath}/js/jquery-ui-timepicker-addon.js'></script> {* *}
+	    <script src="{$basePath}/js/jquery-ui.min.js"></script> {* *}
 	    
 	    <script src="{$basePath}/js/timepicker.js"></script> 
+	    	    <script src="{$basePath}/js/nette.ajax.js"></script> {* *}
 	    <script src="{$basePath}/js/netteForms.js"></script>
 	    
 	    
 	    <!--script src="{*$basePath*}/js/jquery.nette.js"></script--> {* tohle tady vadi GRIDU, nefakaji pak filtry bez kliku na search*}
-	    <script src="{$basePath}/js/nette.ajax.js"></script> {* has to be there *}
-	    <script src="{$basePath}/js/grido/grido.ajax.js"></script> {* has to be there *}
+
+	    <script src="{$basePath}/js/grido/grido.ajax.js"></script> {**}
 	    
-	    <script src='{$basePath}/js/dateInput.js'></script> {* has to be there *}
-	    <script src="{$basePath}/js/date-input-settings.js"></script> {* has to be there *}
+	    <script src='{$basePath}/js/dateInput.js'></script> {*  *}
+	    <script src="{$basePath}/js/date-input-settings.js"></script> {* *}
 	    
 	    <script src="{$basePath}/js/jquery.hashchange.min.js"></script>
 	    <script src="{$basePath}/js/jquery.maskedinput.min.js"></script>
@@ -68,6 +69,7 @@
 	    
 	    <script n:if="$ajax" src="{$basePath}/js/main.ajax.js"></script>
 	    <script n:if="!$ajax" src="{$basePath}/js/main.js"></script>
+	    
 	{/}
 
 	{snippet flash}

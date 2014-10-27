@@ -17,12 +17,13 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\OneToOne,
-    Doctrine\ORM\Mapping\ManyToOne,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\OneToOne,
+    \Doctrine\ORM\Mapping\ManyToOne,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\EntityMapperTrait,
+    \Doctrine\ORM\Mapping\UniqueConstraint,
     \Nette\DateTime;
 
 /**
@@ -30,6 +31,8 @@ use Doctrine\ORM\Mapping as ORM,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
+ * @ORM\Table(name="SeasonApplication",
+ * uniqueConstraints={@UniqueConstraint(name="unique_season_app", columns={"season_fk", "group_fk", "owner_fk"})})
  */
 
 class SeasonApplication extends BaseEntity {
@@ -52,20 +55,11 @@ class SeasonApplication extends BaseEntity {
     /** @ORM\Column(type="datetime", nullable = false) */
     protected $enrolledTime;
     
-    /** @ORM\Column(type="integer", nullable = true) */
-    protected $creditsRatio;
-    
     /**
-     * @OneToOne(targetEntity="Payment", fetch = "EAGER")
+     * @OneToOne(targetEntity="Payment", fetch = "EAGER", cascade={"REMOVE"})
      * @JoinColumn(name = "payment_fk", nullable = true)
      */
-    protected $payment;
-    
-    /**
-     * @ORM\Column(type="float")
-     * @var float
-     */
-    protected $membershipRatio;
+    protected $payment; 
     
     /**
      * @ManyToOne(targetEntity="User", fetch = "LAZY")
@@ -83,7 +77,7 @@ class SeasonApplication extends BaseEntity {
     protected $documentPath;
     
     /**
-     * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
+     * @ManyToOne(targetEntity="User", fetch = "EAGER", cascade = {"MERGE"})
      * @JoinColumn(nullable = true, name = "editor_fk")
      */
     protected $editor;
@@ -155,8 +149,6 @@ class SeasonApplication extends BaseEntity {
 	$this->enrolledTime = $enrolledTime;
     }
 
-   
-
     public function setPayment($payment) {
 	$this->payment = $payment;
     }
@@ -180,21 +172,6 @@ class SeasonApplication extends BaseEntity {
     public function setComment($comment) {
 	$this->comment = $comment;
     }
-    public function getCreditsRatio() {
-	return $this->creditsRatio;
-    }
-
-    public function getMembershipRatio() {
-	return $this->membershipRatio;
-    }
-
-    public function setCreditsRatio($creditsRatio) {
-	$this->creditsRatio = $creditsRatio;
-    }
-
-    public function setMembershipRatio($membershipRatio) {
-	$this->membershipRatio = $membershipRatio;
-    }
     
     public function getSportGroup() {
 	return $this->sportGroup;
@@ -203,9 +180,5 @@ class SeasonApplication extends BaseEntity {
     public function setSportGroup($sportGroup) {
 	$this->sportGroup = $sportGroup;
     }
-
-
-
-
     
 }

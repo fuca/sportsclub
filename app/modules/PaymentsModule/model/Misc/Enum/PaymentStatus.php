@@ -28,16 +28,18 @@ final class PaymentStatus extends EnumType implements IEnum {
 
     const 
 	NOT_YET		= "no",
+	SENT		= "snt",
 	YES_CASH	= "cash",
 	YES_ACCOUNT	= "acc";
     
     protected $name = "PaymentStatus";
-    protected $values = [self::NOT_YET, self::YES_ACCOUNT, self::YES_CASH];
+    protected $values = [self::NOT_YET, self::YES_ACCOUNT, self::YES_CASH, self::SENT];
 
      public static function getOptions() {
 	return array(
-	    self::NOT_YET	=>  "Nezaplaceno",
-	    self::YES_CASH	=>  "Placeno hotově",
-	    self::YES_ACCOUNT	=>  "Placeno na účet");
+	    self::NOT_YET	=>  "No",
+	    self::SENT		=>  "Sent",
+	    self::YES_CASH	=>  "Cash",
+	    self::YES_ACCOUNT	=>  "Account");
     }
 }

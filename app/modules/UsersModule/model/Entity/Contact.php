@@ -18,9 +18,9 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\OneToOne,
-    Doctrine\ORM\Mapping\JoinColumn,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\OneToOne,
+    \Doctrine\ORM\Mapping\JoinColumn,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \Nette\DateTime,
     \App\Model\Misc\EntityMapperTrait,

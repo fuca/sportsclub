@@ -25,11 +25,12 @@ use \App\SystemModule\Presenters\SecuredPresenter,
     \Nette\Application\UI\Form,
     \Nette\Utils\ArrayHash,
     \App\Model\Entities\Forum,
-    \Grido\Grid;
+    \Grido\Grid,
+    \App\SecurityModule\Model\Misc\Annotations\Secured;
 
 /**
  * AdminForumPresenter
- *
+ * @Secured(resource="ForumAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SecuredPresenter {
@@ -204,7 +205,7 @@ class AdminPresenter extends SecuredPresenter {
     
     private function getSelectGroups() {
 	try {
-	    $groups = $this->sportGroupService->getSelectSportGroups();
+	    $groups = $this->sportGroupService->getSelectAllSportGroups();
 	    return $groups;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleException($ex);

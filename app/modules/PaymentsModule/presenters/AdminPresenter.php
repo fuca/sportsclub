@@ -25,17 +25,19 @@ use \Grido\Grid,
     \Nette\ArrayHash,
     \App\SystemModule\Presenters\SecuredPresenter,
     \App\Services\Exceptions\DataErrorException,
-    Kdyby\Doctrine\DuplicateEntryException,
-    \App\Services\Exceptions,
+    \Kdyby\Doctrine\DuplicateEntryException,
+    \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Form,
-    \App\Model\Misc\PaymentOwnerType,
+    \App\Model\Misc\Enum\PaymentStatus,
+    \App\Model\Misc\Enum\PaymentOwnerType,
     \App\SystemModule\Model\Service\ISportGroupService,
-    App\SystemModule\Model\Service\IPositionService,
-    App\PaymentsModule\Forms\PaymentForm;
+    \App\SystemModule\Model\Service\IPositionService,
+    \App\PaymentsModule\Forms\PaymentForm,
+    \App\SecurityModule\Model\Misc\Annotations\Secured;
 
 /**
  * Payments module admin presenter
- * @Secured resource={payments.admin}
+ * @Secured(resource="PaymentsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SecuredPresenter {
@@ -94,73 +96,69 @@ class AdminPresenter extends SecuredPresenter {
 	// render form
     }
 
+    /**
+     * 
+     * @param \Nette\ArrayHash $values
+     */
     public function createPaymentHandle(ArrayHash $values) {
 	$payment = new Payment((array) $values);
 	try {
-	    // TODO set editor and OTHER STUFF
+	    $payment->setEditor($this->getUser()->getIdentity());
 	    $this->getPaymentService()->createPayment($payment);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Payment could not be created", self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
 
-    private function createMultiPaymentHandle($values, array $ids) {
+    private function createMultiPaymentHandle(ArrayHash $values, array $ids) {
 	foreach ($ids as $id) {
 	    $payment = new Payment((array) $values);
 	    $payment->setOwner($id);
 	    try {
-		// TODO set editor and OTHER STUFF
+		$payment->setEditor($this->getUser()->getIdentity());
 		$this->getPaymentService()->createPayment($payment);
-	    } catch (DataErrorException $ex) {
-		$this->flashMessage("Payment could not be created", self::FM_ERROR);
+	    } catch (Exceptions\DataErrorException $ex) {
+		$this->handleDataSave($id, null, $ex);
 	    }
 	}
 	$this->redirect("default");
     }
 
     public function actionUpdatePayment($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu id", self::FM_ERROR);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	try {
 	    $dbPayment = $this->getPaymentService()->getPayment($id, false);
 	    if ($dbPayment !== null) {
 		$form = $this->getComponent('updatePaymentForm');
 		$form->setDefaults($dbPayment->toArray());
 	    }
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se načíst požadovaná data", self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, null, $ex);
 	}
     }
 
     public function updatePaymentHandle(ArrayHash $values) {
 	$payment = new Payment((array) $values);
 	try {
-	    // TODO set editor and OTHER STUFF
+	    $payment->setEditor($this->getUser()->getIdentity());
 	    $this->getPaymentService()->updatePayment($payment);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se uložit požadované změny", self::FM_ERROR);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, null, $ex);
 	}
 	$this->redirect("default");
     }
 
     public function handleDeletePayment($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát arugmentu id", self::FM_ERROR);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	try {
 	    $this->getPaymentService()->deletePayment($id);
-	} catch (DataErrorException $ex) {
-	    switch ($ex->getCode()) {
-		case 1000:
-		    $this->flashMessage("Nemůžete smazat platbu, která je užívána jinými entitami systému", self::FM_ERROR);
-		    break;
-	    }
-	} catch (Exception $ex) {
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDependencyDelete($id, null, $ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
 	}
 	$this->redirect("this");
     }
@@ -183,13 +181,12 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $seasons = $this->getSeasonService()->getSelectSeasons();
 	    $users = $this->getUsersService()->getSelectUsers();
-	    $groups = $this->getSportGroupsService()->getSelectSportGroups();
+	    $groups = $this->getSportGroupsService()->getSelectAllSportGroups();
 	    $form->setSeasons($seasons);
 	    $form->setUsers($users);
 	    $form->setSportGroups($groups);
-	} catch (DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se načíst potřebná data", self::FM_ERROR);
-	    dd($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	return $form;
     }
@@ -208,8 +205,8 @@ class AdminPresenter extends SecuredPresenter {
 			try {
 			    $users = $this->getPositionService()->getUsersWithinGroup($groupId);
 			    $this->createMultiPaymentHandle($values, $users);
-			} catch (DataErrorException $ex) {
-			    $this->flashMessage("Nepodařilo se načíst potřebná data", self::FM_ERROR);
+			} catch (Exceptions\DataErrorException $ex) {
+			    $this->handleDataLoad(null, "this", $ex);
 			}
 			break;
 		    case PaymentOwnerType::SELECT:
@@ -225,6 +222,14 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function createComponentPaymentsGrid($name) {
+
+	try {
+	    $seasons = [null => null] + $this->seasonService->getSelectSeasons();
+	    $users = [null => null] + $this->getUsersService()->getSelectUsers();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "default", $ex);
+	}
+
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->getPaymentService()->getPaymentsDataSource());
 	$grid->setPrimaryKey("id");
@@ -236,29 +241,92 @@ class AdminPresenter extends SecuredPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
 
-	$grid->addColumnText('owner', 'Člen')
-		->setSortable();
+	$grid->addColumnText('owner', $this->tt('paymentsModule.admin.grid.user'))
+		->setSortable()
+		->setFilterSelect($users);
 	$headerLabel = $grid->getColumn('owner')->headerPrototype;
 	$headerLabel->class[] = 'center';
 
-	$grid->addColumnText('season', 'Sezóna')
-		->setSortable();
-	$headerLabel = $grid->getColumn('season')->headerPrototype;
-	$headerLabel->class[] = 'center';
 
-	$grid->addColumnDate('orderedDate', 'Zadáno', self::DATETIME_FORMAT)
+	$grid->addColumnText('season', $this->tt('paymentsModule.admin.grid.season'))
+		->setSortable()
+		->setFilterSelect($seasons);
+	$headerSeas = $grid->getColumn('season')->headerPrototype;
+	$headerSeas->class[] = 'center';
+
+	$grid->addColumnDate('dueDate', $this->tt('paymentsModule.admin.grid.dueDate'), self::DATE_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
-	$headerAuthor = $grid->getColumn('orderedDate')->headerPrototype;
-	$headerAuthor->class[] = 'center';
+	$headerOrdered = $grid->getColumn('dueDate')->headerPrototype;
+	$headerOrdered->class[] = 'center';
 
-	$grid->addActionHref('delete', '[Smaz]', 'deletePayment!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updatePayment')
+	$grid->addColumnNumber('amount', $this->tt('paymentsModule.admin.grid.amount'))
+		->setSortable()
+		->setFilterNumber();
+	$headerAm = $grid->getColumn('amount')->headerPrototype;
+	$headerAm->class[] = 'center';
+
+	$states = [null => null] + PaymentStatus::getOptions();
+	$grid->addColumnText('status', $this->tt('paymentsModule.admin.grid.status'))
+		->setTruncate(9)
+		->setSortable()
+		->setReplacement($states)
+		->setFilterSelect($states);
+
+	$headerSta = $grid->getColumn('status')->headerPrototype;
+	$headerSta->class[] = 'center';
+
+	$grid->addActionHref('delete', '', 'deletePayment!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("paymentsModule.admin.grid.messages.rlyDelPayment", null, ["id" => $u->getId()]);
+		});
+
+	$grid->addActionHref('edit', '', 'updatePayment')
 		->setIcon('pencil');
 
+	$grid->setOperation(["delete" => $this->tt("system.common.delete"),
+		    "markCash" => $this->tt("paymentsModule.admin.grid.markDoneCash"),
+		    "markAcc" => $this->tt("paymentsModule.admin.grid.markDoneAcc"),
+		    "markSent" => $this->tt("paymentsModule.admin.grid.markSent")], $this->paymentsGridOpsHandler)
+		->setConfirm("delete", $this->tt("paymentsModule.admin.grid.messages.rlyDelPaymentItems"));
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-payments " . date("Y-m-d H:i:s", time()));
+    }
+
+    public function paymentsGridOpsHandler($op, $ids) {
+	$me = $this->getUser()->getIdentity();
+	switch ($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeletePayment($id);
+		}
+		break;
+	    case "markCash":
+		foreach ($ids as $id) {
+		    try {
+			$this->paymentService->markAsDoneCash($id, $me);
+		    } catch (Exceptions\DataErrorException $ex) {
+			$this->handleDataSave($id, "this", $ex);
+		    }
+		}
+		break;
+	    case "markAcc":
+		foreach ($ids as $id) {
+		    try {
+			$this->paymentService->markAsDoneAcc($id, $me);
+		    } catch (Exceptions\DataErrorException $ex) {
+			$this->handleDataSave($id, "this", $ex);
+		    }
+		}
+		break;
+	    case "markSent":
+		foreach ($ids as $id) {
+		    $this->paymentService->markAsSent($id, $me);
+		}
+		break;
+	}
+	$this->redirect("this");
     }
 
 }

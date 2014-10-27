@@ -1,4 +1,4 @@
-
+groupPositions: "Positions within group"
 
 commentControl:
 	titleAdd: "Add comment"
@@ -6,3 +6,25 @@ commentControl:
 	noDataFound: "No comments were found"
 	commentsRestricted: "Comments are restricted for you"
 	
+sportTypeForm:
+	newGroup: "New sport type"
+	name: "Name "
+	note: "Note"
+
+admin:
+	sportAdd: "Add new sport type"
+	groupAdd: "Add new sport group"	
+
+admin.grid:
+	name: "Name"
+	note: "Note"
+	sport: "Sport"
+	parent: "Parent"
+	delete: "Delete"
+	active: "Active"
+	
+admin.grid.messages:
+	rlyDelSport: "Do you really want to delete sport #%id%"
+	rlyDelGroup: "Do you really want to delete group #%id%"
+	rlyDelSportItems: "Do you really want to delete %i sports"
+	rlyDelGroupItems: "Do you really want to delete %i groups"

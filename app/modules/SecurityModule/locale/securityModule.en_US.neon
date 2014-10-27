@@ -17,3 +17,34 @@ loginControl.loginForm:
 	email: "Email:"
 	password: "Password:"
 	submit: "         Let me in         "
+
+admin.messages:
+	roleNameExists: "Role '%name%' already exists"
+
+admin.grid:
+	rlyDeletePosition: "Do you really want to delete position '%pos%'"
+	rlyDeleteRule: "Do you really want to delete rule '%pos%'"
+	rlyDeleteRole: "Do you really want to delete role '%pos%'"
+
+aclForm:
+	roleSelect: "Select role .."
+	actionSelect: "Select action .."
+	modeSelect: "Select mode .."
+	resourceSelect: "Select resource .."
+	
+	role: "Role"
+	action: "Akce"
+	mode: "Mode"
+	resource: "Resource"
+
+posForm:
+	editPosGroup: "Edit position"
+	user: "User"
+	role: "Role"
+	group: "Group"
+	note:	"Note"
+	publishContact: "Publish in contacts"
+	name: "Name"
+	userSelect: "Select user .."
+	groupSelect: "Select group .."
+	roleSelect: "Select role .. "

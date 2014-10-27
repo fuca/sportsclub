@@ -16,9 +16,9 @@
  */
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\ManyToOne,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\ManyToOne,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\PaymentStatus,
     \App\Model\IIdentifiable,

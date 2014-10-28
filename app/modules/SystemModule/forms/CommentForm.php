@@ -46,22 +46,22 @@ class CommentForm extends BaseForm {
 	$this->addHidden("id");
 	$this->addHidden("author");
 	
-	$this->addText("title","Titulek");
+	$this->addText("title", "systemModule.commentControl.title", 42);
 	
-	$this->addTextArea("content", "Obsah", 40, 10)
-		->addRule(Form::FILLED, "Komentář musí mít obsah")
-		->setRequired("Komentář musí mít obsah");
+	$this->addTextArea("content", "systemModule.commentControl.content", 45, 5)
+		->addRule(Form::FILLED, "systemModule.commentControl.contentMustFill")
+		->setRequired("systemModule.commentControl.contentMustFill");
 	
 //	if ($this->isUpdate()) {
 //	    $this->addSelect("author", "Autor", $this->getUsers());
 //	    $this->addSelect("editor", "Editor", $this->getUsers());
 //	}
 	
-	$this->addSubmit("submitButton", "Uložit");
-	if ($this->getShowCancel()) {
-	    $this->addSubmit("cancelButton", "Zpět")
-		    ->onClick[] = callback($this->parent, "cancelForm");
-	}
+	$this->addSubmit("submitButton", "system.forms.submitButton.label");
+//	if ($this->getShowCancel()) {
+//	    $this->addSubmit("cancelButton", "system.forms.cancelButton.label")
+//		    ->onClick[] = callback($this->parent, "cancelForm");
+//	}
 	
 	$this->onSuccess[] = callback($this->parent, "commentFormSuccess");
     }

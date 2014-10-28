@@ -19,7 +19,8 @@
 namespace App\WallsModule\Presenters;
 
 use \App\SystemModule\Presenters\SecuredPresenter,
-    \App\Model\Service\WallService,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
+    \App\Model\Misc\Exceptions,
     \App\Model\Entities\WallPost,
     \App\WallsModule\Forms\WallPostForm,
     \App\Model\Misc\Enum\FormMode,
@@ -31,7 +32,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
 
 /**
  * AdminPresenter of wallposts module
- *
+ * @Secured(resource="WallsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SecuredPresenter {
@@ -62,20 +63,18 @@ class AdminPresenter extends SecuredPresenter {
     }
     
     public function actionUpdateWallPost($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
 	    $wpDb = $this->wallService->getWallPost($id);
 	    if ($wpDb !== null) {
 		$form = $this->getComponent("updateWallPostForm");
-		$grArr = $wpDb->getGroups()->map(function($e){return $e->getId();})->toArray();
+		$grArr = $wpDb->getGroups()
+			->map(function($e){return $e->getId();})->toArray();
 		$wpDb->setGroups($grArr);
 		$form->setDefaults($wpDb->toArray());
 	    }
-	} catch (Exception $ex) {
-	    $this->handleException($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
     
@@ -84,9 +83,10 @@ class AdminPresenter extends SecuredPresenter {
 	    $wp = new WallPost((array) $values);
 	    $wp->setEditor($this->getUser()->getIdentity());
 	    $this->wallService->createWallPost($wp);
-	} catch (Exception $ex) {
-	    $this->handleException($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, "default", $ex);
 	}
+	$this->redirect("default");
     }
     
     public function updateWallPost(ArrayHash $values) {
@@ -94,23 +94,26 @@ class AdminPresenter extends SecuredPresenter {
 	    $wp = new WallPost((array) $values);
 	    $wp->setEditor($this->getUser()->getIdentity());
 	    $this->wallService->updateWallPost($wp);
-	} catch (Exception $ex) {
-	    $this->handleException($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, "default", $ex);
 	}
+	$this->redirect("default");
     }
     
     public function handleDeleteWallPost($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	$this->doDeleteWallPost($id);
+	$this->redirect("this");
+    }
+    
+    private function doDeleteWallPost($id) {
 	try {
 	    $wpDb = $this->wallService->getWallPost($id);
 	    if ($wpDb !== null) {
 		$this->wallService->removeWallPost($wpDb->getId());
 	    }
-	} catch (Exception $ex) {
-	    $this->handleException($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
 	}
     }
     
@@ -135,7 +138,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $sGroups = $this->sportGroupService->getSelectAllSportGroups();
 	    $form->setSportGroups($sGroups);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	return $form;
     }
@@ -163,7 +166,7 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $users = [null=>null]+$this->usersService->getSelectUsers();    
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	
 	$grid = new Grid($this, $name);
@@ -177,58 +180,68 @@ class AdminPresenter extends SecuredPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style["width"] = '0.1%';
 	
-	$grid->addColumnText('title', 'Titulek')
+	$grid->addColumnText('title', $this->tt("wallsModule.admin.grid.title"))
 		->setTruncate(20)
 		->setSortable()
 		->setFilterText();
 	$headerTitle = $grid->getColumn('title')->headerPrototype;
 	$headerTitle->class[] = 'center';
 	
-	$grid->addColumnText('status', 'Stav')
+	$articleStates = [null=>null]+ArticleStatus::getOptions();
+	$grid->addColumnText('status', $this->tt("wallsModule.admin.grid.status"))
 		->setSortable()
+		->setReplacement($articleStates)
 		->setFilterSelect($articleStates);
-	$grid->getColumn('status')->setCustomRender(callback($this, 'stateRenderer'));
 	$headerStatus = $grid->getColumn('status')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
-	$grid->addColumnText('commentMode', 'Komentáře')
+	
+	$commentModes = CommentMode::getOptions();
+	$grid->addColumnText('commentMode', $this->tt("wallsModule.admin.grid.cmntMode"))
 		->setSortable()
+		->setReplacement($commentModes)
 		->setFilterSelect($commentModes);
-	$grid->getColumn('commentMode')->setCustomRender(callback($this, 'commentModeRenderer'));
+	
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
-	$grid->addColumnText('author', 'Autor')
+	$grid->addColumnText('author', $this->tt("wallsModule.admin.grid.author"))
 		->setSortable()
 		->setFilterSelect($users);
 	$headerAuthor = $grid->getColumn('author')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addColumnDate('updated', 'Změna', self::DATETIME_FORMAT)
+	$grid->addColumnDate('updated', $this->tt("wallsModule.admin.grid.change"), self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerAuthor = $grid->getColumn('updated')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addActionHref('delete', '[Smaz]', 'deleteWallPost!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateWallPost')
+	$grid->addActionHref('delete', '', 'deleteWallPost!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("wallsModule.admin.grid.messages.", null, ["id"=>$u->getId()]);
+		});
+	
+	$grid->addActionHref('edit', '', 'updateWallPost')
 		->setIcon('pencil');
 
+	$grid->setOperation(["delete"=>$this->tt("system.common.delete")], $this->wpostGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-wallposts" . date("Y-m-d H:i:s", time()));
 
 	return $grid;
     }
     
-    public function stateRenderer($e) {
-	$articleStates = ArticleStatus::getOptions();
-	return $articleStates[$e->getStatus()];
-    }
-    
-    public function commentModeRenderer($e) {
-	$commentModes = CommentMode::getOptions();
-	return $commentModes[$e->getCommentMode()];
+    public function wpostGridOpsHandler($op, $ids) {
+	switch($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteWallPost($id);
+		}
+		break;
+	}
+	$this->redirect("this");
     }
     
 }

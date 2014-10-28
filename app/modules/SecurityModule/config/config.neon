@@ -7,8 +7,15 @@ parameters:
 
 services:
 
+	securityModule.applicationsListener:
+		class:
+			App\SecurityModule\Model\Listeners\ApplicationsListener
+		tags: [kdyby.subscriber]
+		setup:
+				- setPositionService()
+				- setRoleService()
 
-	securityModule.cacheStorage: 
+	securityModule.cacheStorage:
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/securityModule/)
 		autowired: false
 
@@ -42,7 +49,7 @@ services:
 
 	securityModule.positionsService:
 		class:
-			App\Model\Service\PositionService
+			App\SecurityModule\Model\Service\PositionService
 		setup:
 				- setCacheStorage(@securityModule.cacheStorage)
 				- setSportGroupService()

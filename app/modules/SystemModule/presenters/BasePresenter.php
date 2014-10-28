@@ -20,6 +20,7 @@ namespace App\SystemModule\Presenters;
 
 use \Nette,
     \Nette\InvalidArgumentException,
+    \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Presenter,
     \Grido\Components\Filters\Filter,
     \App\Model\Misc\Enum\CommentMode,

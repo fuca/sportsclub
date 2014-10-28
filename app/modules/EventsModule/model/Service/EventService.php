@@ -23,24 +23,28 @@ use \App\Model\Entities\Event,
     \App\Model\Entities\SportGroup,
     \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\DuplicateEntryException,
-    \Doctrine\ORM\NoResultException,
     \Kdyby\Doctrine\DBALException,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Service\BaseService,
     \Nette\Utils\DateTime,
     \Nette\Utils\Strings,
     \Nette\Caching\Cache,
+    \EventCalendar\IEventModel,
+    \App\Model\Entities\Comment,
+    \App\SystemModule\Model\Service\ICommentable,
+    \Kdyby\Monolog\Logger,
     \Grido\DataSources\Doctrine,
     \Doctrine\Common\Collections\ArrayCollection,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\UsersModule\Model\Service\IUserService;
+    \App\UsersModule\Model\Service\IUserService,
+    \App\SystemModule\Model\Service\ICommentService;
 
 /**
  * Service for dealing with Event related entities
  *
  * @author <michal.fuca.fucik(at)gmail.com>
  */
-class EventService extends BaseService implements IEventService {
+class EventService extends BaseService implements IEventService, IEventModel {
 
     /**
      * @var \Kdyby\Doctrine\EntityDao
@@ -57,6 +61,11 @@ class EventService extends BaseService implements IEventService {
      */
     private $userService;
     
+    /**
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    public $commentService;
+    
     public function getUserService() {
 	return $this->userService;
     }
@@ -68,9 +77,13 @@ class EventService extends BaseService implements IEventService {
     public function setUserService(IUserService $uss) {
 	$this->userService = $uss;
     }
+    
+    public function setCommentService(ICommentService $cs) {
+	$this->commentService = $cs;
+    }
 
-    function __construct(EntityManager $em) {
-	parent::__construct($em, Event::getClassName());
+    function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Event::getClassName(), $logger);
 	$this->eventDao = $em->getDao(Event::getClassName());
     }
 
@@ -85,15 +98,15 @@ class EventService extends BaseService implements IEventService {
     
     public function rejectParticipation(Event $e, User $u) {
 	if ($e === NULL)
-	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event was null");
 	if ($u === NULL)
-	    throw new Exceptions\NullPointerException("Argument User was null", 0);
+	    throw new Exceptions\NullPointerException("Argument User was null");
 	// TODO how should this work?
     }
 
     public function createEvent(Event $e) {
 	if ($e === NULL)
-	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event was null");
 	try {
 	    $e->setEditor($e->getAuthor());
 	    $e->setUpdated(new DateTime);
@@ -102,9 +115,11 @@ class EventService extends BaseService implements IEventService {
 	    $this->eventDao->save($e);
 	    $this->invalidateEntityCache($e);
 	} catch (DBALException $ex) {
+	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException("Event with this title already exist");
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex->getMessage());
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
    
@@ -121,14 +136,15 @@ class EventService extends BaseService implements IEventService {
 	    }
 	    $e->setGroups($coll);
 	} catch (\Exception $e) {
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $e;
     }
     
     private function editorTypeHandle(Event $e) {
 	if ($e === null)
-	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null");
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -138,13 +154,14 @@ class EventService extends BaseService implements IEventService {
 	    }
 	    $e->setEditor($editor);
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
     
     private function authorTypeHandle(Event $e) {
 	if ($e === null)
-	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null");
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -154,7 +171,8 @@ class EventService extends BaseService implements IEventService {
 	    }
 	    $e->setAuthor($editor);
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
      
@@ -168,16 +186,14 @@ class EventService extends BaseService implements IEventService {
 		$this->eventDao->delete($dbE);
 	    }
 	} catch (DBALException $ex) {
-	    $this->getLogger()->addError($ex->getMessage());
-	    throw new Exceptions\DataErrorException($ex->getMessage(), 0, $ex->getPrevious());
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function getEvent($id, $useCache = true) {
-	if ($id === NULL)
-	    throw new Exceptions\NullPointerException("Argument Id was null", 0);
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	try {
 	    if (!$useCache) {
 		return $this->eventDao->find($id);
@@ -190,27 +206,47 @@ class EventService extends BaseService implements IEventService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
+    }
+    
+    public function getEventAlias($alias) {
+	if (empty($alias)) 
+	    throw new Exceptions\InvalidStateException("Argument alias has to be non empty string");
+	try {
+	    return $this->eventDao->createQueryBuilder("e")
+		    ->where("e.alias like :alias")
+		    ->setParameter("alias", $alias)
+		    ->getQuery()->getSingleResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function getEvents(SportGroup $g) {
 	if ($g === NULL)
-	    throw new Exceptions\NullPointerException("Argument SportGroup was null", 0);
-
-	$qb = $this->entityManager->createQueryBuilder();
-	$qb->select('e')
-		->from('App\Model\Entities\Event', 'e')
-		->innerJoin('e.groups', 'g')
-		->where('g.id = :gid')
-		->setParameter("gid", $g->id);
-	return $qb->getQuery()->getResult();
+	    throw new Exceptions\NullPointerException("Argument SportGroup was null");
+	
+	try {
+	    $qb = $this->entityManager->createQueryBuilder();
+	    $qb->select('e')
+		    ->from('App\Model\Entities\Event', 'e')
+		    ->innerJoin('e.groups', 'g')
+		    ->where('g.id = :gid')
+		    ->setParameter("gid", $g->id);
+	    return $qb->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function updateEvent(Event $e) {
 	if ($e === NULL)
-	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event was null");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $eDb = $this->eventDao->find($e->getId());
@@ -226,10 +262,12 @@ class EventService extends BaseService implements IEventService {
 	    }
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {
+	    $this->logWarning($ex);
 	    $this->entityManager->rollback();
-	    throw new Exceptions\DuplicateEntryException($ex);
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (Exception $ex) {
-	    throw new Exceptions\DataErrorException("Update event could not been proceeded");
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -238,4 +276,84 @@ class EventService extends BaseService implements IEventService {
 		$this->eventDao->createQueryBuilder('ev'));
 	return $model;
     }
+
+    public function getForDate($year, $month, $day) {
+	$date = new DateTime();
+	$date->setDate($year, $month, $day);
+	try {
+	    $qb = $this->eventDao->createQueryBuilder("e");
+	    $res = $qb->where("e.takePlaceSince <= :now")->andWhere("e.takePlaceTill >= :now")
+			    ->setParameter("now", $date)
+			    ->getQuery()->getResult();
+	    return $res;
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function isForDate($year, $month, $day) {
+	$res = $this->getForDate($year, $month, $day);
+	return $res?true:false;
+    }
+    
+    
+    
+    public function createComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->entityManager->beginTransaction();
+	    $wpDb = $this->eventDao->find($e->getId());
+	    if ($wpDb !== null) {
+		//$this->commentService->createComment($c);
+		$ccs = $wpDb->getComments();
+		//$ccs->clear(); // vymaze celou kolekci
+		$ccs->add($c);
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($wpDb);
+	    }
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function updateComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->entityManager->beginTransaction();
+	    //$wpDb = $this->eventDao->find($e->getId());
+	    $this->commentService->updateComment($c);
+	    $this->invalidateEntityCache($e);
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function deleteComment(Comment $c, ICommentable $e) {
+	try {
+	    $wpDb = $this->eventDao->find($e->getId());
+	    if ($wpDb !== null) {
+		$coll = $wpDb->getComments();
+		$id = $c->getId();
+		$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+		$index = $coll->indexOf($comment);
+		$coll->remove($index);
+
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush($wpDb);
+		$this->commentService->deleteComment($c->getId());    
+		$this->invalidateEntityCache($wpDb);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	
+    }
+
 }

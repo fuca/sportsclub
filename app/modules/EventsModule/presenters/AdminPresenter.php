@@ -56,11 +56,11 @@ class AdminPresenter extends SecuredPresenter {
     public $userService;
 
     public function actionDefault() {
-	
+	// render grid
     }
 
     public function actionAddEvent() {
-	// NASTAVIT AUTORA v SELECTU???
+	// render form
     }
 
     public function actionUpdateEvent($id) {
@@ -75,12 +75,9 @@ class AdminPresenter extends SecuredPresenter {
 		$form->setDefaults($e->toArray());
 	    }
 	} catch (Exceptions\EntityNotFoundException $ex) {
-	    $this->flashMessage("Entita s danym id neexistuje", self::FM_ERROR);
+	    $this->handleEntityNotExists($id, "this", $ex);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->flashMessage("Nepodarilo se nacist pozadovana data", self::FM_ERROR);
-	} finally {
-	    $this->logger->addError("Adm Events pres actionUpdateEvent ERR fetch event with id $id");
-	    //$this->redirect("default");
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -90,10 +87,9 @@ class AdminPresenter extends SecuredPresenter {
 	    $e->setAuthor($this->getUser()->getIdentity());
 	    $this->eventsService->createEvent($e);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
-	    $this->flashMessage("Nepodařilo se provést požadovanou změnu", self::FM_ERROR);
+	    $this->handleDataSave(null, null, $ex);
 	}
-	$this->redirect("Admin:default");
+	$this->redirect("default");
     }
 
     public function updateEvent(ArrayHash $values) {
@@ -102,26 +98,22 @@ class AdminPresenter extends SecuredPresenter {
 	    $e->setEditor($this->getUser()->getIdentity());
 	    $this->eventsService->updateEvent($e);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->flashMessage("Nepodařilo se uložit požadované změny", self::FM_ERROR);
+	    $this->handleDataSave(null, null, $ex);
 	}
-	$this->redirect("Admin:default");
+	$this->redirect("default");
     }
 
     public function handleDeleteEvent($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Bad argument format", self::FM_WARNING);
-	    $this->redirect("this");
-	}
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteEvent($id);
+	$this->redirect("this");
     }
     
     private function doDeleteEvent($id) {
 	try {
 	    $this->eventsService->deleteEvent($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
-	    $this->flashMessage("Nepodařilo se smazat záznam $id", self::FM_ERROR);
-	    return false;
+	   $this->handleDataDelete($id, "this", $ex);
 	}
     } 
 
@@ -162,9 +154,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $users = $this->userService->getSelectUsers();
 	    $form->setUsers($users);
 	} catch (\Exception $ex) {
-	    $this->flashMessage("Nepodarilo se nacist potrebna data", self::FM_ERROR);
-	    // TODO LOG
-	    $this->redirect("default");
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	return $form;
     }
@@ -191,10 +181,10 @@ class AdminPresenter extends SecuredPresenter {
 	$headerTitle->class[] = 'center';
 
 	$grid->addColumnText('eventType', 'Typ')
-		//->setEditableControl(new \Nette\Forms\Controls\SelectBox(NULL, $eventTypes), $this->updateEventHandler)
+		->setReplacement([null=>null]+EventType::getOptions())
 		->setSortable()
 		->setFilterSelect($eventTypes);
-	$grid->getColumn('eventType')->setCustomRender(callback($this, 'eventTypesRenderer'));
+	
 	$headerType = $grid->getColumn('eventType')->headerPrototype;
 	$headerType->class[] = 'center';
 
@@ -225,12 +215,6 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-events" . date("Y-m-d H:i:s", time()));
     }
-    
-//    public function updateEventHandler($id, $newValue, $oldValue, $column) { 
-//	$this->flashMessage("OK", self::FM_SUCCESS);
-//	//$vcalues = new ArrayHash("id"=>$id, $);
-//	//$this->updateEvent($values);
-//    }
 
     public function eventsGridOperationHandler($operation, $id) {
 	switch ($operation) {
@@ -243,10 +227,5 @@ class AdminPresenter extends SecuredPresenter {
 	    default:
 		    $this->redirect("this");
 	}
-    }
-
-    public function eventTypesRenderer($e) {
-	$types = EventType::getOptions();
-	return $types[$e->getEventType()];
     }
 }

@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\SecurityModule\Model\Service;
 
 use \App\Model\Entities\User,
     \App\Model\Entities\Position,
     \App\Model\Entities\Role,
+    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities,
     \App\Model\Entities\SportGroup,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\Services\Exceptions\DataErrorException,
@@ -178,10 +179,24 @@ class PositionService extends BaseService implements IPositionService {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
+    
+    public function deletePositionsWithRole(Entities\User $user, Role $role) {
+	try {
+	    return $this->positionDao->createQueryBuilder("p")
+			->delete()->where("p.role = :role")
+			->andWhere("p.owner = :owner")
+			->setParameter("role", $role)
+			->setParameter("owner", $user)
+				->getQuery()->getResult();
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+    }
 
     public function getUserPositions(User $user, $useCache = true) {
 	if ($user === null)
-	    throw new NullPointerException("Argument User cannot be null");
+	    throw new Exceptions\NullPointerException("Argument User cannot be null");
 	try {
 	    $id = User::getClassName()."-".$user->getId();
 	    $cache = $this->getEntityCache();

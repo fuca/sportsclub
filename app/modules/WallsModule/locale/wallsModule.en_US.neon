@@ -1,5 +1,20 @@
 admin:
 	wallPostNew: "New wallpost"
 	wallPostAdd: "Add wallpost"
+
 admin.wallPostForm.errors:
 	wallPostAlreadyExist: "Wallpost with given title already exist"
+
+admin.grid:
+    title: "Title"
+    status: "Status"
+    cmntMode: "Comments"
+    author: "Author"
+    change: "Change"
+
+
+admin.grid.messages:
+	rlyDelWallPost: "Do you really want to delete wall post #%id%"
+
+protected.messages:
+    noWallPosts: "There are no wall posts at this wall"

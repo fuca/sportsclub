@@ -18,10 +18,10 @@
 
 namespace App\WallsModule\Model\Service;
 
-use \Nette\Diagnostics\Debugger,
-    \App\Model\Entities\WallPost,
+use \App\Model\Entities\WallPost,
     \App\Model\Entities\SportGroup,
     \App\Model\Service\BaseService,
+    \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\EntityManager,
     \Grido\DataSources\Doctrine,
     \App\Model\Misc\Exceptions,
@@ -32,12 +32,10 @@ use \Nette\Diagnostics\Debugger,
     \App\Model\Entities\Comment,
     \App\UsersModule\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\Services\Exceptions\NullPointerException,
     \App\SystemModule\Model\Service\ICommentService;
 
 /**
  * Description of WallService
- *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class WallService extends BaseService implements IWallService {
@@ -78,14 +76,14 @@ class WallService extends BaseService implements IWallService {
 	return $this->userService;
     }
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, WallPost::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, WallPost::getClassName(), $logger);
 	$this->wallDao = $em->getDao(WallPost::getClassName());
     }
 
     public function createWallPost(WallPost $w) {
 	if ($w == null)
-	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null");
 	try {
 	    $w->setAuthor($w->getEditor());
 	    $w->setUpdated(new DateTime());
@@ -93,13 +91,14 @@ class WallService extends BaseService implements IWallService {
 	    $this->wallDao->save($w);
 	    $this->invalidateEntityCache();
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function getWallPost($id, $useCache = true) {
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given");
 	try {
 	    if (!$useCache) {
 		return $this->wallDao->find($id);
@@ -112,6 +111,7 @@ class WallService extends BaseService implements IWallService {
 		$cache->save($id, $data, $opts);
 	    }
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
@@ -131,15 +131,14 @@ class WallService extends BaseService implements IWallService {
 		return $qb->getQuery()->getResult();
 	    }
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function removeWallPost($id) {
-	if ($id == null)
-	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException();
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	try {
 	    $wpDb = $this->wallDao->find($id);
 	    if ($wpDb !== null) {
@@ -147,13 +146,14 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $this->invalidateEntityCache($wpDb);
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function updateWallPost(WallPost $w) {
 	if ($w == null)
-	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $wpDb = $this->wallDao->find($w->getId());
@@ -170,6 +170,7 @@ class WallService extends BaseService implements IWallService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $wpDb;
@@ -193,15 +194,16 @@ class WallService extends BaseService implements IWallService {
 		}
 	    }
 	    $wp->setGroups($coll);
-	} catch (\Exception $e) {
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $wp;
     }
 
     private function editorTypeHandle(WallPost $a) {
 	if ($a === null)
-	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null");
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -211,13 +213,14 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $a->setEditor($editor);
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     private function authorTypeHandle(WallPost $a) {
 	if ($a === null)
-	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null");
 	try {
 	    $author = null;
 	    if ($this->getUserService() !== null) {
@@ -227,7 +230,8 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $a->setAuthor($author);
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -247,8 +251,8 @@ class WallService extends BaseService implements IWallService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->getLogger()->addError($ex->getMessage());
-	    throw new Exceptions\DataErrorException("Error occured while adding comment");
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -261,8 +265,8 @@ class WallService extends BaseService implements IWallService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->getLogger()->addError($ex->getMessage());
-	    throw new Exceptions\DataErrorException("Error occured while adding comment");
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -282,9 +286,8 @@ class WallService extends BaseService implements IWallService {
 		$this->invalidateEntityCache($wpDb);
 	    }
 	} catch (Exception $ex) {
-	    
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
-	
     }
-
 }

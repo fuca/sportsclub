@@ -19,14 +19,16 @@
 namespace App\WallsModule\Presenters;
 
 use \App\SystemModule\Presenters\SecuredPresenter,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \Nette\Utils\ArrayHash,
     \Nette\Utils\DateTime,
-    \App\Model\Entities\WallpostComment;
+    \App\Model\Entities\WallpostComment,
+    \App\Model\Misc\Exceptions;
     
 
 /**
  * ProtectedPresenter
- *
+ * @Secured(resource="WallsProtected"))
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class ProtectedPresenter extends SecuredPresenter {
@@ -38,14 +40,13 @@ class ProtectedPresenter extends SecuredPresenter {
     public $wallService;
     
     /**
-     * @Secured
      */
     public function actionDefault($abbr = null) {
 	try {
 	    $wps = $this->wallService->getWallPosts();
 	    $this->template->wallPosts = $wps;
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handledataLoad($abbr, "default", $ex);
 	}
     }
 
@@ -53,10 +54,7 @@ class ProtectedPresenter extends SecuredPresenter {
      * @Secured
      */
     public function actionShowWallPost($id) {
-	if ($id === null) {
-	    $this->flashMessage("Argument id was null");
-	    $this->redirect("default");
-	}
+	if ($id === null) $this->handleBadArgument ($id);
 	try {
 	    // TODO check whether id is numeric or string to call appropriate method
 	    $wp = [];
@@ -66,7 +64,7 @@ class ProtectedPresenter extends SecuredPresenter {
 	    }
 	    $this->template->data = $wp;
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -79,7 +77,7 @@ class ProtectedPresenter extends SecuredPresenter {
 	    $comment->setUpdated(new DateTime());
 	    $this->wallService->createComment($comment, $this->getEntity());	    
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
 	if (!$this->isAjax()) {
 	    $this->redirect("this");
@@ -95,7 +93,7 @@ class ProtectedPresenter extends SecuredPresenter {
 	    $comment->setUpdated(new DateTime());
 	    $this->wallService->updateComment($comment, $this->getEntity());	    
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	
 	if (!$this->isAjax()) {
@@ -106,7 +104,12 @@ class ProtectedPresenter extends SecuredPresenter {
     }
     
     public function deleteComment(WallPostComment $comm) {
-	$this->wallService->deleteComment($comm, $this->getEntity());
+	try {
+	    $this->wallService->deleteComment($comm, $this->getEntity());
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($comm->getId(), "this", $ex);
+	}
+	
 	if ($this->isAjax()) {
 	    $this->redrawControl("commentsData");
 	} else {

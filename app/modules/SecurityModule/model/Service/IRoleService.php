@@ -71,6 +71,8 @@ interface IRoleService {
      */
     function getUserRoles(User $u);
     
+    function getRoleName($name);
+    
     /**
      * 
      * @return type

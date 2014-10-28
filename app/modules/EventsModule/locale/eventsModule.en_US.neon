@@ -3,3 +3,6 @@ admin:
 	eventNew: "New event"
 eventForm.errors:
 	eventAlreadyExist: "Event with given title already exist"
+
+protected.messages:
+	noDataFound: "No data available"

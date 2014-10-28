@@ -30,7 +30,10 @@ use \Nette\DI\CompilerExtension,
  */
 class SecurityModuleExtension extends BaseModuleExtension implements ITranslationProvider {
 
-    private $defaults = [];
+    private $defaults = [
+	"evDefRoleName" => "player", 
+	"evDefComment" => "created by system",
+	"deleteOldPositions" => false];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -41,6 +44,10 @@ class SecurityModuleExtension extends BaseModuleExtension implements ITranslatio
 
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
+	
+	$builder->getDefinition($this->prefix("applicationsListener"))
+		->addSetup("setDefaultRoleName", [$config["evDefRoleName"]])
+		->addSetup("setDefaultComment", [$config["evDefComment"]]);
     }
 
     public function getTranslationResources() {

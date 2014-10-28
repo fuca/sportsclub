@@ -90,15 +90,28 @@ systemModule:
 				phone: x
 				email: x
 			
-		role: 
-			name: administrator
-			children: null
-			parents: null
-			note: "Default system administrator"
-			added: null
+		roles:
+			-
+				name: administrator
+				children: null
+				parents: null
+				note: "Default system administrator"
+				added: null
+			-
+				name: player  # potreba role pro automaticky vytvareny pozice dle prihlasek, viz v nastaveni securityModule
+				children: null
+				parents: null
+				note: "Default system player"
+				added: null
+				    # mozna by se mohl pridat guest, member, player, executive a ten admin jako defaultni role
 
 paymentsModule:
 	dueDate: "1 month"
+
+securityModule:
+	evDefRoleName: player
+	evDefComment: "Created by system"
+	deleteOldPositions: true
 			
 nette:
 	application:

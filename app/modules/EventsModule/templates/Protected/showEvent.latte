@@ -1,0 +1,15 @@
+{* Latte template *}
+{layout ./base.latte}
+{block content}
+{if $data}
+    <h3>{$data->getTitle()} ({$data->getEventType()})</h3>
+    <a href="{plink showEvent, $data->getAlias()}">{$data->getAlias()}</a><br/>
+    <span>{$data->getTakePlaceSince()|date:'%d.%m.%Y'}</span> >> <span>{$data->getTakePlaceTill()|date:'%d.%m.%Y'}</span>
+    <p>
+	{$data->getDescription()}
+    </p>
+	{control commentControl:form}
+	{control commentControl:comments}
+    {else}
+    {_eventsModule.protected.messages.noDataFound}
+{/}

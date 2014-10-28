@@ -13,3 +13,4 @@ services:
 			- setCacheStorage(@eventsModule.cacheStorage)
 			- setGroupService()
 			- setUserService()
+			- setCommentService()

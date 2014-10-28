@@ -37,6 +37,8 @@ interface IEventService {
     
     function getEvent($id);
     
+    function getEventAlias($alias);
+    
     function getEvents(SportGroup $g);
     
     function getEventsDataSource();

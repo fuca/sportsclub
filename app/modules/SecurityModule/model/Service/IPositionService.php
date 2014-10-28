@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
+namespace App\SecurityModule\Model\Service;
 
-use App\Model\Entities\User,
-    \App\Model\Entities\Position;
+use \App\Model\Entities\User,
+    \App\Model\Entities\Position,
+    \App\Model\Entities\Role,
+    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities;
 
 /**
  * Interface for Position service
@@ -33,6 +35,8 @@ interface IPositionService {
     function updatePosition(Position $p);
     
     function deletePosition(Position $p);
+    
+    function deletePositionsWithRole(Entities\User $user, Role $role);
     
     function getUserPositions(User $u);
     

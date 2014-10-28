@@ -1,0 +1,80 @@
+.eventCalendar {
+    height: 40%;
+}
+
+/* plocha se dny v tydnu a dny v mesici */
+.ec-monthTable {
+    border: 1px solid black;
+}
+
+/* den v mesici */
+.ec-validDay {
+    border: 1px solid black;
+    
+  position: relative;
+}
+
+/* den, pro který existuje nějaká událost */
+.ec-eventDay {
+    background: orange;
+}
+
+/* den bez data */
+.ec-empty {
+    
+}
+
+/* */
+.ec-dayOfEvents {
+    background: red;
+}
+
+.ec-eventBox {
+    
+}
+
+.ec-event  {
+    
+}
+
+.ec-bottomNavigation {
+    
+}
+
+.ec-month {
+    
+}
+
+.ec-year {
+    
+}
+
+.ec-prev-anchor {
+    border-radius
+}
+
+caption {
+    text-align: center;
+}
+
+.eventCalendar .controls {
+    cursor: pointer;
+}
+
+.eventCalendar .controls a {
+    font-weight: bold;
+    font-size: 2em;
+}
+
+.eventCalendar caption h4 {
+    display: inline;
+    font-size: 2em;
+}
+
+.eventCalendar table .ec-day-column {
+    width: 8rem;
+}
+
+.eventCalendar table tr {
+    height: 5rem;
+}

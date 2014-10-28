@@ -3,6 +3,10 @@
 
 {block content}
 
+{if $wallPosts}
 {foreach $wallPosts as $wp}
     <a href="{plink showWallPost $wp->getId()}">{$wp->getTitle()}</a><br/>
+{/}
+{else}
+    {_wallsModule.protected.messages.noWallPosts}
 {/}

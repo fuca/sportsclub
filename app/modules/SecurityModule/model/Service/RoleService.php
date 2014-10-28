@@ -107,6 +107,19 @@ class RoleService extends BaseService implements IRoleService {
 	}
 	return $data;
     }
+    
+    public function getRoleName($name) {
+	if (!is_string($name)) 
+	    throw new Exceptions\InvalidArgumentException("Argument name was null");
+	try {
+	    return $this->roleDao->createQueryBuilder("r")
+			->where("r.name = :name")->setParameter("name", $name)
+			->getQuery()->getResult();
+	} catch (\Exception $e) {
+	    $this->logError($e);
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+    }
 
     public function getRoles() {
 	$cache = $this->getEntityCache();

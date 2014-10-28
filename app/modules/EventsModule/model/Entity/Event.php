@@ -18,11 +18,11 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\ManyToOne,
-    Doctrine\ORM\Mapping\ManyToMany,
-    Doctrine\ORM\Mapping\JoinTable,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\ManyToMany,
+    \Doctrine\ORM\Mapping\JoinTable,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\EventVisibility,
@@ -30,7 +30,8 @@ use Doctrine\ORM\Mapping as ORM,
     \App\Model\Misc\EntityMapperTrait,
     \Doctrine\Common\Collections\ArrayCollection,
     \Nette\DateTime,
-    App\Model\IIdentifiable;
+    \App\Model\IIdentifiable,
+    \App\SystemModule\Model\Service\ICommentable;
 
 /**
  * ORM persistable entity representing real event
@@ -38,7 +39,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class Event extends BaseEntity Implements IIdentifiable {
+class Event extends BaseEntity Implements IIdentifiable, ICommentable {
     
     use EntityMapperTrait;
 
@@ -101,7 +102,7 @@ class Event extends BaseEntity Implements IIdentifiable {
 
     /**
      * ONE TO MANY
-     * @ManyToMany(targetEntity="Comment", cascade={"remove"})
+     * @ManyToMany(targetEntity="Comment", cascade={"all"}, fetch="EAGER")
      * @JoinTable(name="Comment_Event",
      *      joinColumns={@JoinColumn(name="event_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})

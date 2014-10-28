@@ -58,6 +58,8 @@ final class CommentControl extends Control {
      * @var \Kdyby\GeneratedProxy\__CG__\App\Model\Entities\User
      */
     private $user;
+
+    
     
     private $formTemplate;
     private $dataTemplate;
@@ -78,11 +80,13 @@ final class CommentControl extends Control {
 		    return $this->getUser()->isLoggedIn();
 		    break;
 		case CommentMode::GROUP:
-		    $ug = $this->getUser()->getIdentity()->getGroups();
-		    $eg = $e->getGroups();
-		    return true;
-		    foreach ($ug as $g) {
+		    return true; // TODO
+		    $eg = $this->getEntity()->getGroups();
+		    $ug = $this->getUser()->getGroups();
+		    foreach ($eg as $g) {
+			if ($ug->contains($g)) return true;
 			// ptam se, jestli ta skupina je v eg
+			// musim zjistit uzivatelovy skupiny, podivam se do positions a vemu skupiny
 		    }
 		    break;
 	    }

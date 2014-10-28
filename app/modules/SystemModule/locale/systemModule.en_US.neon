@@ -5,6 +5,12 @@ commentControl:
 	allData: "Comments"
 	noDataFound: "No comments were found"
 	commentsRestricted: "Comments are restricted for you"
+
+	title: "Title"
+	content: "Content"
+	contentMustFill: "Content has to be filled"
+	commentsLabel: "Comments"
+	commentAdd: "Add comment"
 	
 sportTypeForm:
 	newGroup: "New sport type"

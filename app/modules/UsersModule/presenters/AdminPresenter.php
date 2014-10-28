@@ -116,7 +116,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $m = $this->getTranslator()->tt("usersModule.messages.dependencyErrorDelete");
 	    $this->flashMessage($m, self::FM_WARNING);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->getTranslator()->tt("usersModule.admin.messages.deleteUserFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
@@ -139,7 +139,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $data = $uUser->toArray() + $uUser->getContact()->toArray() + $uUser->getContact()->getAddress()->toArray();
 	    $form->setDefaults($data);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.messages.updateUserFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
@@ -153,7 +153,7 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $this->userService->updateUser(UserEntityManageHelper::hydrateUserFromHash($values));
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.messages.updateUserFailed", ["id" => $values->id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
@@ -208,7 +208,7 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $this->userService->toggleUser($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.toggleUserFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
@@ -226,7 +226,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $form = $this->getComponent("updateWebProfileForm");
 	    $form->setDefaults($wp->toArray());
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.cannotReadData", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
@@ -498,11 +498,11 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $this->userService->permitWebProfile($id, $this->getUser()->getIdentity());
 	} catch (Exceptions\InvalidArgumentException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.badArgumentFormat", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.webProfilePermitFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
@@ -513,11 +513,11 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $this->userService->denyWebProfile($id, $this->getUser()->getIdentity());
 	} catch (Exceptions\InvalidArgumentException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.badArgumentFormat", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.webProfileDenyFailed", ["id" => $id]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}

@@ -106,7 +106,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	    throw new Exceptions\DuplicateEntryException(
 		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_TAX, $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -120,7 +120,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	    $t->setSeason($sportGroup);
 	    return $t;
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -134,7 +134,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		    ->getSportGroup((integer) $group, false);
 	    $t->setSportGroup($sportGroup);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $t;
@@ -150,7 +150,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		$t->setEditor($editor);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $t;
@@ -168,7 +168,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		$this->invalidateEntityCache($db);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -196,7 +196,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	    throw new Exceptions\DuplicateEntryException(
 		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_TAX, $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -220,7 +220,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
@@ -233,7 +233,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 			->setParameter("season", $s)->setParameter("group", $sg)
 			->getQuery()->getSingleResult();
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}

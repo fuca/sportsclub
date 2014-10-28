@@ -1,0 +1,13 @@
+{layout ./base.latte}
+
+{block content}
+{if $data}
+    {foreach $data as $a}
+	<h4><a href="{plink showArticle, $a->getAlias()}">{$a->getTitle()}</a></h4>
+	<p>{$a->getContent()|truncate:100} 
+	    <a href="{plink showArticle, $a->getAlias()}">{_articlesModule.readMore}</a>
+	</p>
+    {/}
+{else}
+    {_articlesModule.public.messages.noArticles}
+{/}

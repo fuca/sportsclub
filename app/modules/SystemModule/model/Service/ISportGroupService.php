@@ -32,6 +32,7 @@ interface ISportGroupService {
     function updateSportGroup(SportGroup $g);
     function deleteSportGroup($id);
     function getSportGroup($id);
+    function getSportGroupAbbr($abbr);
     function getSportGroupsDatasource();
     function getGroupsWithUser(User $u);
     function getSelectAllSportGroups($id = null);

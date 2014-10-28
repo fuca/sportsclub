@@ -36,7 +36,7 @@ class ProtectedPresenter extends SecuredPresenter {
      */
     public $forumService;
     
-    public function actionDefault($abbr = null) {
+    public function actionDefault($abbr = self::ROOT_GROUP) {
 	$data = null;
 	try {
 	    $data = $this->forumService->getForums($abbr);

@@ -64,7 +64,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
     
     public function setSportTypeService(ISportTypeService $s) {
 	if ($s === null)
-	    throw new Exceptions\NullPointerException("Argument ISportTypeService was null", 0);
+	    throw new Exceptions\NullPointerException("Argument ISportTypeService was null");
 	$this->sportTypeService = $s;
     }
 
@@ -76,7 +76,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
     // <editor-fold desc="Administration of GROUPS">
     public function createSportGroup(SportGroup $g) {
 	if ($g == null)
-	    throw new Exceptions\NullPointerException("Argument SportGroup cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportGroup cannot be null");
 	try {
 	    $this->groupParentHandle($g);
 	    $this->groupSportTypeHandle($g);
@@ -87,7 +87,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    throw new Exceptions\DuplicateEntryException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -95,7 +95,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 
     private function groupParentHandle(SportGroup $g) {
 	if ($g === null)
-	    throw new Exceptions\NullPointerException("Argument SportType was null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportType was null");
 	try {
 	    $parId = $g->getParent();
 	    if ($parId !== null) {
@@ -105,7 +105,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		}
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -114,7 +114,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 
     private function groupSportTypeHandle(SportGroup $g) {
 	if ($g === null)
-	    throw new Exceptions\NullPointerException("Argument SportType was null", 0);
+	    throw new Exceptions\NullPointerException("Argument SportType was null");
 	try {
 	    
 	    $parent = $g->getParent();
@@ -131,7 +131,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$g->setSportType($typeDb);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -158,7 +158,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -179,7 +179,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), 1000, $ex);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -203,11 +203,32 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
+    }
+    
+    public function getSportGroupAbbr($abbr) {
+	if (empty($abbr))
+	    throw new Exceptions\InvalidArgumentException("Argument abbr was empty");
+	try {
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($abbr);
+	    if ($data == null) {
+		$data = $this->groupDao->createQueryBuilder("g")
+			->where("g.abbr = :abbr")->setParameter("abbr", $abbr)
+			->getQuery()->getSingleResult();
+		$opts = [Cache::TAGS=>[self::ENTITY_COLLECTION, $abbr, self::SELECT_COLLECTION]];
+		$cache->save($abbr, $data, $opts);
+	    }
+	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function getSportGroupsDatasource() {
@@ -217,16 +238,16 @@ class SportGroupService extends BaseService implements ISportGroupService {
     }
 
     public function getGroupsWithUser(User $user) { // TODO tohle by logicky melo vratit vsechny skupiny, ve kterych tento uzivatel figuruje, coz by nemelo mit smysl !
-	if ($user == null)
-	    throw new Exceptions\NullPointerException("Argument User was null", 0);
-	try {
-	    //$res = $this->groupDao->findBy(array("owner" => $user->id));
-	} catch (\Exception $ex) {
-	    $this->logError($ex);
-	    throw new Exceptions\DataErrorException(
-		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-	}
-	return $res;
+//	if ($user == null)
+//	    throw new Exceptions\NullPointerException("Argument User was null", 0);
+//	try {
+//	    //$res = $this->groupDao->findBy(array("owner" => $user->id));
+//	} catch (\Exception $ex) {
+//	    $this->logError($ex);
+//	    throw new Exceptions\DataErrorException(
+//		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+//	}
+//	return $res;
     }
     
     public function getSelectApplicableGroups($id = null) {
@@ -249,7 +270,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    }
 	    return $data;
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -269,7 +290,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    }
 	    return $data;
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -288,7 +309,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    }  
 	    return $this->groupDao->findAll();
 	} catch (\Exceptions $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}

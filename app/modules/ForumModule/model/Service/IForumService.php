@@ -53,7 +53,7 @@ interface IForumService {
     /**
      * 
      */
-    function getForums(SportGroup $g = null);
+    function getForums(SportGroup $g);
     
     function getForumDatasource();
 }

@@ -1,0 +1,13 @@
+{* Latte template *}
+{layout ./base.latte}
+{block content}
+
+{if $data}
+    <article>
+	<h4>{$data->getTitle()}</h4>
+	<em>{$data->getUpdated()|date:"%d.%m.%Y %H:%M"} {$data->getEditor()}</em>
+	<p>{!$data->getContent()}</p>
+	{control commentControl:form}
+	{control commentControl:comments}
+    </article>
+{/}

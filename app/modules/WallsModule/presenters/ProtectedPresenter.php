@@ -27,7 +27,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
     
 
 /**
- * ProtectedPresenter
+ * WallsProtectedPresenter
  * @Secured(resource="WallsProtected"))
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -40,10 +40,21 @@ class ProtectedPresenter extends SecuredPresenter {
     public $wallService;
     
     /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\ISportGroupService
      */
-    public function actionDefault($abbr = null) {
+    public $sportGroupService;
+    
+    /**
+     */
+    public function actionDefault($abbr = self::ROOT_GROUP) {
+	$sg = null;
 	try {
-	    $wps = $this->wallService->getWallPosts();
+	    if (is_string($abbr))
+		$sg = $this->sportGroupService->getSportGroupAbbr($abbr);
+	    elseif (is_numeric($abbr))
+		$sg = $this->sportGroupService->getSportGroup($abbr);
+	    $wps = $this->wallService->getWallPosts($sg);
 	    $this->template->wallPosts = $wps;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handledataLoad($abbr, "default", $ex);
@@ -51,12 +62,11 @@ class ProtectedPresenter extends SecuredPresenter {
     }
 
     /**
-     * @Secured
+     * 
      */
     public function actionShowWallPost($id) {
-	if ($id === null) $this->handleBadArgument ($id);
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
-	    // TODO check whether id is numeric or string to call appropriate method
 	    $wp = [];
 	    $wp = $this->wallService->getWallPost($id);
 	    if ($wp !== null) {

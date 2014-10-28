@@ -121,7 +121,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -136,7 +136,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$p->setOwner($owner);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $p;
@@ -152,7 +152,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$p->setEditor($editor);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $p;
@@ -168,7 +168,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$p->setSeason($season);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $p;
@@ -190,7 +190,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
@@ -209,7 +209,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	    $this->logWarning($ex);
 	    throw new DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -235,7 +235,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -283,7 +283,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$this->invalidateEntityCache($db);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}

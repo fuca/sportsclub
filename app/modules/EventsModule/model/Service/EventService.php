@@ -118,7 +118,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException("Event with this title already exist");
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -136,7 +136,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    }
 	    $e->setGroups($coll);
 	} catch (\Exception $e) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $e;
@@ -154,7 +154,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    }
 	    $e->setEditor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -171,7 +171,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    }
 	    $e->setAuthor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -186,7 +186,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		$this->eventDao->delete($dbE);
 	    }
 	} catch (DBALException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -206,7 +206,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
@@ -221,7 +221,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		    ->setParameter("alias", $alias)
 		    ->getQuery()->getSingleResult();
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -239,7 +239,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		    ->setParameter("gid", $g->id);
 	    return $qb->getQuery()->getResult();
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -266,7 +266,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -287,7 +287,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 			    ->getQuery()->getResult();
 	    return $res;
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }

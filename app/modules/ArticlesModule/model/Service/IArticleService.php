@@ -51,6 +51,8 @@ interface IArticleService {
      */
     function getArticle($id);
     
+    function getArticleAlias($alias);
+    
     /**
      * Returns article associated with given sportGroup
      * @return \Doctrine\Common\Collections\ArrayCollection

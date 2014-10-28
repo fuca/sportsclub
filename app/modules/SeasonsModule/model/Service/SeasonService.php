@@ -77,7 +77,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    throw new Exceptions\DuplicateEntryException(
 	    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_LABEL, $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		$ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -108,7 +108,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    }
 	    $s->setEditor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -126,7 +126,7 @@ class SeasonService extends BaseService implements ISeasonService {
 		$this->invalidateEntityCache($db);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -149,7 +149,7 @@ class SeasonService extends BaseService implements ISeasonService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -178,7 +178,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    throw new Exceptions\DuplicateEntryException(
 	    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_LABEL, $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -221,7 +221,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    }
 	    return $data;
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -239,7 +239,7 @@ class SeasonService extends BaseService implements ISeasonService {
 			->where("s.current = true")
 			->getQuery()->getSingleResult();
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 	    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}

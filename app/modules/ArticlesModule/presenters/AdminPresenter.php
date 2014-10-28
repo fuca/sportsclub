@@ -19,12 +19,9 @@
 namespace App\ArticlesModule\Presenters;
 
 use \App\SystemModule\Presenters\SecuredPresenter,
-    \App\ArticlesModule\Model\Service\IArticleService,
-    \App\SystemModule\Model\Service\ISportGroupService,
-    \App\UsersModule\Model\Service\IUserService,
+    \App\Model\Entities\Article,
     \App\Model\Misc\Exceptions,
     \App\Model\Misc\Enum\FormMode,
-    \App\ArticlesModule\Model\Entities\Article,
     \App\ArticlesModule\Forms\ArticleForm,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\Enum\CommentMode,
@@ -64,10 +61,7 @@ class AdminPresenter extends SecuredPresenter {
     }
     
     public function actionUpdateArticle($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
 	    $artDb = $this->articleService->getArticle($id);
 	    if ($artDb !== null) {
@@ -76,25 +70,27 @@ class AdminPresenter extends SecuredPresenter {
 		$artDb->setGroups($grArr);
 		$form->setDefaults($artDb->toArray());
 	    }
-	} catch (Exception $ex) {
-	    $this->handleException($ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
     
     public function handleDeleteArticle($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
-	    $this->redirect("default");
-	}
-	try {
-	    $this->articleService->deleteArticle($id);
-	} catch (Exception $ex) {
-	    $this->handleException($ex);
-	}
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	$this->doDeleteArticle("this");
 	if (!$this->isAjax()) {
 	    $this->redirect("this");
 	}
     }
+    
+    private function doDeleteArticle($id) {
+	try {
+	    $this->articleService->deleteArticle($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
+	}
+    }
+    
     
     public function createArticle(ArrayHash $values) {
 	try {
@@ -102,8 +98,9 @@ class AdminPresenter extends SecuredPresenter {
 	    $a->setEditor($this->getUser()->getIdentity());
 	    $this->articleService->createArticle($a);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
+	$this->redirect("default");
     }
     
     public function updateArticle(ArrayHash $values) {
@@ -112,8 +109,9 @@ class AdminPresenter extends SecuredPresenter {
 	    $a->setEditor($this->getUser()->getIdentity());
 	    $this->articleService->updateArticle($a);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
+	$this->redirect("default");
     }
     
     public function createComponentAddArticleForm($name) {
@@ -137,7 +135,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $sGroups = $this->sportGroupService->getSelectAllSportGroups();
 	    $form->setSportGroups($sGroups);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	return $form;
     }
@@ -180,45 +178,47 @@ class AdminPresenter extends SecuredPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style["width"] = '0.1%';
 	
-	$grid->addColumnText('title', 'Titulek')
+	$grid->addColumnText('title', $this->tt("articlesModule.admin.grid.title"))
 		->setTruncate(20)
 		->setSortable()
 		->setFilterText();
 	$headerTitle = $grid->getColumn('title')->headerPrototype;
 	$headerTitle->class[] = 'center';
 	
-	$grid->addColumnText('status', 'Stav')
+	$grid->addColumnText('status', $this->tt("articlesModule.admin.grid.state"))
 		->setSortable()
+		->setReplacement($articleStates)
 		->setFilterSelect($articleStates);
-	$grid->getColumn('status')->setCustomRender(callback($this, 'statusRenderer'));
+	
 	$headerStatus = $grid->getColumn('status')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
-	$grid->addColumnText('commentMode', 'Komentáře')
+	$grid->addColumnText('commentMode', $this->tt("articlesModule.admin.grid.comments"))
 		->setSortable()
+		->setReplacement($commentModes)
 		->setFilterSelect($commentModes);
-	$grid->getColumn('commentMode')->setCustomRender(callback($this, 'commentModeRenderer'));
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
-	$grid->addColumnText('author', 'Autor')
+	$grid->addColumnText('author', $this->tt("articlesModule.admin.grid.author"))
 		->setSortable()
 		->setFilterSelect($users);
 	$headerAuthor = $grid->getColumn('author')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addColumnDate('updated', 'Změna', self::DATETIME_FORMAT)
+	$grid->addColumnDate('updated', $this->tt("articlesModule.admin.grid.change"), self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerAuthor = $grid->getColumn('updated')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addActionHref('delete', '[Smaz]', 'deleteArticle!')
+	$grid->addActionHref('delete', '', 'deleteArticle!')
 		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateArticle')
+	
+	$grid->addActionHref('edit', '', 'updateArticle')
 		->setIcon('pencil');
 
-	$grid->setOperation(["delete" => "Delete"], $this->articlesGridOperationHandler);
+	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->articlesGridOperationHandler);
 	
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-articles" . date("Y-m-d H:i:s", time()));
@@ -230,26 +230,10 @@ class AdminPresenter extends SecuredPresenter {
 	switch($operation) {
 	    case "delete":
 		foreach ($ids as $id) {
-		try {
-			$this->articleService->deleteArticle($id);
-		    } catch (Exceptions\DataErrorException $ex) {
-			$this->handleException($ex);
-		    }
+		    $this->doDeleteArticle($id);
 		}
-		$this->redirect("this");
 		break;
-	    default:
-		$this->redirect("this");
 	}
-    }
-    
-    public function statusRenderer($e) {
-	$articleStates = ArticleStatus::getOptions();
-	return $articleStates[$e->getStatus()];
-    }
-    
-    public function commentModeRenderer($e) {
-	$commentModes = CommentMode::getOptions();
-	return $commentModes[$e->getCommentMode()];
+	$this->redirect("this");
     }
 }

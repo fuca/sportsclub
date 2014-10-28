@@ -1,5 +1,20 @@
+readMore: "more.."
+
 admin:
 	articleAdd: "Add article"
 	articleNew: "New article"
+
+admin.grid:
+	change: "Change"
+	author: "Author"
+	title: "Title"
+	comments: "Comments"
+	state: "State"
+
 articleForm.errors:
 	articleAlreadyExist: "Article with given title already exist"
+
+
+public:
+public.messages:
+	noArticles: "No articles were found for this category"

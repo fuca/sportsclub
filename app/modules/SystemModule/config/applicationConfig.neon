@@ -69,8 +69,8 @@ systemModule:
 	init:
 		group:
 			name: Club
-			description: "Root group"
-			abbr: root 
+			description: "Root system group"
+			abbr: root # tohle musi byt root!!!!, takze to oddelat z nastaveni a natvrdo to tam mit vzdy
 			children: null #hide
 			appDate: null #hide
 			parent: null #hide 

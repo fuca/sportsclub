@@ -143,7 +143,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    throw new Exceptions\DuplicateEntryException(
 		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_APPLICATION);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	$this->onCreate(clone $app);
@@ -160,7 +160,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    }
 	    return true;
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -182,7 +182,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
@@ -196,7 +196,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    $season = $this->getSeasonService()->getSeason($id, false);
 	    $app->setSeason($season);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -214,7 +214,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    }
 	    $app->setPayment($payment);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -230,7 +230,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    }
 	    $app->setSportGroup($group);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -248,7 +248,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    }
 	    $app->setOwner($owner);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -266,7 +266,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    }
 	    $app->setEditor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -283,7 +283,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 		$this->invalidateEntityCache($appDb);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -313,7 +313,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    throw new Exceptions\DuplicateEntryException(
 		    $ex->getMessage(), Exceptions\DuplicateEntryException::SEASON_APPLICATION, $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }

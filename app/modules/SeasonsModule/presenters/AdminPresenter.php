@@ -325,7 +325,7 @@ class AdminPresenter extends SecuredPresenter {
 		    break;
 	    }
 	} catch (Exceptions\DuplicateEntryException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    $form->addError(
 		    $this->tt("seasonsModule.admin.errors.seasonGroupExists"), self::FM_WARNING);
 	}

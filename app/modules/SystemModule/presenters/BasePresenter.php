@@ -35,6 +35,7 @@ use \Nette,
 abstract class BasePresenter extends Presenter {
 
     const NUM_IDENTIFIER = 'id';
+    const ROOT_GROUP = "root";
 
     /**
      * @const string Flash messages type
@@ -151,9 +152,12 @@ abstract class BasePresenter extends Presenter {
 	$this->setLayout('publicLayout');
 
 	$this->template->setTranslator($this->translator);
-	//$this->template->layoutsPath = '../../../../templates/';
 	$appDir = $this->context->parameters['appDir'];
 	$this->template->layoutsPath = $appDir . "/modules/SystemModule/templates/";
+	
+	if ($this->isAjax()) {
+	    $this->redrawControl("flash");
+	}
     }
 
     // <editor-fold desc="COMMON COMPONENT FACTORIES">

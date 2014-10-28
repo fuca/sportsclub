@@ -91,7 +91,7 @@ class WallService extends BaseService implements IWallService {
 	    $this->wallDao->save($w);
 	    $this->invalidateEntityCache();
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -111,27 +111,25 @@ class WallService extends BaseService implements IWallService {
 		$cache->save($id, $data, $opts);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
 
-    public function getWallPosts(SportGroup $g = null) {
+    public function getWallPosts(SportGroup $g) {
 	try {
 	    if (empty($g)) {
 		return $this->wallDao->findAll();
 	    } else {
-		$qb = $this->entityManager->createQueryBuilder();
-		$qb->select('w')
-			->from('App\Model\Entities\WallPost', 'w')
-			->innerJoin('e.groups', 'g')
+		$qb = $this->wallDao->createQueryBuilder("w")
+			->innerJoin('w.groups', 'g')
 			->where('g.id = :gid')
 			->setParameter("gid", $g->id);
 		return $qb->getQuery()->getResult();
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -146,7 +144,7 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $this->invalidateEntityCache($wpDb);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -170,7 +168,7 @@ class WallService extends BaseService implements IWallService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $wpDb;
@@ -195,7 +193,7 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $wp->setGroups($coll);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $wp;
@@ -213,7 +211,7 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $a->setEditor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -230,7 +228,7 @@ class WallService extends BaseService implements IWallService {
 	    }
 	    $a->setAuthor($author);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -251,7 +249,7 @@ class WallService extends BaseService implements IWallService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -265,7 +263,7 @@ class WallService extends BaseService implements IWallService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -286,7 +284,7 @@ class WallService extends BaseService implements IWallService {
 		$this->invalidateEntityCache($wpDb);
 	    }
 	} catch (Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }

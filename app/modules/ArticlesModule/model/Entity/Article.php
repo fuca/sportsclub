@@ -27,7 +27,8 @@ use \Doctrine\ORM\Mapping as ORM,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\EntityMapperTrait,
-    \App\Model\IIdentifiable;
+    \App\Model\IIdentifiable,
+    \App\SystemModule\Model\Service\ICommentable;
 
 /**
  * ORM persistable entity representing real article
@@ -35,7 +36,7 @@ use \Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class Article extends BaseEntity implements IIdentifiable {
+class Article extends BaseEntity implements IIdentifiable, ICommentable {
     
     use EntityMapperTrait;
 
@@ -84,7 +85,7 @@ class Article extends BaseEntity implements IIdentifiable {
 
     /**
      * ONE TO MANY
-     * @ManyToMany(targetEntity="Comment", cascade={"remove"})
+     * @ManyToMany(targetEntity="Comment", cascade={"all"})
      * @JoinTable(name="Comment_Article",
      *      joinColumns={@JoinColumn(name="article_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})

@@ -70,11 +70,11 @@ class SportTypeService extends BaseService implements ISportTypeService {
 	    }
 	    $this->invalidateEntityCache($db);
 	} catch (DBALException $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DependencyException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -96,7 +96,7 @@ class SportTypeService extends BaseService implements ISportTypeService {
 		$cache->save($id, $data, $opt);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}

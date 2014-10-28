@@ -115,7 +115,7 @@ class ForumService extends BaseService implements IForumService {
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -131,7 +131,7 @@ class ForumService extends BaseService implements IForumService {
 		$this->invalidateEntityCache();
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -151,7 +151,7 @@ class ForumService extends BaseService implements IForumService {
 		$cache->save($id, $data, $opts);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
@@ -161,17 +161,24 @@ class ForumService extends BaseService implements IForumService {
 	if (empty($alias))
 	    throw new Exceptions\InvalidArgumentException("Argument alias was empty");
 	try {
-	    return $this->forumDao->createQueryBuilder("f")
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($alias);
+	    if ($data == null) {
+		$data = $this->forumDao->createQueryBuilder("f")
 		    ->where("f.alias LIKE :alias")
 		    ->setParameter("alias", $alias)
 		    ->getQuery()->getSingleResult();
+		$opts = [Cache::TAGS=>[self::ENTITY_COLLECTION, $alias, self::SELECT_COLLECTION]];
+		$cache->save($alias, $data, $opts);
+	    }
+	    return $data;
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
-    public function getForums(SportGroup $g = null) {
+    public function getForums(SportGroup $g) {
 	try {
 	    if ($g == null) {
 		return $this->forumDao->findAll();
@@ -184,7 +191,7 @@ class ForumService extends BaseService implements IForumService {
 		    ->setParameter("gid", $g->id);
 	    return $qb->getQuery()->getResult();
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -206,7 +213,7 @@ class ForumService extends BaseService implements IForumService {
 		$this->invalidateEntityCache($fDb);
 	    }
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -230,7 +237,7 @@ class ForumService extends BaseService implements IForumService {
 	    }
 	    $e->setGroups($coll);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $e;
@@ -248,7 +255,7 @@ class ForumService extends BaseService implements IForumService {
 	    }
 	    $e->setEditor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -265,7 +272,7 @@ class ForumService extends BaseService implements IForumService {
 	    }
 	    $e->setAuthor($editor);
 	} catch (\Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -287,7 +294,7 @@ class ForumService extends BaseService implements IForumService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -301,7 +308,7 @@ class ForumService extends BaseService implements IForumService {
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -322,7 +329,7 @@ class ForumService extends BaseService implements IForumService {
 		$this->invalidateEntityCache($wpDb);
 	    }
 	} catch (Exception $ex) {
-	    $this->logError($ex);
+	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }

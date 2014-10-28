@@ -48,10 +48,12 @@ interface IForumService {
      */
     function getForum($id);
     
+    function getForumAlias($alias);
+    
     /**
      * 
      */
-    function getForums(SportGroup $g);
+    function getForums(SportGroup $g = null);
     
     function getForumDatasource();
 }

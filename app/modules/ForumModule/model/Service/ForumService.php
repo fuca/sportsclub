@@ -18,21 +18,23 @@
 
 namespace App\ForumModule\Model\Service;
 
-use \App\Model\Entities\Event,
-    \App\Model\Entities\SportGroup,
-    \App\Model\Entities\User,
+use \App\Model\Entities\SportGroup,
     \Grido\DataSources\Doctrine,
     \App\Model\Entities\Forum,
     \Nette\Utils\DateTime,
+    \App\Model\Entities\Comment,
+    \App\SystemModule\Model\Service\ICommentable,
     \Doctrine\DBAL\DBALException,
     \Nette\Caching\Cache,
     \Doctrine\Common\Collections\ArrayCollection,
     \App\Model\Misc\Exceptions,
     \Nette\Utils\Strings,
+    \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Service\BaseService,
     \App\UsersModule\Model\Service\IUserService,
-    \App\SystemModule\Model\Service\ISportGroupService;
+    \App\SystemModule\Model\Service\ISportGroupService,
+    \App\SystemModule\Model\Service\ICommentService;
 
 /**
  * Implementation of service dealing with Forum entities
@@ -55,12 +57,22 @@ class ForumService extends BaseService implements IForumService {
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     private $sportGroupService;
+    
+    /**
+     *
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    private $commentService;
 
     /**
      * @var string
      */
     private $defaultImgPath;
     
+    public function setCommentService(ICommentService $commentService) {
+	$this->commentService = $commentService;
+    }
+        
     public function setDefaultImgPath($defaultImgPath) {
 	$this->defaultImgPath = $defaultImgPath;
     }
@@ -77,14 +89,14 @@ class ForumService extends BaseService implements IForumService {
 	$this->userService = $userService;
     }
     
-    function __construct(EntityManager $em) {
-	parent::__construct($em, Forum::getClassName());
+    function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Forum::getClassName(), $logger);
 	$this->forumDao = $em->getDao(Forum::getClassName());
     }
 
     public function createForum(Forum $f) {
 	if ($f == NULL)
-	    throw new Exceptions\NullPointerException("Argument Forum was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Forum was null");
 	try {
 	    $this->entityManager->beginTransaction();
 	    $f->setUpdated(new DateTime());
@@ -93,21 +105,22 @@ class ForumService extends BaseService implements IForumService {
 	    if (empty($f->getImgName())) {
 		$f->setImgName($this->defaultImgPath);
 	    }
-	    $f->setAlias(Strings::normalize($f->getTitle()));
+	    $f->setAlias(Strings::webalize($f->getTitle()));
+	    //$f->setAlias(Strings::normalize($f->getTitle()));
 	    $this->forumDao->save($f);
 	    $this->entityManager->commit();
 	} catch (DBALException $ex) {
 	    $this->entityManager->rollback();
-	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious()); // previous PDOException #23000
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function deleteForum($id) {
-	if ($id == NULL)
-	    throw new Exceptions\NullPointerException("Argument Forum was null", 0);
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given");
 	
@@ -118,6 +131,7 @@ class ForumService extends BaseService implements IForumService {
 		$this->invalidateEntityCache();
 	    }
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -137,30 +151,47 @@ class ForumService extends BaseService implements IForumService {
 		$cache->save($id, $data, $opts);
 	    }
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $data;
     }
-
-    public function getForums(SportGroup $g) {
-	if ($g == NULL)
-	    throw new Exceptions\NullPointerException("Argument SportGroup was null", 0);
+    
+    public function getForumAlias($alias) {
+	if (empty($alias))
+	    throw new Exceptions\InvalidArgumentException("Argument alias was empty");
 	try {
-	$qb = $this->entityManager->createQueryBuilder();
-	$qb->select('f')
-		->from('App\Model\Entities\Forum', 'f')
-		->innerJoin('f.groups', 'g')
-		->where('g.id = :gid')
-		->setParameter("gid", $g->id);
-	return $qb->getQuery()->getResult();
+	    return $this->forumDao->createQueryBuilder("f")
+		    ->where("f.alias LIKE :alias")
+		    ->setParameter("alias", $alias)
+		    ->getQuery()->getSingleResult();
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function getForums(SportGroup $g = null) {
+	try {
+	    if ($g == null) {
+		return $this->forumDao->findAll();
+	    }
+	    $qb = $this->entityManager->createQueryBuilder();
+	    $qb->select('f')
+		    ->from('App\Model\Entities\Forum', 'f')
+		    ->innerJoin('f.groups', 'g')
+		    ->where('g.id = :gid')
+		    ->setParameter("gid", $g->id);
+	    return $qb->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
     public function updateForum(Forum $f) {
 	if ($f === NULL)
-	    throw new Exceptions\NullPointerException("Argument Forum was null", 0);
+	    throw new Exceptions\NullPointerException("Argument Forum was null");
 	try {
 	    $fDb = $this->forumDao->find($f->getId());
 	    if ($fDb !== null) {
@@ -169,11 +200,13 @@ class ForumService extends BaseService implements IForumService {
 		$this->sportGroupsTypeHandle($fDb);
 		$this->editorTypeHandle($fDb);
 		$this->authorTypeHandle($fDb);
+		$fDb->setAlias(Strings::webalize($f->getTitle()));
 		$this->entityManager->merge($fDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($fDb);
 	    }
 	} catch (\Exception $ex) {
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -196,15 +229,16 @@ class ForumService extends BaseService implements IForumService {
 		}
 	    }
 	    $e->setGroups($coll);
-	} catch (\Exception $e) {
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $e;
     }
     
     private function editorTypeHandle(Forum $e) {
 	if ($e === null)
-	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null");
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -214,13 +248,14 @@ class ForumService extends BaseService implements IForumService {
 	    }
 	    $e->setEditor($editor);
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
     
     private function authorTypeHandle(Forum $e) {
 	if ($e === null)
-	    throw new Exceptions\NullPointerException("Argument Event cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument Event cannot be null");
 	try {
 	    $editor = null;
 	    if ($this->getUserService() !== null) {
@@ -229,8 +264,67 @@ class ForumService extends BaseService implements IForumService {
 		    $editor = $this->getUserService()->getUser($id, false);
 	    }
 	    $e->setAuthor($editor);
-	} catch (Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
+    public function createComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->entityManager->beginTransaction();
+	    $wpDb = $this->forumDao->find($e->getId());
+	    if ($wpDb !== null) {
+		//$this->commentService->createComment($c);
+		$ccs = $wpDb->getComments();
+		//$ccs->clear(); // vymaze celou kolekci
+		$ccs->add($c);
+		$wpDb->setLastActivity(new DateTime());
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($wpDb);
+	    }
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function updateComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->entityManager->beginTransaction();
+	    //$wpDb = $this->wallDao->find($e->getId());
+	    $this->commentService->updateComment($c);
+	    $this->invalidateEntityCache($e);
+	    $this->entityManager->commit();
+	} catch (\Exception $ex) {
+	    $this->entityManager->rollback();
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function deleteComment(Comment $c, ICommentable $e) {
+	try {
+	    $wpDb = $this->forumDao->find($e->getId());
+	    if ($wpDb !== null) {
+		$coll = $wpDb->getComments();
+		$id = $c->getId();
+		$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+		$index = $coll->indexOf($comment);
+		$coll->remove($index);
+
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush($wpDb);
+		$this->commentService->deleteComment($c->getId());    
+		$this->invalidateEntityCache($wpDb);
+	    }
+	} catch (Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
 }

@@ -18,14 +18,15 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\JoinTable,
-    Doctrine\ORM\Mapping\ManyToMany,
-    Doctrine\ORM\Mapping\ManyToOne,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\JoinTable,
+    \Doctrine\ORM\Mapping\ManyToMany,
+    \Doctrine\ORM\Mapping\ManyToOne,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
-    \App\Model\Misc\EntityMapperTrait;
+    \App\Model\Misc\EntityMapperTrait,
+    \App\SystemModule\Model\Service\ICommentable;
 
 /**
  * ORM persistable entity representing real forum thread
@@ -33,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class Forum extends BaseEntity {
+class Forum extends BaseEntity implements ICommentable {
 
     use EntityMapperTrait;
 
@@ -101,7 +102,7 @@ class Forum extends BaseEntity {
 
     /**
      * ONE TO MANY
-     * @ManyToMany(targetEntity="Comment", cascade={"remove"})
+     * @ManyToMany(targetEntity="Comment", cascade={"all"})
      * @JoinTable(name="Comment_Forum",
      *      joinColumns={@JoinColumn(name="forum_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})

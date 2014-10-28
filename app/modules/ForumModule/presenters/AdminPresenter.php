@@ -62,20 +62,18 @@ class AdminPresenter extends SecuredPresenter {
     }
     
     public function actionUpdateForum($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id)) $this->handleBadArgument($id);
 	try {
 	    $fDb = $this->forumService->getForum($id);
 	    if ($fDb !== null) {
 		$form = $this->getComponent("updateForumForm");
-		$grArr = $fDb->getGroups()->map(function($e){return $e->getId();})->toArray();
+		$grArr = $fDb->getGroups()
+			->map(function($e){return $e->getId();})->toArray();
 		$fDb->setGroups($grArr);
 		$form->setDefaults($fDb->toArray());
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
     
@@ -85,8 +83,9 @@ class AdminPresenter extends SecuredPresenter {
 	    $f->setEditor($this->getUser()->getIdentity());
 	    $this->forumService->createForum($f);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
+	$this->redirect("default");
     }
     
     public function updateForum(ArrayHash $values) {
@@ -94,19 +93,22 @@ class AdminPresenter extends SecuredPresenter {
 	    $f = new Forum((array) $values);
 	    $this->forumService->updateForum($f);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
+	$this->redirect("default");
     }
     
     public function handleDeleteForum($id) {
-	if (!is_numeric($id)) {
-	    $this->flashMessage("Špatný formát argumentu", self::FM_WARNING);
-	    $this->redirect("default");
-	}
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	$this->doDeleteForum($id);
+	$this->redirect("this");
+    }
+    
+    private function doDeleteForum($id) {
 	try {
 	    $this->forumService->deleteForum($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataDelete($id, "this", $ex);
 	}
     }
     
@@ -154,46 +156,57 @@ class AdminPresenter extends SecuredPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style["width"] = '0.1%';
 	
-	$grid->addColumnText('title', 'Název')
+	$grid->addColumnText('title', $this->tt("forumModule.admin.grid.title"))
 		->setTruncate(20)
 		->setSortable()
 		->setFilterText();
 	$headerTitle = $grid->getColumn('title')->headerPrototype;
 	$headerTitle->class[] = 'center';
 	
-	$grid->addColumnText('commentMode', 'Komentáře')
+	$grid->addColumnText('commentMode', $this->tt("forumModule.admin.grid.comments"))
 		->setSortable()
+		->setReplacement($commentModes)
 		->setFilterSelect($commentModes);
-	$grid->getColumn('commentMode')->setCustomRender(callback($this, 'commentModeRenderer'));
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
-	$grid->addColumnText('author', 'Autor')
+	$grid->addColumnText('author', $this->tt("forumModule.admin.grid.author"))
 		->setSortable()
 		->setFilterSelect($users);
 	$headerAuthor = $grid->getColumn('author')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addColumnDate('updated', 'Změna', self::DATETIME_FORMAT)
+	$grid->addColumnDate('updated', $this->tt("forumModule.admin.grid.change"), self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerAuthor = $grid->getColumn('updated')->headerPrototype;
 	$headerAuthor->class[] = 'center';
 	
-	$grid->addActionHref('delete', '[Smaz]', 'deleteForum!')
-		->setIcon('trash');
-	$grid->addActionHref('edit', '[Uprav]', 'updateForum')
+	$grid->addActionHref('delete', '', 'deleteForum!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("forumModule.admin.grid.messages.rlyDelForum", null, ["id"=>$u->getId()]);
+		});
+		
+	$grid->addActionHref('edit', '', 'updateForum')
 		->setIcon('pencil');
 
+	$grid->setOperation(["delete"=>$this->tt("forumModule.admin.grid.messages.rlyDelForumItems")], 
+		$this->forumGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-forum" . date("Y-m-d H:i:s", time()));
 	return $grid;
     }
     
-        
-    public function commentModeRenderer($e) {
-	$commentModes = CommentMode::getOptions();
-	return $commentModes[$e->getCommentMode()];
+    public function forumGridOpsHandler($op, $ids) {
+	switch($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteForum($id);
+		}
+		break;
+	}
+	$this->redirect("this");
     }
     
     private function prepareForumForm($name) {
@@ -208,7 +221,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $groups = $this->sportGroupService->getSelectAllSportGroups();
 	    return $groups;
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
     }
     
@@ -217,7 +230,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $users = $this->userService->getSelectUsers();    
 	    return $users;
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleException($ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
     }
 }

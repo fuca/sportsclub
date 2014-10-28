@@ -9,7 +9,7 @@
 	    <p><a id="comment-{$c->getId()}" href="#comment-{$c->getId()}">#{$c->getId()}</a>
 	    <strong>{$c->getTitle()} </strong> <a href="{link getCommentForm!, $c->getId()}" class="ajaxdialog">[E]</a><a href="{link deleteComment!, $c->getId()}">[X]</a><br/>
 	    {$c->getContent()}<br>
-	    {$c->getAuthor()} | {$c->getUpdated()|date:'%d.%m.%Y'}<br/>
+	    {$c->getAuthor()} | {$c->getUpdated()|date:'%d.%m.%Y %H:%M'}<br/>
 	    </p>
 	    {/}
     {/}

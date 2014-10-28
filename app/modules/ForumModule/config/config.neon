@@ -11,3 +11,4 @@ services:
 			- setCacheStorage(@forumModule.cacheStorage)
 			- setUserService()
 			- setSportGroupService()
+			- setCommentService()

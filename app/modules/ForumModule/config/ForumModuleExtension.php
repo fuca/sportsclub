@@ -44,7 +44,7 @@ class ForumModuleExtension extends BaseModuleExtension implements ITranslationPr
     }
 
     public function getTranslationResources() {
-	return [__DIR__ . "/../lang"];
+	return [__DIR__ . "/../".self::LOCALE_DIR];
     }
 
     public function beforeCompile() {

@@ -1,0 +1,26 @@
+#   
+# Config file for Motivation module
+#
+
+services:
+		    
+	motivationModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/motivationModule)
+		autowired: no
+
+	motivationModule.motivationTaxService:
+		class:
+			App\MotivationModule\Model\Service\MotivationTaxService
+		setup:
+			- setCacheStorage(@motivationModule.cacheStorage)
+			- setUserService()
+			- setSeasonService()
+			- setSportGroupService()
+
+	motivationModule.motivationEntryService:
+		class:
+			App\MotivationModule\Model\Service\MotivationEntryService
+		setup:
+			- setCacheStorage(@motivationModule.cacheStorage)
+			- setUserService()
+			- setSeasonService()

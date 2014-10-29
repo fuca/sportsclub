@@ -32,7 +32,7 @@ abstract class SecuredPresenter extends BasePresenter {
 	$user = $this->getUser();
 	if (!$user->isLoggedIn()) {
 	    if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
-		$this->flashMessage('Uplynula maximální doba neaktivity! Systém vás z bezpečnostních důvodů odhlásil.', 'warning');
+		$this->flashMessage($this->tt("securityModule.loginControl.messages.outCosInactive"), self::FM_WARNING);
 	    }
 
 	    $backlink = $this->storeRequest();

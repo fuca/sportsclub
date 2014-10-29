@@ -27,18 +27,14 @@ use \App\SystemModule\Model\Service\Menu\IAdminMenuControlFactory;
  */
 final class AdminMenuControlFactory implements IAdminMenuControlFactory {
     
-    private $items;
+    private $items = [];
     
     public function getItems() {
 	return $this->items;
     }
     
     public function addItem($item) {
-	
-    }
-        
-    public function create() {
-	
+	$this->items += $item;
     }
 }
 

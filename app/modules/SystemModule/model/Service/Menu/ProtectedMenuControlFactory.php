@@ -28,17 +28,13 @@ use \App\SystemModule\Model\Service\Menu\IProtectedMenuControlFactory;
 final class ProtectedMenuControlFactory implements IProtectedMenuControlFactory {
     
     
-    private $items;
+    private $items = [];
     
     public function getItems() {
 	return $this->items;
     }
     
     public function addItem($item) {
-	
-    }
-        
-    public function create() {
-	
+	$this->items += $item;
     }
 }

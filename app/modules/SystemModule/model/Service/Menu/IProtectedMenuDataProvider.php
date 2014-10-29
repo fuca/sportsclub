@@ -29,5 +29,5 @@ interface IProtectedMenuDataProvider {
     /** 
      * @return array
      */
-    function getItemsResources();
+    function getProtectedItemsResources();
 }

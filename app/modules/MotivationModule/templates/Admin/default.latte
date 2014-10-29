@@ -1,0 +1,11 @@
+{* Latte template *}
+{layout ./base.latte}
+{block content}
+
+<a href="{plink :Motivation:Admin:createTax}">{_motivationModule.admin.taxAdd}</a>
+
+{control taxesGrid}
+
+<a href="{plink :Motivation:Admin:createEntry}">{_motivationModule.admin.entryAdd}</a>
+
+{control entriesGrid}

@@ -291,7 +291,7 @@ class UserService extends BaseService implements IUserService {
     }
 
     /**
-     * 
+     * Null active means all users, bool active means users with the same active value
      * @param inteter $id
      * @param bool|null $active
      * @return array of pairs

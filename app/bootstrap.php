@@ -40,7 +40,7 @@ Type::addType("EventType", "App\Model\Misc\Enum\EventType");
 Type::addType("AclPrivilege", "App\Model\Misc\Enum\AclPrivilege");
 Type::addType("ArticleStatus", "App\Model\Misc\Enum\ArticleStatus");
 Type::addType("CommentMode", "App\Model\Misc\Enum\CommentMode");
-
+Type::addType("MotivationEntryType", "App\Model\Misc\Enum\MotivationEntryType");
 
 // form extensions
 DateInput::register($configurator);

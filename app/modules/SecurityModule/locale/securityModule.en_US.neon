@@ -10,6 +10,8 @@ loginControl:
 loginControl.messages:
 	userInactive: "Inactive account. If you feel this information is invalid, feel free to contact our office."
 	invalidCredentials: "Wrong username or password"
+	uWereLoggedOut: "You were logged out"
+	outCosInactive: "Maximum inactivity period expired! You were logged out for security reasons."
 
 loginControl.loginForm:
 	title: "Log in"

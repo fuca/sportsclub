@@ -29,5 +29,5 @@ interface IPublicMenuDataProvider {
     /** 
      * @return array
      */
-    function getItemsResources();
+    function getPublicItemsResources();
 }

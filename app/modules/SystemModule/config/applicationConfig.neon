@@ -89,7 +89,12 @@ systemModule:
 					accountNumber: 111
 				phone: x
 				email: x
-			
+securityModule:
+	evDefRoleName: player
+	evDefComment: "Created by system"
+	deleteOldPositions: true
+
+	init:
 		roles:
 			-
 				name: administrator
@@ -107,11 +112,6 @@ systemModule:
 
 paymentsModule:
 	dueDate: "1 month"
-
-securityModule:
-	evDefRoleName: player
-	evDefComment: "Created by system"
-	deleteOldPositions: true
 			
 nette:
 	application:
@@ -241,3 +241,4 @@ extensions:
 	articlesModule: App\ArticlesModule\Config\ArticlesModuleExtension
 	wallsModule: App\WallsModule\Config\WallsModuleExtension
 	forumModule: App\ForumModule\Config\ForumModuleExtension
+	motivationModule: App\MotivationModule\Config\MotivationModuleExtension

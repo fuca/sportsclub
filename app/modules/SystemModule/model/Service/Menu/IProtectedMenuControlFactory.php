@@ -4,5 +4,7 @@ namespace App\SystemModule\Model\Service\Menu;
 
 interface IProtectedMenuControlFactory {
     
-    function create ();
+    function getItems();
+    
+    function addItem($item);
 }

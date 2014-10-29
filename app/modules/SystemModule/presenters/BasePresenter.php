@@ -36,13 +36,20 @@ abstract class BasePresenter extends Presenter {
 
     const NUM_IDENTIFIER = 'id';
     const ROOT_GROUP = "root";
+    
+    /**
+     * Absolute root of protected section, redirect there if module default action fails
+     */
+    const LAST_CHANCE_REDIRECT = ":System:Protected:default";
 
     /**
      * @const string Flash messages type
      */
-    const FM_SUCCESS = "success",
-	    FM_ERROR = "error",
-	    FM_WARNING = "warning";
+    const FM_SUCCESS = "alert alert-success fade in",
+	    FM_ERROR = "alert alert-danger fade in",
+	    FM_WARNING = "alert alert-warning fade in",
+	    FM_INFO = "alert alert-info";
+    
     const DATETIME_FORMAT = "j.n.Y H:i",
 	  DATE_FORMAT = "j.n.Y";
 
@@ -174,6 +181,9 @@ abstract class BasePresenter extends Presenter {
 	$c->setUser($this->getUser()->getIdentity());
 	//$c->setIsCommenting($this->isAllowedToComment($this->getEntity()));
 	return $c;
+    }
+    
+    public function createComponentGroupsFilterMenu($name) {
     }
 
     // </editor-fold>

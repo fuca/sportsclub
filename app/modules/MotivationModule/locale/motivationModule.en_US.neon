@@ -1,0 +1,54 @@
+taxForm:
+	groupNew: "New motivation tax"
+	groupEdit: "Update motivation tax"
+	season: "Season"
+	group: "Group"
+	editor: "Editor"
+	update: "Changed"
+	ordered: "Created"
+	credit: "Credits"
+	publicNoteToggle: "Add public note"
+	publicNote: "Note"
+	seasonSel: "Select season .."
+	seasonMustFill: "Season must be selected"
+	groupSel: "Select group .."
+	groupMustFill: "Group must be selected"
+	creditMustNumeric: "Credit must be type of numeric"
+
+taxForm.messages:
+	taxAlreadyExist: "Motivation tax for given season and group already exist"
+
+entryForm:
+	groupNew: "New motivation entry"
+	member: "User"
+	subject: "Subject"
+	amount: "Amount"
+	editor: "Editor"
+	season: "Season"
+	seasonSel: "Select season .."
+	type: "Type"
+	
+admin:
+	taxAdd: "Add tax"
+	entryAdd: "Add entry"
+
+admin.grid:
+	season: "Season"
+	group: "Group"
+	credit: "Credit"
+	orderedDate: "Ordered"
+	note: "Note"
+	owner: "Owner"
+	amount: "Amount"
+	type: "Type"
+	rlyDeleteTaxId: "Do you really want to delete motivation tax #%id%"
+protected:
+	myMotivation: "My motivation"
+
+protected.grid:
+	season: "Season"
+	amount: "Amount"
+	updated: "Change"
+	type: "Type"
+	subject: "Subject"
+	

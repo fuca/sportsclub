@@ -54,30 +54,30 @@ class SystemModuleExtension extends BaseModuleExtension implements ITranslationP
 	    
 			if ($extension instanceof IAdminMenuDataProvider) {
 	    		    $adminFact = $builder->getDefinition("adminMenuControlFactory");
-			    $dataArray = $extension->getItemsResources();
+			    $dataArray = $extension->getAdminItemsResources();
 			    
 			    foreach($dataArray as $item) {
-				$adminFact->addSetup("addItem", $item);
+				$adminFact->addSetup("addItem", [$item]);
 			    }
 			    continue;
 			}
 			
 			if ($extension instanceof IProtectedMenuDataProvider) {
 	    		    $protFact = $builder->getDefinition("protectedMenuControlFactory");
-			    $dataArray = $extension->getItemsResources();
+			    $dataArray = $extension->getProtectedItemsResources();
 			    
 			    foreach($dataArray as $item) {
-				$protFact->addSetup("addItem", $item);
+				$protFact->addSetup("addItem", [$item]);
 			    }
 			    continue;
 			}
 			
 			if ($extension instanceof IPublicMenuDataProvider) {
 	    		    $publicFact = $builder->getDefinition("publicMenuControlFactory");
-			    $dataArray = $extension->getItemsResources();
+			    $dataArray = $extension->getPublicItemsResources();
 			    
 			    foreach($dataArray as $item) {
-				$publicFact->addSetup("addItem", $item);
+				$publicFact->addSetup("addItem", [$item]);
 			    }
 			    continue;
 			}

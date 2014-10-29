@@ -16,22 +16,22 @@
  * limitations under the License.
  */
 
-namespace App\WallsModule\Config;
+namespace App\MotivationModule\Config;
 
 use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \Kdyby\Translation\DI\ITranslationProvider,
-    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
+    \Doctrine\DBAL\Types\Type;
 
 /**
- * WallsModuleExtension
+ * MotivationModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class WallsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
+class MotivationModuleExtension extends BaseModuleExtension implements ITranslationProvider {
 
-    private $defaults = [];
+    private $defaults = [
+	"dueDate"=>"1 month"];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -39,9 +39,11 @@ class WallsModuleExtension extends BaseModuleExtension implements ITranslationPr
 	$config = $this->getConfig($this->defaults);
 
 	$builder = $this->getContainerBuilder();
-
+	
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
+	
+//	Type::addType("MotivationEntryType", "App\Model\Misc\Enum\MotivationEntryType");
     }
 
     public function getTranslationResources() {
@@ -55,13 +57,5 @@ class WallsModuleExtension extends BaseModuleExtension implements ITranslationPr
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
     }
-
-    public function getAdminItemsResources() {
-	return ["wallsModule.menu.wallsAdmin"=>":Walls:Admin:default"];
-    }
-
-    public function getProtectedItemsResources() {
-	return ["wallsModuke.menu.wallsProtected"=>":Walls:Protected:default"];
-    }
-
+    
 }

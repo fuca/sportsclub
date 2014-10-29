@@ -17,12 +17,87 @@
  */
 
 namespace App\MotivationModule\Presenters;
-use App\SystemModule\Presenters\SecuredPresenter;
+use \App\SystemModule\Presenters\SecuredPresenter,
+ Grido\Grid, App\Model\Misc\Enum\MotivationEntryType;
+
 /**
- * CreditPresenter
+ * MotivationProtectedPresenter
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class ProtectedPresenter extends SecuredPresenter {
+final class ProtectedPresenter extends SecuredPresenter {
     
+    /**
+     * @inject
+     * @var \App\SeasonsModule\Model\Service\ISeasonService
+     */
+    public $seasonService;
+    
+    /**
+     * @inject
+     * @var \App\MotivationModule\Model\Service\IMotivationEntryService
+     */
+    public $entryService;
+    
+    public function actionDefault() {
+	// grid render
+    }
+    
+    public function createComponentUserMotivationGrid($name) {
+	try {
+	    $seasons = [null=>null]+$this->seasonService->getSelectSeasons();
+	    //$users = [null=>null]+$this->userService->getSelectUsers();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, self::LAST_CHANCE_REDIRECT, $ex);
+	}
+	
+	$grid = new Grid($this, $name);
+	$grid->setModel($this->entryService->getEntriesDataSource($this->getUser()->getIdentity()));
+	$grid->setPrimaryKey("id");
+	
+//	$grid->addColumnNumber('id', '#')
+//		->cellPrototype->class[] = 'center';
+//	$headerId = $grid->getColumn('id')->headerPrototype;
+//	$headerId->class[] = 'center';
+//	$headerId->rowspan = "2";
+//	$headerId->style['width'] = '0.1%';
+	
+	$grid->addColumnText('season', $this->tt("motivationModule.protected.grid.season"))
+		->setSortable()
+		->setFilterSelect($seasons);
+	
+	$headerSeas = $grid->getColumn('season')->headerPrototype;
+	$headerSeas->class[] = 'center';
+	
+	
+	$grid->addColumnText('amount', $this->tt("motivationModule.protected.grid.amount"))
+		->setSortable()
+		->setFilterText();
+	
+	$headerAmnt = $grid->getColumn('amount')->headerPrototype;
+	$headerAmnt->class[] = 'center';
+	
+	$grid->addColumnDate("updated", $this->tt("motivationModule.protected.grid.updated"), self::DATE_FORMAT)
+		->setSortable();
+	$headerOd = $grid->getColumn('updated')->headerPrototype;
+	$headerOd->class[] = 'center';
+	
+	$grid->addColumnText('type', $this->tt("motivationModule.protected.grid.type"))
+		->setSortable()
+		->setReplacement(MotivationEntryType::getOptions())
+		->setFilterSelect([null=>null]+MotivationEntryType::getOptions());
+	
+	$headerT = $grid->getColumn('type')->headerPrototype;
+	$headerT->class[] = 'center';
+	
+	$grid->addColumnText('subject', $this->tt("motivationModule.protected.grid.subject"))
+		->setSortable()
+		->setFilterText();
+	
+	$headerSubj = $grid->getColumn('subject')->headerPrototype;
+	$headerSubj->class[] = 'center';
+
+	$grid->setFilterRenderType($this->filterRenderType);
+	$grid->setExport("protected-motivation" . date("Y-m-d H:i:s", time()));
+    }
 }

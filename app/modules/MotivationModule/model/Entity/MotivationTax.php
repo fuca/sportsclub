@@ -19,18 +19,20 @@ namespace App\Model\Entities;
 use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\JoinColumn,
     \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\UniqueConstraint,
     \Kdyby\Doctrine\Entities\BaseEntity,
-    \App\Model\Misc\Enum\PaymentStatus,
     \App\Model\IIdentifiable,
     \App\Model\Misc\EntityMapperTrait;
 
 /**
- * ORM persistable entity payment
+ * ORM persistable entity motivation tax
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
+ * @ORM\Table(name="MotivationTax",
+ * uniqueConstraints={@UniqueConstraint(name="unique_motivation_tax", columns={"season_fk", "group_fk"})})
  */
-class Payment extends BaseEntity implements IIdentifiable {
+class MotivationTax extends BaseEntity implements IIdentifiable {
     
     use EntityMapperTrait;
 
@@ -40,101 +42,72 @@ class Payment extends BaseEntity implements IIdentifiable {
      * @ORM\GeneratedValue
      */
     protected $id;
-    
-    /**
-     * @ManyToOne(targetEntity="User", fetch = "LAZY")
-     * @JoinColumn(nullable = false, name = "owner_fk")
-     */
-    protected $owner;
 
     /**
      * @ManyToOne(targetEntity="Season", fetch = "LAZY")
      * @JoinColumn(nullable = false, name = "season_fk")
      */
     protected $season;
+    
+    /**
+     * @ManyToOne(targetEntity="SportGroup", fetch = "EAGER")
+     * @JoinColumn(nullable = false, name = "group_fk")
+     */
+    protected $sportGroup;
 
-    /** @ORM\Column(type="string", nullable = false) */
-    protected $subject;
-
-    /** @ORM\Column(type="string", nullable = false) */
-    protected $amount;
-
-    /** @ORM\Column(type="string", nullable = false) */
-    protected $vs;
-
-    /** @ORM\Column(type="datetime", nullable = false) */
-    protected $dueDate;
+    /** @ORM\Column(type="integer", nullable = false) */
+    protected $credit;
 
     /** @ORM\Column(type="datetime", nullable = false) */
     protected $orderedDate;
 
+    /** @ORM\Column(type="datetime", nullable = false) */
+    protected $updated;
+    
     /**
      * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
      * @JoinColumn(nullable = true, name = "author_fk")
      */
     protected $editor;
 
-    /** @ORM\Column(type="PaymentStatus", nullable = false) */
-    protected $status;
-
-    /** @ORM\Column(type="string", nullable = false) */
-    protected $protectedNote;
-
     /** @ORM\Column(type="string", nullable = false) */
     protected $publicNote;
     
     public function __construct(array $values = []) {
 	parent::__construct();
-	$this->status = PaymentStatus::NOT_YET;
 	$this->fromArray($values);
     }
 
     public function __toString() {
-	return "{$this->getOwner()} {$this->getAmount()},- (#{$this->getId()})";
+	return "{$this->getGroup()} {$this->getSeason()} (#{$this->getId()})";
     }
     
-    public function getId() {
-	return $this->id;
+    public function getCredit() {
+	return $this->credit;
     }
 
-    public function getOwner() {
-	return $this->owner;
+    public function setCredit($credit) {
+	$this->credit = $credit;
+    }
+
+    public function getId() {
+	return $this->id;
     }
 
     public function getSeason() {
 	return $this->season;
     }
 
-    public function getSubject() {
-	return $this->subject;
-    }
-
-    public function getAmount() {
-	return $this->amount;
-    }
-
-    public function getVs() {
-	return $this->vs;
-    }
-
-    public function getDueDate() {
-	return $this->dueDate;
-    }
-
     public function getOrderedDate() {
 	return $this->orderedDate;
     }
 
+    public function getUpdated() {
+	return $this->updated;
+    }
+
     public function getEditor() {
 	return $this->editor;
-    }
-
-    public function getStatus() {
-	return $this->status;
-    }
-
-    public function getProtectedNote() {
-	return $this->protectedNote;
     }
 
     public function getPublicNote() {
@@ -145,28 +118,8 @@ class Payment extends BaseEntity implements IIdentifiable {
 	$this->id = $id;
     }
 
-    public function setOwner($owner) {
-	$this->owner = $owner;
-    }
-
     public function setSeason($season) {
 	$this->season = $season;
-    }
-
-    public function setSubject($subject) {
-	$this->subject = $subject;
-    }
-
-    public function setAmount($amount) {
-	$this->amount = $amount;
-    }
-
-    public function setVs($vs) {
-	$this->vs = $vs;
-    }
-
-    public function setDueDate($dueDate) {
-	$this->dueDate = $dueDate;
     }
 
     public function setOrderedDate($orderedDate) {
@@ -174,19 +127,23 @@ class Payment extends BaseEntity implements IIdentifiable {
 	    $this->orderedDate = $orderedDate;
     }
 
+    public function setUpdated($updated) {
+	$this->updated = $updated;
+    }
+
     public function setEditor($editor) {
 	$this->editor = $editor;
     }
 
-    public function setStatus($status) {
-	$this->status = $status;
-    }
-
-    public function setProtectedNote($protectedNote) {
-	$this->protectedNote = $protectedNote;
-    }
-
     public function setPublicNote($publicNote) {
 	$this->publicNote = $publicNote;
+    }
+    
+    public function getSportGroup() {
+	return $this->sportGroup;
+    }
+
+    public function setSportGroup($sportGroup) {
+	$this->sportGroup = $sportGroup;
     }
 }

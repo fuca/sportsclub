@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2014 Michal Fučík <michal.fuca.fucik(at)gmail.com>.
+ * Copyright 2014 fuca.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,27 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Service\Menu;
+namespace App\Model\Misc\Enum;
+
+use \App\Model\Misc\Enum\EnumType;
 
 /**
- * IAdminMenuDataProvider
- * 
+ * Enumerate for representing motivation entry type
+ *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-
-interface IAdminMenuDataProvider {
+final class MotivationEntryType extends EnumType implements IEnum {
+    const   CREDIT = "crd",
+	    PENALTY = "pnl",
+	    REWARD = "rwd";
     
-    /** 
-     * @return array
-     */
-    function getAdminItemsResources();
+    protected $name = "MotivationEntryType";
+    protected $values = [self::CREDIT, self::PENALTY, self::REWARD];
+	    
+    public static function getOptions() {
+	return array(
+	    self::CREDIT    => "Kredit",
+	    self::PENALTY   => "Pokuta",
+	    self::REWARD    => "Odměna");
+    }
 }

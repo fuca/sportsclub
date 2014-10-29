@@ -34,10 +34,7 @@ final class PublicMenuControlFactory implements IPublicMenuControlFactory {
     }
     
     public function addItem($item) {
-	
+	$this->items += $item;
     }
-        
-    public function create() {
-	
-    }
+
 }

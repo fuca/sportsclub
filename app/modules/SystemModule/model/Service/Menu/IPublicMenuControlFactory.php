@@ -25,8 +25,7 @@ namespace App\SystemModule\Model\Service\Menu;
  */
 interface IPublicMenuControlFactory {
     
-    /** 
-     * @return MenuControl 
-     */
-    function create();
+    function getItems();
+    
+    function addItem($item);
 }

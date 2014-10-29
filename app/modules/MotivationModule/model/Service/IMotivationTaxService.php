@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Service\Menu;
-
+namespace App\MotivationModule\Model\Service;
+ 
+use \App\Model\Entities\MotivationTax;
 /**
- * IAdminMenuDataProvider
- * 
+ * Interface for MotivationTaxService
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-
-interface IAdminMenuDataProvider {
+interface IMotivationTaxService {
     
-    /** 
-     * @return array
-     */
-    function getAdminItemsResources();
+    function createTax(MotivationTax $t);
+    function updateTax(MotivationTax $t);
+    function deleteTax($id);
+    function getTax($id);
+    function getTaxesDatasource();
 }

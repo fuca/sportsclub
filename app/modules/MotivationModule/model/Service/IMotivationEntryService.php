@@ -16,18 +16,20 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Service\Menu;
+namespace App\MotivationModule\Model\Service;
+
+use \App\Model\Entities\MotivationEntry;
 
 /**
- * IAdminMenuDataProvider
- * 
+ * Interface for MotivationEntryService
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-
-interface IAdminMenuDataProvider {
+interface IMotivationEntryService {
     
-    /** 
-     * @return array
-     */
-    function getAdminItemsResources();
+    function createEntry(MotivationEntry $e);
+    function updateEntry(MotivationEntry $e);
+    function deleteEntry($id);
+    function getEntry($id);
+    function getEntriesDataSource();
+    
 }

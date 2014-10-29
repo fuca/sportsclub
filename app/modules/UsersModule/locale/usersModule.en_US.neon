@@ -1,3 +1,6 @@
+adminMenuItem.label: "Users"
+protectedMenuDataItem.label: "Personal data"
+protectedMenuProfileItem.label: "Profile"
 
 common:
 

@@ -1,4 +1,5 @@
 groupPositions: "Positions within group"
+adminMenuItem.label: "System"
 
 commentControl:
 	titleAdd: "Add comment"

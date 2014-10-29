@@ -21,14 +21,17 @@ namespace App\UsersModule\Config;
 use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \Kdyby\Translation\DI\ITranslationProvider,
+	\App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
 
 /**
  * UsersModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class UsersModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class UsersModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
 
     private $defaults = [];
 
@@ -53,6 +56,25 @@ class UsersModuleExtension extends BaseModuleExtension implements ITranslationPr
 
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
+    }
+
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("usersModule.adminMenuItem.label");
+	$i->setUrl(":Users:Admin:default");
+	return [$i];
+    }
+
+    public function getProtectedItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("usersModule.protectedMenuDataItem.label");
+	$i->setUrl(":Users:Protected:data");
+	
+	$y = new ItemData();
+	$y->setLabel("usersModule.protectedMenuProfileItem.label");
+	$y->setUrl(":Users:Protected:profile");
+	
+	return [$i, $y];
     }
 
 }

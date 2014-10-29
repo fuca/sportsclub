@@ -201,24 +201,6 @@ services:
 				- setCacheStorage(@serviceEntityCache)
 				- setUserService()
 
-	adminMenuControlFactory:
-		class:
-			App\SystemModule\Model\Service\Menu\AdminMenuControlFactory
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-
-	protectedMenuControlFactory:
-		class:
-			App\SystemModule\Model\Service\Menu\ProtectedMenuControlFactory
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-
-	publicMenuControlFactory:
-		class:
-			App\SystemModule\Model\Service\Menu\PublicMenuControlFactory
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-
 extensions:
 
 	# 3rd party extensions
@@ -230,6 +212,7 @@ extensions:
 	facebook: Kdyby\Facebook\DI\FacebookExtension
 	translation: Kdyby\Translation\DI\TranslationExtension
 	monolog: Kdyby\Monolog\DI\MonologExtension
+	smfMenu: Smf\Menu\Config\Extension
 
 	# Application modules
 	systemModule: App\SystemModule\Config\SystemModuleExtension

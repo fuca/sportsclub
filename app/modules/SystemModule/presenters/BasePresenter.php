@@ -19,6 +19,7 @@
 namespace App\SystemModule\Presenters;
 
 use \Nette,
+    \Smf\Menu,
     \Nette\InvalidArgumentException,
     \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Presenter,
@@ -82,6 +83,30 @@ abstract class BasePresenter extends Presenter {
      * @var \Doctrine\Common\Annotations\Reader
      */
     public $annotationReader;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\Menu\CategoriesMenuFactory
+     */
+    public $catMenuFactory;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\Menu\AdminMenuControlFactory
+     */
+    public $adminMenuFactory;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\Menu\PublicMenuControlFactory
+     */
+    public $publicMenuFactory;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\Menu\ProtectedMenuControlFactory
+     */
+    public $protectedMenuFactory;
     
     protected function getAnnotReader() {
 	return $this->annotationReader;
@@ -184,6 +209,18 @@ abstract class BasePresenter extends Presenter {
     }
     
     public function createComponentGroupsFilterMenu($name) {
+	$c = $this->catMenuFactory->createComponent($this, $name);
+	return $c;
+    }
+    
+    public function createComponentAdminMenu($name) {
+	$c = $this->adminMenuFactory->createComponent($this, $name);
+	return $c;
+    }
+    
+    public function createComponentProtectedMenu($name) {
+	$c = $this->protectedMenuFactory->createComponent($this, $name);
+	return $c;
     }
 
     // </editor-fold>

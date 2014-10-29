@@ -21,14 +21,16 @@ namespace App\SecurityModule\Config;
 use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \Kdyby\Translation\DI\ITranslationProvider,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider;
 
 /**
  * SecurityModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SecurityModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class SecurityModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
 
     private $defaults = [
 	"evDefRoleName" => "player", 
@@ -60,6 +62,13 @@ class SecurityModuleExtension extends BaseModuleExtension implements ITranslatio
 
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
+    }
+
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("securityModule.adminMenuItem.label");
+	$i->setUrl(":Security:Admin:default");
+	return [$i];
     }
 
 }

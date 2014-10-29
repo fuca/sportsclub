@@ -21,6 +21,9 @@ namespace App\PaymentsModule\Config;
 use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
@@ -28,7 +31,7 @@ use \Nette\DI\CompilerExtension,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class PaymentsModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class PaymentsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IProtectedMenuDataProvider, IAdminMenuDataProvider {
 
     private $defaults = [
 	"dueDate"=>"1 month"];
@@ -58,5 +61,19 @@ class PaymentsModuleExtension extends BaseModuleExtension implements ITranslatio
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
     }
-    
+
+    public function getProtectedItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("paymentsModule.protectedMenuItem.label");
+	$i->setUrl(":Payments:Protected:payments");
+	return [$i];
+    }
+
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("paymentsModule.adminMenuItem.label");
+	$i->setUrl(":Payments:Admin:default");
+	return [$i];
+    }
+
 }

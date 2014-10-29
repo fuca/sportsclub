@@ -22,6 +22,8 @@ use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \App\Model\Misc\Exceptions,
     \Nette\Utils\FileSystem,
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\ArticlesModule\Model\Service\ArticleService,
     \Kdyby\Translation\DI\ITranslationProvider;
 
@@ -30,7 +32,7 @@ use \Nette\PhpGenerator\ClassType,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
 
     private $defaults = [
 	ArticleService::DEFAULT_IMAGE_PATH => "img/article",
@@ -65,5 +67,11 @@ final class ArticlesModuleExtension extends BaseModuleExtension implements ITran
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
     }
-
+    
+        public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("articlesModule.adminMenuItem.label");
+	$i->setUrl(":Articles:Admin:default");
+	return [$i];
+    }
 }

@@ -21,6 +21,8 @@ namespace App\SeasonsModule\Config;
 use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
@@ -28,7 +30,7 @@ use \Nette\DI\CompilerExtension,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SeasonsModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class SeasonsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
 
     private $defaults = [
 	"memberShip" => true];
@@ -56,6 +58,13 @@ class SeasonsModuleExtension extends BaseModuleExtension implements ITranslation
 
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
+    }
+
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("seasonsModule.adminMenuItem.label");
+	$i->setUrl(":Seasons:Admin:default");
+	return [$i];
     }
 
 }

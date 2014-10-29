@@ -23,3 +23,29 @@ services:
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
 				- setSportTypeService()
+
+	systemModule.categoriesMenuFactory:
+		class:
+			App\SystemModule\Model\Service\Menu\CategoriesMenuFactory
+		setup:
+				- setCacheStorage(@systemModule.cacheStorage)
+				- setTranslator()
+				- setSportGroupsService()
+
+	systemModule.adminMenuControlFactory:
+		class:
+			App\SystemModule\Model\Service\Menu\AdminMenuControlFactory
+		setup:
+				#- setCacheStorage(@systemModule.cacheStorage)
+
+	systemModule.protectedMenuControlFactory:
+		class:
+			App\SystemModule\Model\Service\Menu\ProtectedMenuControlFactory
+		setup:
+				- setCacheStorage(@systemModule.cacheStorage)
+
+	systemModule.publicMenuControlFactory:
+		class:
+			App\SystemModule\Model\Service\Menu\PublicMenuControlFactory
+		setup:
+				- setCacheStorage(@systemModule.cacheStorage)

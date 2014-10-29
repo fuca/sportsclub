@@ -1,4 +1,13 @@
-{* Latte template *}
+{* EventsModule protected *}
 {layout ./base.latte}
 {block content}
 {control calendar}
+
+{if $data}
+    {foreach $data as $d}   
+	{$d->getTitle()}<br/>
+    {/}
+    {else}
+	{_eventsModule.protected.messages.noDataFound}
+{/}
+{control groupsFilterMenu}

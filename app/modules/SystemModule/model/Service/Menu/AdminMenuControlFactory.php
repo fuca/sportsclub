@@ -18,23 +18,54 @@
 
 namespace App\SystemModule\Model\Service\Menu;
 
-use \App\SystemModule\Model\Service\Menu\IAdminMenuControlFactory;
+use \App\Model\Service\BaseService,
+    \App\SystemModule\Model\Service\ISportGroupService,
+    \Kdyby\Doctrine\EntityManager,
+    \App\Model\Misc\Exceptions,
+    \Kdyby\Monolog\Logger, 
+    \Nette\Caching\Cache,
+    \App\Components\MenuControl,
+    \App\Components\MenuControl\MenuNode,
+    \Kdyby\Translation\Translator,
+    \Doctrine\Common\Collections\ArrayCollection,
+    \App\SystemModule\Model\Service\Menu\IItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuControlFactory;
 
 /**
  * AdminMenuControlFactory
  * 
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class AdminMenuControlFactory implements IAdminMenuControlFactory {
+final class AdminMenuControlFactory extends BaseService implements IAdminMenuControlFactory {
     
-    private $items = [];
+    private $items;
     
     public function getItems() {
 	return $this->items;
     }
     
     public function addItem($item) {
-	$this->items += $item;
+	if (!$item instanceof IItemData)
+	    throw new Exceptions\InvalidStateException("Argument item has to be type of MenuNode");
+	$this->items->add($item);
     }
-}
+    
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, "App\SystemModule\Model\Service\Menu\AdminMenuControlFactory", $logger);
+	$this->items = new ArrayCollection();
+    }
+    
+    public function createComponent($pres, $name) {
+	$c = new MenuControl($pres, $name);
+	$iterator = $this->items->getIterator();
+	$iterator->uasort(function ($a, $b) {
+	    return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
+	});
+	$this->items = new ArrayCollection(iterator_to_array($iterator));
+	foreach ($this->items as $i) {
+	    $c->addNode($i->getLabel(), $i->getUrl(), $i->getMode(), $i->getData(), $i->getName());
+	}
+	return $c;
+    }
 
+}

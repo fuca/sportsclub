@@ -22,6 +22,9 @@ use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \App\Model\Misc\Exceptions,
     \Nette\Utils\FileSystem,
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
@@ -29,7 +32,7 @@ use \Nette\PhpGenerator\ClassType,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class ForumModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class ForumModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
 
     private $defaults = ["defaultImg" => "default-forum-ico.png"];
 
@@ -53,6 +56,20 @@ class ForumModuleExtension extends BaseModuleExtension implements ITranslationPr
 
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
+    }
+    
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("forumModule.adminMenuItem.label");
+	$i->setUrl(":Forum:Admin:default");
+	return [$i];
+    }
+
+    public function getProtectedItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("forumModule.protectedMenuItem.label");
+	$i->setUrl(":Forum:Protected:default");
+	return [$i];
     }
 
 }

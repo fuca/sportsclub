@@ -44,8 +44,7 @@ class ProtectedPresenter extends SecuredPresenter {
     public function actionDefault() {}
     
     public function actionPayments() {
-	
-	// vzit si z prihlasenyho uzivatele id a obdrzet data
+
     }
     
     public function actionPaymentDetails($id) {

@@ -21,6 +21,9 @@ namespace App\EventsModule\Config;
 use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
@@ -28,7 +31,7 @@ use \Nette\DI\CompilerExtension,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class EventsModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class EventsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
 
     private $defaults = [];
 
@@ -54,5 +57,20 @@ class EventsModuleExtension extends BaseModuleExtension implements ITranslationP
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
     }
+    
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("eventsModule.adminMenuItem.label");
+	$i->setUrl(":Events:Admin:default");
+	return [$i];
+    }
+
+    public function getProtectedItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("eventsModule.protectedMenuItem.label");
+	$i->setUrl(":Events:Protected:default");
+	return [$i];
+    }
+
 
 }

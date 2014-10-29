@@ -1,3 +1,4 @@
+adminMenuItem.label: "Security"
 messages:
 	givenPasswordsDontMatch: "Given new passwords do not match"
 

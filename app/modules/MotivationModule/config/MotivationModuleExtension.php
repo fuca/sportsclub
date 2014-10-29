@@ -21,14 +21,17 @@ namespace App\MotivationModule\Config;
 use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \Kdyby\Translation\DI\ITranslationProvider,
-    \Doctrine\DBAL\Types\Type;
+    \Doctrine\DBAL\Types\Type,
+    \App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
 
 /**
  * MotivationModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class MotivationModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class MotivationModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
 
     private $defaults = [
 	"dueDate"=>"1 month"];
@@ -57,5 +60,19 @@ class MotivationModuleExtension extends BaseModuleExtension implements ITranslat
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
     }
-    
+
+    public function getAdminItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("motivationModule.adminMenuItem.label");
+	$i->setUrl(":Motivation:Admin:default");
+	return [$i];
+    }
+
+    public function getProtectedItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("motivationModule.protectedMenuItem.label");
+	$i->setUrl(":Motivation:Protected:default");
+	return [$i];
+    }
+
 }

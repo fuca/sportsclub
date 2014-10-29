@@ -31,7 +31,7 @@ use \Nette\DI\CompilerExtension,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SystemModuleExtension extends BaseModuleExtension implements ITranslationProvider {
+class SystemModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
 
     private $defaults = [];
 
@@ -53,39 +53,43 @@ class SystemModuleExtension extends BaseModuleExtension implements ITranslationP
 	foreach ($this->compiler->getExtensions() as $extension) {
 	    
 			if ($extension instanceof IAdminMenuDataProvider) {
-	    		    $adminFact = $builder->getDefinition("adminMenuControlFactory");
+	    		    $adminFact = $builder->getDefinition($this->prefix("adminMenuControlFactory"));
 			    $dataArray = $extension->getAdminItemsResources();
 			    
 			    foreach($dataArray as $item) {
 				$adminFact->addSetup("addItem", [$item]);
 			    }
-			    continue;
 			}
 			
 			if ($extension instanceof IProtectedMenuDataProvider) {
-	    		    $protFact = $builder->getDefinition("protectedMenuControlFactory");
+	    		    $protFact = $builder->getDefinition($this->prefix("protectedMenuControlFactory"));
 			    $dataArray = $extension->getProtectedItemsResources();
 			    
 			    foreach($dataArray as $item) {
 				$protFact->addSetup("addItem", [$item]);
 			    }
-			    continue;
 			}
 			
 			if ($extension instanceof IPublicMenuDataProvider) {
-	    		    $publicFact = $builder->getDefinition("publicMenuControlFactory");
+	    		    $publicFact = $builder->getDefinition($this->prefix("publicMenuControlFactory"));
 			    $dataArray = $extension->getPublicItemsResources();
 			    
 			    foreach($dataArray as $item) {
 				$publicFact->addSetup("addItem", [$item]);
 			    }
-			    continue;
 			}
 		}
     }
 
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
+    }
+
+    public function getAdminItemsResources() {
+	$i = new \App\SystemModule\Model\Service\Menu\ItemData();
+	$i->setLabel("systemModule.adminMenuItem.label");
+	$i->setUrl(":System:Admin:default");
+	return [$i];
     }
 
 }

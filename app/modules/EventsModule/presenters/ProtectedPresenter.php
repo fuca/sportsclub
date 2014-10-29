@@ -38,8 +38,27 @@ class ProtectedPresenter extends SecuredPresenter {
      */
     public $eventService;
     
-    public function actionDefault() {
-	
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\ISportGroupService
+     */
+    public $sportGroupService;
+    
+    
+    public function actionDefault($abbr = self::ROOT_GROUP) {	
+	$data = null;
+	try {
+	    if (is_string($abbr))
+		$sg = $this->sportGroupService->getSportGroupAbbr($abbr);
+	    elseif (is_numeric($abbr))
+		$sg = $this->sportGroupService->getSportGroup($abbr);
+	    
+	    $data = $this->eventService->getEvents($sg);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($abbr, "default", $ex);
+	}
+	$this->template->data = $data;
+	$this->template->commentable = true;
     }
     
     public function actionShowEvent($id) {

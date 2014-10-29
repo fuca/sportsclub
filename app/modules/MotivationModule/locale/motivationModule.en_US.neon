@@ -1,3 +1,6 @@
+adminMenuItem.label: "Motivation"
+protectedMenuItem.label: "Motivation"
+
 taxForm:
 	groupNew: "New motivation tax"
 	groupEdit: "Update motivation tax"

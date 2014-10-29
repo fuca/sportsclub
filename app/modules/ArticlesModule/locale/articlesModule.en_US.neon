@@ -1,5 +1,8 @@
 readMore: "more.."
 
+adminMenuItem.label: "Articles"
+publicMenuItem.label: "Articles"
+
 admin:
 	articleAdd: "Add article"
 	articleNew: "New article"

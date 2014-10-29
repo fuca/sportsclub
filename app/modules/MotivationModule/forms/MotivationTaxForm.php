@@ -90,7 +90,7 @@ final class MotivationTaxForm extends BaseForm {
 		->setRequired("motivationModule.taxForm.groupMustFill");
 	
 	$this->addText("credit", "motivationModule.taxForm.credit")
-		->addRule(Form::NUMERIC, "motivationModule.taxForm.CreditMustNumeric")
+		->addRule(Form::NUMERIC, "motivationModule.taxForm.creditMustNumeric")
 		->addRule(Form::FILLED, "motivationModule.taxForm.creditMustFill")
 		->setRequired(true);
 	

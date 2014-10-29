@@ -1,3 +1,6 @@
+adminMenuItem.label: "Events"
+protectedMenuItem.label: "Events"
+
 admin:
 	eventAdd: "Add event"
 	eventNew: "New event"

@@ -1,3 +1,7 @@
+
+adminMenuItem.label: "Walls"
+protectedMenuItem.label: "Walls"
+
 admin:
 	wallPostNew: "New wallpost"
 	wallPostAdd: "Add wallpost"

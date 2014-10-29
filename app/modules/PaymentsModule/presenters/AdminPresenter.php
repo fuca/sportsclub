@@ -68,7 +68,7 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var \App\Model\Service\IPositionService
+     * @var \App\SecurityModule\Model\Service\IPositionService
      */
     public $positionService;
 

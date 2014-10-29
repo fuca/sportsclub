@@ -18,14 +18,24 @@
 
 namespace App\SystemModule\Model\Service\Menu;
 
-use \App\SystemModule\Model\Service\Menu\IPublicMenuControlFactory;
+use \App\Model\Service\BaseService,
+    \App\SystemModule\Model\Service\ISportGroupService,
+    \Kdyby\Doctrine\EntityManager,
+    \App\Model\Misc\Exceptions,
+    \Kdyby\Monolog\Logger, 
+    \Nette\Caching\Cache,
+    \App\Components\MenuControl,
+    \App\Components\MenuControl\MenuNode,
+    \Kdyby\Translation\Translator,
+    \Doctrine\Common\Collections\ArrayCollection,
+    \App\SystemModule\Model\Service\Menu\IPublicMenuControlFactory;
 
 /**
  * PublicMenuControlFactory
  * 
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class PublicMenuControlFactory implements IPublicMenuControlFactory {
+final class PublicMenuControlFactory extends BaseService implements IPublicMenuControlFactory {
     
     private $items;
     
@@ -36,5 +46,10 @@ final class PublicMenuControlFactory implements IPublicMenuControlFactory {
     public function addItem($item) {
 	$this->items += $item;
     }
-
+    
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, "App\SystemModule\Model\Service\Menu\PublicMenuControlFactory", $logger);
+	$this->items = new ArrayCollection();
+    }
+   
 }

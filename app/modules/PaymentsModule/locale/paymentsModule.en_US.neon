@@ -1,3 +1,5 @@
+adminMenuItem.label: "Payments"
+protectedMenuItem.label: "Payments"
 admin.grid.messages:
     rlyDelPayment: "Do you really delete payment #%id%?"
     rlyDelPaymentItems: "Do you really delete %i payments?"

@@ -21,6 +21,7 @@ namespace App\WallsModule\Config;
 use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \Kdyby\Translation\DI\ITranslationProvider,
+    \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
 
@@ -57,11 +58,17 @@ class WallsModuleExtension extends BaseModuleExtension implements ITranslationPr
     }
 
     public function getAdminItemsResources() {
-	return ["wallsModule.menu.wallsAdmin"=>":Walls:Admin:default"];
+	$i = new ItemData();
+	$i->setLabel("wallsModule.adminMenuItem.label");
+	$i->setUrl(":Walls:Admin:default");
+	return [$i];
     }
 
     public function getProtectedItemsResources() {
-	return ["wallsModuke.menu.wallsProtected"=>":Walls:Protected:default"];
+	$i = new ItemData();
+	$i->setLabel("wallsModule.protectedMenuItem.label");
+	$i->setUrl(":Walls:Protected:default");
+	return [$i];
     }
 
 }

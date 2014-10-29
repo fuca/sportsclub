@@ -1,3 +1,6 @@
+adminMenuItem.label: "Forum"
+protectedMenuItem.label: "Forum"
+
 admin:
 	forumAdd: "Add forum"
 	forumNew: "New forum"

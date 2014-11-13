@@ -1,13 +1,46 @@
-<ul>
-	{block #head-menu}
-		{foreach $nodes as $node}
-			<li><a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}">{_$node->label}</a></li>
-				{if count($node->getComponents()) > 0}
-					<ul>
-					{include #head-menu, nodes => $node->getComponents()}
-					</ul>
-				{/if}
-		{/foreach}
+{* Menu control head menu render *}
+
+<div class="btn-group">
+    <button type="button" class="btn dropdown-toggle {$buttonClass}" data-toggle="dropdown" aria-expanded="true">
+	{_$menuLabel}
+	<span class="caret"></span>
+    </button>
 	
+    <ul class="dropdown-menu" role="menu">
+	{block #head-menu}
+	{var separates => []}
+	{foreach $nodes as $node}
+	    {if $node->data["separate"]}
+		{? array_push($separates, $node)}
+	    {else}
+		<li {if @$node->data["disable"]} class="disabled" {/}>
+		    <a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}">
+			{_$node->label}
+		    </a>
+		</li>
+
+		{if count($node->getComponents()) > 0}
+			<ul>
+			{include #head-menu, nodes => $node->getComponents()}
+			</ul>
+		{/if}
+		{/}
+
+	{/foreach}
+	{foreach $separates  as $node}
+	    <li class="divider"></li>
+	    <li {if @$node->data["disable"]} class="disabled" {/}>
+		<a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}">
+		    {_$node->label}
+		</a>
+	    </li>
+	    {if count($node->getComponents()) > 0}
+		<ul>
+		{include #head-menu, nodes => $node->getComponents()}
+		</ul>
+	    {/if}
+	{/foreach}
+
 	{/block}
-</ul>
+    </ul>
+</div>

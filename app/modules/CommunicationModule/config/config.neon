@@ -1,0 +1,23 @@
+services:
+
+	communicationModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/communicationModule)
+		autowired: no
+
+	communicationModule.forumService:
+		class:
+			App\CommunicationModule\Model\Service\ForumService
+		setup:
+			- setCacheStorage(@communicationModule.cacheStorage)
+			- setUserService()
+			- setSportGroupService()
+			- setCommentService()
+
+	communicationModule.privateMessageService:
+		class:
+			App\CommunicationModule\Model\Service\PrivateMessageService
+		setup:
+			- setCacheStorage(@communicationModule.cacheStorage)
+			- setUserService()
+			
+			

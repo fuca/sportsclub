@@ -7,17 +7,19 @@
 *}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
 	<meta charset="utf-8">
 	<meta name="description" content="{block meta-description}">
 	<meta name="robots" content="{$robots}" n:ifset="$robots">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>{block title|striptags}Sportsclub{/block}</title>
 
 	{var theme => "default"}
 
 	{block styleSheets}
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/_css.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/reset.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/root.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/grido.css">
@@ -37,15 +39,12 @@
     </head>
 
     <body>
-	{* vygenerovano, nevim proc to tu je *}
-	<!--script> document.documentElement.className += ' js';</script-->
-	
 	{block scripts}
 	    {var ajax = $presenter->getParameter('ajax') == 'on'}
 	    
 	    <script src="{$basePath}/js/jquery.min.js"></script>{**}
 	    <script src="{$basePath}/js/bootstrap/bootstrap.min.js"></script>
-	    <script src="{$basePath}/js/bootstrap/bootstrap-dropdown.js"></script>
+	
 	    <script src="{$basePath}/js//bootstrap/bootstrap-alert.js"></script>
 	    <script src='{$basePath}/js/jquery-ui-timepicker-addon.js'></script> {* *}
 	    <script src="{$basePath}/js/jquery-ui.min.js"></script> {* *}
@@ -72,33 +71,80 @@
 	    <script n:if="!$ajax" src="{$basePath}/js/main.js"></script>
 	    
 	{/}
+	<div class="container">
+<!----------------------------------------------------------------------------------->	
 
-	{snippet flash}
-	    <div n:foreach="$flashes as $flash" class="{$flash->type}">
-		<button type="button" class="close" data-dismiss="alert">×</button>
-		{$flash->message}
-	    </div>
-	{/snippet}
 
-	<section>
-	    <header>
-		<section class="content">
-		    <nav>NAVIGACE
+	    <header class="header">
+		<div class="row">
+		    <div class="col-md-8">
+			<a href="{plink :System:Public:default}">
+			    <div id="clublogo" class="visible-lg"></div>
+			    <div id="clublogo" class="visible-md">MEDIUM LOGO</div>
+			    <div  class="visible-sm">SMALL LOGO</div>
+			    <div  class="visible-xs">EXTRA SMALL LOGO</div>
+			</a>
+		    </div>
+		    <nav class="col-md-4">
+			<div id="usermenu">
+			    {control loginControl}
+			    <div class="row">
+				<div class="search">
+				    <form>
+					<input type="text" class="textfield" class="col-sm-6"/>
+					<input type="submit" class="button" value="Find" class="col-sm-6" />
+				    </form> 
+				</div>
+			    </div>
+			</div>
 		    </nav>
-		</section>
+		</div> 
 	    </header>
 
-	    <section>
-		<section class="content">
-		    {include content}
-		</section>
-	    </section>
+	
+<!----------------------------------------------------------------------------------->	
+		<div id="publicmenu-container">
+		    {*control publicMenu*}mega menu
+		</div>  
+			
+			    {block maintheme}
+			    {/block}
 
-	    <footer>
-		<section class="content">
-		    Sportsclub 2014
-		</section>
-	    </footer>
-	</section>
+			<div id="content">
+
+			    {include content}
+    
+
+			    <div class="cleaner"></div>
+			    <div class="row">
+				<div class="col-md-3">
+				    <a href=""><img src="{$basePath}/img/partner_hella.jpg" title="dsadasd" height="125" width="200" />
+					<p>Hella Autotechnik</p></a>
+				</div>
+				<div class="col-md-3"><a href=""><img src="{$basePath}/img/partner_futurpol.jpg" height="125" width="200" />
+					<p>Futurpol</p></a>
+				</div>
+				<div class="col-md-3">
+				    <a href=""><img src="{$basePath}/img/partner_a3sport.jpg" height="125" width="200" /><p>A3 Sport</p></a>
+				</div>
+				<div class="col-md-3">
+				    <a href=""><img src="{$basePath}/img/partner_jersey53.jpg" height="125" width="200" /><p>Jersey53</p>
+				    </a>
+				</div>
+			    </div>
+			</div>  
+
+<!----------------------------------------------------------------------------------->	
+		    <footer class="footer">
+			<div class="row">
+			    <div class="col-md-8"><p class="copyright">&copy; 2014 SportsClub</p></div>
+			    <div class="col-md-4">
+				    <p class="menu"><a href="">Homepage</a> &nbsp;&nbsp;/&nbsp;&nbsp; 
+					<a href="">Sitemap</a>  &nbsp;&nbsp;/&nbsp;&nbsp;  <a href="">Contacts</a></p>
+			    </div>
+			</div>
+		    </footer>
+<!----------------------------------------------------------------------------------->	
+	</div>
 </body>
 </html>

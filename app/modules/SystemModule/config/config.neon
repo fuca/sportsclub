@@ -44,8 +44,8 @@ services:
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
 
-	systemModule.publicMenuControlFactory:
+	systemModule.commonMenuControlFactory:
 		class:
-			App\SystemModule\Model\Service\Menu\PublicMenuControlFactory
+			App\SystemModule\Model\Service\Menu\CommonMenuControlFactory
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)

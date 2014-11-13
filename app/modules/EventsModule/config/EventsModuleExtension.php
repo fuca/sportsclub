@@ -24,6 +24,7 @@ use \Nette\DI\CompilerExtension,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
     \Kdyby\Translation\DI\ITranslationProvider;
 
 /**
@@ -31,7 +32,8 @@ use \Nette\DI\CompilerExtension,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class EventsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
+class EventsModuleExtension extends BaseModuleExtension implements ITranslationProvider, 
+	IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider {
 
     private $defaults = [];
 
@@ -68,9 +70,15 @@ class EventsModuleExtension extends BaseModuleExtension implements ITranslationP
     public function getProtectedItemsResources() {
 	$i = new ItemData();
 	$i->setLabel("eventsModule.protectedMenuItem.label");
-	$i->setUrl(":Events:Protected:default");
+	$i->setUrl(":Events:Protected:userEvents");
 	return [$i];
     }
 
+    public function getCommonItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("eventsModule.protectedMenuItem.label");
+	$i->setUrl(":Events:Protected:default");
+	return [$i];
+    }
 
 }

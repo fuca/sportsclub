@@ -90,7 +90,7 @@ class CategoriesMenuFactory extends BaseService {
 	if ($children->isEmpty()) return;
 	foreach ($children as $c) {
 		$abbr = $c->getAbbr();
-		$name = $c->getName();
+		$name = $c->getName()." ({$c->getSportType()->getName()})";
 		$current = FALSE;
 		if ($pres->getParam('abbr') == $abbr) {
 		    $current = TRUE;

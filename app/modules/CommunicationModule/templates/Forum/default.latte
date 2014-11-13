@@ -1,0 +1,24 @@
+{* Protected Forum *}
+{layout ./base.latte}
+{block content}
+
+{if $data}
+    {foreach $data as $f}
+	<article class="forum-thumbnail">
+	    <h5><a href="{plink showForum, $f->getAlias()}">{$f->getTitle()}</a></h5>
+	    <p>{$f->getDescription()}</p>
+	    {var act => $f->getLastActivity()}
+	    <em>
+	    {if $act}
+		{_communicationModule.protected.lastChange} {$act|date:'%d.%m.%Y %H:%M'}
+	    {else}
+		{_communicationModule.protected.messages.noActivity}
+	    {/}
+	    </em>
+	</article>
+    {/}
+{else}
+    {_communicationModule.protected.messages.noForum}
+{/}
+
+{control groupsFilterMenu}

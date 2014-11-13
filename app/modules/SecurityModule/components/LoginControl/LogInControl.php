@@ -113,19 +113,25 @@ final class LogInControl extends Control {
 	    $this->presenter->getUser()->login($values->username, $values->password);
 	    $bl = $this->presenter->getParameter("backlink");
 	    if ($bl) {
-		$this->presenter->restoreRequest($bl);
+		$this->presenter->redirect($this->presenter->restoreRequest($bl));
+	    } else {
+		$this->presenter->redirect($this->logInTarget);
 	    }
-	    $this->presenter->redirect($this->logInTarget);
 	} catch (AuthenticationException $e) {
 	    $form->addError($this->getPresenter()->getTranslator()->translate($e->getMessage()));
 	}
     }
 
     public function render() {
+	$loggedIn = $this->getUser()->isLoggedIn();
 	$this->template->setFile($this->templateMain);
 	$this->template->logInLink = $this->presenter->link(":Security:Auth:in");
 	$this->template->logOutLink = $this->presenter->link(":Security:Auth:out");
-	$this->template->isLoggedIn = $this->getUser()->isLoggedIn();
+	$this->template->isLoggedIn = $loggedIn;
+	$this->template->user = $loggedIn ? $this->getUser()->getIdentity() : null;
+	$this->template->pmsCount = 3;
+	$this->template->messagesMenu = true;
+	$this->template->adminMenuPredicate = true;
 	$this->template->render();
     }
 
@@ -143,24 +149,22 @@ final class LogInControl extends Control {
 	$this->template->userProfileLink = $this->presenter->link(":Users:Protected:profile");
 	$this->template->render();
     }
+    
+    public function createComponentProtectedMenu($name) {
+	return $this->presenter->createComponentProtectedMenu($name);
+    }
 
-//    public function createComponentUserMenu($name) {
-//	$res = $this->presenter->createComponentUserMenu($name);
-//	return $res;
-//    }
-//
-//    public function createComponentAdminMenu($name) {
-//	$res = $this->presenter->createComponentAdminMenu($name);
-//	return $res;
-//    }
-//
-//    public function createComponentClubMenu($name) {
-//	$res = $this->presenter->createComponentClubMenu($name);
-//	return $res;
-//    }
-//
-//    public function createComponentMailMenu($name) {
-//	$res = $this->presenter->createComponentMailMenu($name);
-//	return $res;
-//    }
+    public function createComponentAdminMenu($name) {
+	return $this->presenter->createComponentAdminMenu($name);
+    }
+
+    public function createComponentCommonMenu($name) {
+	$res = $this->presenter->createComponentCommonMenu($name);
+	return $res;
+    }
+
+    public function createComponentMailMenu($name) {
+	$res = $this->presenter->createComponentMailMenu($name);
+	return $res;
+    }
 }

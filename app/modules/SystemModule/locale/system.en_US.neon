@@ -3,6 +3,7 @@ common:
 	no: "No"
 	delete: "Delete"
 	update:	"Update"
+	cancel: "Cancel"
 
 forms:
 	cancelButton.label: "       Cancel      "

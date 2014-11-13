@@ -46,10 +46,10 @@ abstract class BasePresenter extends Presenter {
     /**
      * @const string Flash messages type
      */
-    const FM_SUCCESS = "alert alert-success fade in",
-	    FM_ERROR = "alert alert-danger fade in",
-	    FM_WARNING = "alert alert-warning fade in",
-	    FM_INFO = "alert alert-info";
+    const FM_SUCCESS	= "alert alert-success fade in",
+	    FM_ERROR	= "alert alert-danger fade in",
+	    FM_WARNING	= "alert alert-warning fade in",
+	    FM_INFO	= "alert alert-info";
     
     const DATETIME_FORMAT = "j.n.Y H:i",
 	  DATE_FORMAT = "j.n.Y";
@@ -98,9 +98,9 @@ abstract class BasePresenter extends Presenter {
     
     /**
      * @inject
-     * @var \App\SystemModule\Model\Service\Menu\PublicMenuControlFactory
+     * @var \App\SystemModule\Model\Service\Menu\CommonMenuControlFactory
      */
-    public $publicMenuFactory;
+    public $commonMenuFactory;
     
     /**
      * @inject
@@ -220,6 +220,16 @@ abstract class BasePresenter extends Presenter {
     
     public function createComponentProtectedMenu($name) {
 	$c = $this->protectedMenuFactory->createComponent($this, $name);
+	return $c;
+    }
+    
+    public function createComponentCommonMenu($name) {
+	$c = $this->commonMenuFactory->createComponent($this, $name);
+	return $c;
+    }
+    
+    public function createComponentMailMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
 	return $c;
     }
 

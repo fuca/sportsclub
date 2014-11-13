@@ -33,6 +33,7 @@ use \App\UsersModule\Forms\UserForm,
     \Nette\ArrayHash,
     \App\UsersModule\Forms\WebProfileForm,
     \App\SystemModule\Presenters\SecuredPresenter,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\UsersModule\Model\Misc\Utils\UserEntityManageHelper;
 
 /**
@@ -127,7 +128,7 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * Action for filling updateUserForm control by values from database
-     * @Secured
+     * @Secured()
      * @param numeric $id
      */
     public function actionUpdateUser($id) {

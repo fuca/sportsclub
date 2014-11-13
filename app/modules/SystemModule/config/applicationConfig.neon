@@ -223,5 +223,5 @@ extensions:
 	eventsModule: App\EventsModule\Config\EventsModuleExtension
 	articlesModule: App\ArticlesModule\Config\ArticlesModuleExtension
 	wallsModule: App\WallsModule\Config\WallsModuleExtension
-	forumModule: App\ForumModule\Config\ForumModuleExtension
+	communitactionModule: App\ForumModule\Config\CommunicationModuleExtension
 	motivationModule: App\MotivationModule\Config\MotivationModuleExtension

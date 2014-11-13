@@ -21,6 +21,7 @@ namespace App\Model\Entities;
 use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\JoinColumn,
     \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\OneToMany,
     \Doctrine\ORM\Mapping\ManyToMany,
     \Doctrine\ORM\Mapping\JoinTable,
     \Kdyby\Doctrine\Entities\BaseEntity,
@@ -101,13 +102,19 @@ class Event extends BaseEntity Implements IIdentifiable, ICommentable {
     protected $groups;
 
     /**
-     * ONE TO MANY
+     * ONE TO MANY UNI
      * @ManyToMany(targetEntity="Comment", cascade={"all"}, fetch="EAGER")
      * @JoinTable(name="Comment_Event",
      *      joinColumns={@JoinColumn(name="event_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})
      */
     protected $comments;
+    
+    /**
+     * ONE TO MANY BI
+     * @OneToMany(targetEntity="EventParticipation", mappedBy="event", cascade={"PERSIST"}, fetch="EAGER")
+     */
+    protected $participations;
     
     public function __construct(array $values = []) {
 	parent::__construct();
@@ -236,6 +243,14 @@ class Event extends BaseEntity Implements IIdentifiable, ICommentable {
 
     public function setComments($comments) {
 	$this->comments = $comments;
+    }
+    
+    public function getParticipations() {
+	return $this->participations;
+    }
+
+    public function setParticipations($participations) {
+	$this->participations = $participations;
     }
     
     public function __toString() {

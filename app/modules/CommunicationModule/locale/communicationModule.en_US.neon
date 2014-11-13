@@ -1,0 +1,47 @@
+adminMenuItem.label: "Forum"
+protectedForumMenuItem.label: "Forum"
+protectedMessagesMenuItem.label: "Messages"
+
+admin:
+	forumAdd: "Add forum"
+	forumNew: "New forum"
+
+admin.grid:
+	title: "Title"
+	comments: "Comments"
+	author: "Author"
+	change: "Change"
+
+admin.grid.messages:
+	rlyDelForum: "Do you really want to delete forum #%id%"
+	rlyDelForumItems: "Do you really want to delete %i forums"
+
+grid:
+	markAsUnread: "Mark as unread"
+	markAsRead: "Mark as read"
+	delete: "Delete"
+	starToggle: "Star toggle"
+
+forumForm.errors:
+	forumAlreadyExist: "Forum with given title already exist"
+
+messaging:
+	messageAdd: "Create new message"
+	inbox: "Incoming messages"
+	outbox: "Outgoing messages"
+	deleted: "Deleted messages"
+pmForm:
+	multiUsers: "Recipients"
+	subject: "Subject"
+	content: "Content"
+	sent: "Sent"
+	delivered: "Delivered"
+	sender: "Sender"
+	starred: "&#9733"
+
+protected:
+	lastChange: "Last activity"
+
+protected.messages:
+	noForum: "There is no forum available for chosen group"
+	noActivity: "No activity so far"

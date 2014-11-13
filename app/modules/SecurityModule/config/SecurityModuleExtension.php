@@ -23,14 +23,15 @@ use \Nette\DI\CompilerExtension,
     \App\Config\BaseModuleExtension,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \Kdyby\Translation\DI\ITranslationProvider,
-    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
 
 /**
  * SecurityModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SecurityModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
+class SecurityModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
 
     private $defaults = [
 	"evDefRoleName" => "player", 
@@ -68,6 +69,14 @@ class SecurityModuleExtension extends BaseModuleExtension implements ITranslatio
 	$i = new ItemData();
 	$i->setLabel("securityModule.adminMenuItem.label");
 	$i->setUrl(":Security:Admin:default");
+	return [$i];
+    }
+
+    public function getProtectedItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("securityModule.protectedMenuItem.label");
+	$i->setUrl(":Security:Auth:out");
+	$i->setData(["separate"=>true]);
 	return [$i];
     }
 

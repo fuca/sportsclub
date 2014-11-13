@@ -21,9 +21,15 @@ namespace App\EventsModule\Presenters;
 use \App\SystemModule\Presenters\SecuredPresenter,
     \EventCalendar\Simple\SimpleCalendar AS SC,
     \App\EventsModule\Model\Service\IEventService,
+    \App\Model\Misc\Enum\EventType,
+    \App\EventsModule\Forms\EventParticipationForm,
+    \App\Model\Entities\EventParticipation,
+    \App\Model\Misc\Enum\EventParticipationType,
     \App\Model\Entities\EventComment,
     \Nette\Utils\ArrayHash,
-    \Nette\Utils\DateTime;
+    \Nette\Utils\DateTime,
+    \Grido\Grid,
+    \App\Model\Misc\Enum\FormMode;
 
 /**
  * Protected Event Presenter
@@ -73,8 +79,16 @@ class ProtectedPresenter extends SecuredPresenter {
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
 	}
+	$parties = $event->getParticipations();
+	$uid = $this->getUser()->getIdentity()->getId();
 	$this->template->data = $event;
 	$this->template->commentable = true;
+	$bool = $parties->filter(
+		function ($e) use ($uid) {
+		    if ($e->getOwner()->getId() == $uid) 
+			return true;
+		})->isEmpty();
+	$this->template->partyExist = $bool; 
     }
     
     public function addComment(ArrayHash $values) {
@@ -135,4 +149,148 @@ class ProtectedPresenter extends SecuredPresenter {
 	$cal->setEvents($this->eventService);
 	return $cal;
     }
+    
+    public function actionShowEventDay($year, $month, $day) {
+	try {
+	    $data = $this->eventService->getForDate($year, $month, $day);
+	    $date = new DateTime();
+	    $date->setDate($year, $month, $day);
+	    $this->template->date = $date->format(self::DATE_FORMAT);
+	    $this->template->data = $data;
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "this", $ex);
+	}
+    }
+    
+    public function userEvents() {
+	
+    }
+    
+    public function createComponentUserEventsGrid($name) {
+	
+	$eventTypes = [null => null] + EventType::getOptions();
+	$partyTypes = [null => null] + EventParticipationType::getOptions();
+	
+	$grid = new Grid($this, $name);
+	$grid->setModel($this->eventService->getUserEventsDataSource($this->getUser()->getIdentity()));
+	$grid->setPrimaryKey("id");
+	$grid->setTranslator($this->getTranslator());
+	
+	$grid->addColumnText('title', 'eventsModule.grid.title')
+		->setCustomRender($this->titleRender)
+		->setTruncate(20)
+		->setSortable()
+		->setFilterText();
+	$headerTitle = $grid->getColumn('title')->headerPrototype;
+	$headerTitle->class[] = 'center';
+	$headerTitle->style["width"] = "20%";
+	
+	$grid->addColumnText('eventType', "eventsModule.grid.type")
+		->setCustomRender($this->typeRender)
+		->setSortable()
+		->setFilterSelect($eventTypes);
+	$headerType = $grid->getColumn('eventType')->headerPrototype;
+	$headerType->class[] = 'center';
+	
+	$grid->addColumnDate('takePlaceSince', 'eventsModule.grid.takeSince', self::DATETIME_FORMAT)
+		->setCustomRender($this->sinceRender)
+		->setSortable();
+	$headerSince = $grid->getColumn('takePlaceSince')->headerPrototype;
+	$headerSince->class[] = 'center';
+
+	$grid->addColumnDate('takePlaceTill', 'eventsModule.grid.takeTill', self::DATETIME_FORMAT)
+		->setCustomRender($this->tillRender)
+		->setSortable();
+	$headerTill = $grid->getColumn('takePlaceTill')->headerPrototype;
+	$headerTill->class[] = 'center';
+	
+	$grid->addColumnText("type", "eventsModule.participation.type")
+		->setCustomRender($this->partyTypeRender)
+		->setSortable()
+		->setFilterSelect($partyTypes);
+	$headerPart = $grid->getColumn('type')->headerPrototype;
+	$headerPart->class[] = 'center';
+	
+	$grid->setFilterRenderType($this->filterRenderType);
+	return $grid;
+	
+    }
+    
+    public function titleRender($e) {
+	return $e->getEvent()->getTitle();
+    }
+    
+    public function typeRender($e) {
+	return $this->tt(EventType::getOptions()[$e->getEvent()->getEventType()]);
+    }
+    
+    public function sinceRender($e) {
+	return $e->getEvent()->getTakePlaceSince()->format(self::DATETIME_FORMAT);
+    }
+    
+    public function tillRender($e) {
+	return $e->getEvent()->getTakePlaceTill()->format(self::DATETIME_FORMAT);
+    }
+    
+    public function partyTypeRender($e) {
+	return $this->tt(EventParticipationType::getOptions()[$e->getType()]);
+    }
+    
+    // <editor-fold desc="EVENT PARTICIPATIONS">
+    
+    public function createComponentAcceptingParticipationForm($name) {
+	$form  = new EventParticipationForm($this, $name, $this->getTranslator());
+	$form->setType(EventParticipationType::YES);
+	$form->initialize();
+	return $form;
+    }
+    
+    public function createComponentDenyingParticipationForm($name) {
+	$form  = new EventParticipationForm($this, $name, $this->getTranslator());
+	$form->setType(EventParticipationType::NO);
+	$form->initialize();
+	return $form;
+    }
+    
+    public function participationFormSuccess(EventParticipationForm $form) {
+	$values = $form->getValues();
+	switch($form->getMode()) {
+	    case FormMode::CREATE_MODE:
+		$this->createEventParticipation($values);
+		break;
+	}
+	$this->redirect("this");
+    }
+    
+    public function createEventParticipation($values) {
+	try {
+	    $p = new EventParticipation((array) $values);
+	    $p->setEvent($this->getEntity());
+	    $p->setOwner($this->getUser()->getIdentity());
+	    $this->eventService->createEventParticipation($p);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave(null, "this", $ex);
+	}
+    } 
+    
+    public function handleCancelParticipation() {
+	try {
+	    $this->eventService
+		    ->deleteEventParticipation(
+			    $this->getUser()->getIdentity(), 
+			    $this->getEntity());
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($this->getEntity()->getId(), "this", $ex);
+	}
+	$this->redirect("this");
+    }
+    
+    public function createComponentParticipationControl($name) {
+	$c = new \App\EventsModule\Components\ParticipationControl($this, $name);
+	$c->setEvent($this->getEntity());
+	$c->setEventService($this->eventService);
+	return $c;
+    }
+    
+    // </editor-fold>
 }

@@ -18,9 +18,10 @@
 
 namespace App\EventsModule\Model\Service;
 
-use App\Model\Entities\Event,
-    App\Model\Entities\SportGroup,
-    App\Model\Entities\User;
+use \App\Model\Entities\Event,
+    \App\Model\Entities\SportGroup,
+    \App\Model\Entities\User,
+    \App\Model\Entities\EventParticipation;
 
 /**
  * Interface for Event service
@@ -37,13 +38,15 @@ interface IEventService {
     
     function getEvent($id);
     
+    function getUserEventsDataSource(User $u);
+    
     function getEventAlias($alias);
     
     function getEvents(SportGroup $g);
     
     function getEventsDataSource();
     
-    function confirmParticipation(Event $e, User $u);
+    function createEventParticipation(EventParticipation $ep);
     
-    function rejectParticipation(Event $e, User $u);
+    function deleteEventParticipation($u, Event $e);
 }

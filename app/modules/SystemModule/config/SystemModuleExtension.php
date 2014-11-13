@@ -23,7 +23,7 @@ use \Nette\DI\CompilerExtension,
     \App\Config\BaseModuleExtension,
     \Kdyby\Translation\DI\ITranslationProvider,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IPublicMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
 
 /**
@@ -70,9 +70,9 @@ class SystemModuleExtension extends BaseModuleExtension implements ITranslationP
 			    }
 			}
 			
-			if ($extension instanceof IPublicMenuDataProvider) {
-	    		    $publicFact = $builder->getDefinition($this->prefix("publicMenuControlFactory"));
-			    $dataArray = $extension->getPublicItemsResources();
+			if ($extension instanceof ICommonMenuDataProvider) {
+	    		    $publicFact = $builder->getDefinition($this->prefix("commonMenuControlFactory"));
+			    $dataArray = $extension->getCommonItemsResources();
 			    
 			    foreach($dataArray as $item) {
 				$publicFact->addSetup("addItem", [$item]);

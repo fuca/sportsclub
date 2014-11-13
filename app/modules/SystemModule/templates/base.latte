@@ -1,0 +1,30 @@
+{layout ./@publicLayout.latte}
+
+{block #content}
+<div class="layout-{include #side}">
+    <div class="side-box">
+	{include #sideBlock}
+    </div>
+
+    <div class="main-box">
+	{if $webProfilePrompt != "" || $passwordResetPrompt != ""}
+	    <div class="prompt">
+		<ul>
+		    {if $passwordResetPrompt != ""}<li>{$passwordResetPrompt} (<a href="{plink User:changePassword}">Změna hesla</a>)</li>{/if}
+		    {if $webProfilePrompt != ""}<li>{$webProfilePrompt} (<a href="{plink User:editProfile}">Editace profilu</a>)</li>{/if}
+		</ul>
+	    </div>
+	{/if}
+	
+	{snippet flash}
+	    <div n:foreach="$flashes as $flash" class="{$flash->type}">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		{$flash->message}
+	    </div>
+	{/snippet}
+	
+	<div class="breadcrumb-top"><a href="#" class="home">&nbsp;</a> {include breadcrumbs}</div>
+	{include #mainBlock}
+    </div>
+
+</div>

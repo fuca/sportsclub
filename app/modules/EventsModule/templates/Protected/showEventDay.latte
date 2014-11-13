@@ -1,0 +1,21 @@
+{* Latte template *}
+{layout ./base.latte}
+{block content}
+
+<h2>{_eventsModule.eventsForDate, null, [date=>$date]}</h2>
+{if $data}
+    {foreach $data as $d}
+	
+	<article>
+	    <header>
+		<a href="{plink showEvent, $d->getAlias()}">{$d->getTitle()}</a>
+	    </header>
+	<p>
+	    {$d->getDescription()|truncate:100:""}<a href="{plink showEvent, $d->getAlias()}"> {_ eventsModule.readMore}</a>
+	</p>
+	<footer>
+	    {_ eventsModule.eventEnds}{$d->getTakePlaceTill()|date:'H:i j.n.Y'}
+	</footer>
+	</article>
+    {/}
+{/}

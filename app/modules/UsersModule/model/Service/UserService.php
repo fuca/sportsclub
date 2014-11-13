@@ -158,7 +158,7 @@ class UserService extends BaseService implements IUserService {
 
 	    $this->handleUpdateContact($uDb, $formUser);
 	    $this->handleUpdateUser($uDb, $formUser);
-
+	    $this->invalidateEntityCache($uDb);
 	    $this->entityManager->commit();
 	}
     }

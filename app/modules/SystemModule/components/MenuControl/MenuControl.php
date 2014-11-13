@@ -46,7 +46,6 @@ class MenuControl extends \Nette\Application\UI\Control {
     }
 
     public function __construct($parent, $name) {
-	parent::__construct($parent, $name);
 	$this->rootNode = new MenuNode($this, $this->rootNodeName);
 	$this->label = $name;
 	$this->headMenuTemplate = __DIR__ . '/headMenu.latte';
@@ -121,9 +120,14 @@ class MenuControl extends \Nette\Application\UI\Control {
     /**
      * Render head menu method.
      */
-    public function render() {
+    public function render($class = "", $label = null, $link = null) {
 	$this->template->setFile($this->headMenuTemplate);
-	$this->template->menuLabel = $this->label;
+	if ($label !== null)
+	    $this->template->menuLabel = $label;
+	else
+	    $this->template->menuLabel = $this->label;
+	$this->template->link = $link;
+	$this->template->buttonClass = $class;
 	$this->template->nodes = $this->rootNode->getComponents();
 	$this->template->render();
     }

@@ -38,10 +38,10 @@ final class EventType extends EnumType implements IEnum {
 
     public static function getOptions() {
 	return array(
-	    self::TRAINING	=>  "Trénink",
-	    self::MATCH		=>  "Zápas",
-	    self::LEAGUE_MATCH	=>  "Ligový zápas",
-	    self::TEAMBUILDING	=>  "Teambuilding",
-	    self::MEETING	=>  "Schůze");
+	    self::TRAINING	=>  "eventsModule.eventType.training",
+	    self::MATCH		=>  "eventsModule.eventType.match",
+	    self::LEAGUE_MATCH	=>  "eventsModule.eventType.leagueMatch",
+	    self::TEAMBUILDING	=>  "eventsModule.eventType.teambuilding",
+	    self::MEETING	=>  "eventsModule.eventType.meeting");
     }
 }

@@ -51,7 +51,7 @@ final class AdminMenuControlFactory extends BaseService implements IAdminMenuCon
     }
     
     public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, "App\SystemModule\Model\Service\Menu\AdminMenuControlFactory", $logger);
+	parent::__construct($em, $this->getClassName(), $logger);
 	$this->items = new ArrayCollection();
     }
     

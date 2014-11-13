@@ -1,12 +1,14 @@
 adminMenuItem.label: "Security"
+protectedMenuItem.label: "Sign out"
 messages:
 	givenPasswordsDontMatch: "Given new passwords do not match"
 
 loginControl:
-	userLogIn: "Log in"
-	userLogOut: "Log out"
-	userLoggedOut: "Logged out"
-	userLoggedIn: "Logged in as %name%"
+	userLogIn: "Sign in"
+	userLogOut: "Sign out"
+	user: "User"
+	notSignedIn: "is not signed in"
+	userLoggedIn: "Signed in as"
 
 loginControl.messages:
 	userInactive: "Inactive account. If you feel this information is invalid, feel free to contact our office."

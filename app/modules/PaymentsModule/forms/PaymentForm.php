@@ -95,12 +95,13 @@ final class PaymentForm extends BaseForm {
 	if ($this->isCreate()) {
 	    $osel = $this->addSelect(self::PAYMENT_OWNER_TYPE_SELECT_ID, "Typ zadání platby", $this->getOwnersSelect());
 	
-	    $osel->addCondition(Form::EQUAL, "single")
+	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_SINGLE)
 		    ->toggle("single-owner");
 	
-	    $osel->addCondition(Form::EQUAL, "group")
+	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_GROUP)
 		    ->toggle("group-owner");
-	    $osel->addCondition(Form::EQUAL, "select")
+	    
+	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_SELECT)
 		    ->toggle("multi-owner");
 	}
 

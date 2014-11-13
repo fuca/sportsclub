@@ -8,8 +8,79 @@
     <p>
 	{$data->getDescription()}
     </p>
-	{control commentControl:form}
-	{control commentControl:comments}
-    {else}
+    {control commentControl:form}
+    {control commentControl:comments}
+{else}
     {_eventsModule.protected.messages.noDataFound}
-{/}
+    {/}
+
+    {snippet participationButtons}
+	{if $partyExist}
+	    <button type="button" data-toggle="modal" data-target="#yesModal">{_ system/common.yes}</button>
+	    <button type="button" data-toggle="modal" data-target="#noModal">{_ system/common.no}</button>
+	{else}
+	    <a href="{link cancelParticipation!}"><button type="button">{_ eventsModule.participation.cancel}</button></a>
+	    {/}
+	    {/snippet}
+
+<!-- Modal yes -->
+		<div class="modal fade" id="yesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+			<div class="modal-content">
+			    <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+				    <span aria-hidden="true">&times;</span>
+				    <span class="sr-only">{_ system.common.cancel}</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">{_ eventsModule.common.yes}</h4>
+			    </div>
+			    {form acceptingParticipationForm}
+				<div class="modal-body">
+					<div class="col-sm-3 control-label">
+					    {label content/}
+					</div>
+					<div class="col-sm-9">
+					    {input content}
+					</div>
+					<br/><br/>
+				    
+				</div>
+				<div class="modal-footer">
+				    <button type="button" class="btn btn-default" data-dismiss="modal">{_ system.common.cancel}</button>
+				    {input submitButton}
+				</div>
+			    {/}
+			    </div>
+			</div>
+		    </div>
+
+<!-- Modal no -->
+		    <div class="modal fade" id="noModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+				<div class="modal-header">
+				    <button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">{_ system.common.cancel}</span>
+				    </button>
+				    <h4 class="modal-title" id="myModalLabel">{_ eventsModule.common.no}</h4>
+				</div>
+				{form denyingParticipationForm}
+				<div class="modal-body">
+				    <div class="col-sm-3 control-label">
+					{label content/}
+				    </div>
+				    <div class="col-sm-9">
+					{input content}
+				    </div>
+				</div>
+				<div class="modal-footer">
+				    <button type="button" class="btn btn-default" data-dismiss="modal">{_ system.common.cancel}</button>
+				    {input submitButton}
+				</div>
+			    {/}
+			    </div>
+			</div>
+		    </div>
+			    
+			    {control participationControl}

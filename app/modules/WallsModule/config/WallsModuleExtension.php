@@ -23,14 +23,15 @@ use \Nette\PhpGenerator\ClassType,
     \Kdyby\Translation\DI\ITranslationProvider,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider;
 
 /**
  * WallsModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class WallsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
+class WallsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider {
 
     private $defaults = [];
 
@@ -65,6 +66,10 @@ class WallsModuleExtension extends BaseModuleExtension implements ITranslationPr
     }
 
     public function getProtectedItemsResources() {
+	return [];
+    }
+    
+    public function getCommonItemsResources() {
 	$i = new ItemData();
 	$i->setLabel("wallsModule.protectedMenuItem.label");
 	$i->setUrl(":Walls:Protected:default");

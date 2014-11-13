@@ -1,5 +1,8 @@
 groupPositions: "Positions within group"
 adminMenuItem.label: "System"
+club: "Club"
+profile: "Profile"
+administrator: "Admin"
 
 commentControl:
 	titleAdd: "Add comment"

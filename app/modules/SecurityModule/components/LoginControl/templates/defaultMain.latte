@@ -1,4 +1,54 @@
-{* Latte template *}
+{* Login control main *}
 
-<a n:if="$isLoggedIn" href="{$logOutLink}">{_securityModule.loginControl.userLogOut}</a>
-<a n:if="!$isLoggedIn" href="{$logInLink}">{_securityModule.loginControl.userLogIn}</a>
+<div class="row menu">
+    {if $isLoggedIn}
+	
+	<div class="col-6-md">
+	    <ul>
+		<li class="user">
+		    {var label =>$user->getName()." ".$user->getSurname()." (".$user->getId().")"}
+		    {control protectedMenu, "", $label}
+		</li>
+	    </ul>
+
+
+	    {*if $messagesMenu}
+<ul>
+		<li class="mail"><a href="#">{$pmsCount}</a>{control mailMenu}</li>
+</ul>
+	    {/if*}
+
+	    <ul>
+		<li class="web">
+		    <a role="button" class="btn" href="{plink :System:Public:default}">{_systemModule.profile}</a>
+		</li>
+	    </ul>
+	</div>
+	    
+	<div class="col-6-md">
+	    <ul>
+		<li class="club">
+		    {control commonMenu, "", "systemModule.club"}
+		</li>
+	    </ul>
+	    {if $adminMenuPredicate}
+		<ul>
+		    <li class="admin">
+			{control adminMenu, "", "systemModule.administrator"}
+		    </li>
+		</ul>
+	    {/if}
+	    
+
+	</div>
+
+    {else}
+	<div class="col-12-md">
+	    <ul>
+		<li class="login">{_securityModule.loginControl.user} <strong>{_securityModule.loginControl.notSignedIn}</strong>
+		<a role="button" class="btn" href="{$logInLink}">{_securityModule.loginControl.userLogIn}</a></li>
+	    </ul>
+	</div>
+	{/}
+    </div>
+    

@@ -20,6 +20,7 @@ namespace App\EventsModule\Model\Service;
 
 use \App\Model\Entities\Event,
     \App\Model\Entities\User,
+    \App\Model\Entities\EventParticipation,
     \App\Model\Entities\SportGroup,
     \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\DuplicateEntryException,
@@ -50,6 +51,11 @@ class EventService extends BaseService implements IEventService, IEventModel {
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $eventDao;
+    
+    /**
+     * @var \Kdyby\Doctrine\EntityDao
+     */
+    private $participationDao;
     
     /**
      * @var \App\SystemModule\Model\Service\ISportGroupService
@@ -85,23 +91,45 @@ class EventService extends BaseService implements IEventService, IEventModel {
     function __construct(EntityManager $em, Logger $logger) {
 	parent::__construct($em, Event::getClassName(), $logger);
 	$this->eventDao = $em->getDao(Event::getClassName());
-    }
-
-    public function confirmParticipation(Event $e, User $u) {
-	if ($e === NULL)
-	    throw new Exceptions\NullPointerException("Argument Event was null", 0);
-	if ($u === NULL)
-	    throw new Exceptions\NullPointerException("Argument User was null", 0);
-	// TODO how should this work?
-	// dodelat entitu nebo vazebni tabulku participaci? asi primo entitu, at pak muzu udelat control pro vypis tech participaci k dane evente
+	$this->participationDao = $em->getDao(EventParticipation::getClassName());
     }
     
-    public function rejectParticipation(Event $e, User $u) {
-	if ($e === NULL)
-	    throw new Exceptions\NullPointerException("Argument Event was null");
-	if ($u === NULL)
-	    throw new Exceptions\NullPointerException("Argument User was null");
-	// TODO how should this work?
+    public function createEventParticipation(EventParticipation $ep) {
+	try {
+	    $eDb = $this->getEvent($ep->getEvent()->getId(), false);
+	    if ($eDb !== null) {
+		$ep->setEvent($eDb);
+		$this->ownerTypeHandle($ep);
+		$this->participationDao->save($ep);
+		$this->invalidateEntityCache($ep->getEvent());
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function deleteEventParticipation($u, Event $e) {
+	try {
+	    $eDb = $this->getEvent($e->getId());
+	    $uDb = $this->userService->getUser($this->getMixId($u));
+	    if ($eDb !== null && $eDb !== null) {
+		$pDb = $this->participationDao->createQueryBuilder("p")
+			->where("p.event = :event")
+			->andWhere("p.owner = :owner")
+			->setParameter("event", $eDb->getId())
+			->setParameter("owner", $uDb->getId())
+			->getQuery()
+			->getSingleResult();
+		if ($pDb !== null) {
+		    $this->participationDao->delete($pDb);
+		}
+	    }
+	    $this->invalidateEntityCache($eDb);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
     public function createEvent(Event $e) {
@@ -153,6 +181,21 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		    $editor = $this->getUserService()->getUser($id, false);
 	    }
 	    $e->setEditor($editor);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    private function ownerTypeHandle(EventParticipation $e) {
+	try {
+	    $editor = null;
+	    if ($this->getUserService() !== null) {
+		$id = $this->getMixId($e->getOwner());
+		if ($id !== null)
+		    $editor = $this->getUserService()->getUser($id, false);
+	    }
+	    $e->setOwner($editor);
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -354,6 +397,20 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	
+    }
+    
+    public function getUserEventsDatasource(User $u) {
+	$model = new Doctrine(
+//		$this->participationDao->createQueryBuilder("ep")
+//		->where("ep.owner = :owner")
+//		->setParameter("owner", $u->getId()));
+		
+		$this->participationDao->createQueryBuilder()
+		->select("ep, ev.title AS title, ev.takePlaceSince as takePlaceSince, ev.takePlaceTill AS takePlaceTill, ev.eventType AS eventType")
+		->add("from", EventParticipation::getClassName()." ep LEFT JOIN ep.event ev")
+		->where("ep.owner = :owner")
+		->setParameter("owner", $u->getId()));
+	return $model;
     }
 
 }

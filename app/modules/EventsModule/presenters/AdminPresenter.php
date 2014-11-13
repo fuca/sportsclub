@@ -67,6 +67,7 @@ class AdminPresenter extends SecuredPresenter {
 	try {
 	    $e = $this->eventsService->getEvent($id);
 	    if ($e !== null) {
+		$this->setEntity($e);
 		$form = $this->getComponent("updateEventForm");
 		$grArr = $e->getGroups()->map(function($e) {
 			    return $e->getId();
@@ -104,18 +105,19 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     public function handleDeleteEvent($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	$this->doDeleteEvent($id);
 	$this->redirect("this");
     }
-    
+
     private function doDeleteEvent($id) {
 	try {
 	    $this->eventsService->deleteEvent($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	   $this->handleDataDelete($id, "this", $ex);
+	    $this->handleDataDelete($id, "this", $ex);
 	}
-    } 
+    }
 
     public function eventFormSubmittedHandle(BaseForm $form) {
 	$values = $form->getValues();
@@ -181,10 +183,10 @@ class AdminPresenter extends SecuredPresenter {
 	$headerTitle->class[] = 'center';
 
 	$grid->addColumnText('eventType', 'Typ')
-		->setReplacement([null=>null]+EventType::getOptions())
+		->setReplacement([null => null] + EventType::getOptions())
 		->setSortable()
 		->setFilterSelect($eventTypes);
-	
+
 	$headerType = $grid->getColumn('eventType')->headerPrototype;
 	$headerType->class[] = 'center';
 
@@ -194,7 +196,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerSince = $grid->getColumn('takePlaceSince')->headerPrototype;
 	$headerSince->class[] = 'center';
 
-	$grid->addColumnDate('takePlaceTill', 'Do', self::DATETIME_FORMAT)		
+	$grid->addColumnDate('takePlaceTill', 'Do', self::DATETIME_FORMAT)
 		->setSortable()
 		->setFilterDateRange();
 	$headerTill = $grid->getColumn('takePlaceTill')->headerPrototype;
@@ -219,13 +221,20 @@ class AdminPresenter extends SecuredPresenter {
     public function eventsGridOperationHandler($operation, $id) {
 	switch ($operation) {
 	    case "delete":
-		    foreach ($id as $i) {
-			$this->doDeleteEvent($i);
-		    }
-		    $this->redirect("this");
+		foreach ($id as $i) {
+		    $this->doDeleteEvent($i);
+		}
+		$this->redirect("this");
 		break;
 	    default:
-		    $this->redirect("this");
+		$this->redirect("this");
 	}
+    }
+
+    public function createComponentParticipationControl($name) {
+	$c = new \App\EventsModule\Components\ParticipationControl($this, $name);
+	$c->setEvent($this->getEntity());
+	$c->setEventService($this->eventsService);
+	return $c;
     }
 }

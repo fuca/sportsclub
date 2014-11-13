@@ -31,8 +31,9 @@ $configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConf
 // enum types registering for database use
 Type::addType("AclMode", "App\Model\Misc\Enum\AclMode");
 Type::addType("WebProfileStatus", "App\Model\Misc\Enum\WebProfileStatus");
-Type::addType("PrivateMessageStatus", "App\Model\Misc\Enum\PrivateMessageStatus");
 Type::addType("PaymentStatus", "App\Model\Misc\Enum\PaymentStatus");
+Type::addType("MailBoxEntryType", "App\Model\Misc\Enum\MailBoxEntryType");
+Type::addType("EventParticipationType", "App\Model\Misc\Enum\EventParticipationType");
 Type::addType("PaymentOwnerType", "App\Model\Misc\Enum\PaymentOwnerType");
 Type::addType("FormMode", "App\Model\Misc\Enum\FormMode");
 Type::addType("EventVisibility", "App\Model\Misc\Enum\EventVisibility");

@@ -1,0 +1,47 @@
+{* Participation control main *}
+
+{block content}
+
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+
+	<div class="panel-heading" role="tab" id="headingOne">
+	    <h4 class="panel-title">
+		<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+		    Participating ({count($accepting)})
+		</a>
+	    </h4>
+	</div>
+
+
+	{foreach $accepting as $a}
+	    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+		<div class="panel-body">
+		    {$a->getOwner()} | <em>{$a->getUpdated()|date:'j.n.Y H:i'}</em> | {$a->getContent()}
+		    {if $admin}
+			<a href="{link deleteParticipation!, $a->getOwner()->getId()}">
+		    <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">{_ system.common.cancel}</span></button>
+		    </a>
+		    {/}
+		</div>
+	    </div>
+	    {/}  
+	    <div class="panel-heading" role="tab" id="headingOne">
+	    <h4 class="panel-title">
+		<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+		    Not participating ({count($denying)})
+		</a>
+	    </h4>
+	</div>
+
+
+	{foreach $denying as $a}
+	    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+		<div class="panel-body">
+		    {$a->getOwner()} | <em>{$a->getUpdated()|date:'j.n.Y H:i'}</em> | {$a->getContent()}
+		</div>
+	    </div>
+	    {/}  
+	</div>
+	
+</div>

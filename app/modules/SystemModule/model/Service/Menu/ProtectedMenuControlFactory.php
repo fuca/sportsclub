@@ -52,7 +52,7 @@ final class ProtectedMenuControlFactory extends BaseService implements IProtecte
     }
     
     public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, "App\SystemModule\Model\Service\Menu\ProtectedMenuControlFactory", $logger);
+	parent::__construct($em, $this->getClassName(), $logger);
 	$this->items = new ArrayCollection();
     }
     

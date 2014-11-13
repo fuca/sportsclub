@@ -45,8 +45,6 @@ abstract class BaseModuleExtension extends CompilerExtension {
 	$servicesCacheDir = $cacheDir."services";
 	$moduleCacheDir = $servicesCacheDir."/".$this->getModuleName();
 	
-	//$builder->getDefinition("anotations.reader")->addSetup("setDefaultAnnotationNamespace", [('\\App\\Model\\Misc\\Annotations')]);
-	
 	if (!file_exists($servicesCacheDir)) {
 	    try {
 		FileSystem::createDir($servicesCacheDir);

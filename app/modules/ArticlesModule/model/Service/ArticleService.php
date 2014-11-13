@@ -229,10 +229,11 @@ class ArticleService extends BaseService implements IArticleService {
 	}
     }
 
-    public function getArticles(SportGroup $g) {
-	if ($g === NULL)
-	    throw new Exceptions\NullPointerException("Argument Group was null");
+    public function getArticles(SportGroup $g = null) {
 	try {
+	    if (is_null($g)) 
+		return $this->articleDao->findAll();
+	    
 	    $id = SportGroup::getClassName()."-".$g->getId();
 	    $cache = $this->getEntityCache();
 	    $data = $cache->load($id);

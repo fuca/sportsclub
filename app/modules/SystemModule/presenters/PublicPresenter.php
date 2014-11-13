@@ -17,7 +17,8 @@
  */
 
 namespace App\SystemModule\Presenters;
-use \App\SystemModule\Presenters\BasePresenter;
+use \App\SystemModule\Presenters\BasePresenter,
+    \App\ArticlesModule\Model\Service\IArticleService;
 
 /**
  * PublicPresenter
@@ -32,7 +33,14 @@ class PublicPresenter extends BasePresenter {
      */
     public $positionService;
     
+    /**
+     * @inject
+     * @var \App\ArticlesModule\Model\Service\IArticleService
+     */
+    public $articleService;
+    
     public function renderDefault() {
+	$this->template->articles = $this->articleService->getArticles();
     }
     
     public function actionShowContacts($gid = 5) {

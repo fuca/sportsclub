@@ -21,9 +21,13 @@ namespace App\EventsModule\Components;
 use \Nette\Application\UI\Control,
     \Nette\ComponentModel\IContainer,
     \App\Model\Entities\Event,
+    \App\Model\Misc\Enum\FormMode,
+    \App\Model\Misc\Exceptions,
     \App\Model\Entities\EventParticipation,
     \App\Model\Misc\Enum\EventParticipationType AS EPT,
-    \App\EventsModule\Model\Service\EventService;
+    \App\EventsModule\Model\Service\EventService,
+    \App\EventsModule\Forms\EventParticipationForm,
+    \App\UsersModule\Model\Service\IUserService;
 
 /**
  * Description of ParticipationControl
@@ -46,6 +50,19 @@ final class ParticipationControl extends Control {
      */
     private $eventService;
     
+    /**
+     * @var \App\UsersModule\Model\Service\IUserService
+     */
+    private $userService;
+    
+    function getUserService() {
+	return $this->userService;
+    }
+
+    function setUserService(IUserService $userService) {
+	$this->userService = $userService;
+    }
+
     public function getEventService() {
 	return $this->eventService;
     }
@@ -108,8 +125,57 @@ final class ParticipationControl extends Control {
 	try {
 	    $this->getEventService()->deleteEventParticipation($user, $this->getEvent());
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->presenter->handleDataDelete($user, "this", $ex);
+	    $this->presenter->flashMessage(
+		    $this->presenter->tt("eventsModule.partForm.errorSave",null,["user"=>$user, "event"=>$this->getEvent()->getId()]), 
+		    \App\SystemModule\Presenters\BasePresenter::FM_ERROR);	    
 	}
 	$this->presenter->redirect("this");
     }
+    
+    public function createComponentUpdateParticipationForm($name) {
+	$c = new EventParticipationForm($this, $name, $this->presenter->getTranslator());
+	$c->setMode(FormMode::UPDATE_MODE);
+	try {
+	    $users = $this->userService->getSelectUsers();
+	    $c->setUsers($users);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->presenter->handleDataLoad(null, "default", $ex);
+	}
+	$c->initialize();
+	return $c;
+    }
+    
+    public function participationFormSuccess(EventParticipationForm $form) {
+	$values = $form->getValues();
+	switch($form->getMode()) {
+	    case FormMode::UPDATE_MODE:
+
+		foreach ($values->owners as $owner) {
+		    $ep = new EventParticipation();
+		    $ep->setOwner($owner);
+		    $ep->setType($values->type);
+		    $ep->setEvent($this->getEvent());
+		    $ep->setContent($values->content);
+		    try {
+			$this->eventService->createEventParticipation($ep);
+		    } catch (Exceptions\DuplicateEntryException $ex) {
+			$this->presenter->flashMessage(
+			    $this->presenter->tt("eventsModule.partForm.errorDupl", null,["user"=>$owner, "event"=>$this->getEvent()->getId()]), 
+			    \App\SystemModule\Presenters\BasePresenter::FM_ERROR);
+		    } catch (Exceptions\DataErrorException $ex) {
+			$this->presenter->flashMessage(
+			    $this->presenter->tt("eventsModule.partForm.errorSave", null,["user"=>$owner, "event"=>$this->getEvent()->getId()]), 
+			    \App\SystemModule\Presenters\BasePresenter::FM_ERROR);
+		    }
+		}
+
+		break;
+	}
+	if (!$this->presenter->isAjax()) {
+	    $this->presenter->redirect("this");
+	} else {
+	    // invalidate control
+	}
+    }
+
 }

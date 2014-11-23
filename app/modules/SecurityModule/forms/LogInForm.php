@@ -27,15 +27,32 @@ use \App\Forms\BaseForm;
 class LogInForm extends BaseForm {
     
     public function initialize() {
-	$this->addText('username', 'securityModule.loginControl.loginForm.email')
-		->setRequired('Prosím zadejte email');
+	$this->addGroup("securityModule.loginControl.loginForm.heading");
+	
+	$userName = $this->addText('username', 'securityModule.loginControl.loginForm.email')
+		->setRequired("securityModule.loginControl.loginForm.plsPutEmail");
 
-	$this->addPassword('password', 'securityModule.loginControl.loginForm.password')
-		->setRequired('Prosím zadejte heslo.');
+	$passWord = $this->addPassword('password', 'securityModule.loginControl.loginForm.password')
+		->setRequired('securityModule.loginControl.loginForm.plsPutPassword');
 
-	$this->addCheckbox('remember', 'securityModule.loginControl.loginForm.remember');
+	$remember = $this->addCheckbox('remember', 'securityModule.loginControl.loginForm.remember');
 
-	$this->addSubmit('send', 'securityModule.loginControl.loginForm.submit');
+	$submit = $this->addSubmit('send', 'securityModule.loginControl.loginForm.submit');
+	
+	/* BOOTSTRAP CSS */
+	$this->getElementPrototype()->class = "form-signin";
+	
+	$userName->getControlPrototype()->class = "form-control";
+	$userName->getLabelPrototype()->class ="sr-only";
+	$userName->getControlPrototype()->type = "email";
+	$userName->getControlPrototype()->addAttributes(["placeholder"=>"securityModule.loginControl.loginForm.emailPlaceholder","autofocus"=>true]);
+	
+	$passWord->getControlPrototype()->class = "form-control";
+	$passWord->getLabelPrototype()->class ="sr-only";
+	$passWord->getControlPrototype()->addAttributes(["placeholder"=>"securityModule.loginControl.loginForm.passwordPlaceholder"]);
+	$remember->getLabelPrototype()->class = "checkbox";
+	$submit->getControlPrototype()->class = 'btn-primary';
+
 	
 	// TODO hodit to do BaseFormu
 	$this->onSuccess[] = ($h = $this->getSuccessHandler() == null)? callback($this->parent, "loginFormSuccessHandle"): $h;

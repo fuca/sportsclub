@@ -6,6 +6,12 @@ publicMenuItem.label: "Articles"
 admin:
 	articleAdd: "Add article"
 	articleNew: "New article"
+	heading: "Articles resources"
+	article.heading: "Articles"
+	addArticle.heading: "New article"
+	updateArticle.heading: "Update article %title%"
+	updateArticle.title: "Update article"
+	updateArticle.bread: "Update article"
 
 admin.grid:
 	change: "Change"

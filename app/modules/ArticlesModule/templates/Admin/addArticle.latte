@@ -1,5 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-<h1>{_articlesModule.admin.articleNew}</h1>
-{control addArticleForm}
+
+{* Articles module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ articlesModule.admin.addArticle.heading}</li>
+{/block}
+
+{block #title}
+    {_ articlesModule.admin.addArticle.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_articlesModule.admin.addArticle.heading}</h3>
+    </div>
+    {control addArticleForm}
+{/}

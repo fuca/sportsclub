@@ -57,15 +57,22 @@ final class AdminMenuControlFactory extends BaseService implements IAdminMenuCon
     
     public function createComponent($pres, $name) {
 	$c = new MenuControl($pres, $name);
+	
 	$iterator = $this->items->getIterator();
 	$iterator->uasort(function ($a, $b) {
 	    return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
 	});
 	$this->items = new ArrayCollection(iterator_to_array($iterator));
 	foreach ($this->items as $i) {
-	    $c->addNode($i->getLabel(), $i->getUrl(), $i->getMode(), $i->getData(), $i->getName());
+	    $node = $c->addNode($i->getLabel(), $i->getUrl(), $i->getMode(), $i->getData(), $i->getName());
+	    
+	    $expl = explode(":", $i->getUrl());
+	    array_pop($expl);
+	    if (implode($expl, ":") == ":".$pres->getName())
+		    $c->setCurrentNode ($node);
 	}
 	return $c;
     }
 
 }
+

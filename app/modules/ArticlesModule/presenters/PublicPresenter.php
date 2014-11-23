@@ -18,7 +18,7 @@
 
 namespace App\ArticlesModule\Presenters;
 
-use \App\SystemModule\Presenters\BasePresenter,
+use \App\SystemModule\Presenters\SystemPublicPresenter,
     \App\Model\Entities\ArticleComment,
     \Nette\Utils\ArrayHash,
     \Nette\Utils\DateTime;
@@ -29,7 +29,7 @@ use \App\SystemModule\Presenters\BasePresenter,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class PublicPresenter extends BasePresenter {
+class PublicPresenter extends SystemPublicPresenter {
     
     /**
      * @inject

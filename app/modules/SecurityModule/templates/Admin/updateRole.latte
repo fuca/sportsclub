@@ -1,5 +1,20 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
-{control updateRoleForm}
+{* Security module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ securityModule.admin.updateRole.heading}</li>
+{/block}
+
+{block #title}
+    {_ securityModule.admin.updateRole.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    {control updateRoleForm}
+{/}

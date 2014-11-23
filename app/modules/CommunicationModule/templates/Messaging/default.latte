@@ -1,4 +1,20 @@
-{* Protected Messaging *}
-{layout ./base.latte}
-{block content}
-<a href="{plink :Communication:Messaging:createMessage}">{_communicationModule.messaging.messageAdd}</a>
+
+{* Communication module Messaging presenter *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.user.heading}</li>
+{/block}
+    
+{block #title}
+    {_communicationModule.user.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+    
+{block #userContent}
+
+{/block}

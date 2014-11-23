@@ -1,3 +1,23 @@
-{layout ./base.latte}
-{block content}
-{control addForumForm}
+
+{* Seasons module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.admin.addForum.heading}</li>
+{/block}
+
+{block #title}
+    {_ communicationModule.admin.addForum.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ communicationModule.admin.addForum.heading}</h3>
+    </div>
+    {control addForumForm}
+{/}

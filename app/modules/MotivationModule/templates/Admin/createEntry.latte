@@ -1,4 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{control createEntryForm}
+
+{* Motivation module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ motivationModule.admin.createEntry.heading}</li>
+{/block}
+
+{block #title}
+    {_ motivationModule.admin.createEntry.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ motivationModule.admin.createEntry.heading}</h3>
+    </div>
+    {control createEntryForm}
+{/}

@@ -76,7 +76,7 @@ class SecurityModuleExtension extends BaseModuleExtension implements ITranslatio
 	$i = new ItemData();
 	$i->setLabel("securityModule.protectedMenuItem.label");
 	$i->setUrl(":Security:Auth:out");
-	$i->setData(["separate"=>true]);
+	$i->setData(["separate"=>true,"headOnly"=>true]);
 	return [$i];
     }
 

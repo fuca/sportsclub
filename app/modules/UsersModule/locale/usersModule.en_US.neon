@@ -20,6 +20,13 @@ admin:
 	userAdd: "Create new user"
 	userEdit: "User update"
 	profileEdit: "Users web profile update"
+	usersGrid: "Users"
+	wpPermitGrid: "Web profiles pending to permit"
+	heading: "Users resources"
+	newUser.heading: "New user"
+	updateUser.heading: "Update user"
+	updateProfile.title: "Update web profile"
+	updateProfile.bread: "Update web profile of %name%"
 
 admin.messages:
 	dependencyErrorDelete: "You cannot delete entity, which is still in use"
@@ -40,5 +47,30 @@ admin.grid:
 webProfForm:
 	personalLikes.label: "Personal likes"
 	personalLikes.desc: "My personal likes"
-	
+
+usrForm:
+	active: "Active"
+	newUser: "New user"
+	updateUser: "Update user"
+	nick: "Nick"
+	name: "Name"
+	surname: "Surname"
+	birthNumber: "Birth number"
+	leagueId: "League id"
+	livingAddress: "Address of permanent residence"
+	street: "Street"
+	houseNum: "House number"
+	city: "City"
+	postCode: "Post code"
+	usrContact: "Contact"
+	phone: "Phone"
+	email: "Email"
+	job: "Job"
+	contactPerson: "Contact person"
+	contName: "Name"
+	contPhone: "Phone"
+
+user:
+	webProfile.heading: "Web profile"
+	personalData.heading: "Personal data"
 	

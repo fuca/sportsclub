@@ -69,11 +69,6 @@ final class SeasonApplicationForm extends BaseForm {
     public function initialize() {
 
 	$this->addHidden("id");
-	if ($this->getMode() == FormMode::CREATE_MODE) {
-	    $this->addGroup("Nová přihláška k sezóně");
-	} else {
-	    $this->addGroup("Úprava přihlášky k sezóně");
-	}
 	
 	$m = null;
 	
@@ -84,7 +79,7 @@ final class SeasonApplicationForm extends BaseForm {
 		    ->setPrompt("Vyberte člena .. ");
 	}
 	$m->addRule(Form::FILLED, "Musí být vybrán alespoň jeden člen")
-	    ->setRequired(true);
+	    ->setRequired("Musí být vybrán alespoň jeden člen");
 	
 	$this->addSelect("season", "Sezóna", $this->getSeasons())
 		->setPrompt("Vyberte sezónu.. ")
@@ -98,7 +93,7 @@ final class SeasonApplicationForm extends BaseForm {
 
 	$this->addTextArea("comment", "Poznámka");
 
-	$this->addSubmit('submitButton', "Uložit");
+	$this->addSubmit('submitButton', "system.forms.submitButton.label");
 	$this->onSuccess[] = callback($this->presenter, "seasonApplicationFormSubmitHandle");
     }
 

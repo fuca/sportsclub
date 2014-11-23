@@ -1,4 +1,23 @@
-{layout ./base.latte}
-{block content}
-<a href="{plink :Forum:Admin:addForum}">{_forumModule.admin.forumAdd}</a>
+
+{* Seasons module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ communicationModule.admin.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+
+<h3>{_ communicationModule.admin.forum.heading}</h3>
 {control forumGrid}
+
+{/block}

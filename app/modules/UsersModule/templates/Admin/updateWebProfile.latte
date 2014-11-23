@@ -1,6 +1,20 @@
-{* Users Module Admin presenter*}
-{layout ./base.latte}
 
-{block content}
-<h2>{_ usersModule.admin.profileEdit}</h2>
-{control updateWebProfileForm}
+{* Users module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ usersModule.admin.updateProfile.bread, null, ["name"=>$name]}</li>
+{/block}
+
+{block #title}
+    {_ usersModule.admin.updateProfile.title} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    {control updateWebProfileForm}
+{/block}

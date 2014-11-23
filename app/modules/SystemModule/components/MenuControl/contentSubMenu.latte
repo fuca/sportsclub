@@ -1,0 +1,51 @@
+
+    <div class="col-xs-6 col-sm-6 col-md-12 col-lg-12 {$wrapperClass}">
+	<nav class="{$class}" role="navigation">    
+	    
+		<div class="panel-heading">{_ $menuLabel}
+		    <div class="navbar-header">
+			{var identifier => \Nette\Utils\Strings::random()}
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu-{$identifier}">
+			    <span class="icon-bar"></span>
+			    <span class="icon-bar"></span>
+			    <span class="icon-bar"></span>
+			</button>		    
+		    </div>
+		</div>
+
+		<div id="menu-{$identifier}" class="collapse navbar-collapse">
+		    <ul>
+			{block #content-menu}
+			{foreach $nodes as $node}
+			    {if isset($node->data['param'])}
+				{var param=>$node->data['param']}
+			    {else}
+				{var param=>FALSE}
+			    {/if}
+			    <li {if $node->isCurrent()} class="current active" {/if} >
+				<a href="{if $node->mode} 
+				   {if $param === FALSE} 
+				       {plink $node->url} 
+				   {else} 
+				   {plink $node->url $param}{/if} {else} {$node->url}
+				       {/if}">
+					   {_ $node->label}
+				       </a>
+			    </li>
+				   {if count($node->getComponents()) > 0}
+				       <ul>
+					   {include #content-menu, nodes => $node->getComponents()}
+				       </ul>
+				   {/if}
+				   {/foreach}
+
+				       {/block}
+		    </ul>
+		</div><!-- /.navbar-collapse -->
+	    
+	</nav>
+    </div><!--/end left column-->
+
+
+
+

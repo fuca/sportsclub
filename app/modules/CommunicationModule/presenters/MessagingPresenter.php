@@ -18,6 +18,7 @@
 
 namespace App\CommunicationModule\Presenters;
 use \App\CommunicationModule\Forms\PrivateMessageForm,
+    \App\SystemModule\Presenters\SystemUserPresenter,
     \App\Model\Entities\PrivateMessage,
     \App\Model\Entities\MailBoxEntry,
     \App\Model\Misc\Exceptions,
@@ -31,7 +32,7 @@ use \App\CommunicationModule\Forms\PrivateMessageForm,
  * MessagingPresenter
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class MessagingPresenter extends ProtectedPresenter {
+final class MessagingPresenter extends SystemUserPresenter {
     
     /**
      * @inject
@@ -329,5 +330,13 @@ final class MessagingPresenter extends ProtectedPresenter {
 	    "starToggle"=>$this->tt("communicationModule.grid.starToggle")],
 	    $this->gridOperationsHandler);
 	return $grid;
+    }
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("communicationModule.messaging.messageAdd",":Communication:Messaging:createMessage");
+	$c->addNode("systemModule.navigation.back",":System:Default:userRoot");
+	return $c;
     }
 }

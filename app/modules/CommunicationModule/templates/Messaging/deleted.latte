@@ -1,5 +1,22 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-<h2>{_communicationModule.messaging.deleted}</h2>
+
+{* Communication module Messaging presenter *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.user.deleted.heading}</li>
+{/block}
+    
+{block #title}
+    {_communicationModule.user.deleted.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+    
+{block #userContent}
+    <div class="page-header">
+	<h2>{_communicationModule.messaging.deleted}</h2>
+    </div>
 {control deletedGrid}

@@ -1,0 +1,48 @@
+
+{* EventsModule Club presenter default *}
+
+{layout $layoutsPath.'clubSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ eventsModule.club.heading}</li>
+{/block}
+
+{block #title}
+    {_eventsModule.club.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+    
+{block #subMenu}
+{/block}
+
+{block #clubContent}
+<div role="tabpanel">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">{_ eventsModule.club.calendarTab.label}</a></li>
+    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{_ eventsModule.club.agendaTab.label}</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="home">
+    {control calendar}
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="profile">
+	{if $data}
+    {foreach $data as $d}   
+	{$d->getTitle()}<br/>
+    {/}
+    {else}
+	{_eventsModule.protected.messages.noDataFound}
+{/}
+    </div>
+  </div>
+
+</div>
+
+    
+
+
+
+{/block}

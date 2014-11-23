@@ -1,0 +1,24 @@
+
+{* Admin section base template *}
+
+{layout ./rootBase.latte}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    <li><a href="{plink :System:Default:adminRoot}">{_ systemModule.navigation.adminModule}</a></li>
+{/block}
+
+{block #title}
+    Administration {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #sideBlock}
+    {control adminMenu:contentMenu, $layoutStyle, "systemModule.administrator", "hidden-xs hidden-sm"}
+    {include #subMenu}
+{/block}
+	
+{block #mainBlock}
+    {include #adminContent}
+    {control adminMenu:contentMenu, $layoutStyle, "systemModule.administrator", "hidden-lg hidden-md"}	
+{/block}

@@ -1,4 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{control createTaxForm}
+
+{* Motivation module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ motivationModule.admin.createTax.heading}</li>
+{/block}
+
+{block #title}
+    {_ motivationModule.admin.createTax.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ motivationModule.admin.createTax.heading}</h3>
+    </div>
+    {control createTaxForm}
+{/}

@@ -103,6 +103,9 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		$this->participationDao->save($ep);
 		$this->invalidateEntityCache($ep->getEvent());
 	    }
+	} catch (DBALException $ex) {
+	    $this->logWarning($ex);
+	    throw new Exceptions\DuplicateEntryException("Event with this title already exist");
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -127,7 +130,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    }
 	    $this->invalidateEntityCache($eDb);
 	} catch (\Exception $ex) {
-	    $this->logError($ex->getMessage());
+	    $this->logError($ex);
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
@@ -320,14 +323,25 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	return $model;
     }
 
-    public function getForDate($year, $month, $day) {
+    public function getForDate($year, $month, $day, array $modifier = []) {
+	$abbr = null;
 	$date = new DateTime();
 	$date->setDate($year, $month, $day);
+	if (!empty($modifier) && isset($modifier["abbr"])) {
+	    $abbr = $modifier["abbr"];
+	}
 	try {
 	    $qb = $this->eventDao->createQueryBuilder("e");
-	    $res = $qb->where("e.takePlaceSince <= :now")->andWhere("e.takePlaceTill >= :now")
-			    ->setParameter("now", $date)
-			    ->getQuery()->getResult();
+	    
+	    if ($abbr !== null) {
+		$qb->innerJoin(SportGroup::getClassName(), "g")
+			->where("g.abbr = :abbr")->setParameter("abbr", $abbr);
+	    }
+	    $qq = $qb->andWhere("e.takePlaceSince <= :now")->andWhere("e.takePlaceTill >= :now")
+		    ->setParameter("now", $date)
+		    ->getQuery();
+	    $res = $qq->getResult();
+	   
 	    return $res;
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -335,9 +349,9 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	}
     }
 
-    public function isForDate($year, $month, $day) {
-	$res = $this->getForDate($year, $month, $day);
-	return $res?true:false;
+    public function isForDate($year, $month, $day, array $modifier = []) {
+	$res = $this->getForDate($year, $month, $day, $modifier);
+	return count($res) > 0?true:false;
     }
     
     

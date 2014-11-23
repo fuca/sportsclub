@@ -1,11 +1,25 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
 
-<a href="{plink :Motivation:Admin:createTax}">{_motivationModule.admin.taxAdd}</a>
+{* Motivation module Admin presenter *}
 
-{control taxesGrid}
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
-<a href="{plink :Motivation:Admin:createEntry}">{_motivationModule.admin.entryAdd}</a>
+{block #breadcrumbs}
+    {include #parent}<li>{_ motivationModule.admin.heading}</li>
+{/block}
 
-{control entriesGrid}
+{block #title}
+    {_ motivationModule.admin.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <h3>{_ motivationModule.admin.tax.heading}</h3>
+    {control taxesGrid}
+
+    <h3>{_ motivationModule.admin.entry.heading}</h3>
+    {control entriesGrid}
+
+{/block}

@@ -1,0 +1,37 @@
+
+{* Events module Club presenter *}
+
+{layout $layoutsPath.'clubSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ eventsModule.club.showEventDay.heading}</li>
+{/block}
+
+{block #title}
+    {_eventsModule.club.showEventDay.heading} | {include #parent}
+{/block}
+    
+{block #subMenu}
+{/block}
+
+{block #clubContent}
+    <div class="page-header">
+    <h3>{_eventsModule.eventsForDate, null, [date=>$date]}</h3>
+    </div>
+    {if $data}
+	{foreach $data as $d}
+
+	    <article>
+		<header>
+		    <a href="{plink showEvent, $d->getAlias()}">{$d->getTitle()}</a>
+		</header>
+	    <p>
+		{$d->getDescription()|truncate:100:""}<a href="{plink showEvent, $d->getAlias()}"> {_ eventsModule.readMore}</a>
+	    </p>
+	    <footer>
+		{_ eventsModule.eventEnds}{$d->getTakePlaceTill()|date:'H:i j.n.Y'}
+	    </footer>
+	    </article>
+	{/}
+    {/}
+{/}

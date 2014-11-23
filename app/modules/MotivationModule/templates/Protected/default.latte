@@ -1,7 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
+{* Eevnts module User presenter User events *}
 
-<h4>{_motivationModule.protected.myMotivation}</h4>
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
 
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} <li>{_motivationModule.user.userMotivation.heading}</li>
+{/block}
+
+{block #title}
+      {_motivationModule.user.userMotivation.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+{/block}
+    
+{block #userContent}
+<div class="page-header">
+<h3>{_motivationModule.protected.myMotivation}</h3>
+</div>
 {control userMotivationGrid}
+{/}

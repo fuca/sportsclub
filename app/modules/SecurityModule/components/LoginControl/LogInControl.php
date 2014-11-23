@@ -146,7 +146,7 @@ final class LogInControl extends Control {
 	$this->template->setFile($this->templateUser);
 	$this->template->isLoggedIn = $loggedIn;
 	$this->template->user = $loggedIn ? $this->getUser()->getIdentity() : null;
-	$this->template->userProfileLink = $this->presenter->link(":Users:Protected:profile");
+	$this->template->userProfileLink = $this->presenter->link(":Users:UserB:profile");
 	$this->template->render();
     }
     

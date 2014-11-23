@@ -1,0 +1,24 @@
+
+{* Eevnts module User presenter User events *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} <li>{_eventsModule.user.userEvents.heading}</li>
+{/block}
+
+{block #title}
+      {_eventsModule.user.userEvents.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+{/block}
+    
+{block #userContent}
+    <div class="page-header">
+	<h3>{_ eventsModule.userEvents}</h3>
+    </div>
+    {control userEventsGrid}
+{/block}

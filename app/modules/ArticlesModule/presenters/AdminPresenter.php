@@ -18,7 +18,7 @@
 
 namespace App\ArticlesModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Entities\Article,
     \App\Model\Misc\Exceptions,
     \App\Model\Misc\Enum\FormMode,
@@ -33,7 +33,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  * ArticleAdminPresenter
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
     
     /**
      * @inject 
@@ -169,6 +169,7 @@ class AdminPresenter extends SecuredPresenter {
 	
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->articleService->getArticlesDataSource());
+	$grid->setTranslator($this->getTranslator());
 	$grid->setPrimaryKey("id");
 	
 	$grid->addColumnNumber("id", "#")
@@ -195,7 +196,7 @@ class AdminPresenter extends SecuredPresenter {
 	
 	$grid->addColumnText('commentMode', $this->tt("articlesModule.admin.grid.comments"))
 		->setSortable()
-		->setReplacement($commentModes)
+		->setCustomRender($this->commentModeRender)
 		->setFilterSelect($commentModes);
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
 	$headerStatus->class[] = 'center';
@@ -226,6 +227,10 @@ class AdminPresenter extends SecuredPresenter {
 	return $grid;
     }
     
+    public function commentModeRender($el) {
+	return $this->tt(CommentMode::getOptions()[$el->getCommentMode()]);
+    }
+    
     public function articlesGridOperationHandler($operation, $ids) {
 	switch($operation) {
 	    case "delete":
@@ -235,5 +240,20 @@ class AdminPresenter extends SecuredPresenter {
 		break;
 	}
 	$this->redirect("this");
+    }
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("articlesModule.admin.articleAdd",":Articles:Admin:addArticle");
+	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	return $c;
+    }
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back",":Articles:Admin:default");
+	return $c;
     }
 }

@@ -1,16 +1,27 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
+{* Seasons module Admin presenter Default action *}
 
-<a href="{plink :Seasons:Admin:addSeason}">Nova sezona</a> 
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
-{control seasonsGrid}
+{block #breadcrumbs}
+    {include #parent}<li>{_ seasonsModule.admin.heading}</li>
+{/block}
 
-<a href="{plink :Seasons:Admin:addSeasonTax}">Nova sezonni povinnost</a>
+{block #title}
+    {_ seasonsModule.admin.heading} | {include #parent}
+{/block}
 
-{control seasonTaxGrid}
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
 
-<a href="{plink :Seasons:Admin:addSeasonApplication}">Nova sezonni prihlaska</a>
+{block #adminContent}
 
-{control seasonApplicationGrid}
+<h3>{_ seasonsModule.admin.season.heading}</h3>
+    {control seasonsGrid}
+<h3>{_ seasonsModule.admin.tax.heading}</h3>
+    {control seasonTaxGrid}
+<h3>{_ seasonsModule.admin.apps.heading}</h3>
+    {control seasonApplicationGrid}
+
+{/block}

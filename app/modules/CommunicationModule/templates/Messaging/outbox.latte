@@ -1,5 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-<h2>{_communicationModule.messaging.outbox}</h2>
-{control outboxGrid}
+
+{* Communication module Messaging presenter *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.user.outbox.heading}</li>
+{/block}
+    
+{block #title}
+    {_communicationModule.user.outbox.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+    
+{block #userContent}
+    <div class="page-header">
+	<h2>{_communicationModule.messaging.outbox}</h2>
+    </div>
+    {control outboxGrid}
+{/}

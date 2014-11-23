@@ -1,7 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
 
-<a href="{plink :Payments:Admin:addPayment}">Nova platba</a>
+{* Payments module Admin presenter *}
 
-{control paymentsGrid}
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ paymentsModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ paymentsModule.admin.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ paymentsModule.admin.payment.heading}</h3>
+    </div>
+    {control paymentsGrid}
+{/block}

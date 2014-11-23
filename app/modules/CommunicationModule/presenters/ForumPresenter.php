@@ -18,7 +18,7 @@
 
 namespace App\CommunicationModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemClubPresenter,
     \App\Model\Misc\Enum\FormMode,
     \App\CommunicationModule\Forms\ForumForm,
     \App\Model\Misc\Enum\CommentMode,
@@ -33,7 +33,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  * @Secured(resource="ForumAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class ForumPresenter extends ProtectedPresenter {
+class ForumPresenter extends SystemClubPresenter {
     
     /**
      * @inject

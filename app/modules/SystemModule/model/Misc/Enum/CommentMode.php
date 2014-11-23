@@ -35,9 +35,9 @@ final class CommentMode extends EnumType implements IEnum {
     
     public static function getOptions() {
 	return array(
-	    self::ALLOWED	=>  "Povoleny", 
-	    self::RESTRICTED	=>  "Zakázány", 
-	    self::SIGNED	=>  "Přihlášení", 
-	    self::GROUP		=>  "Skupina");
+	    self::ALLOWED	=>  "systemModule.commentMode.allowed", 
+	    self::RESTRICTED	=>  "systemModule.commentMode.restricted", 
+	    self::SIGNED	=>  "systemModule.commentMode.signedIn", 
+	    self::GROUP		=>  "systemModule.commentMode.group");
     }
 }

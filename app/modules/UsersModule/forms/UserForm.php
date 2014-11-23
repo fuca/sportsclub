@@ -53,36 +53,36 @@ final class UserForm extends BaseForm {
 	$this->addHidden('profileStatus');
 	$this->addHidden("password");
 
-	$this->addSubmit('submitButton', 'Uložit');
+	$this->addSubmit('submitButton', "system.forms.submitButton.label");
 	if ($this->getMode() == FormMode::CREATE_MODE)
-	    $this->addGroup('Nový uživatel');
+	    $this->addGroup('usersModule.usrForm.newUser');
 	else
-	    $this->addGroup('Editace uživatele');
+	    $this->addGroup('usersModule.usrForm.updateUser');
 
-	$this->addText('nick', 'Přezdívka', 16, 16)
-		->addRule(Form::FILLED, 'Není zadáno příjmení')
+	$this->addText('nick', 'usersModule.usrForm.nick', 16, 16)
+		->addRule(Form::FILLED, 'usersModule.surnameMustFill')
 		->setRequired(TRUE);
 	
 	if ($this->getMode() == FormMode::UPDATE_MODE)
-	    $this->addCheckbox('active', "Aktivní");
+	    $this->addCheckbox('active', 'usersModule.usrForm.active');
 
 
-	$this->addText('name', 'Jméno', $nameLength, $nameLength)
-		->addRule(Form::FILLED, 'Není zadáno jméno')
-		->setRequired(TRUE);
+	$this->addText('name', 'usersModule.usrForm.name', $nameLength, $nameLength)
+		->addRule(Form::FILLED, 'usersModule.usrForm.nameMustFill')
+		->setRequired('usersModule.usrForm.nameMustFill');
 
-	$this->addText('surname', 'Příjmení', $surnameLength, $surnameLength)
-		->addRule(Form::FILLED, 'Není zadáno příjmení')
-		->setRequired(TRUE);
+	$this->addText('surname', 'usersModule.usrForm.surname', $surnameLength, $surnameLength)
+		->addRule(Form::FILLED, 'usersModule.usrForm.surnameMustFill')
+		->setRequired('usersModule.usrForm.surnameMustFill');
 
-	$this->addText('birthNumber', 'Rodné číslo', 10, 10)
-		->addRule(Form::FILLED, 'Není zadáno rodné číslo')
-		->addRule(Form::NUMERIC, 'Rodné číslo musí obsahovat pouze čísla')
-		->addRule(Form::LENGTH, 'Rodné číslo musí být dlouhé 10 znaků', 10)
-		->setRequired(TRUE);
+	$this->addText('birthNumber', 'usersModule.usrForm.birthNumber', 10, 10)
+		->addRule(Form::FILLED, 'usersModule.usrForm.birthNumberMustFill')
+		->addRule(Form::NUMERIC, 'usersModule.usrForm.birthNumberNumsOnly')
+		->addRule(Form::LENGTH, 'usersModule.usrForm.birthNumber10CharsOnly', 10)
+		->setRequired('usersModule.usrForm.birthNumberMustFill');
 
 
-	$this->addText('leagueId', 'Identifikátor v lize');
+	$this->addText('leagueId', 'usersModule.usrForm.leagueId');
 
 //	$this->addMultiSelect('roles', 'Role', $this->getRoles(), 6)
 //		->addRule(Form::FILLED, 'Role musí být vybrána')
@@ -91,52 +91,52 @@ final class UserForm extends BaseForm {
 //		->addRule(Form::FILLED, 'Kategorie musí být vybrána')
 //		->setRequired(TRUE);
 
-	$this->addGroup('Adresa trvalého bydliště');
-	$this->addText('street', 'Ulice')
-		->addRule(Form::FILLED, 'Pole "Adresa" je povinné')
-		->setRequired(TRUE);
+	$this->addGroup('usersModule.usrForm.livingAddress');
+	$this->addText('street', 'usersModule.usrForm.street')
+		->addRule(Form::FILLED, 'usersModule.usrForm.streetMustFill')
+		->setRequired('usersModule.usrForm.streetMustFill');
 
-	$this->addText('number', 'Číslo popisné a orientační')
-		->addRule(Form::FILLED, "Pole 'Číslo popisné a orientační' je povinné")
-		->setRequired(TRUE);
+	$this->addText('number', 'usersModule.usrForm.houseNum')
+		->addRule(Form::FILLED, 'usersModule.usrForm.houseNumMustFill')
+		->setRequired('usersModule.usrForm.houseNumMustFill');
 
-	$this->addText('city', 'Město/Obec')
-		->addRule(Form::FILLED, 'Pole "Město" je povinné')
-		->setRequired(TRUE);
+	$this->addText('city', 'usersModule.usrForm.city')
+		->addRule(Form::FILLED, 'usersModule.usrForm.cityMustFill')
+		->setRequired('usersModule.usrForm.cityMustFill');
 
-	$this->addText('postalCode', 'PSČ', 5, 5)
-		->addRule(Form::FILLED, 'Pole "PSČ" je povinné')
-		->addRule(Form::NUMERIC, 'PSČ musí obsahovat pouze čísla')
-		->addRule(Form::LENGTH, 'PSČ musí být dlouhé 5 znaků', 5)
-		->setRequired(TRUE);
+	$this->addText('postalCode', 'usersModule.usrForm.postCode', 5, 5)
+		->addRule(Form::FILLED, 'usersModule.usrForm.postCodeMustFill')
+		->addRule(Form::NUMERIC, 'usersModule.usrForm.postCodeNumsOly')
+		->addRule(Form::LENGTH, 'usersModule.usrForm.postCode5NumsOnly', 5)
+		->setRequired('usersModule.usrForm.postCodeMustFill');
 
-	$this->addGroup('Kontakt na člena');
-	$this->addText('phone', 'Telefon', $phoneNoLength, $phoneNoLength)
-		->addRule(Form::FILLED, 'Není zadáno telefonní číslo')
-		->addRule(Form::NUMERIC, 'Telefonní číslo musí obsahovat pouze čísla')
-		->addRule(Form::LENGTH, "Telefon musí obsahovat $phoneNoLength znaků", $phoneNoLength)
-		->setRequired(TRUE);
+	$this->addGroup('usersModule.usrForm.usrContact');
+	$this->addText('phone', 'usersModule.usrForm.phone', $phoneNoLength, $phoneNoLength)
+		->addRule(Form::FILLED, 'usersModule.usrForm.phoneMustFill')
+		->addRule(Form::NUMERIC, 'usersModule.usrForm.phoneNumsOnly')
+		->addRule(Form::LENGTH, 'usersModule.usrForm.phoneNumsLength', $phoneNoLength)
+		->setRequired('usersModule.usrForm.phoneMustFill');
 
-	$this->addText('email', 'E-mail', $emailLength, $emailLength)
-		->addRule(Form::FILLED, 'Není zadáno příjmení')
-		->addRule(Form::EMAIL, 'Špatný formát emailu')
-		->setRequired(TRUE);
+	$this->addText('email', 'usersModule.usrForm.email', $emailLength, $emailLength)
+		->addRule(Form::FILLED, 'usersModule.usrForm.emailMustFill')
+		->addRule(Form::EMAIL, 'usersModule.usrForm.emailBadFormat')
+		->setRequired('usersModule.usrForm.emailMustFill');
 
-	$this->addText('job', 'Zaměstnání')
-		->addRule(Form::FILLED, 'Není zadáné zaměstnání')
-		->setRequired(TRUE);
+	$this->addText('job', 'usersModule.usrForm.job')
+		->addRule(Form::FILLED, 'usersModule.usrForm.jobMustFill')
+		->setRequired('usersModule.usrForm.jobMustFill');
 
 
-	$this->addGroup('Kontaktní osoba');
-	$this->addText('contPersonName', 'Jméno', $surnameLength, $surnameLength);
+	$this->addGroup('usersModule.usrForm.contactPerson');
+	$this->addText('contPersonName', 'usersModule.usrForm.contName', $surnameLength, $surnameLength);
 
-	$this->addText('contPersonPhone', 'Telefon', $phoneNoLength, $phoneNoLength)
+	$this->addText('contPersonPhone', 'usersModule.usrForm.contPhone', $phoneNoLength, $phoneNoLength)
 		->addCondition(Form::FILLED)
-		->addRule(Form::LENGTH, "Telefonní číslo musí mít max $phoneNoLength znaků", $phoneNoLength)
-		->addRule(Form::NUMERIC, 'Telefonní číslo musí obsahovat pouze čísla');
-	$this->addText('contPersonMail', 'E-mail', $emailLength, $emailLength)
+		->addRule(Form::LENGTH, 'usersModule.usrForm.phoneNumsLength', $phoneNoLength)
+		->addRule(Form::NUMERIC, 'usersModule.usrForm.phoneNumsOnly');
+	$this->addText('contPersonMail', 'usersModule.usrForm.email', $emailLength, $emailLength)
 		->addCondition(Form::FILLED)
-		->addRule(Form::EMAIL, 'Špatný formát emailu');
+		->addRule(Form::EMAIL, 'usersModule.usrForm.emailBadFormat');
 	$this->onSuccess[] = callback($this, 'userFormSubmitted');
     }
 
@@ -159,10 +159,10 @@ final class UserForm extends BaseForm {
 	} catch (Exceptions\DuplicateEntryException $e) {
 	    switch ($e->getCode()) {
 		case Exceptions\DuplicateEntryException::EMAIL_EXISTS:
-		    $form['email']->addError("User with specified email '$values->email' already exists");
+		    $form['email']->addError($this->tt("usersModule.usrForm.emailAlreadyExist",null,["email"=>$values->email]));
 		    break;
 		case Exceptions\DuplicateEntryException::BIRTH_NUM_EXISTS:
-		    $form['birthNumber']->addError("User with specified birth number '$values->birthNumber' already exists");
+		    $form['birthNumber']->addError($this->tt("usersModule.usrForm.birthNumberAlreadyExist",null,["number"=>$values->birthNumber]));
 		    break;
 	    }
 	}

@@ -1,5 +1,23 @@
 adminMenuItem.label: "Seasons"
 
+admin:
+	seasonAdd: "Add new season"
+	taxAdd: "Add new season tax"
+	appAdd: "Add new season application"
+	heading: "Seasons resources"
+	season.heading: "Seasons"
+	tax.heading: "Season taxes"
+	apps.heading: "Season applications"
+	addSeasonTax.heading: "New season tax"
+	addSeasonApplication.heading: "New season application"
+	addSeason.heading: "New season"
+
+	updateSeason.heading: "Update season %title%"
+	updateSeason.title: "Update season"
+	updateSeasonApplication.heading: "Update season application of %name%"
+	updateSeasonApplication.title: "Update season application"
+	updateSeasonTax.heading: "Update season tax"
+
 admin.grid:
 	delete: "Delete"
 	update: "Update"

@@ -65,7 +65,7 @@ class PaymentsModuleExtension extends BaseModuleExtension implements ITranslatio
     public function getProtectedItemsResources() {
 	$i = new ItemData();
 	$i->setLabel("paymentsModule.protectedMenuItem.label");
-	$i->setUrl(":Payments:Protected:payments");
+	$i->setUrl(":Payments:User:default");
 	return [$i];
     }
 

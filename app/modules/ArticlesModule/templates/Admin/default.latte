@@ -1,5 +1,22 @@
-{layout ./base.latte}
 
-{block content}
-<a href="{plink addArticle}">{_articlesModule.admin.articleAdd}</a>
-{control articlesGrid}
+{* Articles module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ articlesModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ articlesModule.admin.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+
+<h3>{_ articlesModule.admin.article.heading}</h3>
+    {control articlesGrid}
+{/block}

@@ -25,7 +25,7 @@ use \App\SystemModule\Forms\SportTypeForm,
     \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\SportType,
     \Nette\ArrayHash,
-    \App\SystemModule\Presenters\SecuredPresenter,
+    \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Form,
     \App\SecurityModule\Model\Misc\Annotations\Secured;
@@ -35,7 +35,7 @@ use \App\SystemModule\Forms\SportTypeForm,
  * @Secured(resource="SystemAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -356,4 +356,13 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     //</editor-fold>
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.admin.groupAdd", ":System:Admin:addSportGroup");
+	$c->addNode("systemModule.admin.sportAdd", ":System:Admin:addSportType");
+	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
+	return $c;
+    }
 }

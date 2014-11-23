@@ -59,7 +59,6 @@ class CategoriesMenuFactory extends BaseService {
     public function __construct(EntityManager $em, Logger $logger = null) {
 	parent::__construct($em, "App\SystemModule\Model\Service\Menu\CategoriesMenuControlFactory", $logger);
     }
-    
 
     public function createComponent($pres, $name) {
 //	$cache = $this->getEntityCache();

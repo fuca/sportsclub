@@ -1,0 +1,25 @@
+
+{* Users module User presenter *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} <li>{_eventsModule.user.userEvents.heading}</li>
+{/block}
+
+{block #title}
+      {_usersModule.user.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+{/block}
+    
+{block #userContent}
+<div class="page-header"></div>
+	
+    <a href="{plink :Users:Protected:data}">{_ usersModule.protected.userData}</a><br/>
+    <a href="{plink :Users:Protected:profile}">{_ usersModule.protected.userProfile}</a>
+{/}
+    

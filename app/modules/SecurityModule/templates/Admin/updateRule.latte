@@ -1,5 +1,24 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
-{control updateRuleForm}
+{* Security module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ securityModule.admin.updateRule.heading}</li>
+{/block}
+
+{block #title}
+    {_ securityModule.admin.updateRule.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block scripts}
+    {include parent}
+{/}
+
+{block #adminContent}
+    {control updateRuleForm}
+{/}

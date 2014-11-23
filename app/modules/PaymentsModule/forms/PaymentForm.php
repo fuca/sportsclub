@@ -86,11 +86,6 @@ final class PaymentForm extends BaseForm {
     public function initialize() {
 	$this->addHidden('id');
 
-	if ($this->isCreate()) {
-	    $this->addGroup("Nová platba");
-	} else {
-	    $this->addGroup("Úprava platby");
-	}
 	$osel = null;
 	if ($this->isCreate()) {
 	    $osel = $this->addSelect(self::PAYMENT_OWNER_TYPE_SELECT_ID, "Typ zadání platby", $this->getOwnersSelect());
@@ -131,6 +126,7 @@ final class PaymentForm extends BaseForm {
 		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::SELECT)
 		->setRequired();
 	}
+	
 	$this->addText("subject", "Předmět")
 		->addRule(Form::FILLED, "Předmět musí být zadán")
 		->setRequired(true);

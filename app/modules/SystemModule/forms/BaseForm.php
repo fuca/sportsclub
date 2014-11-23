@@ -60,7 +60,13 @@ abstract class BaseForm extends Form {
 	$renderer->wrappers['label']['container'] = 'div class="col-sm-3 control-label"';
 	$renderer->wrappers['control']['description'] = 'span class=help-block';
 	$renderer->wrappers['control']['errorcontainer'] = 'span class=help-block';
-
+	
+	$renderer->wrappers['control']['.submit'] = 'btn btn-lg btn-primary';
+	$renderer->wrappers['control']['.button'] = 'btn btn-lg btn-default';
+//	dd($renderer);
+//	dd($renderer->wrappers['controls']);
+//	dd($renderer->wrappers['control']);
+	
 	// make form and controls compatible with Twitter Bootstrap
 	$this->getElementPrototype()->class('form-horizontal');
 

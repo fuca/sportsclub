@@ -34,6 +34,13 @@ entryForm:
 admin:
 	taxAdd: "Add tax"
 	entryAdd: "Add entry"
+	heading: "Motivation resources"
+	tax.heading: "Motivation taxes"
+	entry.heading: "Motivation entries"
+	createEntry.heading: "New motivation entry"
+	createTax.heading: "New motivation tax"
+	updateEntry.heading: "Update motivation entry"
+	updateTax.heading: "Update motivation tax"
 
 admin.grid:
 	season: "Season"
@@ -54,4 +61,7 @@ protected.grid:
 	updated: "Change"
 	type: "Type"
 	subject: "Subject"
+
+user:
+	userMotivation.heading: "Motivation"
 	

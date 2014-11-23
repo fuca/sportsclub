@@ -69,15 +69,15 @@ class EventsModuleExtension extends BaseModuleExtension implements ITranslationP
 
     public function getProtectedItemsResources() {
 	$i = new ItemData();
-	$i->setLabel("eventsModule.protectedMenuItem.label");
-	$i->setUrl(":Events:Protected:userEvents");
+	$i->setLabel("eventsModule.userMenuItem.label");
+	$i->setUrl(":Events:User:default");
 	return [$i];
     }
 
     public function getCommonItemsResources() {
 	$i = new ItemData();
-	$i->setLabel("eventsModule.protectedMenuItem.label");
-	$i->setUrl(":Events:Protected:default");
+	$i->setLabel("eventsModule.clubMenuItem.label");
+	$i->setUrl(":Events:Club:default");
 	return [$i];
     }
 

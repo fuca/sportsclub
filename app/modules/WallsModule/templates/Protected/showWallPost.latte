@@ -1,13 +1,28 @@
+
 {* WallsModule Protected showWallPost *}
 
-{layout ./base.latte}
+{layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
-{block content}
+{block #side}left{/block}
 
-<h2>{$data->getTitle()}</h2>
+{block #breadcrumbs}
+    {include #parent} <li>{_wallsModule.club.showWallPost.heading}</li>
+{/block}
 
-<p>{$data->getContent()}</p>
-<p>{$data->getAuthor()}</p>
+{block #title}
+      {_wallsModule.club.showWallPost.heading} / {include #parent}
+{/block}
 
-{control commentControl:form}
+{block #subMenu}
+{/block}
+
+{block #clubContent}
+<div class="page-header">
+    <h3>{$data->getTitle()}</h3>
+</div>
+    <p>{$data->getContent()}</p>
+    <p>{$data->getAuthor()}</p>
+
+    {control commentControl:form}
 {control commentControl:comments}
+{/}

@@ -1,6 +1,20 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
-<h2>{_ usersModule.admin.userEdit}</h2>
-{control updateUserForm}
+{* Users module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ usersModule.admin.updateUser.heading}</li>
+{/block}
+
+{block #title}
+    {_ usersModule.admin.updateUser.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    {control updateUserForm}
+{/}

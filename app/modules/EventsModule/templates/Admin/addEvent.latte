@@ -1,5 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-<h1>{_eventsModule.admin.eventNew}</h1>
-{control addEventForm}
+
+{* Events module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ eventsModule.admin.addEvent.heading}</li>
+{/block}
+
+{block #title}
+    {_ eventsModule.admin.addEvent.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_eventsModule.admin.eventNew}</h3>
+    </div>
+    {control addEventForm}
+{/}

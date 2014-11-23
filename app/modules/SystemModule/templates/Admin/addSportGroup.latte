@@ -1,6 +1,24 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
-{control addSportGroupForm}{/}
+{* System module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ systemModule.admin.addSportGroup.heading}</li>
+{/block}
+
+{block #title}
+    {_ systemModule.admin.addSportGroup.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ systemModule.admin.addSportGroup.heading}</h3>
+    </div>
+    {control addSportGroupForm}
+{/}
 

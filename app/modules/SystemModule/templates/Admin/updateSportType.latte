@@ -1,5 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
-{control updateSportTypeForm}
+{* System module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ systemModule.admin.updateSportType.bread}</li>
+{/block}
+
+{block #title}
+    {_ systemModule.admin.updateSportType.title} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ systemModule.admin.updateSportType.heading}</h3>
+    </div>
+    {control updateSportTypeForm}
+{/}

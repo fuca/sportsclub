@@ -1,0 +1,22 @@
+
+{* Users module User presenter Personal data *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} <li>{_usersModule.user.personalData.heading}</li>
+{/block}
+
+{block #title}
+      {_usersModule.user.personalData.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+{/block}
+    
+{block #userContent}
+	{control userDataForm}
+	{control userPasswordChangeForm}
+{/}

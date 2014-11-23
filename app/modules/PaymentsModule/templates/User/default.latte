@@ -1,0 +1,25 @@
+
+{* Payments module User presenter User events *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} <li>{_paymentsModule.user.payments.heading}</li>
+{/block}
+
+{block #title}
+      {_paymentsModule.user.payments.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+    
+{/block}
+    
+{block #userContent}
+    <div class="page-header">
+	<h3>{_paymentsModule.user.userPayments}</h3>
+    </div>
+    {control userPaymentsGrid}
+{/block}

@@ -1,4 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{control addSeasonForm}
+
+{* Seasons module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ seasonsModule.admin.addSeason.heading}</li>
+{/block}
+
+{block #title}
+    {_ seasonsModule.admin.addSeason.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ seasonsModule.admin.addSeason.heading}</h3>
+    </div>
+    {control addSeasonForm}
+{/block}

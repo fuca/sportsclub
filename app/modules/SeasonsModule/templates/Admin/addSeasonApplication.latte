@@ -1,4 +1,75 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{control addSeasonApplicationForm}
+
+{* Seasons module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ seasonsModule.admin.addSeasonApplication.heading}</li>
+{/block}
+
+{block #title}
+    {_ seasonsModule.admin.addSeasonApplication.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ seasonsModule.admin.addSeasonApplication.heading}</h3>
+    </div>
+    {form addSeasonApplicationForm}
+	<div class="row">
+	    
+	    <div class="col-md-6">
+		<div class="form-group">
+		    <div class="col-sm-3 control-label">
+			{label owner /} 
+		    </div>
+		    <div class="col-sm-9">
+			{input owner}
+		    </div>
+		</div>
+	    </div>
+		    
+	    <div class="col-md-6">
+		<div class="form-group">
+		    <div class="col-sm-3 control-label">
+			{label season /} 
+		    </div>
+		    <div class="col-sm-9">
+			{input season}
+		    </div>
+		</div>
+		    
+		<div class="form-group">
+		    <div class="col-sm-3 control-label">
+			{label sportGroup /} 
+		    </div>
+		    <div class="col-sm-9">
+			{input sportGroup}
+		    </div>
+		</div>
+		    
+		<div class="form-group">
+		    <div class="col-sm-3 control-label">
+			{label comment /} 
+		    </div>
+		    <div class="col-sm-9">
+			{input comment}
+		    </div>
+		</div>
+		    
+		<div class="form-group">
+		    <div class="col-sm-3 control-label">
+		    </div>
+		    <div class="col-sm-9">
+			{input submitButton}
+		    </div>
+		</div>
+		
+	    </div>
+	</div>
+    {/form}
+{/}

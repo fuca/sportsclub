@@ -1,0 +1,21 @@
+{* Admin section base template *}
+{layout ./rootBase.latte}
+
+{block #breadcrumbs}
+
+{/block}
+
+{block #side}left{/block}
+
+{block #title}
+{/block}
+
+
+{block #sideBlock}
+	{control adminMenu:contentMenu}
+	{include #subMenu}
+{/block}
+	
+{block #mainBlock}
+	{include #icontent}
+{/block}

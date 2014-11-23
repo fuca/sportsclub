@@ -1,6 +1,22 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-<a href="{plink addEvent}">{_eventsModule.admin.eventAdd}</a>
 
+{* Events module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ eventsModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ eventsModule.admin.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+
+<h3>{_ eventsModule.admin.event.heading}</h3>
 {control eventsGrid}
+{/block}

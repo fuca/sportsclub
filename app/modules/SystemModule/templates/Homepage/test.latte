@@ -1,0 +1,25 @@
+{* Latte template *}
+
+{block content}
+
+<a href="{link changeTest!}" class="ajax">Change it!</a> 
+{snippet test}
+    {$test}
+{/snippet}
+{block #scripts}
+{include parent}
+<script src="{$basePath}/js/jquery.nette.js"></script> {**}
+{/block}
+
+<script>
+   $(document).on('change', 'a.ajax', function() {
+    $.nette.ajax({
+        type: 'GET',
+        url: this.href,
+	success: function(payload) {
+       $('#snippet--test').html(payload.snippets['snippet--test']);
+    }
+    });
+});
+    
+</script>

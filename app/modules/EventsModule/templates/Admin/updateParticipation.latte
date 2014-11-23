@@ -1,0 +1,23 @@
+
+{* Events module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ eventsModule.admin.updateParticipation.bread}</li>
+{/block}
+
+{block #title}
+    {_ eventsModule.admin.updateParticipation.title} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ eventsModule.admin.updateParticipation.heading}</h3>
+    </div>
+    {control participationControl:admin}
+{/}

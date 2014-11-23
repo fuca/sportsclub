@@ -1,0 +1,20 @@
+{* Latte template *}
+
+{layout ./base.latte}
+
+{block #breadcrumbs}
+    <li>IS</li>
+{/block}
+
+{block #sectionContent}
+<div class="row">
+    <div class="col-md-4">
+	{control adminMenu:grid}
+    </div>
+    <div class="col-md-4">
+	{control protectedMenu:grid}
+    </div>
+    <div class="col-md-4">
+	{control commonMenu:grid}
+    </div>
+</div>

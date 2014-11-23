@@ -1,8 +1,22 @@
-{layout ./base.latte}
 
-{block content}
+{* Users module Admin presenter Default action *}
 
-<a href="{plink :Users:Admin:newUser}">{_ usersModule.admin.userNew}</a>
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ usersModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ usersModule.admin.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+
 <h3>{_ usersModule.admin.usersGrid}</h3>
 {control usersGrid}
 

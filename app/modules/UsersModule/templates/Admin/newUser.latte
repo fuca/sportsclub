@@ -1,5 +1,20 @@
-{layout ./base.latte}
 
-{block content}
-<h2>{_ usersModule.admin.userNew}</h2>
-{control newUserForm}
+{* Users module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ usersModule.admin.newUser.heading}</li>
+{/block}
+
+{block #title}
+    {_ usersModule.admin.newUser.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    {control newUserForm}
+{/block}

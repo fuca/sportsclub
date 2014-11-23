@@ -73,12 +73,6 @@ final class MotivationTaxForm extends BaseForm {
 	
 	$this->addHidden('id');
 
-	if ($this->isCreate()) {
-	    $this->addGroup("motivationModule.taxForm.groupNew");
-	} else {
-	    $this->addGroup("motivationModule.taxForm.groupEdit");
-	}
-
 	$this->addSelect("season", "motivationModule.taxForm.season", $this->getSeasons())
 		->setPrompt("motivationModule.taxForm.seasonSel")
 		->addRule(Form::FILLED, "motivationModule.taxForm.seasonMustFill")

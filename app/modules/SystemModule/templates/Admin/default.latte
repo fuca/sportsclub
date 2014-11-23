@@ -1,12 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
+{* System module Admin presenter *}
 
-<a href="{plink :System:Admin:addSportGroup}">{_ systemModule.admin.groupAdd}</a>
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
-{control sportGroupGrid}
+{block #breadcrumbs}
+    {include #parent}<li>{_ systemModule.admin.heading}</li>
+{/block}
 
-<a href="{plink :System:Admin:addSportType}">{_ systemModule.admin.sportAdd}</a>
+{block #title}
+    {_ systemModule.admin.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
 
-{control sportTypeGrid}
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <h3>{_ systemModule.admin.sportTypes.heading}</h3>
+    {control sportGroupGrid}
+    <h3>{_ systemModule.admin.sportGroups.heading}</h3>
+    {control sportTypeGrid}
+{/block}

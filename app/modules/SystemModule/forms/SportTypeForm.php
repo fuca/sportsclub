@@ -47,12 +47,6 @@ final class SportTypeForm extends BaseForm {
     }
 
     public function initialize() {
-
-	if ($this->getMode() == FormMode::CREATE_MODE) {
-	    $this->addGroup("systemModule.sportTypeForm.newGroup");    
-	} else {
-	    $this->addGroup("systemModule.sportTypeForm.editGroup");
-	}
 	
 	$this->addHidden('id');
 	$this->addText('name', "systemModule.sportTypeForm.name")

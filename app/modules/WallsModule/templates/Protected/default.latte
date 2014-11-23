@@ -1,14 +1,27 @@
+
 {* WallsModule Protected default *}
-{layout ./base.latte}
 
-{block content}
+{layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
-{if $wallPosts}
-{foreach $wallPosts as $wp}
-    <a href="{plink showWallPost $wp->getId()}">{$wp->getTitle()}</a><br/>
-{/}
-{else}
-    {_wallsModule.protected.messages.noWallPosts}
-{/}
+{block #breadcrumbs}
+    {include #parent}<li>{_ wallsModule.club.heading}</li>
+{/block}
+    
+{block #title}
+    {_wallsModule.club.heading} / {include #parent}
+{/block}
 
-{control groupsFilterMenu}
+{block #subMenu}
+{/block}
+    
+{block #clubContent}
+    <h3>{_ wallsModule.club.wallPosts.heading}</h3>
+    {if $wallPosts}
+
+	{foreach $wallPosts as $wp}
+	    <a href="{plink showWallPost $wp->getId()}">{$wp->getTitle()}</a><br/>
+	{/}
+    {else}
+	{_wallsModule.club.messages.noWallPosts}
+    {/}
+{/block}

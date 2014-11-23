@@ -30,17 +30,22 @@ $configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConf
 
 // enum types registering for database use
 Type::addType("AclMode", "App\Model\Misc\Enum\AclMode");
+Type::addType("AclPrivilege", "App\Model\Misc\Enum\AclPrivilege");
+
 Type::addType("WebProfileStatus", "App\Model\Misc\Enum\WebProfileStatus");
-Type::addType("PaymentStatus", "App\Model\Misc\Enum\PaymentStatus");
 Type::addType("MailBoxEntryType", "App\Model\Misc\Enum\MailBoxEntryType");
+
 Type::addType("EventParticipationType", "App\Model\Misc\Enum\EventParticipationType");
+
 Type::addType("PaymentOwnerType", "App\Model\Misc\Enum\PaymentOwnerType");
+Type::addType("PaymentStatus", "App\Model\Misc\Enum\PaymentStatus");
+
 Type::addType("FormMode", "App\Model\Misc\Enum\FormMode");
+Type::addType("CommentMode", "App\Model\Misc\Enum\CommentMode");
+
 Type::addType("EventVisibility", "App\Model\Misc\Enum\EventVisibility");
 Type::addType("EventType", "App\Model\Misc\Enum\EventType");
-Type::addType("AclPrivilege", "App\Model\Misc\Enum\AclPrivilege");
-Type::addType("ArticleStatus", "App\Model\Misc\Enum\ArticleStatus");
-Type::addType("CommentMode", "App\Model\Misc\Enum\CommentMode");
+
 Type::addType("MotivationEntryType", "App\Model\Misc\Enum\MotivationEntryType");
 
 // form extensions

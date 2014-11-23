@@ -1,0 +1,14 @@
+
+{* Latte template *}
+
+{layout ./base.latte}
+
+{block #breadcrumbs}
+    <li>{_ systemModule.navigation.adminModule}</li>
+{/block}
+
+{block #sectionContent}
+
+<div class="row">
+    {control adminMenu:grid}
+</div>

@@ -18,7 +18,7 @@
 
 namespace App\WallsModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemClubPresenter,
     \App\SecurityModule\Model\Misc\Annotations\Secured,
     \Nette\Utils\ArrayHash,
     \Nette\Utils\DateTime,
@@ -31,7 +31,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  * @Secured(resource="WallsProtected"))
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class ProtectedPresenter extends SecuredPresenter {
+class ProtectedPresenter extends SystemClubPresenter {
 
     /**
      * @inject

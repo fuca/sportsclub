@@ -1,4 +1,24 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{control addWallPostForm}
+
+{* Walls module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ wallsModule.admin.addWallPost.heading}</li>
+{/block}
+
+{block #title}
+    {_ wallsModule.admin.addWallPost.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backWallPostsSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ wallsModule.admin.addWallPost.heading}</h3>
+    </div>
+    {control addWallPostForm}
+    
+{/block}

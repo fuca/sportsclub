@@ -19,7 +19,7 @@
 	{var theme => "default"}
 
 	{block styleSheets}
-	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/_css.css">
+	
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/reset.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/root.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/grido.css">
@@ -28,17 +28,18 @@
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/ui-timepicker-addon.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap.min.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap-theme.min.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/_css.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/screen.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/event-calendar.css">
 	<link rel="stylesheet" media="print" href="{$basePath}/css/{$theme}/print.css">
 	{/}
 	
-	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
+	<link rel="shortcut icon" href="{$basePath}/favicon.ico?v=2" />
 	
 	{block head}{/}
     </head>
 
-    <body>
+    <body class="{$layoutStyle}">
 	{block scripts}
 	    {var ajax = $presenter->getParameter('ajax') == 'on'}
 	    
@@ -55,6 +56,7 @@
 	    
 	    <!--script src="{*$basePath*}/js/jquery.nette.js"></script--> {* tohle tady vadi GRIDU, nefakaji pak filtry bez kliku na search*}
 
+	    
 	    <script src="{$basePath}/js/grido/grido.ajax.js"></script> {**}
 	    
 	    <script src='{$basePath}/js/dateInput.js'></script> {*  *}
@@ -77,22 +79,26 @@
 
 	    <header class="header">
 		<div class="row">
-		    <div class="col-md-8">
-			<a href="{plink :System:Public:default}">
-			    <div id="clublogo" class="visible-lg"></div>
-			    <div id="clublogo" class="visible-md">MEDIUM LOGO</div>
-			    <div  class="visible-sm">SMALL LOGO</div>
-			    <div  class="visible-xs">EXTRA SMALL LOGO</div>
+		    <div class="col-md-7">
+			<a href="{plink :System:Homepage:default}">
+			    <div class="visible-lg clublogo-lg"></div>
+			    <div class="visible-md clublogo-md">MEDIUM </div>
+			    <div class="visible-sm clublogo-sm">SMALL </div>
+			    <div class="visible-xs clublogo-xs">EXTRA SMALL </div>
 			</a>
 		    </div>
-		    <nav class="col-md-4">
+		    <nav class="col-md-5">
 			<div id="usermenu">
 			    {control loginControl}
 			    <div class="row">
 				<div class="search">
-				    <form>
-					<input type="text" class="textfield" class="col-sm-6"/>
-					<input type="submit" class="button" value="Find" class="col-sm-6" />
+				    <form class="form-inline" role="form">
+					<div class="form-group">
+					    <div class="input-group">
+						<input type="text" class="textfield" class="col-sm-6 form-control" placeholder="Enter text for search"/>
+						<input type="submit" class="button" value="Find" class="col-sm-6" />
+					    </div>
+					</div>
 				    </form> 
 				</div>
 			    </div>
@@ -103,22 +109,81 @@
 
 	
 <!----------------------------------------------------------------------------------->	
-		<div id="publicmenu-container">
-		    {*control publicMenu*}mega menu
-		</div>  
+		    <div class="wrapper">
+			<div id="sectionbar">
+			    <div id="publicmenu-container">
+				
+				<nav class="navbar navbar-default" role="navigation">
+				    <!-- Brand and toggle get grouped for better mobile display -->
+				    <div class="navbar-header">
+				      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				      </button>
+					<a class="navbar-brand" href="#">Články</a>
+					<a class="navbar-brand" href="#">Klub</a>
+					<a class="navbar-brand" href="#">Kontakt</a>
+				    </div>
+
+				    <!-- Collect the nav links, forms, and other content for toggling -->
+				    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+				    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					
+				      <ul class="nav navbar-nav">
+					
+					<li class="dropdown">
+					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Florbal<span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+					    <li><a href="#">Info</a></li>
+					    <li><a href="#">Soupiska</a></li>
+					    <li><a href="#">Články</a></li>
+					    <li><a href="#">Síň slávy</a></li>
+					  </ul>
+					</li>
+					
+					<li class="dropdown">
+					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Fotbal<span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+					    <li><a href="#">Info</a></li>
+					    <li><a href="#">Soupiska</a></li>
+					    <li><a href="#">Články</a></li>
+					    <li><a href="#">Síň slávy</a></li>
+					  </ul>
+					</li>
+					<li>
+					
+				      </ul> <!-- /. nav navbar-nav
+					
+				    </div><!-- /.navbar-collapse -->
+				    </div>
+				</nav>
+				
+				
+				
+				    
+			    </div>
 			
-			    {block maintheme}
+			    {block #maintheme} {* vypis pouze z Public: default *}
 			    {/block}
-
+			</div>
+			
 			<div id="content">
-
-			    {include content}
-    
+			    
+			    {include #content}
 
 			    <div class="cleaner"></div>
-			    <div class="row">
+			</div>
+			    
+		</div>  
+		    
+<!----------------------------------------------------------------------------------->	
+		    <footer class="footer">
+			<div class="partners row">
 				<div class="col-md-3">
-				    <a href=""><img src="{$basePath}/img/partner_hella.jpg" title="dsadasd" height="125" width="200" />
+				    <a href="">
+					<img src="{$basePath}/img/partner_hella.jpg" title="dsadasd" height="125" width="200" />
 					<p>Hella Autotechnik</p></a>
 				</div>
 				<div class="col-md-3"><a href=""><img src="{$basePath}/img/partner_futurpol.jpg" height="125" width="200" />
@@ -132,15 +197,16 @@
 				    </a>
 				</div>
 			    </div>
-			</div>  
-
-<!----------------------------------------------------------------------------------->	
-		    <footer class="footer">
-			<div class="row">
-			    <div class="col-md-8"><p class="copyright">&copy; 2014 SportsClub</p></div>
-			    <div class="col-md-4">
-				    <p class="menu"><a href="">Homepage</a> &nbsp;&nbsp;/&nbsp;&nbsp; 
-					<a href="">Sitemap</a>  &nbsp;&nbsp;/&nbsp;&nbsp;  <a href="">Contacts</a></p>
+			<div class="row appendix">
+			    <div class="col-md-6">
+				<small class="copyright">&copy; 2014 SportsClub</small>
+			    </div>
+			    <div class="col-md-6">
+				    <nav>
+					<a href="">Homepage</a> &nbsp;&nbsp;{$breadCrumbSeparator}&nbsp;&nbsp; 
+					<a href="">Sitemap</a>  &nbsp;&nbsp;{$breadCrumbSeparator}&nbsp;&nbsp;  
+					<a href="">Contacts</a>
+				    </nav>
 			    </div>
 			</div>
 		    </footer>

@@ -25,14 +25,15 @@ use \Nette\PhpGenerator\ClassType,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\ArticlesModule\Model\Service\ArticleService,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \Kdyby\Translation\DI\ITranslationProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * ArticlesModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
+final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
 	ArticleService::DEFAULT_IMAGE_PATH => "img/article",
@@ -68,10 +69,14 @@ final class ArticlesModuleExtension extends BaseModuleExtension implements ITran
 	parent::afterCompile($class);
     }
     
-        public function getAdminItemsResources() {
+    public function getAdminItemsResources() {
 	$i = new ItemData();
 	$i->setLabel("articlesModule.adminMenuItem.label");
 	$i->setUrl(":Articles:Admin:default");
 	return [$i];
+    }
+    
+    public function getDatabaseTypes() {
+	return ["ArticleStatus"=>"App\Model\Misc\Enum\ArticleStatus"];
     }
 }

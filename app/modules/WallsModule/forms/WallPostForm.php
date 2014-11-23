@@ -69,7 +69,7 @@ final class WallPostForm extends BaseForm {
 		->addRule(Form::FILLED, "Konec zobrazení musí být zadán")
 		->setRequired("Konec zobrazení musí být zadán");
 	
-	$this->addTextArea("content", "Obsah")
+	$this->addTextArea("content", "Obsah", 50, 8)
 		->addRule(Form::FILLED, "Obsah musí být zadán")
 		->setRequired("Obsah musí být zadán");
 	
@@ -86,7 +86,7 @@ final class WallPostForm extends BaseForm {
 	    $this->addSelect("editor", "Poslední změna", $this->getUsers());
 	}
 	
-	$this->addSubmit("submitButton");
+	$this->addSubmit("submitButton", "system.forms.submitButton.label");
 	
 	$this->onSuccess[] = callback($this->parent, 'wallPostFormSubmitted');
     }

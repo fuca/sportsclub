@@ -18,7 +18,7 @@
 
 namespace App\EventsModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\EventsModule\Model\Service\EventService,
     \App\SystemModule\Model\Service\ISportGroupService,
     \App\UsersModule\Model\Service\IUserService,
@@ -35,7 +35,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  * AdminEventPresenter
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -74,6 +74,19 @@ class AdminPresenter extends SecuredPresenter {
 			})->toArray();
 		$e->setGroups($grArr);
 		$form->setDefaults($e->toArray());
+	    }
+	} catch (Exceptions\EntityNotFoundException $ex) {
+	    $this->handleEntityNotExists($id, "this", $ex);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, "default", $ex);
+	}
+    }
+    
+    public function actionUpdateParticipation($id) {
+	try {
+	    $e = $this->eventsService->getEvent($id);
+	    if ($e !== null) {
+		$this->setEntity($e);
 	    }
 	} catch (Exceptions\EntityNotFoundException $ex) {
 	    $this->handleEntityNotExists($id, "this", $ex);
@@ -167,6 +180,7 @@ class AdminPresenter extends SecuredPresenter {
 
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->eventsService->getEventsDataSource());
+	$grid->setTranslator($this->getTranslator());
 
 	$grid->addColumnNumber('id', '#')
 		->cellPrototype->class[] = 'center';
@@ -183,7 +197,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerTitle->class[] = 'center';
 
 	$grid->addColumnText('eventType', 'Typ')
-		->setReplacement([null => null] + EventType::getOptions())
+		->setCustomRender($this->typeRender)
 		->setSortable()
 		->setFilterSelect($eventTypes);
 
@@ -208,8 +222,15 @@ class AdminPresenter extends SecuredPresenter {
 	$headerDead->class[] = 'center';
 
 	$grid->addActionHref('delete', '', 'deleteEvent!')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("eventsModule.grid.deleteEvent")]))
 		->setIcon('trash');
+	
+	$grid->addActionHref("participation", "", "updateParticipation")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("eventsModule.grid.updateParticipation")]))
+		->setIcon("list-alt");
+	
 	$grid->addActionHref('edit', '', 'updateEvent')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("eventsModule.grid.updateEvent")]))
 		->setIcon('pencil');
 
 	$grid->setOperation(["delete" => "Delete"], $this->eventsGridOperationHandler)
@@ -217,6 +238,11 @@ class AdminPresenter extends SecuredPresenter {
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-events" . date("Y-m-d H:i:s", time()));
     }
+    
+    public function typeRender($el) {
+	return $this->tt(EventType::getOptions()[$el->getEventType()]);
+    }
+
 
     public function eventsGridOperationHandler($operation, $id) {
 	switch ($operation) {
@@ -235,6 +261,15 @@ class AdminPresenter extends SecuredPresenter {
 	$c = new \App\EventsModule\Components\ParticipationControl($this, $name);
 	$c->setEvent($this->getEntity());
 	$c->setEventService($this->eventsService);
+	$c->setUserService($this->userService);
 	return $c;
     }
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("eventsModule.admin.eventAdd",":Events:Admin:addEvent");
+	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	return $c;
+    } 
 }

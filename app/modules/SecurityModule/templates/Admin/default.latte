@@ -1,14 +1,26 @@
-{* Latte template *}
-{layout ./base.latte}
 
-{block content}
+{* Security module Admin presenter Default action *}
 
-<a href="{plink :Security:Admin:addRole}">Nova role</a>
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
-{control rolesGrid}
+{block #breadcrumbs}
+    {include #parent}<li>{_ securityModule.admin.heading}</li>
+{/block}
 
-<a href="{plink :Security:Admin:addRule}">Nove pravidlo</a>
-{control rulesGrid}
+{block #title}
+    {_ securityModule.admin.heading} | {include #parent}
+{/block}
 
-<a href="{plink :Security:Admin:addPosition}">Nova pozice</a>
-{control positionsGrid}
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+
+    <h3>{_ securityModule.admin.roles.heading}</h3>
+	{control rolesGrid}
+    <h3>{_ securityModule.admin.rules.heading}</h3>
+	{control rulesGrid}
+    <h3>{_ securityModule.admin.pos.heading}</h3>
+	{control positionsGrid}
+{/block}

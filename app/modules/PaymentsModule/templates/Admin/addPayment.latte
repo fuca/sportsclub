@@ -1,4 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{control addPaymentForm}
+
+{* Payments module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ paymentsModule.admin.addPayment.heading}</li>
+{/block}
+
+{block #title}
+    {_ paymentsModule.admin.addPayment.heading} {$breadCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ paymentsModule.admin.addPayment.heading}</h3>
+    </div>
+    {control addPaymentForm}
+{/}

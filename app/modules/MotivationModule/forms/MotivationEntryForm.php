@@ -67,12 +67,6 @@ final class MotivationEntryForm extends BaseForm {
 	$this->addHidden('id');
 
 	if ($this->isCreate()) {
-	    $this->addGroup("motivationModule.entryForm.groupNew");
-	} else {
-	    $this->addGroup("motivationModule.entryForm.groupUpdate");
-	}
-
-	if ($this->isCreate()) {
 	    $this->addMultiSelect(self::MULTI_OWNER_ID, "motivationModule.entryForm.member", $this->getUsers())
 		    ->setOption("id", "multi-owner")
 		    ->setRequired();

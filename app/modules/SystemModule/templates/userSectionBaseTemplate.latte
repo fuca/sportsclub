@@ -1,0 +1,23 @@
+
+{* User section base template *}
+
+{layout ./rootBase.latte}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+<li><a href="{plink :System:Default:userRoot}">{_ systemModule.navigation.userModule}</a></li>
+{/block}
+
+{block #title}
+    User section / {include #parent}
+{/block}
+
+{block #sideBlock}
+	{control protectedMenu:contentMenu, $layoutStyle, "systemModule.navigation.menu.user", "hidden-xs hidden-sm"}
+	{include #subMenu}
+{/block}
+	
+{block #mainBlock}
+	{include #userContent}
+{/block}

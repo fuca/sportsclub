@@ -18,7 +18,7 @@
 
 namespace App\SecurityModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemAdminPresenter,
     \Nette\ArrayHash,
     \Grido\Grid,
     \App\SecurityModule\Forms\RoleForm,
@@ -38,7 +38,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  * @Secured(resource="SecurityAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -54,7 +54,7 @@ class AdminPresenter extends SecuredPresenter {
 
     /**
      * @inject
-     * @var \App\Model\Service\IPositionService
+     * @var \App\SecurityModule\Model\Service\IPositionService
      */
     public $positionService;
 
@@ -654,4 +654,22 @@ class AdminPresenter extends SecuredPresenter {
     }
 
     // </editor-fold>
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("securityModule.admin.roleAdd", ":Security:Admin:addRole");
+	$c->addNode("securityModule.admin.ruleAdd", ":Security:Admin:addRule");
+	$c->addNode("securityModule.admin.posAdd", ":Security:Admin:addPosition");
+
+	$c->addNode("securityModule.navigation.back", ":System:Default:adminRoot");
+	return $c;
+    }
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("securityModule.navigation.back", ":Security:Admin:default");
+	return $c;
+    }
 }

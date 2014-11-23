@@ -1,5 +1,23 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-<a href="{plink addWallPost}">{_wallsModule.admin.wallPostAdd}</a>
-{control wallPostsGrid}
+
+{* Walls module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ wallsModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ wallsModule.admin.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ wallsModule.admin.wallPost.heading}</h3>
+    </div>
+    {control wallPostsGrid}
+{/block}

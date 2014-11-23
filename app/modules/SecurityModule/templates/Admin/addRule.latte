@@ -1,13 +1,28 @@
-{* Latte template *}
-{layout ./base.latte}
+
+{* Security module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ securityModule.admin.addRule.heading}</li>
+{/block}
+
+{block #title}
+    {_ securityModule.admin.addRule.heading} | {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
 
 {block scripts}
-{include parent}
-
-    
+    {include parent}
 {/}
 
-{block content}
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ securityModule.admin.addRule.heading}</h3>
+    </div>
 {snippet privilegesSnippet}
     {form addRuleForm}
 	{label resource /} {input resource}<br/>

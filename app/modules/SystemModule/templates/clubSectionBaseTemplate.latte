@@ -1,0 +1,26 @@
+
+{* Club section base template *}
+
+{layout ./rootBase.latte}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    <li><a href="{plink :System:Default:clubRoot}">{_ systemModule.navigation.clubModule}</a></li>
+{/block}
+
+{block #title}
+    Club section / {include #parent}
+{/block}
+
+
+{block #sideBlock}
+	{control commonMenu:contentMenu, $layoutStyle, "systemModule.navigation.menu.club", "hidden-xs hidden-sm"}
+	{control groupsFilterMenu:contentMenu, "categories", "systemModule.navigation.menu.cats"}
+	{include #subMenu}
+{/block}
+	
+{block #mainBlock}
+	{include #clubContent}
+	{control commonMenu:contentMenu, $layoutStyle, "systemModule.navigation.menu.club", "hidden-lg hidden-md"}
+{/block}

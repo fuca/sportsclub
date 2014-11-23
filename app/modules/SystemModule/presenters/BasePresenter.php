@@ -90,6 +90,7 @@ abstract class BasePresenter extends Presenter {
      */
     public $catMenuFactory;
     
+        
     /**
      * @inject
      * @var \App\SystemModule\Model\Service\Menu\AdminMenuControlFactory
@@ -98,15 +99,15 @@ abstract class BasePresenter extends Presenter {
     
     /**
      * @inject
-     * @var \App\SystemModule\Model\Service\Menu\CommonMenuControlFactory
-     */
-    public $commonMenuFactory;
-    
-    /**
-     * @inject
      * @var \App\SystemModule\Model\Service\Menu\ProtectedMenuControlFactory
      */
     public $protectedMenuFactory;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\Menu\CommonMenuControlFactory
+     */
+    public $commonMenuFactory;
     
     protected function getAnnotReader() {
 	return $this->annotationReader;
@@ -119,7 +120,7 @@ abstract class BasePresenter extends Presenter {
      */
     public function getEntityId() {
 	if (!isset($this->entityId))
-	    throw new Exceptions\InvalidStateException("EntityId is not set, it seems it wasn't passed as request '" . self::NUM_IDENTIFIER . "' parameter");
+	    throw new Exceptions\InvalidStateException("EntityId is not set, it seems it wasn't passed within request '" . self::NUM_IDENTIFIER . "' parameter");
 	return $this->entityId;
     }
 
@@ -151,7 +152,7 @@ abstract class BasePresenter extends Presenter {
      * @param string $locale
      * @return string
      */
-    protected function tt($message, $count = null, $parameters = [], $domain = null, $locale = null) {
+    public function tt($message, $count = null, $parameters = [], $domain = null, $locale = null) {
 	return $this->getTranslator()->translate($message, $count, $parameters, $domain, $locale);
     }
 
@@ -186,7 +187,9 @@ abstract class BasePresenter extends Presenter {
 	$this->template->setTranslator($this->translator);
 	$appDir = $this->context->parameters['appDir'];
 	$this->template->layoutsPath = $appDir . "/modules/SystemModule/templates/";
-	
+	$this->template->layoutStyle = \App\Model\Misc\Enum\LayoutSectionStyle::INFO;
+	$this->template->breadCrumbSeparator = "/";
+	$this->template->titleCrumbSeparator = "/";
 	if ($this->isAjax()) {
 	    $this->redrawControl("flash");
 	}
@@ -196,7 +199,7 @@ abstract class BasePresenter extends Presenter {
 
     public function createComponentLoginControl($name) {
 	$c = new LogInControl($this, $name);
-	$c->setLogInTarget(":System:Public:default");
+	$c->setLogInTarget(":System:Homepage:default");
 	return $c;
     }
 
@@ -213,7 +216,12 @@ abstract class BasePresenter extends Presenter {
 	return $c;
     }
     
-    public function createComponentAdminMenu($name) {
+    public function createComponentMailMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	return $c;
+    }
+    
+        public function createComponentAdminMenu($name) {
 	$c = $this->adminMenuFactory->createComponent($this, $name);
 	return $c;
     }
@@ -225,11 +233,6 @@ abstract class BasePresenter extends Presenter {
     
     public function createComponentCommonMenu($name) {
 	$c = $this->commonMenuFactory->createComponent($this, $name);
-	return $c;
-    }
-    
-    public function createComponentMailMenu($name) {
-	$c = new \App\Components\MenuControl($this, $name);
 	return $c;
     }
 

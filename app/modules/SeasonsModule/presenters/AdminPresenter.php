@@ -27,7 +27,7 @@ use \App\UsersModule\Forms\SportTypeForm,
     \App\Model\Entities\SportType,
     \App\Model\Entities\SportGroup,
     \Nette\ArrayHash,
-    \App\SystemModule\Presenters\SecuredPresenter,
+    \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Form,
     \App\Model\Entities\SeasonTax,
@@ -41,7 +41,7 @@ use \App\UsersModule\Forms\SportTypeForm,
  * @Secured(resource="SeasonsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -690,4 +690,21 @@ class AdminPresenter extends SecuredPresenter {
     }
 
 // </editor-fold>
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("seasonsModule.admin.seasonAdd", ":Seasons:Admin:addSeason");
+	$c->addNode("seasonsModule.admin.taxAdd",":Seasons:Admin:addSeasonTax");
+	$c->addNode("seasonsModule.admin.appAdd",":Seasons:Admin:addSeasonApplication");
+	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	return $c;
+    }
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("securityModule.navigation.back", ":Seasons:Admin:default");
+	return $c;
+    }
 }

@@ -17,7 +17,7 @@
  */
 
 namespace App\MotivationModule\Presenters;
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemUserPresenter,
  Grido\Grid, App\Model\Misc\Enum\MotivationEntryType;
 
 /**
@@ -25,7 +25,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class ProtectedPresenter extends SecuredPresenter {
+final class ProtectedPresenter extends SystemUserPresenter {
     
     /**
      * @inject

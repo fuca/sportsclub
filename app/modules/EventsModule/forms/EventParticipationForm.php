@@ -19,7 +19,7 @@
 namespace App\EventsModule\Forms;
 
 use \App\Forms\BaseForm,
-    \Nette\Application\UI\Form,
+    \App\Model\Misc\Enum\EventParticipationType,
     \App\Model\Misc\Exceptions;
 
 /**
@@ -35,6 +35,19 @@ class EventParticipationForm extends BaseForm {
      */
     protected $type;
     
+    /**
+     * @var array of select users
+     */
+    protected $users;
+    
+    function getUsers() {
+	return $this->users;
+    }
+
+    function setUsers($users) {
+	$this->users = $users;
+    }
+    
     public function setType($type) {
 	$this->type = $type;
     }
@@ -47,14 +60,24 @@ class EventParticipationForm extends BaseForm {
 
     public function initialize() {
 	$this->addHidden("id");
-	$this->addHidden("type");
 	
-	$this['type']->value = $this->getType();
-	
-	$this->addTextArea("content", "eventsModule.partForm.content", 40, 3);
+	if ($this->isCreate()) {
+	    $this->addHidden("type");
+	    $this['type']->value = $this->getType();
 
-	$this->addSubmit("submitButton", "system.forms.submitButton.label")->setAttribute("class", "btn btn-primary");
+	    $this->addTextArea("content", "eventsModule.partForm.content", 40, 3);
+	} else {
+	    $this->addMultiSelect("owners", "eventsModule.partForm.owners", $this->getUsers(), 20)
+		    ->setRequired("eventsModule.partForm.ownersMustSel");
+	    
+	    $this->addSelect("type", "eventsModule.partForm.type", EventParticipationType::getOptions())
+		    ->setRequired("eventsModule.partForm.typeMustSel");
+	    
+	    $this->addTextArea("content", "eventsModule.partForm.content", 40, 3);
+	}
+	$this->addSubmit("submitButton", "system.forms.submitButton.label")
+		->getControlPrototype()->class = "btn btn-primary";
 
-	$this->onSuccess[] = callback($this->presenter, "participationFormSuccess");
+	$this->onSuccess[] = callback($this->parent, "participationFormSuccess");
     }
 }

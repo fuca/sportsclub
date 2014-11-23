@@ -1,5 +1,22 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
 
+{* Articles module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ articlesModule.admin.updateArticle.bread}</li>
+{/block}
+
+{block #title}
+    {_ articlesModule.admin.updateArticle.title} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_articlesModule.admin.updateArticle.heading}</h3>
+    </div>
 {control updateArticleForm}

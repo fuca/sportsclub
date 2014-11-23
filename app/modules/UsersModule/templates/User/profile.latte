@@ -1,0 +1,21 @@
+
+{* Users module User presenter Web profile *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} <li>{_usersModule.user.webProfile.heading}</li>
+{/block}
+
+{block #title}
+      {_usersModule.user.webProfile.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+{/block}
+    
+{block #userContent}
+    {control userWebProfileForm}
+{/block}

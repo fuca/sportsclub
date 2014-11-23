@@ -23,7 +23,7 @@ use \Grido\Grid,
     \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\SportGroup,
     \Nette\ArrayHash,
-    \App\SystemModule\Presenters\SecuredPresenter,
+    \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Services\Exceptions\DataErrorException,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\Model\Misc\Exceptions,
@@ -40,7 +40,7 @@ use \Grido\Grid,
  * @Secured(resource="PaymentsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -328,5 +328,12 @@ class AdminPresenter extends SecuredPresenter {
 	}
 	$this->redirect("this");
     }
-
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("paymentsModule.admin.paymentAdd", ":Payments:Admin:addPayment");
+	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
+	return $c;	
+    }
 }

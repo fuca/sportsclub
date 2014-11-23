@@ -32,7 +32,7 @@ use \App\UsersModule\Forms\UserForm,
     \Nette\DateTime,
     \Nette\ArrayHash,
     \App\UsersModule\Forms\WebProfileForm,
-    \App\SystemModule\Presenters\SecuredPresenter,
+    \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\UsersModule\Model\Misc\Utils\UserEntityManageHelper;
 
@@ -41,7 +41,7 @@ use \App\UsersModule\Forms\UserForm,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -226,6 +226,7 @@ class AdminPresenter extends SecuredPresenter {
 	    $wp = $user->getWebProfile();
 	    $form = $this->getComponent("updateWebProfileForm");
 	    $form->setDefaults($wp->toArray());
+	    $this->template->name = (string) $user;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.cannotReadData", ["id" => $id]);
@@ -235,7 +236,6 @@ class AdminPresenter extends SecuredPresenter {
 
     public function createComponentUpdateWebProfileForm($name) {
 	$form = new WebProfileForm($this, $name, $this->getTranslator());
-	$form->setShowCancel();
 	$form->initialize();
 	return $form;
     }
@@ -524,4 +524,19 @@ class AdminPresenter extends SecuredPresenter {
 	}
     }
     // </editor-fold>
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("usersModule.admin.userNew", ":Users:Admin:newUser");
+	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
+	return $c;
+    }
+    
+        public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back", ":Users:Admin:default");
+	return $c;
+    }
 }

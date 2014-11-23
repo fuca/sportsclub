@@ -17,18 +17,17 @@
  */
 
 namespace App\SystemModule\Presenters;
-
 use \App\SystemModule\Presenters\BasePresenter;
 
 /**
- * SecuredPresenter (Base presenter for secured section)
+ * SecuredPresenter
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 abstract class SecuredPresenter extends BasePresenter {
-
-    public function checkRequirements($element) {
-	parent::checkRequirements($element);
+    
+    public function startup() {
+	parent::startup();
 	$user = $this->getUser();
 	if (!$user->isLoggedIn()) {
 	    if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
@@ -38,30 +37,6 @@ abstract class SecuredPresenter extends BasePresenter {
 	    $backlink = $this->storeRequest();
 	    $this->redirect(':Security:Auth:in', ['backlink' => $backlink]);
 	}
-
-	if ($element instanceof \Nette\Reflection\Method) {
-	    $secAnn = $this->annotationReader->getMethodAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
-	}
-	if ($element instanceof \Nette\Application\UI\PresenterComponentReflection) {
-	    $secAnn = $this->annotationReader->getClassAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
-	}
-
-	if ($secAnn) {
-
-//	    if (!$user->isAllowed($element->getName(), $secAnn->getPrivileges())) {
-//		$this->flashMessage('Na vstup do této sekce nemáte dostatečné oprávnění!', self::FM_WARNING);
-//                $this->redirect('Homepage:default');
-//	    }
-	    // asi by se tu mely proverovat ty skupinovy a vlastnicky prava, ci co..
-	}
-    }
-
-    protected function beforeRender() {
-	parent::beforeRender();
-    }
-
-    public function actionDefault() {
-	
     }
 
 }

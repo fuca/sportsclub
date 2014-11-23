@@ -1,9 +1,29 @@
 
-ul{list-style:none;}
+ul {
+    list-style:none;
+}
 
-/* Mega Menu Styles */
-.publicmenu ul, .publicmenu ul li {list-style: none;}
-.publicmenu ul {position: relative; padding: 0; margin: 0;}
+/* 
+    ================
+	MEGA MENU  
+    ================
+*/
+
+.btn-group-justified {
+    width: auto;
+}
+
+.publicmenu ul,
+.publicmenu ul li {
+    list-style: none;
+}
+
+.publicmenu ul {
+    position: relative; 
+    padding: 0; 
+    margin: 0;
+}
+
 .publicmenu ul li ul {display: none;}
 .publicmenu .sub {display: none;}
 .publicmenu .sub ul {display: block;}
@@ -16,15 +36,15 @@ ul.publicmenu li {
     border: none;
 }
 
-ul.publicmenu { position: relative; }
+/*ul.publicmenu { position: relative; }*/
 
-ul.publicmenu li {
+/*ul.publicmenu li {
     float: left; 
     margin: 0; 
     padding: 0; 
-}
+}*/
 
-ul.publicmenu li a {
+/*ul.publicmenu li a {
     font-size: 1.05em;
     float: left; 
     display: block; 
@@ -36,7 +56,7 @@ ul.publicmenu li a {
     text-align: center;
     height: 18px;
     border-right: 1px solid #aaa;
-}
+}*/
 
 #publicmenu-container ul li a { color: #333; }
 
@@ -45,12 +65,12 @@ ul.publicmenu li a {
 #publicmenu-container ul li a.active, 
 #publicmenu-container ul.publicmenu li.mega-hover a { color: #fff; }
 
-#publicmenu-container ul.publicmenu li.first a {
+/*#publicmenu-container ul.publicmenu li.first a {
     -webkit-border-radius: 3px 0 0 3px;
     -moz-border-radius: 3px 0 0 3px;
     border-radius: 3px 0 0 3px;
     width: 122px;
-}
+}*/
 
 #publicmenu-container ul.publicmenu li.last a { 
     border: none;
@@ -74,7 +94,7 @@ ul.publicmenu li .sub-container {
     position: absolute; 
 }
 
-/*toto je podmenu*/
+/* toto je podmenu */
 ul.publicmenu li .sub {  
     top: 0px;
     background: #555;
@@ -146,15 +166,17 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
     border: 1px solid blue;
 }
 
+/* END OF MEGA MENU */
 
 
 
 
 
-
-
-
-
+/* 
+    =================
+	HEAD MENU 
+    =================
+*/
 
 #usermenu {
     color: #555555;
@@ -162,8 +184,13 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
 
 #usermenu .menu {
     height: 4em;
+    margin-right: 5%;
 }
 
+#usermenu li a.active {
+    background-color: #eee !important;
+    color: #000;
+}
 
 #usermenu ul li {
     float: left;
@@ -178,11 +205,21 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
     border-bottom-color: #fff !important;
 }
 
-#usermenu li a, #usermenu li button {
+#usermenu li a, 
+#usermenu li button {
     padding: 7px 10px;
     background-color: #0758d1;
     color: #fff;
     text-decoration: none;
+}
+
+#usermenu li.login {
+    float: right;
+    margin-right: 20%;
+}
+
+#usermenu li.login a.btn{
+    background-color: #F97A09;
 }
 
 
@@ -242,8 +279,11 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
-    height: 25px;
-    width: 200px;
+    padding: 5px;
+    font-size: 15px;
+    height: auto;
+    width: 230px;
+    
 }
 
 #usermenu .search input.button {
@@ -251,15 +291,14 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
-    height: 29px;
-    padding: 0 10px;
+    height: auto;
+    padding: 5px;
+    font-size: 15px;
     background-color: #ddd;
     width: 80px;
-    margin-left: 15px; 
+    margin-left: 10px; 
 }
 
-
-/*-podmenu minimenu--*/
 
 #usermenu ul li ul li { 
  
@@ -294,43 +333,64 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
 }
 
 
+/* END OF HEAD MENU */
 
 
 
+/* 
+    ====================
+	CONTENT MENU 
+    ====================
+*/
 
-/* CONTENT MENU */
-
-
-#content .menu, #content .submenu {
-    width: 250px;
+#content .menu, 
+#content .submenu {
+    width: 220px;
     margin-bottom: 20px;
     background: #fafafa url('../img/bg_header.png') repeat-x top;
     border: 1px solid #bbb;
     border-bottom: none;
 }
 
-#content .menu ul, #content .submenu ul {
+#content .menu ul, 
+#content .submenu ul {
     margin: 0;
     padding: 0;
 }
 
-#content .menu li.title, #content .submenu li.title {
+#content .menu .panel-heading, 
+#content .submenu .panel-heading {
     color: #fff;
     padding: 10px 15px; 
     font-size: 1.25em;
     font-weight: normal;
     margin: -1px -1px 5px -1px;
+    
 }
 
-#content .menu li.title { background-color: #0758d1; }
-#content .submenu li.title { background-color: #555; }  
+#content .menu .panel-heading { 
+    background-color: #0758d1; 
+}
 
-#content .menu ul.club li.title { background-color: #D7060C; }
-#content .menu ul.admin li.title { background-color: #CC00CC; }
-#content .menu ul.user li.title { background-color: #F97A09; }
+#content .submenu .panel-heading { 
+    background-color: #555; 
+}  
+
+#content .menu .club .panel-heading { 
+    background-color: #D7060C; 
+}
+
+#content .menu .admin .panel-heading { 
+    background-color: #CC00CC; 
+}
+
+#content .menu .user .panel-heading { 
+    background-color: #F97A09; 
+}
 
 
-#content .menu li a, #content .submenu li a {
+#content .menu li a, 
+#content .submenu li a {
     color: #222;
     display: block;
     padding: 7px 10px 5px 10px;
@@ -339,28 +399,70 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
     text-decoration: none;
 }
 
-#content .menu li a:hover, #content .menu li a.active, #content .submenu li a:hover, #content .submenu li a.active {
+#content .menu li a:hover, 
+#content .menu li a.active, 
+#content .submenu li a:hover, 
+#content .submenu li a.active {
     background: #eee; 
     border-left: 10px solid #105ac9;
     color: #000;
 } 
 
-#content .menu li a.active, #content .submenu li a.active {
-    font-weight: bold;
+#content .menu li a.active, 
+#content .submenu li a.active {
+/*    font-weight: bold;*/
 }
 
-#content .menu ul.club li a:hover, #content .menu ul.club li a.active { border-left: 10px solid #D7060C; } 
-#content .menu ul.admin li a:hover, #content .menu ul.admin li a.active { border-left: 10px solid  #CC00CC; }  
-#content .menu ul.user li a:hover, #content .menu ul.user li a.active { border-left: 10px solid #F97A09; }  
-#content .submenu ul li a:hover, #content .submenu ul li a.active { border-left: 10px solid #555; } 
+#content .menu .club li a:hover, 
+#content .menu .club li a.active { 
+    border-left: 10px solid #D7060C; 
 
-#content .menu ul.user a strong { color: red; } 
+} 
+
+#content .menu .admin li a:hover, 
+#content .menu .admin li a.active { 
+    border-left: 10px solid  #CC00CC; 
+}  
+
+#content .menu .user li a:hover, 
+#content .menu .user li a.active { 
+    border-left: 10px solid #F97A09; 
+}  
+
+#content .submenu ul li a:hover, 
+#content .submenu ul li a.active { 
+    border-left: 10px solid #555; 
+} 
+
+#content .menu .user a strong { color: red; } 
 
 
-#content .menu li ul li a, #content .submenu li ul li a {
+#content .menu li ul li a, 
+#content .submenu li ul li a {
     padding: 7px 10px 5px 20px;
 }
 
-#content .menu li ul li ul li a, #content .submenu li ul li ul li a {
+#content .menu li ul li ul li a, 
+#content .submenu li ul li ul li a {
     padding: 7px 10px 5px 30px;
 }
+
+#content .navbar-collapse {
+    padding: 0;
+    max-height:none;
+}
+
+#content .menu .navbar-header,
+#content .submenu .navbar-header {
+    max-width: 30%;
+    display: inline;
+    float: right;
+}
+
+#content .menu .navbar-toggle,
+#content .submenu .navbar-toggle{
+    margin: 0;
+}
+
+
+/* END OF CONTENT MENU */

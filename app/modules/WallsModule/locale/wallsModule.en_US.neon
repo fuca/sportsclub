@@ -5,6 +5,11 @@ protectedMenuItem.label: "Walls"
 admin:
 	wallPostNew: "New wallpost"
 	wallPostAdd: "Add wallpost"
+	heading: "Walls resources"
+	wallPost.heading: "Wall posts"
+	addWallPost.heading: "New wallpost"
+	updateWallPost.heading: "Update wallpost"
+	updateWallPost: "Update wallpost"
 
 admin.wallPostForm.errors:
 	wallPostAlreadyExist: "Wallpost with given title already exist"
@@ -20,5 +25,11 @@ admin.grid:
 admin.grid.messages:
 	rlyDelWallPost: "Do you really want to delete wall post #%id%"
 
-protected.messages:
+club:
+    heading: "Walls"
+    wallPosts.heading: "Wall posts for %cat% category"
+    showWallPost.heading: "Wall post detail"
+
+
+club.messages:
     noWallPosts: "There are no wall posts at this wall"

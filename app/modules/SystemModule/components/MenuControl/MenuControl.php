@@ -30,8 +30,17 @@ class MenuControl extends \Nette\Application\UI\Control {
 
     /** @var content menu template */
     private $contentMenuTemplate;
+    
+    /** @var content submenu template */
+    private $contentSubMenuTemplate;
 
     private $rootNodeName = 'rootNode';
+    
+    private $cssClass;
+    
+    public function setCssClass($cssClass) {
+	$this->cssClass = $cssClass;
+    }
     
     public function getRootNodeName() {
 	return $this->rootNodeName;
@@ -50,6 +59,7 @@ class MenuControl extends \Nette\Application\UI\Control {
 	$this->label = $name;
 	$this->headMenuTemplate = __DIR__ . '/headMenu.latte';
 	$this->contentMenuTemplate = __DIR__ . '/contentMenu.latte';
+	$this->contentSubMenuTemplate = __DIR__ . '/contentSubMenu.latte';
 	$this->gridTemplate = __DIR__ . '/gridMenu.latte';
     }
 
@@ -105,6 +115,14 @@ class MenuControl extends \Nette\Application\UI\Control {
 	$this->contentMenuTemplate = $template;
 	return $this;
     }
+    
+    public function setContentSubMenuTemplate($template) {
+	if (!is_string($template) || $template == '')
+	    throw new Exceptions\InvalidArgumentException('Argument has to be non-empty string, and the file has to exist.');
+
+	$this->contentSubMenuTemplate = $template;
+	return $this;
+    }
 
     /**
      * Add MenuNode to hierarchy.
@@ -145,12 +163,31 @@ class MenuControl extends \Nette\Application\UI\Control {
     /**
      * Render content menu method
      */
-    public function renderContentMenu($class = 'menu') {
+    public function renderContentMenu($layoutStyle, $label = null, $wrapperClass = "") {
 	$this->template->setFile($this->contentMenuTemplate);
-	$this->template->menuLabel = $this->label;
+	if ($label != null)
+	    $this->template->menuLabel = $label;
+	else 
+	    $this->template->menuLabel = $this->label;
 	$this->template->nodes = $this->rootNode->getComponents();
-	$this->template->layoutStyle = $this->presenter->getLayoutStyle();
-	$this->template->class = $class;
+	$this->template->layoutStyle = $layoutStyle;
+	$this->template->class = "menu";
+	$this->template->wrapperClass = $wrapperClass;
+	$this->template->render();
+    }
+    
+    /**
+     * Render content submenu method
+     */
+    public function renderContentSubMenu($label = null, $wrapperClass = "") {
+	$this->template->setFile($this->contentSubMenuTemplate);
+	if ($label != null)
+	    $this->template->menuLabel = $label;
+	else 
+	    $this->template->menuLabel = $this->label;
+	$this->template->nodes = $this->rootNode->getComponents();
+	$this->template->wrapperClass = $wrapperClass;
+	$this->template->class = "submenu";
 	$this->template->render();
     }
 

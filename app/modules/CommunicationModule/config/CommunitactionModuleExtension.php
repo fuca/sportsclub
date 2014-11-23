@@ -62,7 +62,7 @@ class CommunicationModuleExtension extends BaseModuleExtension implements ITrans
     public function getAdminItemsResources() {
 	$i = new ItemData();
 	$i->setLabel("communicationModule.adminMenuItem.label");
-	$i->setUrl(":Communication:AdminForum:default");
+	$i->setUrl(":Communication:Admin:default");
 	return [$i];
     }
 

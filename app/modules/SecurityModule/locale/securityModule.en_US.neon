@@ -17,11 +17,32 @@ loginControl.messages:
 	outCosInactive: "Maximum inactivity period expired! You were logged out for security reasons."
 
 loginControl.loginForm:
-	title: "Log in"
-	remember: "   Remember me"
+	title: "Sign in"
+	heading: "Please sign in"
+	remember: "Remember me"
 	email: "Email:"
 	password: "Password:"
-	submit: "         Let me in         "
+	submit: "Let me in"
+	plsPutEmail: "Please type your email"
+	plsPutPassword: "Please type your password"
+	emailPlaceholder: "Email address"
+	passwordPlaceholder: "Password"
+	
+
+admin:
+	roleAdd: "Add new role"
+	ruleAdd: "Add new rule"
+	posAdd: "Add new position"
+	heading: "Security resources"
+	roles.heading: "User roles"
+	rules.heading: "Access control rules"
+	pos.heading: "User group positions"
+	addPosition.heading: "New position"
+	addRule.heading: "New rule"
+	addRole.heading: "New role"
+	updateRole.heading: "Update role"
+	updateRule.heading: "Update rule"
+	updatePosition.heading: "Update position"
 
 admin.messages:
 	roleNameExists: "Role '%name%' already exists"
@@ -53,3 +74,13 @@ posForm:
 	userSelect: "Select user .."
 	groupSelect: "Select group .."
 	roleSelect: "Select role .. "
+	newPosGroup: "New position"
+
+roleForm:
+	name: "Name"
+	parents: "Parent roles"
+	note: "Note"
+	newRoleGroup: "New role"
+
+navigation:
+	back: "Back"

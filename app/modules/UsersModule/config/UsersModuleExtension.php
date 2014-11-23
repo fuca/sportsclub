@@ -68,11 +68,11 @@ class UsersModuleExtension extends BaseModuleExtension implements ITranslationPr
     public function getProtectedItemsResources() {
 	$i = new ItemData();
 	$i->setLabel("usersModule.protectedMenuDataItem.label");
-	$i->setUrl(":Users:Protected:data");
+	$i->setUrl(":Users:User:data");
 	
 	$y = new ItemData();
 	$y->setLabel("usersModule.protectedMenuProfileItem.label");
-	$y->setUrl(":Users:Protected:profile");
+	$y->setUrl(":Users:User:profile");
 	
 	return [$i, $y];
     }

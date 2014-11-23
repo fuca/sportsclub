@@ -1,48 +1,67 @@
 
-/* ===================================
-   GLOBAL WIREFRAME 
-   ===================================*/
+/* =========================
+	GLOBAL WIREFRAME 
+   =========================
+*/
 
 body {
-  margin: 0;
-  padding: 0;
-  font-size: 90%;
-  font-family: 'Open Sans',arial,sans-serif;
-  background: #eee url('images/bg.png') no-repeat top center;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    font-family: 'Open Sans',arial,sans-serif;
+    background: #eee;
+/*    background-color: #000 !important;*/
+   
 }
 
 .wrapper {
-  width: 1010px;
-  margin: 0 auto;
-  position: relative;
-  background: #fff;
-  -webkit-border-radius: 3px 3px 0 0;
-  -moz-border-radius: 3px 3px 0 0;
-  border-radius:  3px 3px 0 0;
+    width: 1010px;
+    width: auto;
+    margin: 0 auto;
+    position: relative;
+    background: #fff;
+    -webkit-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    border-radius:  3px 3px 0 0;
 }
 
+.container {
+    max-width: 1100px;
+    width: auto;
+}
 
-/* ===================================
-   PAGE HEADER
+/*
+   ===================================
+	    PAGE HEADER
    
    #header
      .wrapper
        #usermenu
        #clublogo 
-   ===================================*/
+   ===================================
+*/
 
 
-#header { padding: 15px 0 20px 0; }
-#header .wrapper { background: transparent; }
+header.header { padding: 15px 0 20px 0; }
 
-#clublogo {
-  background: transparent url('../img/bg_clublogo.png') no-repeat center left;
-  height: 115px;
-  width: 500px;
+.clublogo-lg,
+.clublogo-md {
+    background: transparent url('../img/bg_clublogo.png') no-repeat center left;
+    height: 115px;
+    width: 500px;
 }
 
-/* ===================================
-   PUBLIC MENU + SLIDER
+.clublogo-sm,
+.clublogo-xs {
+    background: transparent url('../img/znak-klub.png') no-repeat center left;
+    height: 115px;  
+    width: 150px;
+    margin: auto;   
+}
+
+/* 
+   ===================================
+	PUBLIC MENU + SLIDER
    
    #sectionbar
      #publicmenu-container
@@ -51,40 +70,44 @@ body {
    ===================================*/
 
 #sectionbar {
-  background: transparent url('../img/bg_sectionbar_homepage.png') repeat-x top left;
-  padding: 20px 0 10px 0;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px 0;
-  border-radius: 3px 3px 0 0;
+    background: transparent url('../img/bg_sectionbar_homepage.png') repeat-x top left;
+    padding: 20px 0 10px 0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px 0;
+    border-radius: 3px 3px 0 0;
+}
+
+#sectionbar nav {
+    margin: 0 2%;
 }
 
 #publicmenu-container {
-  background: transparent url('../img/bg_publicmenu_light.png') repeat-x center;
-  width: 968px;
-  height: 48px;
-  margin: 0px auto 0px auto;
-  padding: 0;
-  position: relative;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  margin-bottom: 10px;
+    width: 100%;
+    height: 48px;
+    margin: 0px auto 0px auto;
+
+    position: relative;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    margin-bottom: 10px;
 }
 
-#maintheme-container{
-  padding: 10px 0 10px 0;
-  margin:0 auto;
-  overflow:hidden;
+#maintheme-container {
+    padding: 1% 1% 0 1%;
+    margin:0 auto;
+    overflow:hidden;
+    border-radius: 0;
 }
 
 #banner {
-  margin:0 auto;
-  position:relative;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  overflow: hidden;
-  xbox-shadow: 0px 3px 7px #000;
+    margin:0 auto;
+    position:relative;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    overflow: hidden;
+    xbox-shadow: 0px 3px 7px #000;
 }
 
 /* ===================================
@@ -95,7 +118,7 @@ body {
      #main-box
    ===================================*/
 
-#content { padding: 20px 20px 10px 20px; }
+#content { padding: 2%;}
 
 /* Sidebox on the left. */
 #content .layout-left .side-box { float: left; }
@@ -106,43 +129,90 @@ body {
 #content .layout-right .main-box { margin-right: 275px; padding-left: 5px; }
 
 #content .cleaner {
-  visibility: hidden;
-  width: 100%;
-  clear: both;
+    visibility: hidden;
+    width: 100%;
+    clear: both;
+}
+
+/* 
+    ================
+	 FOOTER
+    ================
+*/
+
+footer.footer .partners {
+    overflow: hidden;
+    padding: 2%;
+    margin: 0 auto;
+    position: relative;
+    background: #222 url('../img/footer_bg.png') repeat-x left top;
+    -webkit-border-radius:  0 0 3px 3px;
+    -moz-border-radius:  0 0 3px 3px;
+    border-radius: 0 0 3px 3px;
+}
+
+footer.footer .partners ul { margin: 0; padding: 0; }
+
+footer.footer .partners ul li {
+    margin: 0;
+    padding: 0;
+    float: left;
+    width: 198px; 
+    list-style-position: outside; 
+    list-style-type: none; 
+    list-style-image: none;
+}
+
+footer .appendix nav { text-align: right; color: #555; }
+
+footer .appendix { padding: 1% 2%; }
+
+footer .appendix small { font-size: inherit; }
+
+/* 
+    ==================================
+	     JUMBOTRON EDIT
+    ==================================
+*/
+
+.container .jumbotron {
+    border-radius: 6px;
+    background-color: transparent;
+    padding: 0 1% 1% 1%;
+    z-index: 5;
+}
+
+.navbar-collapse { z-index: 10; }
+
+.carousel-caption {
+    padding-bottom: 0;
+    padding-left: 1.5%;
+    background-color: rgba(0, 0, 0, 0.6);
+    text-align: left;
+    left: 0;
+    bottom: 0;
+    right: 60%;
+}
+
+.carousel-caption a { color: #fff !important; }
+
+.carousel-caption a small { 
 }
 
 
-/* ===================================
-   FOOTER
-   ===================================*/
-   
-#footer div.partners {
-  overflow: hidden;
-  padding: 20px 15px 20px 15px;
-  margin: 0 auto;
-  position: relative;
-  background: #222 url('../img/footer_bg.png') repeat-x left top;
-  -webkit-border-radius:  0 0 3px 3px;
-  -moz-border-radius:  0 0 3px 3px;
-  border-radius: 0 0 3px 3px;
+.carousel-caption span.glyphicon {
+    font-size: .7em;
 }
 
-#footer .partners ul { margin: 0; padding: 0; }
-
-#footer .partners ul li {
-  margin: 0;
-  padding: 0;
-  float: left;
-  width: 198px; 
-  list-style-position: outside; 
-  list-style-type: none; 
-  list-style-image: none;
+.carousel-caption small {
+    font-size: .8em;
 }
 
-#footer div.apendix p {
-  color: #555;
-  margin: 0;
-  padding: 10px 5px;
+.carousel-indicators {
+    text-align: right;
+    bottom: 0;
+    width: 30%;
+    right: 5%;
+    left: initial;
+    margin-left: 0;
 }
-
-#footer div.apendix p.menu { float: right; }

@@ -2,14 +2,26 @@ groupPositions: "Positions within group"
 adminMenuItem.label: "System"
 club: "Club"
 profile: "Profile"
-administrator: "Admin"
+administrator: "Administration"
+
+navigation:
+	options: "/ Options"
+	back: "Back"
+	adminModule: "Administration section"
+	clubModule: "Club section"
+	userModule: "User module"
+
+navigation.menu:
+	club: "Club section"
+	admin: "Administration"
+	user: "User section"
+	cats: "Categories"
 
 commentControl:
 	titleAdd: "Add comment"
 	allData: "Comments"
 	noDataFound: "No comments were found"
 	commentsRestricted: "Comments are restricted for you"
-
 	title: "Title"
 	content: "Content"
 	contentMustFill: "Content has to be filled"
@@ -21,9 +33,32 @@ sportTypeForm:
 	name: "Name "
 	note: "Note"
 
+sportGroupForm:
+	name: "Name"
+	desc: "Description"
+	abbr: "Abbreviation"
+	parent: "Superior"
+	priority: "Priority"
+	sport: "Sport type"
+	active: "Active"
+	groupSel: "Select sport group .."
+	prioritySel: "Select priority .."
+	sportSel: "Select sport type .."
+
 admin:
 	sportAdd: "Add new sport type"
 	groupAdd: "Add new sport group"	
+	sportTypes.heading: "Sport types"
+	sportGroups.heading: "Sport groups"
+	heading: "System resources"
+	addSportGroup.heading: "New sport group"
+	addSportType.heading: "New sport type"
+	updateSportGroup.heading: "Update sport group %title%"
+	updateSportGroup.bread: "Sport group update"
+	updateSportGroup.title: "Sport group update"
+	updateSportType.heading: "Update sport type %title%"
+	updateSportType.title: "Sport type update"
+	updateSportType.bread: "Sport type update"
 
 admin.grid:
 	name: "Name"
@@ -38,3 +73,9 @@ admin.grid.messages:
 	rlyDelGroup: "Do you really want to delete group #%id%"
 	rlyDelSportItems: "Do you really want to delete %i sports"
 	rlyDelGroupItems: "Do you really want to delete %i groups"
+
+commentMode:
+	group: "Group only"
+	allowed: "Allowed"
+	restricted: "Restricted"
+	signedIn: "Signed in only"

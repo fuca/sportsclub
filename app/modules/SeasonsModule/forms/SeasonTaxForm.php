@@ -68,12 +68,6 @@ final class SeasonTaxForm extends BaseForm {
     public function initialize() {
 
 	$this->addHidden("id");
-	
-	if ($this->getMode() == FormMode::CREATE_MODE) {
-	    $this->addGroup("Nové plnění");
-	} else {
-	    $this->addGroup("Úprava plnění k sezóně");
-	}
 
 	$this->addSelect("season", "Sezóna", $this->getSeasons())
 		->setPrompt("Vyberte sezónu.. ")

@@ -18,7 +18,7 @@
 
 namespace App\WallsModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Misc\Exceptions,
     \App\Model\Entities\WallPost,
@@ -35,7 +35,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  * @Secured(resource="WallsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SecuredPresenter {
+class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -171,6 +171,7 @@ class AdminPresenter extends SecuredPresenter {
 	
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->wallService->getWallPostsDatasource());
+	$grid->setTranslator($this->getTranslator());
 	$grid->setPrimaryKey("id");
 	
 	$grid->addColumnNumber("id", "#")
@@ -187,7 +188,7 @@ class AdminPresenter extends SecuredPresenter {
 	$headerTitle = $grid->getColumn('title')->headerPrototype;
 	$headerTitle->class[] = 'center';
 	
-	$articleStates = [null=>null]+ArticleStatus::getOptions();
+	
 	$grid->addColumnText('status', $this->tt("wallsModule.admin.grid.status"))
 		->setSortable()
 		->setReplacement($articleStates)
@@ -195,11 +196,9 @@ class AdminPresenter extends SecuredPresenter {
 	$headerStatus = $grid->getColumn('status')->headerPrototype;
 	$headerStatus->class[] = 'center';
 	
-	
-	$commentModes = CommentMode::getOptions();
 	$grid->addColumnText('commentMode', $this->tt("wallsModule.admin.grid.cmntMode"))
+		->setCustomRender($this->commentModeRender)
 		->setSortable()
-		->setReplacement($commentModes)
 		->setFilterSelect($commentModes);
 	
 	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
@@ -233,6 +232,10 @@ class AdminPresenter extends SecuredPresenter {
 	return $grid;
     }
     
+    public function commentModeRender($el) {
+	return $this->tt(CommentMode::getOptions()[$el->getCommentMode()]);
+    }
+    
     public function wpostGridOpsHandler($op, $ids) {
 	switch($op) {
 	    case "delete":
@@ -244,4 +247,18 @@ class AdminPresenter extends SecuredPresenter {
 	$this->redirect("this");
     }
     
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("wallsModule.admin.wallPostAdd", ":Walls:Admin:addWallPost");
+	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
+	return $c;
+    }
+    
+    public function createComponentBackWallPostsSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back", ":Walls:Admin:default");
+	return $c;
+    }
 }

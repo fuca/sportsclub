@@ -18,11 +18,16 @@ admin.grid:
 admin:
     paymentNew: "New payment"
     paymentAdd: "Add new payment"
+    heading: "Payment resources"
+    payment.heading: "Payments"
+    addPayment.heading: "New payment"
+    updatePatment.heading: "Update payment"
 
 
-protected:
-    myPayments: "My payments"
+user:
+    userPayments: "My payments"
     paymentDetailId: "Payment detail"
+    payments.heading: "Payments"
 
 protected.grid.messages:
     rlyMarkAsSent: "Do you really want to mark payment #%id% as SENT"

@@ -10,11 +10,17 @@
 	{block #head-menu}
 	{var separates => []}
 	{foreach $nodes as $node}
-	    {if $node->data["separate"]}
+	    {if isset($node->data["separate"]) && $node->data["separate"] == true}
 		{? array_push($separates, $node)}
 	    {else}
 		<li {if @$node->data["disable"]} class="disabled" {/}>
-		    <a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}">
+		    <a href="
+		       {if $node->mode}
+			   {plink $node->url}
+		       {else}
+			   {$node->url}
+		       {/if}"
+		       {if $node->isCurrent()}class="active"{/}>
 			{_$node->label}
 		    </a>
 		</li>
@@ -30,7 +36,12 @@
 	{foreach $separates  as $node}
 	    <li class="divider"></li>
 	    <li {if @$node->data["disable"]} class="disabled" {/}>
-		<a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}">
+		<a href="
+		   {if $node->mode}
+		    {plink $node->url}
+		   {else}
+		    {$node->url}{/if}"
+		   {if $node->isCurrent()}class="active"{/} >
 		    {_$node->label}
 		</a>
 	    </li>

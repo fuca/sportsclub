@@ -5,12 +5,19 @@ protectedMessagesMenuItem.label: "Messages"
 admin:
 	forumAdd: "Add forum"
 	forumNew: "New forum"
+	heading: "Communication resources"
+	forum.heading: "Forum"
+	addForum.heading: "New forum"
+	updateForum.heading: "Update forum %title%"
+	updateForum.bread: "Forum update"
+	updateForum.title: "Forum update"
 
 admin.grid:
 	title: "Title"
 	comments: "Comments"
 	author: "Author"
 	change: "Change"
+	delete: "Delete"
 
 admin.grid.messages:
 	rlyDelForum: "Do you really want to delete forum #%id%"
@@ -39,8 +46,15 @@ pmForm:
 	sender: "Sender"
 	starred: "&#9733"
 
-protected:
+club:
+	heading: "Forum"
 	lastChange: "Last activity"
+	forum.heading: "Forum %title%"
+
+user:
+	inbox.heading: "Inbox"
+	outbox.heading: "Outbox"
+	deleted.heading: "Deleted"
 
 protected.messages:
 	noForum: "There is no forum available for chosen group"

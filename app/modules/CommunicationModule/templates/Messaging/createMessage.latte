@@ -1,4 +1,22 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
+
+{* Communication module Messaging presenter *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.user.createMessage.heading}</li>
+{/block}
+    
+{block #title}
+    {_communicationModule.user.createMessage.heading} / {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+    
+{block #userContent}
+    <div class="page-header">
 {control createPrivateMessageForm}
+    </div>
+    {/}

@@ -18,7 +18,7 @@
 
 namespace App\MotivationModule\Presenters;
 
-use \App\SystemModule\Presenters\SecuredPresenter,
+use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Misc\Exceptions,
     \Nette\Utils\ArrayHash, 
     \Grido\Grid,
@@ -35,7 +35,7 @@ use \App\SystemModule\Presenters\SecuredPresenter,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class AdminPresenter extends SecuredPresenter {
+final class AdminPresenter extends SystemAdminPresenter {
     
     /**
      * @inject
@@ -457,5 +457,14 @@ final class AdminPresenter extends SecuredPresenter {
     }
     
     // </editor-fold>
+    
+    public function createComponentSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("motivationModule.admin.taxAdd",":Motivation:Admin:createTax");
+	$c->addNode("motivationModule.admin.entryAdd",":Motivation:Admin:createEntry");
+	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	return $c;
+    }
     
 }

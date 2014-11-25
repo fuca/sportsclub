@@ -31,9 +31,12 @@ use \App\Model\Entities\SportGroup,
     \App\UsersModule\Model\Service\IUserService,
     \Doctrine\Common\Collections\ArrayCollection,
     \App\Model\Entities\Article,
+    \App\Model\Misc\Enum\ArticleStatus,
     \Kdyby\Monolog\Logger,
     \App\SystemModule\Model\Service\ICommentable,  
-    \App\Model\Entities\Comment;
+    \App\Model\Entities\Comment,
+    \Tomaj\Image\ImageService;
+    //\Brabijan\Images\ImageStorage;
 
 /**
  * Service for dealing with Article entities
@@ -42,9 +45,14 @@ use \App\Model\Entities\SportGroup,
  */
 class ArticleService extends BaseService implements IArticleService {
     
+    // image storage extension
+    use \Brabijan\Images\TImagePipe;
+    
     const   DEFAULT_IMAGE_PATH = "defaultImagePath",
 	    DEFAULT_THUMBNAIL = "defafaultThumbnail",
 	    DEFAULT_IMAGE = "defaultImage";
+    
+    const COLLECTION_HIGHLIGHTS  = "highlight";
     
     /**
      * @var \Kdyby\Doctrine\EntityDao
@@ -65,6 +73,25 @@ class ArticleService extends BaseService implements IArticleService {
      * @var array config parameters
      */
     private $config;
+    
+//    /**
+//     * @var \Brabijan\Images\ImageStorage
+//     */
+//    private $imageStorage;
+    
+//    function setImageStorage(\Brabijan\Images\ImageStorage $imageStorage) {
+//	$this->imageStorage = $imageStorage;
+//    }
+    
+    /**
+     * 
+     * @var \Tomaj\Image\ImageService 
+     */
+    private $imageService;
+    
+    function setImageService(\Tomaj\Image\ImageService $imageService) {
+	$this->imageService = $imageService;
+    }
     
     public function getConfig() {
 	return $this->config;
@@ -101,8 +128,10 @@ class ArticleService extends BaseService implements IArticleService {
 	    $a->setUpdated(new DateTime());
 	    $this->sportGroupsTypeHandle($a);
 	    $a->setAlias(Strings::webalize($a->getTitle()));
-	    $a->setPictureName($this->config[self::DEFAULT_IMAGE]); // az bude img storage, tak mi vrati nazev
-	    $a->setThumbnail($this->config[self::DEFAULT_THUMBNAIL]); // az bude img storage, tak mi vrati nazev
+	    
+	    $identifier = $this->imageService->storeNetteFile($a->getPicture());
+	    $a->setPicture($identifier);
+	    
 	    $this->articleDao->save($a);
 	    
 	    $this->invalidateEntityCache();
@@ -179,6 +208,9 @@ class ArticleService extends BaseService implements IArticleService {
 	try {
 	$db = $this->articleDao->find($id);
 	    if ($db !== NULL) {
+		$identifier = $db->getPicture();
+		$this->imageService->removeResource($identifier);
+		
 		$this->articleDao->delete($db);
 	    }
 	} catch (\Exception $ex) {
@@ -217,7 +249,7 @@ class ArticleService extends BaseService implements IArticleService {
 	    if ($data === null) {
 		$data = $this->articleDao->createQueryBuilder("a")
 			->where("a.alias LIKE :alias")
-			->setParameter("alias", $alias)
+			    ->setParameter("alias", $alias)
 			->getQuery()->getSingleResult();
 		$opts = [Cache::TAGS=>[self::ENTITY_COLLECTION, $alias, self::SELECT_COLLECTION]];
 		$cache->save($alias, $data, $opts);
@@ -229,10 +261,14 @@ class ArticleService extends BaseService implements IArticleService {
 	}
     }
 
-    public function getArticles(SportGroup $g = null) {
+    public function getArticles(SportGroup $g = null, $limit = 20) {
 	try {
 	    if (is_null($g)) 
-		return $this->articleDao->findAll();
+		return $this->articleDao->createQueryBuilder("a")
+		    ->andWhere("a.status = :state")
+			->setParameter("state", ArticleStatus::PUBLISHED)
+		    ->getQuery()
+		    ->getResult();
 	    
 	    $id = SportGroup::getClassName()."-".$g->getId();
 	    $cache = $this->getEntityCache();
@@ -241,7 +277,11 @@ class ArticleService extends BaseService implements IArticleService {
 		$qb = $this->articleDao->createQueryBuilder("a")
 			->innerJoin('a.groups', 'g')
 			->where('g.id = :gid')
-			->setParameter("gid", $g->id);
+			    ->setParameter("gid", $g->id)
+			->andWhere("a.status = :state")
+			    ->setParameter("state", ArticleStatus::PUBLISHED)
+			->orderBy("a.updated", "DESC")
+			->setMaxResults($limit);
 		$data = $qb->getQuery()->getResult();
 		$opts = [Cache::TAGS=>[self::ENTITY_COLLECTION, $id, self::SELECT_COLLECTION]];
 		$cache->save($id, $data, $opts);
@@ -264,14 +304,14 @@ class ArticleService extends BaseService implements IArticleService {
 	    
 	    $db = $this->articleDao->find($a->getId());
 	    if ($db !== null) {
+		$this->articlePictureHandle($a, $db);
+		
 		$db->fromArray($a->toArray());
 		$this->sportGroupsTypeHandle($db);
 		$db->setUpdated(new DateTime());
 		$this->editorTypeHandle($db);
 		$this->authorTypeHandle($db);
 		$db->setAlias(Strings::webalize($a->getTitle()));
-		$db->setPictureName($this->config[self::DEFAULT_IMAGE]); // az bude img storage, tak mi vrati nazev
-		$db->setThumbnail($this->config[self::DEFAULT_THUMBNAIL]); // az bude img storage, tak mi vrati nazev
 		
 		$this->entityManager->merge($db);
 		$this->entityManager->flush();
@@ -288,6 +328,17 @@ class ArticleService extends BaseService implements IArticleService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	return $a;
+    }
+    
+    private function articlePictureHandle(Article $incoming, Article $database) {
+	if ($incoming->getPicture() == '') {
+	    $incoming->setPicture($database->getPicture());
+	} else {
+	    $oldImageStorage = $database->getPicture();
+	    $this->imageService->removeResource($oldImageStorage);
+	    $identifier = $this->imageService->storeNetteFile($incoming->getPicture());
+	    $incoming->setPicture($identifier);
+	}
     }
 
     public function getArticlesDatasource() {
@@ -351,4 +402,27 @@ class ArticleService extends BaseService implements IArticleService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
+    public function getHighLights($limit = 10) {
+	try {
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load(self::COLLECTION_HIGHLIGHTS);
+	    if ($data === null) {
+		$data = $this->articleDao->createQueryBuilder("a")
+		    ->where("a.highlight = 1")
+		    ->andWhere("a.status = :state")
+			->setParameter("state", ArticleStatus::PUBLISHED)
+		    ->orderBy("a.updated", "DESC")
+		    ->setMaxResults($limit)
+		    ->getQuery()->getResult();
+		$opts = [Cache::TAGS=>[self::COLLECTION_HIGHLIGHTS, self::ENTITY_COLLECTION]];
+		$cache->save(self::COLLECTION_HIGHLIGHTS, $data, $opts);
+	    }
+	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
 }

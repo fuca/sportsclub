@@ -22,34 +22,35 @@ final class WebProfileForm extends BaseForm {
 	$cols = 50;
 	$this->addHidden('id');
 	
-	$this->addSubmit('submitButton', 'Uložit');
-	
 	$this->addGroup('usersModule.admin.profileEdit');
 
-	$this->addTextArea('personalLikes', 'usersModule.webProfForm.personalLikes.label', $cols, $rows)
-		->setOption("description", "usersModule.webProfForm.personalLikes.desc");
+	$this->addTextArea('personalLikes', 'usersModule.webProfForm.personalLikes.label', $cols, $rows);
 
-	$this->addTextArea('personalDislikes', 'Nemám rád', $cols, $rows);
+	$this->addTextArea('personalDislikes', 'usersModule.webProfForm.personalDisLikes.label', $cols, $rows);
 
-	$this->addTextArea('personalInterests', 'Zájmy', $cols, $rows);
+	$this->addTextArea('personalInterests', 'usersModule.webProfForm.personalInterests.label', $cols, $rows);
 	
-	$this->addText('jerseyNumber', 'Číslo dresu')
-		->addRule(Form::NUMERIC, "Číslo dresu musí být číslo");
+	$this->addText('jerseyNumber', 'usersModule.webProfForm.jerseyNumber.label')
+		->addRule(Form::NUMERIC, "usersModule.webProfForm.jerseyNumber.mustNumber");
 	
-	$this->addTextArea('equipment', 'Vybavení', $cols, $rows);
+	$this->addTextArea('equipment', 'usersModule.webProfForm.equipment.label', $cols, $rows);
 	
-	$this->addTextArea('favouriteBrand', 'Oblíbená značka', $cols, $rows);
+	$this->addTextArea('favouriteBrand', 'usersModule.webProfForm.favBrand.label', $cols, $rows);
 	
-	$this->addTextArea('favouriteClub', 'Oblíbený klub', $cols, $rows);
+	$this->addTextArea('favouriteClub', 'usersModule.webProfForm.favClub.label', $cols, $rows);
 	
-	$this->addTextArea('sportExperience', 'Sportovní zkušenosti', $cols, $rows);
+	$this->addTextArea('sportExperience', 'usersModule.webProfForm.experience.label', $cols, $rows);
 	
-	$this->addTextArea('howGotThere', 'Jak jsem se sem dostal', $cols, $rows);
+	$this->addTextArea('howGotThere', 'usersModule.webProfForm.howGotThere.label', $cols, $rows);
 	
-	$this->addTextArea('aditionalInfo', 'Více o mně', $cols, $rows);
+	$this->addTextArea('aditionalInfo', 'usersModule.webProfForm.moreAboutMe.label', $cols, $rows);
 	
-	$this->addTextArea('signature', 'Podpis', $cols, $rows);
-	$this->addSelect("status", "Stav", $wpStates);
+	$this->addUpload("picture", "usersModule.webProfForm.picture.label");
+	
+	$this->addTextArea('signature', 'usersModule.webProfForm.signature.label', $cols, $rows);
+	$this->addSelect("status", "usersModule.webProfForm.status.label", $wpStates);
+	
+	$this->addSubmit('submitButton', 'system.forms.submitButton.label');
 	
 	$this->onSuccess[] = callback($this->presenter, 'webProfileFormSuccess');
     }

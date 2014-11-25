@@ -24,7 +24,7 @@ parameters:
 	debugger: 
 		email: "michal.fuca.fucik@gmail.com"
 
-	wwwDir: %appDir%/../www/
+	#wwwDir: %appDir%/../ # defined within framework
 	cacheDir: %tempDir%/cache/
 	modulesDir: %appDir%/modules/
 	libsDir: %appDir%/vendor/others/
@@ -201,6 +201,14 @@ services:
 				- setCacheStorage(@serviceEntityCache)
 				- setUserService()
 
+	imagesBackend: \Tomaj\Image\Backend\FileBackend(%wwwDir%, 'assets/images/') # to lomitko na konci musi byt, jinak se to povali do slozky /imagesarticles/
+	articleImageService: 
+		class: \Tomaj\Image\ImageService(@imagesBackend, 'articles/:year/:month/:hash', ['340x200', '700x400', '1028x370'], 70)
+		autowired: no
+	userImageService: 
+		class: \Tomaj\Image\ImageService(@imagesBackend, 'users/:year/:hash', ['230x280'], 80)
+		autowired: no
+
 extensions:
 
 	# 3rd party extensions
@@ -212,7 +220,8 @@ extensions:
 	facebook: Kdyby\Facebook\DI\FacebookExtension
 	translation: Kdyby\Translation\DI\TranslationExtension
 	monolog: Kdyby\Monolog\DI\MonologExtension
-	smfMenu: Smf\Menu\Config\Extension
+	#images: Brabijan\Images\DI\ImagesExtension // nepouzivat nahrazeno imageService od tomaj
+	
 
 	# Application modules
 	systemModule: App\SystemModule\Config\SystemModuleExtension

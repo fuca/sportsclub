@@ -20,13 +20,17 @@ namespace App\SystemModule\Presenters;
 
 use \App\SystemModule\Forms\SportTypeForm,
     \App\SystemModule\Forms\SportGroupForm,
+    \App\SystemModule\Forms\StaticPageForm,
     \Grido\Grid,
+    \App\Model\Misc\Enum\CommentMode,
     \App\Model\Entities\SportGroup,
     \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\SportType,
+    \App\Model\Entities\StaticPage,
     \Nette\ArrayHash,
     \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Misc\Exceptions,
+    \App\Model\Misc\Enum\StaticPageStatus,
     \Nette\Application\UI\Form,
     \App\SecurityModule\Model\Misc\Annotations\Secured;
 
@@ -35,7 +39,7 @@ use \App\SystemModule\Forms\SportTypeForm,
  * @Secured(resource="SystemAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class AdminPresenter extends SystemAdminPresenter {
+final class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * @inject
@@ -48,6 +52,18 @@ class AdminPresenter extends SystemAdminPresenter {
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $sportGroupService;
+    
+    /**
+     * @inject
+     * @var \App\UsersModule\Model\Service\IUserService
+     */
+    public $userService;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\IStaticPageService
+     */
+    public $staticPageService;
 
     public function getSportGroupService() {
 	return $this->sportGroupService;
@@ -120,9 +136,11 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     public function createComponentSportTypeGrid($name) {
+	
 	$grid = new Grid($this, $name);
-
+	$grid->setTranslator($this->getTranslator());
 	$grid->setModel($this->getSportTypeService()->getSportTypeDataSource());
+	
 	$grid->setPrimaryKey('id');
 
 	$grid->addColumnNumber('id', '#')
@@ -136,12 +154,6 @@ class AdminPresenter extends SystemAdminPresenter {
 		->setSortable();
 	$headerAdded = $grid->getColumn('name')->headerPrototype;
 	$headerAdded->class[] = 'center';
-
-	//$grid->addColumnText('image', 'Ikona');
-	//$grid->getColumn('role')->setCustomRender(callback($this, 'roleParColToString'));
-
-	//$headerParent = $grid->getColumn('image')->headerPrototype;
-	//$headerParent->class[] = 'center';
 
 	$grid->addColumnText('note', $this->tt("systemModule.admin.grid.note"))
 		->setSortable();
@@ -257,6 +269,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	
 	$grid = new Grid($this, $name);
 	
+	$grid->setTranslator($this->getTranslator());
 	$grid->setModel($this->getSportGroupService()->getSportGroupsDataSource());
 	$grid->setPrimaryKey('id');
 
@@ -356,13 +369,210 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     //</editor-fold>
+    // <editor-fold desc="Administration of STATIC PAGES">
+    
+    public function actionCreateStaticPage() {
+	// render form
+    }
+    
+     public function createStaticPage(ArrayHash $values) {
+	$page = new StaticPage((array) $values);
+	$page->setEditor($this->getUser()->getIdentity());
+	try {
+	    $this->staticPageService->createStaticPage($page);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, null, $ex);
+	}
+	$this->redirect("default");
+    }
+
+    public function actionUpdateStaticPage($id) {
+	if (!is_numeric($id)) 
+	    $this->handleBadArgument ($id);
+	try {
+	    $dbPage = $this->staticPageService->getStaticPage($id);
+	    if ($dbPage !== null) {
+		$form = $this->getComponent('updateStaticPageForm');
+		$form->setDefaults($dbPage->toArray());
+		$this->template->page = $dbPage;
+	    }
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, "default", $ex);
+	}
+    }
+
+    public function updateStaticPage(ArrayHash $values) {
+	$page = new StaticPage();
+	$page->fromArray((array) $values);
+	$page->setEditor($this->getUser()->getIdentity());
+	try {
+	    $this->staticPageService->updateStaticPage($page);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, null, $ex);
+	}
+	$this->redirect("default");
+    }
+
+    
+    public function handleDeleteStaticPage($id) {
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	$this->doDeleteStaticPage($id);
+	$this->redirect("this");
+    }
+    
+    private function doDeleteStaticPage($id) {
+	try {
+	    $this->staticPageService->deleteStaticPage($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDependencyDelete($id, "this", $ex);
+	}
+    }
+
+    public function createComponentStaticPagesGrid($name) {
+	try {
+//	    $users	= [null=>null] + $this->userService->getSelectUsers();
+//	    $pages	= [null=>null] + $this->staticPageService->getSelectStaticPages();
+	    $states	= [null=>null] + StaticPageStatus::getOptions();
+	    $commModes	= [null=>null] + CommentMode::getOptions();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, null, $ex);
+	}
+	
+	$grid = new Grid($this, $name);
+	$grid->setTranslator($this->getTranslator());
+	$grid->setModel($this->staticPageService->getPagesDataSource());
+	$grid->setPrimaryKey('id');
+
+	$grid->addColumnNumber('id', '#')
+		->cellPrototype->class[] = 'center';
+	$headerId = $grid->getColumn('id')->headerPrototype;
+	$headerId->class[] = 'center';
+	$headerId->rowspan = "2";
+	$headerId->style['width'] = '0.1%';
+
+	$grid->addColumnText('title', $this->tt("systemModule.admin.grid.title"))
+		->setSortable();
+	$headerTt = $grid->getColumn('title')->headerPrototype;
+	$headerTt->class[] = 'center';
+
+	$grid->addColumnText('abbr', $this->tt("systemModule.admin.grid.abbr"))
+		->setSortable()
+		->setFilterText();
+	$headerAb = $grid->getColumn('abbr')->headerPrototype;
+	$headerAb->class[] = 'center';
+	
+//	$grid->addColumnText('parent', $this->tt("systemModule.admin.grid.parent"))	
+//		->setSortable()
+//		->setFilterSelect($pages);
+//	$headerParent = $grid->getColumn('parent')->headerPrototype;
+//	$headerParent->class[] = 'center';
+	
+	$grid->addColumnText('commentMode', $this->tt("systemModule.admin.grid.commMode"))	
+		->setSortable()
+		->setCustomRender($this->spCommModeRender)
+		->setFilterSelect($commModes);
+	$headerCm = $grid->getColumn('commentMode')->headerPrototype;
+	$headerCm->class[] = 'center';
+
+	$grid->addColumnText('status', $this->tt("systemModule.admin.grid.status"))
+		->setSortable()
+		->setCustomRender($this->spStatusRender)
+		->setFilterSelect($states);
+	$headerSt = $grid->getColumn('status')->headerPrototype;
+	$headerSt->class[] = 'center';
+
+	$grid->addActionHref('delete', '', 'deleteStaticPage!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("systemModule.admin.grid.messages.rlyDelPage",null,["id"=>$u->getId()]);
+		});
+	
+	$grid->addActionHref('edit', '', 'updateStaticPage')
+		->setIcon('pencil');
+
+	$grid->setOperation(["delete"=>$this->tt("systemModule.admin.grid.delete")], $this->staticPagesOpHandler)
+		->setConfirm("delete", $this->tt("systemModule.admin.grid.messages.rlyDelPageItems"));
+	$grid->setFilterRenderType($this->filterRenderType);
+	$grid->setExport("admin-types " . date("Y-m-d H:i:s", time()));
+    }
+    
+    public function spStatusRender($e) {
+	return $this->tt(StaticPageStatus::getOptions()[$e->getStatus()]);
+    }
+    
+    public function spCommModeRender($e) {
+	return $this->tt(CommentMode::getOptions()[$e->getCommentMode()]);
+    }
+    
+    public function staticPagesOpHandler($op, $ids) {
+	switch($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteStaticPage($id);
+		}
+ 		break;
+	}
+	$this->redirect("this");
+    }
+
+    public function createComponentAddStaticPageForm($name) {
+	$form = $this->prepareStaticPageForm($name);
+	$form->initialize();
+	return $form;
+    }
+
+    public function createComponentUpdateStaticPageForm($name) {
+	$form = $this->prepareStaticPageForm($name, $this->getEntityId());
+	$form->setMode(FormMode::UPDATE_MODE);
+	$form->initialize();
+	return $form;
+    }
+
+    private function prepareStaticPageForm($name, $selfId = null) {
+	$form = new StaticPageForm($this, $name, $this->getTranslator());
+	
+	try {
+	    $sportGroups = $this->sportGroupService->getSelectAllSportGroups($selfId);
+	    $form->setSportGroups($sportGroups);
+	    
+	    $users = $this->userService->getSelectUsers();
+	    $form->setUsers($users);
+	    
+	    $pages = $this->staticPageService->getSelectStaticPages($selfId);
+	    $form->setPages($pages);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->flashMessage($ex->getMessage(), self::FM_ERROR);
+	}
+	return $form;
+    }
+    
+    public function staticPageFormSubmitted(StaticPageForm $form) {
+
+	$values = $form->getValues();
+	try {
+	    switch ($form->getMode()) {
+		case FormMode::CREATE_MODE:
+		    $this->createStaticPage($values);
+		    break;
+		case FormMode::UPDATE_MODE:
+		    $this->updateStaticPage($values);
+		    break;
+	    }
+	} catch (DuplicateEntryException $ex) {
+	    $form->addError(
+		    $this
+		    ->tt("systemModule.staticPageForm.pageAbbrExists", null, ["name"=>$values->name]));
+	}
+    }
+    //</editor-fold>
     
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
 	$c->addNode("systemModule.admin.groupAdd", ":System:Admin:addSportGroup");
 	$c->addNode("systemModule.admin.sportAdd", ":System:Admin:addSportType");
-	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
+	$c->addNode("systemModule.admin.pageAdd", ":System:Admin:addStaticPage");
+	$c->addNode("systemModule.navigation.back", ":System:Admin:default");
 	return $c;
     }
 }

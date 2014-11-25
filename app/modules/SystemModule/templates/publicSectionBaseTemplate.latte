@@ -1,5 +1,7 @@
+
 {* Admin section base template *}
-{layout ./rootBase.latte}
+
+{layout ./publicRootBase.latte}
 
 {block #breadcrumbs}
 
@@ -10,12 +12,11 @@
 {block #title}
 {/block}
 
-
 {block #sideBlock}
-	{control adminMenu:contentMenu}
+	{control groupsFilterMenu:contentMenu, "categories", "systemModule.navigation.menu.cats"}
 	{include #subMenu}
 {/block}
 	
 {block #mainBlock}
-	{include #icontent}
+	{include #publicContent}
 {/block}

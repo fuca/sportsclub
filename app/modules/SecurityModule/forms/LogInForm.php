@@ -37,7 +37,8 @@ class LogInForm extends BaseForm {
 
 	$remember = $this->addCheckbox('remember', 'securityModule.loginControl.loginForm.remember');
 
-	$submit = $this->addSubmit('send', 'securityModule.loginControl.loginForm.submit');
+	$submit = $this->addSubmit('submit', 'securityModule.loginControl.loginForm.submit');
+	$this->onSuccess[] = $this->parent->loginFormSuccessHandle;
 	
 	/* BOOTSTRAP CSS */
 	$this->getElementPrototype()->class = "form-signin";
@@ -52,9 +53,5 @@ class LogInForm extends BaseForm {
 	$passWord->getControlPrototype()->addAttributes(["placeholder"=>"securityModule.loginControl.loginForm.passwordPlaceholder"]);
 	$remember->getLabelPrototype()->class = "checkbox";
 	$submit->getControlPrototype()->class = 'btn-primary';
-
-	
-	// TODO hodit to do BaseFormu
-	$this->onSuccess[] = ($h = $this->getSuccessHandler() == null)? callback($this->parent, "loginFormSuccessHandle"): $h;
     }
 }

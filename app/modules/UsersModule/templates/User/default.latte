@@ -6,7 +6,7 @@
 {block #side}left{/block}
 
 {block #breadcrumbs}
-    {include #parent} <li>{_eventsModule.user.userEvents.heading}</li>
+    {include #parent} <li>{_usersModule.user.default.bread}</li>
 {/block}
 
 {block #title}
@@ -19,7 +19,7 @@
 {block #userContent}
 <div class="page-header"></div>
 	
-    <a href="{plink :Users:Protected:data}">{_ usersModule.protected.userData}</a><br/>
-    <a href="{plink :Users:Protected:profile}">{_ usersModule.protected.userProfile}</a>
+    <a href="{plink :Users:User:data}">{_ usersModule.protected.userData}</a><br/>
+    <a href="{plink :Users:User:profile}">{_ usersModule.protected.userProfile}</a>
 {/}
     

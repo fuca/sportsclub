@@ -150,6 +150,8 @@ final class CommentControl extends Control {
     public function renderForm() {
 	$this->template->setFile($this->formTemplate);
 	$this->template->allowed = $this->isCommenting();
+	$this->template->titlePlaceHolder = $this->presenter->tt("systemModule.commentControl.titlePlaceHolder");
+	$this->template->contentPlaceHolder = $this->presenter->tt("systemModule.commentControl.contentPlaceHolder");
 	$this->template->render();
     }
 

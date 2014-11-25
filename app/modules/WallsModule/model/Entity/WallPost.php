@@ -68,7 +68,7 @@ class WallPost extends BaseEntity implements IIdentifiable, ICommentable {
     /** @ORM\Column(type="string", nullable = false) */
     protected $title;
 
-    /** @ORM\Column(type="string", nullable = false) */
+    /** @ORM\Column(type="text", nullable = false) */
     protected $content;
     
     /** @ORM\Column(type="string", nullable = false) */

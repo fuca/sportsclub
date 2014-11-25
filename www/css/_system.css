@@ -1,0 +1,13 @@
+/*
+    ========================
+	Comment control
+    ========================
+*/
+
+#frm-commentControl-addCommentForm {
+    margin: 10% 0 0 0;
+}
+
+#frm-commentControl-addCommentForm .form-group {
+    margin: 20px;
+}

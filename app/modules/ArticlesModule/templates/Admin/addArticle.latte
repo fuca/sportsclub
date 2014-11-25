@@ -19,5 +19,91 @@
     <div class="page-header">
 	<h3>{_articlesModule.admin.addArticle.heading}</h3>
     </div>
-    {control addArticleForm}
+    {form updateArticleForm}
+
+    <div class="row">
+	<div class="col-md-8">
+
+	    <div class="form-group">
+		{label title /} 
+		{input title class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label content /} 
+		{input content class=>form-control}
+
+	    </div>
+	</div>
+
+	<div class="form-options col-md-3">
+
+	    <div class="form-group">
+
+		{label highlight /} 
+
+		{input highlight class=>form-control}
+
+	    </div>
+
+	    <div class="form-group">
+
+		{label groups /} 
+		<br/>
+
+		{input groups}
+
+	    </div>
+
+	    <div class="form-group">
+
+		{label status /} 
+
+		{input status class=>form-control}
+
+	    </div>
+
+	    <div class="form-group">
+
+		{label commentMode /} 
+
+		{input commentMode class=>form-control}
+
+	    </div>
+
+	    <div class="form-group">
+
+		<abbr title="{_articlesModule.admin.tooltip.pictureChange}">{label picture /}</abbr>
+
+		{input picture}
+
+	    </div>
+	    {if $form->isUpdate()}
+		<div class="article-thumbnail">
+		    <img src="{$basePath}/assets/images/{$article->getPicture()}" class="article-thumbnail img-responsive"/>
+		</div>
+
+		<div class="form-group">
+
+		    {label author /} 
+
+		    {input author class=>form-control}
+
+		</div>
+
+		<div class="form-group">
+
+		    {label editor /} 
+
+		    {input editor class=>form-control}
+
+		</div>
+	    {/if}
+	    <div class="form-group">
+		{input submit class=>"btn btn-lg btn-primary btn-block"}
+	    </div>
+	</div>
+    </div>
+
+{/form}
 {/}

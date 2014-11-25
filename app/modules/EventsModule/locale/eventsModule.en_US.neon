@@ -16,11 +16,14 @@ common:
 club:
 	calendarTab.label: "Calendar"
 	agendaTab.label: "Agenda"
-	heading: "Events"
+	eventsSection: "Events"
+	heading: "Overview"
 	showEvent.heading: "Event detail"
+	showEventDay.heading: "Events for single day"
 	
 grid:
 	title: "Title"
+	view: "Go to event"
 	type: "Type"
 	takeSince: "Starts"
 	takeTill: "Ends"
@@ -56,6 +59,8 @@ partForm:
 participation:
 	cancel: "Cancel participation"
 	type: "Participation"
+	yes.heading: "Participating (%count%)"
+	no.heading: "Not participating (%count%)"
 
 eventParticipationType:
 	noIwont: "No, I don't want to participate at this event"

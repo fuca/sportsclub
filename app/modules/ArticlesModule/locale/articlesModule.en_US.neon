@@ -2,6 +2,13 @@ readMore: "more.."
 
 adminMenuItem.label: "Articles"
 publicMenuItem.label: "Articles"
+articles.heading: "Articles"
+
+artStatus:
+	draft: "Draft"
+	published: "Published"
+	notPub: "Not published"
+
 
 admin:
 	articleAdd: "Add article"
@@ -9,16 +16,23 @@ admin:
 	heading: "Articles resources"
 	article.heading: "Articles"
 	addArticle.heading: "New article"
-	updateArticle.heading: "Update article %title%"
+	updateArticle.heading: "Update article"
 	updateArticle.title: "Update article"
 	updateArticle.bread: "Update article"
+
+admin.tooltip:
+	pictureChange: "If you would like to change picture, simply choose new one and save changes"
 
 admin.grid:
 	change: "Change"
 	author: "Author"
 	title: "Title"
 	comments: "Comments"
+	view: "View"
+	delete: "Delete"
+	update: "Update"
 	state: "State"
+	rlyDelArticle: "Do you really want to delete article #%id%?"
 
 articleForm.errors:
 	articleAlreadyExist: "Article with given title already exist"

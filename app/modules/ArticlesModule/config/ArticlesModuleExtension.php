@@ -36,7 +36,7 @@ use \Nette\PhpGenerator\ClassType,
 final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
-	ArticleService::DEFAULT_IMAGE_PATH => "img/article",
+	ArticleService::DEFAULT_IMAGE_PATH => "article",
 	ArticleService::DEFAULT_THUMBNAIL => "articleThumbDefault.png",
 	ArticleService::DEFAULT_IMAGE => "articleImageDefault.png"];
 

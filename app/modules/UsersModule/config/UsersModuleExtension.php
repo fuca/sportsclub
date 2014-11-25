@@ -22,16 +22,18 @@ use \Nette\DI\CompilerExtension,
     \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
     \Kdyby\Translation\DI\ITranslationProvider,
-	\App\SystemModule\Model\Service\Menu\ItemData,
+    \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * UsersModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class UsersModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
+class UsersModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [];
 
@@ -76,5 +78,8 @@ class UsersModuleExtension extends BaseModuleExtension implements ITranslationPr
 	
 	return [$i, $y];
     }
-
+    
+    public function getDatabaseTypes() {
+	return ["WebProfileStatus"=>"App\Model\Misc\Enum\WebProfileStatus"];
+    }
 }

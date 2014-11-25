@@ -24,14 +24,16 @@ use \Nette\DI\CompilerExtension,
     \Kdyby\Translation\DI\ITranslationProvider,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * SystemModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SystemModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider {
+class SystemModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [];
 
@@ -91,5 +93,9 @@ class SystemModuleExtension extends BaseModuleExtension implements ITranslationP
 	$i->setUrl(":System:Admin:default");
 	return [$i];
     }
+    public function getDatabaseTypes() {
+	return ["StaticPageStatus"=>"App\Model\Misc\Enum\StaticPageStatus"];
+    }
+
 
 }

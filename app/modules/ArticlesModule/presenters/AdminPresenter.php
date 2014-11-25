@@ -69,6 +69,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		$grArr = $artDb->getGroups()->map(function($e){return $e->getId();})->toArray();
 		$artDb->setGroups($grArr);
 		$form->setDefaults($artDb->toArray());
+		$this->template->article = $artDb;
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
@@ -76,8 +77,8 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     public function handleDeleteArticle($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
-	$this->doDeleteArticle("this");
+	if (!is_numeric($id)) $this->handleBadArgument($id);
+	$this->doDeleteArticle($id);
 	if (!$this->isAjax()) {
 	    $this->redirect("this");
 	}
@@ -214,10 +215,19 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerAuthor->class[] = 'center';
 	
 	$grid->addActionHref('delete', '', 'deleteArticle!')
-		->setIcon('trash');
+		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("articlesModule.admin.grid.delete")]))
+		->setConfirm(function($u) {
+		    return $this->tt("articlesModule.admin.grid.rlyDelArticle",null, ["id"=>$u->getId()]);
+		});
 	
 	$grid->addActionHref('edit', '', 'updateArticle')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("articlesModule.admin.grid.update")]));
+	
+	$grid->addActionHref("goto", "","goToArticle")
+		->setIcon('eye-open')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("articlesModule.admin.grid.view")]));
 
 	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->articlesGridOperationHandler);
 	
@@ -225,6 +235,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->setExport("admin-articles" . date("Y-m-d H:i:s", time()));
 
 	return $grid;
+    }
+    
+    public function actionGoToArticle($id) {
+	$this->redirect("Public:showArticle", $id);
     }
     
     public function commentModeRender($el) {

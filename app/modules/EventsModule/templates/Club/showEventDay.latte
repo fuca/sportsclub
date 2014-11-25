@@ -4,7 +4,9 @@
 {layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ eventsModule.club.showEventDay.heading}</li>
+    {include #parent}
+    <li><a href="{plink :Events:Club:default}">{_ eventsModule.club.eventsSection}</a></li>
+    <li>{_ eventsModule.club.showEventDay.heading}</li>
 {/block}
 
 {block #title}

@@ -49,3 +49,11 @@ services:
 			App\SystemModule\Model\Service\Menu\CommonMenuControlFactory
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
+
+	systemModule.staticPageService:
+		class:
+			App\SystemModule\Model\Service\StaticPageService
+		setup:
+				- setCacheStorage(@systemModule.cacheStorage)
+				- setSportGroupService()
+				- setUserService()

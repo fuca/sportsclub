@@ -103,10 +103,10 @@ final class SportGroupForm extends BaseForm {
 	
 	$this->addSubmit('submit', "system.forms.submitButton.label");
 
-	$this->onSuccess[] = callback($this, 'sportTypeFormSubmitted');
+	$this->onSuccess[] = callback($this, 'sportGroupFormSubmitted');
     }
 
-    public function sportTypeFormSubmitted(Form $form) {
+    public function sportGroupFormSubmitted(Form $form) {
 
 	$values = $form->getValues();
 	try {

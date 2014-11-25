@@ -78,25 +78,27 @@ class ArticleForm extends BaseForm {
 	$this->addHidden("alias");
 	$this->addHidden("counter");
 	
-	$this->addText("title", "Titulek")
+	$this->addText("title", "Titulek", 45)
 	    ->addRule(Form::FILLED, "Titulek musí být zadán")
 	    ->setRequired("Titulek musí být zadán");
 	
-	$this->addTextArea("content", "Obsah")
+	$this->addTextArea("content", "Obsah", 45, 35)
 	    ->addRule(Form::FILLED, "Obsah musí být zadán")
 	    ->setRequired("Obsah musí být zadán");
 	
-	$this->addCheckbox("highlight", "Zvýraznit");
-	$this->addSelect("status", "Stav", $this->getStates());
+	$this->addUpload("picture", "Obrázek");
+
+	$this->addCheckbox("highlight", "Zvýraznit"); 
+	$this->addSelect("status", "Stav", $this->getStates()); 
 	$this->addSelect("commentMode", "Komentáře", $this->getCommentModes());
-	$this->addCheckboxList("groups", "Skupiny", $this->getSportGroups());
+	$this->addCheckboxList("groups", "Skupiny", $this->getSportGroups()); 
 	
 	if ($this->isUpdate()) {
 	    $this->addSelect("author", "Autor", $this->getUsers());
 	    $this->addSelect("editor", "Poslední změna", $this->getUsers());
 	}
 	
-	$this->addSubmit("submitButton", "Uložit");
+	$this->addSubmit("submit", "system.forms.submitButton.label");
 	$this->onSuccess[] = callback($this->parent, "articleFormSubmitted");
     }
 }

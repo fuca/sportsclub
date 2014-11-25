@@ -16,17 +16,22 @@
  * limitations under the License.
  */
 
-namespace App\EventsModule\Model\Service;
+namespace App\SystemModule\Model\Service;
 
-use App\Model\Entities\EventParticipation;
+use \App\Model\Entities\StaticPage;
 
 /**
- * Interface for EventParticipation service
+ * Interface for Static pages service
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
-interface IEventParticipationService {
+interface IStaticPageService {
     
-    function createParticipation(EventParticipation $e);
-    function updateParticipation(EventParticipation $e);
+    function createStaticPage(StaticPage $sp);
+    function updateStaticPage(StaticPage $sp);
+    function deleteStaticPage($id);
+    function getStaticPage($id, $useCache = true);
+    function getPagesDataSource();
+    function getSelectStaticPages($id = null);
+    
 }

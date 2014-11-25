@@ -99,6 +99,10 @@ class UserPresenter extends SystemUserPresenter {
 	$headerPart = $grid->getColumn('type')->headerPrototype;
 	$headerPart->class[] = 'center';
 	
+	$grid->addActionHref("goto", "", "goToEvent")
+		->setIcon("eye-open")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("eventsModule.grid.view")]));
+	
 	$grid->setFilterRenderType($this->filterRenderType);
 	return $grid;
 	
@@ -122,5 +126,10 @@ class UserPresenter extends SystemUserPresenter {
     
     public function partyTypeRender($e) {
 	return $this->tt(EventParticipationType::getOptions()[$e->getType()]);
+    }
+    
+    public function actionGoToEvent($id) {
+	$participation = $this->eventService->getEventParticipation($id);
+	$this->redirect(":Events:Club:showEvent", $participation->getEvent()->getId());
     }
 }

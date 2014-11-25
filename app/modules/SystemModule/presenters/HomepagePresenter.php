@@ -41,6 +41,7 @@ class HomepagePresenter extends SystemPublicPresenter {
     
     public function renderDefault() {
 	$this->template->articles = $this->articleService->getArticles();
+	$this->template->highlights = $this->articleService->getHighLights();
     }
     
     public function actionShowContacts($gid = 5) {

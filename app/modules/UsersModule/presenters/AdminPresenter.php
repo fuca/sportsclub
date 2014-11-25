@@ -227,6 +227,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $form = $this->getComponent("updateWebProfileForm");
 	    $form->setDefaults($wp->toArray());
 	    $this->template->name = (string) $user;
+	    $this->template->profile = $wp;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.admin.cannotReadData", ["id" => $id]);
@@ -236,6 +237,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     public function createComponentUpdateWebProfileForm($name) {
 	$form = new WebProfileForm($this, $name, $this->getTranslator());
+	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
@@ -351,24 +353,23 @@ class AdminPresenter extends SystemAdminPresenter {
 	//$grid->addActionHref('application', '[Prihl]', 'userApplications');
 	// setDisable() - nastavi callback, kdy ma byt vypnuto - vhodne pri overovani opravneni
 	$grid->addActionHref("regenPassword", "", 'regenPassword!')
-		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.pwRegen")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.pwRegen")]))
 		->setIcon('lock')
 		->setConfirm(function($u) {
 		    return "Are you sure you want to regenerate password for user {$u->surname} {$u->name} ({$u->id})?";
 		});
 	$grid->addActionHref('delete', '', "deleteUser!")
-		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.delete")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.delete")]))
 		->setIcon('trash')
 		->setConfirm(function($u) {
 		    return "Are you sure you want to delete user {$u->surname} {$u->name} ({$u->id})?";
 		});
 	$grid->addActionHref('update', '', 'updateUser')
-		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.update")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.update")]))
 		->setIcon('pencil');
 	
-
 	$grid->addActionHref('webProfile', '', 'updateWebProfile')
-		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.updateWp")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.updateWp")]))
 		->setIcon('th-list');
 
 	$operation = array('delete' => 'Delete', 'activeToggle' => 'ActiveToggle');
@@ -410,7 +411,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->userService->getWebProfilesToPermitDatasource());
 
-	$grid->translator->lang = $this->getLocale();
+	$grid->setTranslator($this->getTranslator());
 	$grid->setDefaultPerPage(30);
 	$grid->setPrimaryKey('id');
 
@@ -421,28 +422,35 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
 
-	$grid->addColumnText("personalLikes", "Content")
+	$grid->addColumnText("personalLikes", "usersModule.wpGrid.content.label")
 			->setTruncate(100)
 			->setCustomRender($this->wpDataRender)
 		->cellPrototype->class[] = 'center';
 
 	$headerData = $grid->getColumn('personalLikes')->headerPrototype;
 	$headerData->class[] = 'center';
-	$headerData->rowspan = "2";
-	$headerData->style['width'] = '40%';
+	$headerData->style['width'] = '80%';
+	
+	$grid->addColumnText("personalDisLikes", "usersModule.wpGrid.photo.label")
+		->setCustomRender($this->wpPhotoRender)
+		->cellPrototype->class[] = 'center';
+
+	$headerPhoto = $grid->getColumn('personalDisLikes')->headerPrototype;
+	$headerPhoto->class[] = 'center';
+	$headerPhoto->style['width'] = '5%';
 
 	$grid->addActionHref('yes', '', "permitProfile!")
-		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.permitProfile")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.permitProfile")]))
 		->setIcon('ok')
 		->setConfirm(function($u) {
-		    return "Are you sure you really want to PERMIT profile #{$u->getId()}?";
+		    return $this->tt("reallyPermitItem", null, ["id"=>$u->getId()]);
 		});
 
 	$grid->addActionHref('no', '', "denyProfile!")
-		//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.denyProfile")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.denyProfile")]))
 		->setIcon('remove')
 		->setConfirm(function($u) {
-		    return "Are you sure you really want to DENY profile #{$u->getId()}?";
+		    return $this->tt("reallyDenyItem", null, ["id"=>$u->getId()]);
 		});
 
 	$operation = array('yes' => 'Permit', 'no' => 'Deny');
@@ -466,7 +474,16 @@ class AdminPresenter extends SystemAdminPresenter {
 		$e->getPersonalInterests() . ", " .
 		$e->getSportExperience() . ", " .
 		$e->getSignature();
-	return \Nette\Utils\Html::el("span")->setText($res)->addAttributes(["title" => $res]);
+	return \Nette\Utils\Html::el("span")
+		->setText($res)
+		->addAttributes(["title" => $res]);
+    }
+    
+    public function wpPhotoRender($e) {
+	
+	$url ="/sportsclub/www/assets/images/{$e->getPicture()}";
+	return \Nette\Utils\Html::el("img")
+		->addAttributes(["src" => $url, "class"=>"user-grid-thumbnail"]);
     }
 
     public function handleDenyProfile($id) {

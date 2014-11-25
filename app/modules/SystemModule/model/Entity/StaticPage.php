@@ -18,28 +18,31 @@
 
 namespace App\Model\Entities;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\JoinTable,
-    Doctrine\ORM\Mapping\ManyToMany,
-    Doctrine\ORM\Mapping\OneToMany,
-    Doctrine\ORM\Mapping\ManyToOne,
+use \Doctrine\ORM\Mapping as ORM,
+    \Doctrine\ORM\Mapping\JoinColumn,
+    \Doctrine\ORM\Mapping\JoinTable,
+    \Doctrine\ORM\Mapping\ManyToMany,
+    \Doctrine\ORM\Mapping\OneToMany,
+    \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\UniqueConstraint,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
-    \App\Model\Misc\Enum\ArticleStatus,
+    \App\Model\Misc\Enum\StaticPageStatus,
     \App\Model\Misc\EntityMapperTrait,
-    \App\Model\IIdentifiable;
+    \App\Model\IIdentifiable,
+    \App\SystemModule\Model\Service\ICommentable;
 
 /**
  * ORM persistable entity representing real address
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
+ * @ORM\Table(name="StaticPage", uniqueConstraints={@UniqueConstraint(name="unique_static_page", columns={"group_fk", "abbr"})})
  */
-class StaticPage extends BaseEntity implements IIdentifiable {
+class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
     
     use EntityMapperTrait;
-      /**
+    /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -47,19 +50,13 @@ class StaticPage extends BaseEntity implements IIdentifiable {
      */
     protected $id;
 
-    /**
-     * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
-     * @JoinColumn(nullable = true, name = "author_fk")
-     */
-    protected $author;
-
     /** @ORM\Column(type="string", nullable = false) */
     protected $title;
 
-    /** @ORM\Column(type="string", nullable = false) */
+    /** @ORM\Column(type="text", nullable = false) */
     protected $content;
 
-    /** @ORM\Column(type="string", nullable = false) */
+    /** @ORM\Column(type="string", nullable = false, unique = true) */
     protected $abbr;
 
     /** @ORM\Column(type="datetime", nullable = false) */
@@ -69,19 +66,19 @@ class StaticPage extends BaseEntity implements IIdentifiable {
     /** @ORM\Column(type="ArticleStatus", nullable = false) */
     protected $status;
     
-    /**
-     * @OneToMany(targetEntity="StaticPage", mappedBy="parent")
-     */
-    protected $children;
-    
-    /**
-     * @ManyToOne(targetEntity="StaticPage", inversedBy="children")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    protected $parent;
+//    /**
+//     * @OneToMany(targetEntity="StaticPage", mappedBy="parent")
+//     */
+//    protected $children;
+//    
+//    /**
+//     * @ManyToOne(targetEntity="StaticPage", inversedBy="children")
+//     * @JoinColumn(name="parent_id", referencedColumnName="id", nullable = true)
+//     */
+//    protected $parent;
 
-    /** @ORM\Column(type="integer", nullable = false) */
-    protected $counter;
+//    /** @ORM\Column(type="integer", nullable = false) */
+//    protected $counter;
 
     /** @ORM\Column(type="CommentMode", nullable = false) */
     protected $commentMode;
@@ -91,39 +88,31 @@ class StaticPage extends BaseEntity implements IIdentifiable {
      * @JoinColumn(nullable = true, name = "editor_fk")
      */
     protected $editor;
+    
+    /**
+     * @ManyToOne(targetEntity="SportGroup")
+     * @JoinColumn(name="group_fk", referencedColumnName="id")
+     **/
+    protected $group;
 
     /**
-     * @ManyToMany(targetEntity="SportGroup", fetch = "LAZY")
-     * @JoinTable(name = "StaticPage_SportGroup",
-	    joinColumns = {
-		@JoinColumn(name = "page_id", referencedColumnName = "id")},
-	    inverseJoinColumns = {
-		@JoinColumn(name = "group_id", referencedColumnName = "id")})
-     */
-    protected $groups;
-
-    /**
-     * ONE TO MANY
+     * ONE TO MANY UNI
      * @ManyToMany(targetEntity="Comment", cascade={"remove"})
      * @JoinTable(name="Comment_StaticPage",
      *      joinColumns={@JoinColumn(name="page_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})
+     *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique = true)})
      */
     protected $comments;
     
     public function __construct(array $values = []) {
 	parent::__construct();
-	$this->status = ArticleStatus::DRAFT;
+	$this->status = StaticPageStatus::DRAFT;
 	$this->commentMode = CommentMode::RESTRICTED;
 	$this->fromArray($values);
     }
 
     public function getId() {
 	return $this->id;
-    }
-
-    public function getAuthor() {
-	return $this->author;
     }
 
     public function getTitle() {
@@ -146,17 +135,13 @@ class StaticPage extends BaseEntity implements IIdentifiable {
 	return $this->status;
     }
 
-    public function getChildren() {
-	return $this->children;
-    }
+//    public function getChildren() {
+//	return $this->children;
+//    }
 
-    public function getParent() {
-	return $this->parent;
-    }
-
-    public function getCounter() {
-	return $this->counter;
-    }
+//    public function getParent() {
+//	return $this->parent;
+//    }
 
     public function getCommentMode() {
 	return $this->commentMode;
@@ -166,8 +151,8 @@ class StaticPage extends BaseEntity implements IIdentifiable {
 	return $this->editor;
     }
 
-    public function getGroups() {
-	return $this->groups;
+    public function getGroup() {
+	return $this->group;
     }
 
     public function getComments() {
@@ -178,12 +163,9 @@ class StaticPage extends BaseEntity implements IIdentifiable {
 	$this->id = $id;
     }
 
-    public function setAuthor($author) {
-	$this->author = $author;
-    }
-
     public function setTitle($title) {
-	$this->title = $title;
+	if (!empty($title))
+	    $this->title = $title;
     }
 
     public function setContent($content) {
@@ -191,7 +173,8 @@ class StaticPage extends BaseEntity implements IIdentifiable {
     }
 
     public function setAbbr($abbr) {
-	$this->abbr = $abbr;
+	if (!empty($abbr))
+	    $this->abbr = $abbr;
     }
 
     public function setUpdated($updated) {
@@ -202,17 +185,14 @@ class StaticPage extends BaseEntity implements IIdentifiable {
 	$this->status = $status;
     }
 
-    public function setChildren($children) {
-	$this->children = $children;
-    }
-
-    public function setParent($parent) {
-	$this->parent = $parent;
-    }
-
-    public function setCounter($counter) {
-	$this->counter = $counter;
-    }
+//    public function setChildren($children) {
+//	if (!empty($children))
+//	    $this->children = $children;
+//    }
+//
+//    public function setParent($parent) {
+//	$this->parent = $parent;
+//    }
 
     public function setCommentMode($commentMode) {
 	$this->commentMode = $commentMode;
@@ -222,8 +202,8 @@ class StaticPage extends BaseEntity implements IIdentifiable {
 	$this->editor = $editor;
     }
 
-    public function setGroups($groups) {
-	$this->groups = $groups;
+    public function setGroup($group) {
+	$this->group = $group;
     }
 
     public function setComments($comments) {

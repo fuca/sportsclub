@@ -6,16 +6,111 @@
 {block #side}left{/block}
 
 {block #breadcrumbs}
-    {include #parent} <li>{_usersModule.user.webProfile.heading}</li>
-{/block}
+{include #parent} <li>{_usersModule.user.webProfile.heading}</li>
+    {/block}
 
 {block #title}
-      {_usersModule.user.webProfile.heading} / {include #parent}
+{_usersModule.user.webProfile.heading} / {include #parent}
 {/block}
 
 {block #subMenu}
 {/block}
-    
+
 {block #userContent}
-    {control userWebProfileForm}
+{form userWebProfileForm}
+    <div class="row">
+	<div class="col-md-6">
+	    <div class="form-group">
+		{label personalLikes /}
+		{input personalLikes class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label personalDislikes /}
+		{input personalDislikes class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label personalInterests /}
+		{input personalInterests class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label jerseyNumber /}
+		{input jerseyNumber class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label equipment /}
+		{input equipment class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label favouriteBrand /}
+		{input favouriteBrand class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label favouriteClub /}
+		{input favouriteClub class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label sportExperience /}
+		{input sportExperience class=>form-control}
+	    </div>
+
+
+
+	</div>
+
+	<div class="col-md-6">
+	    
+	    {if $form->isUpdate()}
+		<div class="user-picture img-thumbnail">
+		    <img src="{$basePath}/assets/images/{$profile->getPicture()|thumb:"user","230x280"}" class="user-picture img-responsive"/>
+		</div>
+	    {/if}
+	    
+	    <div class="form-group">
+		{label picture /}
+		{input picture }
+	    </div>
+	    
+	    <div class="form-group">
+		{label howGotThere /}
+		{input howGotThere class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label aditionalInfo /}
+		{input aditionalInfo class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label signature /}
+		{input signature class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label signature /}
+		{input signature class=>form-control}
+	    </div>
+
+	</div>
+    </div>
+	    <div class="row">
+	    <div class="col-md-3"></div>
+	    <div class="col-md-6">
+		<div class="form-group">
+		    {input submitButton class=>"btn btn-primary btn-block"}
+		</div>
+
+	    </div>
+	    <div class="col-md-3"></div>
+
+    </div>
+
+
+{/form}
 {/block}

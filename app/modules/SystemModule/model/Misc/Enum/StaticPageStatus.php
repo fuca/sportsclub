@@ -20,23 +20,23 @@ namespace App\Model\Misc\Enum;
 use \App\Model\Misc\Enum\EnumType;
 
 /**
- * Enumerate for representing Article status
+ * Enumerate for representing StaticPage status
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class ArticleStatus extends EnumType implements IEnum {
+final class StaticPageStatus extends EnumType implements IEnum {
     
     const 
 	DRAFT		= "drf",
 	PUBLISHED	= "pub",
 	NOT_PUBLISHED	= "not";
     
-    protected $name = "ArticleStatus";
+    protected $name = "StaticPageStatus";
     protected $values = [self::DRAFT, self::PUBLISHED, self::NOT_PUBLISHED];
     
     public static function getOptions() {
 	return array(
-	    self::DRAFT		=>  "articlesModule.artStatus.draft", 
-	    self::PUBLISHED	=>  "articlesModule.artStatus.published", 
-	    self::NOT_PUBLISHED	=>  "articlesModule.artStatus.notPub");
+	    self::DRAFT		=>  "systemModule.statPageStatus.draft", 
+	    self::PUBLISHED	=>  "systemModule.statPageStatus.published", 
+	    self::NOT_PUBLISHED	=>  "systemModule.statPageStatus.notPub");
     }
 }

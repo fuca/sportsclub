@@ -2,30 +2,32 @@
 {var robots => index}
 
 {block title}
-Main page {$titleCrumbSeparator} {include #parent}
+    Main page {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block maintheme}
 <div id="maintheme-container">
     <div class="jumbotron">
-    {if $articles}
-	<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+	{if $highlights}
+	
+	<div  id="homepage-jumbotron-carousel" class="carousel slide" data-ride="carousel">
 	    {block indicators}
 	  <!-- Indicators -->
 	    <ol class="carousel-indicators">
-		{foreach $articles as $key=>$a}
-		    <li data-target="#carousel-example-generic" data-slide-to="{$key}" {if $iterator->isFirst()} class="active">{/}</li>
-			{/}
-		</ol>
-		{/}
+		{foreach $highlights as $key=>$a}
+		    <li data-target="#homepage-jumbotron-carousel" data-slide-to="{$key}" {if $iterator->isFirst()} class="active"{/} ></li>
+		{/foreach}
+	    </ol>
+	    {/block}
 
 	  <!-- Wrapper for slides -->
 		<div class="carousel-inner" role="listbox">
 		    {foreach $articles as $article}
-			<div class="item active">
-			    <img src="img/banner01.jpg"/>
+			<div class="item
+			     {if $iterator->isFirst()} active{/} ">
+			    <img src="{$basePath}/assets/images/{$article->getPicture()|thumb:"article", "1028x370"}"/>
 			    <div class="carousel-caption">
-				<h3><a href="{plink :Articles:Public:showArticle $article->getId()}">{$article->getTitle()}</a></h3>
+				<h3><a href="{plink :Articles:Public:showArticle $article->getId()}">{$article->getTitle()|truncate:50}</a></h3>
 				<p>
 				    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
 				    <small>{$article->getUpdated()|date:"%d.%m.%Y"}</small>
@@ -40,13 +42,13 @@ Main page {$titleCrumbSeparator} {include #parent}
 			</div>
 		    {/foreach}	
 		</div>
-    {/}     
+	{/}     
 	      <!-- Controls -->
-		    <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+		    <a class="left carousel-control" href="#homepage-jumbotron-carousel" role="button" data-slide="prev">
 			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 			<span class="sr-only">Previous</span>
 		    </a>
-		    <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+		    <a class="right carousel-control" href="#homepage-jumbotron-carousel" role="button" data-slide="next">
 			<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 			<span class="sr-only">Next</span>
 		    </a>
@@ -62,119 +64,53 @@ Main page {$titleCrumbSeparator} {include #parent}
 		<div class="col-md-8 article-box">
 		    {if $articles}
 			{foreach $articles as $article}
-			    <div class="row">
-				<div class="article-wrapper col-sm-6" style="background-image: url('{$basePath}/img/articles/{$article->getPictureName()}');">
+			    {if $iterator->isOdd()}
+				<div class="row">
+			    {/if}
+				<div class="article-wrapper col-sm-6" style="background-image: url('assets/images/{!$article->getPicture()|thumb:"article", "340x200"}');">
 				    <a href="{plink :Articles:Public:showArticle $article->getId()}">
-					<div class="article">
+					<article class="article">
 					    <h3>{$article->title}</h3>
-					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span> 
-					    <span class="group">&nbsp;
+					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span>
+					    <span class="group">&nbsp;|&nbsp;
 						{foreach $article->getGroups() as $c}
-						    {$c}
+						    {$c->getName()}
 						    {if !$iterator->isLast()},{/if}
 						{/foreach}
 					    </span>
-					    <p>{$article->getContent()|truncate:100}</p>
-					</div>
-				    </a>	
-				</div>
-					
-				<div class="article-wrapper col-sm-6" style="background-image: url('{$basePath}/img/articles/{$article->getPictureName()}');">
-				    <a href="{plink :Articles:Public:showArticle $article->getId()}">
-					<div class="article">
-					    <h3>{$article->title}</h3>
-					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span> 
-					    <span class="group">&nbsp;
-						{foreach $article->getGroups() as $c}
-						    {$c}
-						    {if !$iterator->isLast()},{/if}
-						{/foreach}
+					    <span>
+						{!$article->getContent()|truncate:100}
 					    </span>
-					    <p>{$article->getContent()|truncate:100}</p>
-					</div>
+					</article>
 				    </a>	
 				</div>
-					
-				<div class="article-wrapper col-sm-6" style="background-image: url('{$basePath}/img/articles/{$article->getPictureName()}');">
-				    <a href="{plink :Articles:Public:showArticle $article->getId()}">
-					<div class="article">
-					    <h3>{$article->title}</h3>
-					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span> 
-					    <span class="group">&nbsp;
-						{foreach $article->getGroups() as $c}
-						    {$c}
-						    {if !$iterator->isLast()},{/if}
-						{/foreach}
-					    </span>
-					    <p>{$article->getContent()|truncate:100}</p>
-					</div>
-				    </a>	
+			    {if $iterator->isEven() || $iterator->isLast()}
 				</div>
-					
-				<div class="article-wrapper col-sm-6 " style="background-image: url('{$basePath}/img/articles/{$article->getPictureName()}');">
-				    <a href="{plink :Articles:Public:showArticle $article->getId()}">
-					<div class="article">
-					    <h3>{$article->title}</h3>
-					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span> 
-					    <span class="group">&nbsp;
-						{foreach $article->getGroups() as $c}
-						    {$c}
-						    {if !$iterator->isLast()},{/if}
-						{/foreach}
-					    </span>
-					    <p>{$article->getContent()|truncate:100}</p>
-					</div>
-				    </a>	
-				</div>
-					
-				<div class="article-wrapper col-sm-6" style="background-image: url('{$basePath}/img/articles/{$article->getPictureName()}');">
-				    <a href="{plink :Articles:Public:showArticle $article->getId()}">
-					<div class="article">
-					    <h3>{$article->title}</h3>
-					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span> 
-					    <span class="group">&nbsp;
-						{foreach $article->getGroups() as $c}
-						    {$c}
-						    {if !$iterator->isLast()},{/if}
-						{/foreach}
-					    </span>
-					    <p>{$article->getContent()|truncate:100}</p>
-					</div>
-				    </a>	
-				</div>
-					
-				<div class="article-wrapper col-sm-6 " style="background-image: url('{$basePath}/img/articles/{$article->getPictureName()}');">
-				    <a href="{plink :Articles:Public:showArticle $article->getId()}">
-					<div class="article">
-					    <h3>{$article->title}</h3>
-					    <span class="published">&nbsp;{$article->getUpdated()|date:"%d.%m.%Y"}</span> 
-					    <span class="group">&nbsp;
-						{foreach $article->getGroups() as $c}
-						    {$c}
-						    {if !$iterator->isLast()},{/if}
-						{/foreach}
-					    </span>
-					    <p>{$article->getContent()|truncate:100}</p>
-					</div>
-				    </a>	
-				</div>
-					
-			    </div>
+			    {/if}
 			{/foreach}
 		    {/if}
-		    <div class="fb-like-box" style="border: 1px solid #ccc;" data-href="https://www.facebook.com/sportsclub" data-width="670" data-colorscheme="light" data-show-faces="false" data-header="false" data-stream="true" data-show-border="false"></div>
+		    
+		    <div class="fb-like-box" data-href="https://www.facebook.com/fbcmohelnice" data-width="670" data-colorscheme="light" data-show-faces="false" data-header="false" data-stream="true" data-show-border="false"></div>
 
 		</div>
 
 		<div class="col-md-4">
+		    <div class="row">
+			<address>
+				<h3>Quick contact</h3>
+				<p><strong><big>FBC Mohelnice</big></strong>, o. s.<br />Masarykova 546/25, 789 85 Mohelnice</p>
+				<p><strong>IČ</strong> 228 90 785, &nbsp; <strong>DIČ</strong> CZ 228 90 785</p>
+				<p><strong>Bank. spojení</strong> &nbsp; 2500140367/2010 (Fio)</p>
+				<p style="text-align: right;">/ <a href="">more contacts</a></p>
+			</address>	
+		    </div>
 		    
-		    <address>
-			    <h3>Quick contact</h3>
-			    <p><strong><big>FBC Mohelnice</big></strong>, o. s.<br />Masarykova 546/25, 789 85 Mohelnice</p>
-			    <p><strong>IČ</strong> 228 90 785, &nbsp; <strong>DIČ</strong> CZ 228 90 785</p>
-			    <p><strong>Bank. spojení</strong> &nbsp; 2500140367/2010 (Fio)</p>
-			    <p style="text-align: right;">/ <a href="">more contacts</a></p>
-		    </address>	
+		    <div id="map">
+			
+		    </div>
+		    
+		    <div class="banner"></div>
+			
 		    
 		</div>
 	    </div>

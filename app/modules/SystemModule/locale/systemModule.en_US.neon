@@ -27,6 +27,8 @@ commentControl:
 	contentMustFill: "Content has to be filled"
 	commentsLabel: "Comments"
 	commentAdd: "Add comment"
+	titlePlaceHolder: "Title of your new comment"
+	contentPlaceHolder: "Content of your new comment"
 	
 sportTypeForm:
 	newGroup: "New sport type"
@@ -48,6 +50,7 @@ sportGroupForm:
 admin:
 	sportAdd: "Add new sport type"
 	groupAdd: "Add new sport group"	
+	pageAdd: "Add new static page"
 	sportTypes.heading: "Sport types"
 	sportGroups.heading: "Sport groups"
 	heading: "System resources"
@@ -59,6 +62,11 @@ admin:
 	updateSportType.heading: "Update sport type %title%"
 	updateSportType.title: "Sport type update"
 	updateSportType.bread: "Sport type update"
+	staticPages.heading: "Static pages"
+	addStaticPage.heading: "New static page"
+	updateStaticPage.heading: "Update static page '%title%' of group '%group%'"
+	updateStaticPage.bread: "Static page edit"
+	updateStaticPage.title: "Static page edit"
 
 admin.grid:
 	name: "Name"
@@ -67,15 +75,41 @@ admin.grid:
 	parent: "Parent"
 	delete: "Delete"
 	active: "Active"
+
+	title: "Title"
+	abbr: "Abbr"
+	commMode: "Comments"
+	status: "Status"
 	
 admin.grid.messages:
 	rlyDelSport: "Do you really want to delete sport #%id%"
 	rlyDelGroup: "Do you really want to delete group #%id%"
 	rlyDelSportItems: "Do you really want to delete %i sports"
 	rlyDelGroupItems: "Do you really want to delete %i groups"
+	rlyDelPageItems: "Do you really want to delete %i pages"
+	rlyDelPage: "Do you really want to delete page #%id%"
 
 commentMode:
 	group: "Group only"
 	allowed: "Allowed"
 	restricted: "Restricted"
 	signedIn: "Signed in only"
+
+statPageStatus:
+	draft: "Draft"
+	published: "Published"
+	notPub: "Not published"
+
+staticPageForm:
+
+	title: "Title"
+	abbr: "Abbreviation"
+	parent: "Parent"
+	group: "Group"
+	status: "Status"
+	commentMode: "Comments"
+	content: "Content"
+	pageSel: "Select parent.. "
+	updated: "Updated"
+	editor: "Editor"
+	pageAbbrExists: "Static page with given abbreviation already  exists"

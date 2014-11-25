@@ -109,6 +109,12 @@ abstract class BasePresenter extends Presenter {
      */
     public $commonMenuFactory;
     
+//    /**
+//     * @inject
+//     * @var \Brabijan\Images\ImagePipe
+//     */
+//    public $imagePipe;
+    
     protected function getAnnotReader() {
 	return $this->annotationReader;
     }
@@ -176,7 +182,11 @@ abstract class BasePresenter extends Presenter {
     protected function createTemplate($class = NULL) {
 	$template = parent::createTemplate($class);
 	$template->registerHelperLoader(callback($this->translator->createTemplateHelpers(), 'loader'));
-
+	$context = $this->context;
+	$template->registerHelper('thumb', function($identifier, $type, $size = '') use ($context) {
+	    $service = $context->getService($type."ImageService");
+	    return \Tomaj\Image\Helper\Image::thumb($service, $identifier, $size);
+	});
 	return $template;
     }
 
@@ -190,6 +200,7 @@ abstract class BasePresenter extends Presenter {
 	$this->template->layoutStyle = \App\Model\Misc\Enum\LayoutSectionStyle::INFO;
 	$this->template->breadCrumbSeparator = "/";
 	$this->template->titleCrumbSeparator = "/";
+	//$this->template->_imagePipe = $this->imagePipe;
 	if ($this->isAjax()) {
 	    $this->redrawControl("flash");
 	}

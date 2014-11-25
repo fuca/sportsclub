@@ -1,5 +1,4 @@
-
-{* Protected section root base template *}
+{* Public section root base template *}
 
 {layout ./@publicLayout.latte}
 
@@ -28,11 +27,11 @@
 		    {$flash->message}
 		</div>
 	    {/snippet}
+	    
 	    <ol class="breadcrumb">
 		<li class="breadcrumb-top">
 		    <a href="{plink :System:Homepage:default}" class="home">&nbsp;</a> 
 		</li>
-		<li><a href="{plink :System:Default:default}">IS</a></li>
 		{include #breadcrumbs}
 	    </ol>
 	    {include #mainBlock}

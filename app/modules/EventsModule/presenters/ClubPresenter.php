@@ -50,6 +50,12 @@ class ClubPresenter extends SystemClubPresenter {
      */
     public $sportGroupService;
     
+    /**
+     * @inject
+     * @var \App\UsersModule\Model\Service\IUserService
+     */
+    public $userService;
+    
     protected function createTemplate($class = NULL) {
 	$template = parent::createTemplate($class);
 	$template->registerHelper('eventType', function ($key) {
@@ -96,7 +102,8 @@ class ClubPresenter extends SystemClubPresenter {
 		    if ($e->getOwner()->getId() == $uid) 
 			return true;
 		})->isEmpty();
-	$this->template->partyExist = $bool; 
+	$this->template->partyExist = $bool;
+	$this->template->deadline = $event->getConfirmUntil() > new DateTime()? true: false;
     }
     
     public function addComment(ArrayHash $values) {
@@ -223,6 +230,7 @@ class ClubPresenter extends SystemClubPresenter {
     public function createComponentParticipationControl($name) {
 	$c = new \App\EventsModule\Components\ParticipationControl($this, $name);
 	$c->setEvent($this->getEntity());
+	$c->setUserService($this->userService);
 	$c->setEventService($this->eventService);
 	return $c;
     }

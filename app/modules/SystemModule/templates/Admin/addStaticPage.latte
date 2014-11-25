@@ -1,0 +1,83 @@
+
+{* System module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ systemModule.admin.addStaticPage.heading}</li>
+{/block}
+
+{block #title}
+    {_ systemModule.admin.addStaticPage.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ systemModule.admin.addStaticPage.heading}</h3>
+    </div>
+    {form addStaticPageForm}
+	<div class="row">
+	    <div class="col-md-8">
+
+		<div class="form-group">
+		    {label title /} 
+		    {input title class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label content /} 
+		    {input content class=>form-control}
+
+		</div>
+	    </div>
+
+	    <div class="form-options col-md-3">
+		
+		{if $form->isUpdate()}
+		    <div class="form-group">
+			{label abbr /} 
+			{input abbr class=>form-control}
+		    </div>
+		{/if}
+		
+		<div class="form-group">
+		    {label group /} 
+		    {input group class=>form-control}
+		</div>
+		
+		<div class="form-group">
+		    {label status /} 
+		    {input status class=>form-control}
+		</div>
+		
+		<div class="form-group">
+		    {label commentMode /} 
+		    {input commentMode class=>form-control}
+		</div>
+		
+		{if $form->isUpdate()}
+		    <div class="form-group">
+			{label updated/} 
+			{input updated class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label editor/} 
+			{input editor class=>form-control}
+		    </div>
+		{/if}
+		<br/>
+		<br/>
+		<br/>
+		<div class="form-group">
+		    {input submit class=>"btn btn-block btn-primary"}
+		</div>
+	    </div>
+	</div>
+    {/form}
+{/}
+

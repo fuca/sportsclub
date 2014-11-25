@@ -57,7 +57,7 @@ class CommentForm extends BaseForm {
 //	    $this->addSelect("editor", "Editor", $this->getUsers());
 //	}
 	
-	$this->addSubmit("submitButton", "system.forms.submitButton.label");
+	$this->addSubmit("submit", "system.forms.submitButton.label");
 //	if ($this->getShowCancel()) {
 //	    $this->addSubmit("cancelButton", "system.forms.cancelButton.label")
 //		    ->onClick[] = callback($this->parent, "cancelForm");

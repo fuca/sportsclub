@@ -37,7 +37,8 @@ use \App\UsersModule\Model\Service\IUserService,
     \App\Model\Entities\Contact,
     \App\Model\Entities\WebProfile,
     \Doctrine\Common\Collections\Criteria,
-    \App\Model\Service\INotificationService;
+    \App\Model\Service\INotificationService,
+    \Tomaj\Image\ImageService;
 
 /**
  * Service for dealing with User related entities
@@ -75,6 +76,15 @@ class UserService extends BaseService implements IUserService {
      * @var string
      */
     private $salt;
+    
+    /**
+     * @var \Tomaj\Image\ImageService
+     */
+    private $imageService;
+    
+    function setImageService(ImageService $imageService) {
+	$this->imageService = $imageService;
+    }
     
     public function getSalt() {
 	return $this->salt;
@@ -151,11 +161,13 @@ class UserService extends BaseService implements IUserService {
 	if ($formUser == null)
 	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
 
+	$this->entityManager->clear(User::getClassName());
 	$this->entityManager->beginTransaction();
-
-	$uDb = $this->getUser($formUser->id);
-	if ($uDb !== null) {
-
+	$uDb = null;
+	$id = $formUser->getId();
+	$uDb = $this->getUser($id, false);
+	
+	    if ($uDb !== null) {
 	    $this->handleUpdateContact($uDb, $formUser);
 	    $this->handleUpdateUser($uDb, $formUser);
 	    $this->invalidateEntityCache($uDb);
@@ -175,7 +187,7 @@ class UserService extends BaseService implements IUserService {
 	    $formUser->getContact()->setUpdated($now);
 	    $uDb->getContact()->fromArray($formUser->getContact()->toArray());
 	    $this->entityManager->merge($uDb->getContact());
-	    $this->entityManager->flush();
+	    //$this->entityManager->flush();
 	} catch (DuplicateEntryException $e) {
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -194,11 +206,25 @@ class UserService extends BaseService implements IUserService {
     private function handleUpdateUser(User $uDb, User $formUser) {
 	try {
 	    $now = new DateTime();
-	    if($formUser->getWebProfile() === null) {
+	    if ($formUser->getWebProfile() === null) {
 		$formUser->setWebProfile($uDb->getWebProfile());	
 	    } else {
+		if ($formUser->getWebProfile()->getPicture() == "") {
+		    $formUser->getWebProfile()->setPicture($uDb->getWebProfile()->getPicture());
+		} else {
+		    $origId = $uDb->getWebProfile()->getPicture();
+		    $this->imageService->removeResource($origId);
+		    
+		    $identifier = $this->imageService
+			    ->storeNetteFile($formUser->getWebProfile()->getPicture());
+		    $formUser->getWebProfile()->setPicture($identifier);
+		}
+		
 		$uDb->getWebProfile()->fromArray($formUser->getWebProfile()->toArray());
+		
 	    }
+	    $this->editorTypeHandle($uDb->getWebProfile());
+	    
 	    $formUser->getWebProfile()->setUpdated($now);
 	    $formUser->setCreated($uDb->getCreated());
 	    $formUser->setUpdated($now);
@@ -225,6 +251,9 @@ class UserService extends BaseService implements IUserService {
 	try {
 	    $db = $this->getUser($id);
 	    if ($db !== null) {
+		$imageId = $db->getWebProfile()->getPicture();
+		$this->imageService->removeResource($imageId);
+		
 		$this->userDao->delete($db);
 	    } else {
 		throw new EntityNotFoundException("User with id '$id' does not exist", 2);

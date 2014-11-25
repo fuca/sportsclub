@@ -63,6 +63,8 @@ abstract class BaseForm extends Form {
 	
 	$renderer->wrappers['control']['.submit'] = 'btn btn-lg btn-primary';
 	$renderer->wrappers['control']['.button'] = 'btn btn-lg btn-default';
+	
+	//$renderer->wrappers['control']['.text'] = 'form-control';
 //	dd($renderer);
 //	dd($renderer->wrappers['controls']);
 //	dd($renderer->wrappers['control']);
@@ -119,6 +121,5 @@ abstract class BaseForm extends Form {
 	if ($this->showCancel)
 	    $this->addButton("cancel", "system.forms.cancelButton.label")
 		->setAttribute("onclick", "history.go(-1);");
-	//$this->addSubmit("submitButton", "system.forms.submitButton.label");
     }
 }

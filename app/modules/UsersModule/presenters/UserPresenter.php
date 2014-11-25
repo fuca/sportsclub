@@ -22,6 +22,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
     \App\UsersModule\Forms\PersonalWebProfileForm,
     \App\UsersModule\Model\Misc\Utils\UserEntityManageHelper,
     \App\UsersModule\Forms\PersonalUserForm,
+    \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\WebProfile,
     \App\Model\Misc\Enum\WebProfileStatus,
     \App\Model\Entities\User,
@@ -86,6 +87,7 @@ class UserPresenter extends SystemUserPresenter {
 	    $uWp = $this->getUser()->getIdentity()->getWebProfile();
 	    $data = $uWp->toArray();
 	    $form->setDefaults($data);
+	    $this->template->profile = $uWp;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($uWp->getId(), "default", $ex);
 	}
@@ -97,17 +99,21 @@ class UserPresenter extends SystemUserPresenter {
      */
     public function webProfileFormSuccess(PersonalWebProfileForm $form) {
 	$values = $form->getValues();
+	
 	$wp = new WebProfile((array) $values);
 	$user = $this->getUser()->getIdentity();
+	
 	$wp->setStatus(WebProfileStatus::UPDATED);
 	$wp->setUpdated(new \Nette\Utils\DateTime());
 	$wp->setEditor($this->getUser()->getIdentity());
 	$user->setWebProfile($wp);
+	
 	try {
 	    $this->userService->updateUser($user);
 	} catch (Exceptions\DataErrorException $e) {
-	    $this->handleDataLoad($wp->getId(), "default", $e);
+	    $this->handleDataSave($wp->getId(), "default", $e);
 	}
+	$this->redirect("this");
     }
     
     public function passWordChangeFormSuccess(PasswordChangeForm $form) {
@@ -136,6 +142,7 @@ class UserPresenter extends SystemUserPresenter {
 
     public function createComponentUserWebProfileForm($name) {
 	$form = new PersonalWebProfileForm($this, $name, $this->getTranslator());
+	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }

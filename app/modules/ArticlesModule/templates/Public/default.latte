@@ -1,14 +1,29 @@
-{layout ./base.latte}
 
-{block content}
-{if $data}
-    {foreach $data as $a}
-	<h4><a href="{plink showArticle, $a->getAlias()}">{$a->getTitle()}</a></h4>
-	<p>{$a->getContent()|truncate:100} 
-	    <a href="{plink showArticle, $a->getAlias()}">{_articlesModule.readMore}</a>
-	</p>
-    {/}
-{else}
-    {_articlesModule.public.messages.noArticles}
+/* Articles module Public presenter */
+
+{layout $layoutsPath.'publicSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent} 
+    <li>{_articlesModule.articles.heading}</li>
+    
+{/block}
+
+{block #subMenu}
 {/}
-{control groupsFilterMenu}
+
+{block #publicContent}
+    {if $data}
+	{foreach $data as $a}
+	    <h4>
+		<a href="{plink showArticle, $a->getAlias()}">{$a->getTitle()}</a>
+	    </h4>
+	    <p>
+		{!$a->getContent()|truncate:100}
+		<a href="{plink showArticle, $a->getAlias()}">{_articlesModule.readMore}</a>
+	    </p>
+	{/}
+    {else}
+	{_articlesModule.public.messages.noArticles}
+    {/}
+

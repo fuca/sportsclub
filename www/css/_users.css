@@ -1,0 +1,31 @@
+/*
+    ====================
+	User 
+	WebProfile
+    ====================
+*/
+#content #frm-updateWebProfileForm img.user-picture,
+#content #frm-userWebProfileForm img.user-picture {
+    width: 230px;
+    height: 280px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+}
+#content #frm-updateWebProfileForm .form-group .form-control,
+#content #frm-userWebProfileForm .form-group .form-control {
+    width: 90%;
+}
+
+#content #frm-updateWebProfileForm .form-group input[type="submit"],
+#content #frm-userWebProfileForm .form-group input[type="submit"] {
+    margin: 10% 0 0;
+}
+
+img.user-grid-thumbnail {
+    width: 60px;
+    height: 40px;
+}
+
+
+
+

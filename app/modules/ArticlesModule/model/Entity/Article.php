@@ -59,17 +59,14 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
     /** @ORM\Column(type="string", nullable = false) */
     protected $title;
 
-    /** @ORM\Column(type="string", nullable = false) */
+    /** @ORM\Column(type="text", nullable = false) */
     protected $content;
 
     /** @ORM\Column(type="datetime", nullable = false) */
     protected $updated;
 
     /** @ORM\Column(type="string", nullable = false) */
-    protected $pictureName;
-    
-    /** @ORM\Column(type="string", nullable = false) */
-    protected $thumbnail;
+    protected $picture;
 
     /** @ORM\Column(type="ArticleStatus", nullable = false) */
     protected $status;
@@ -139,8 +136,8 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
 	return $this->updated;
     }
 
-    public function getPictureName() {
-	return $this->pictureName;
+    public function getPicture() {
+	return $this->picture;
     }
 
     public function getStatus() {
@@ -195,8 +192,8 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
 	$this->updated = $updated;
     }
 
-    public function setPictureName($pictureName) {
-	$this->pictureName = $pictureName;
+    public function setPicture($picture) {
+	$this->picture = $picture;
     }
 
     public function setStatus($status) {

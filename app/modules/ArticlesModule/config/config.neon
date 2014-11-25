@@ -15,3 +15,4 @@ services:
 			- setCacheStorage(@articlesModule.cacheStorage)
 			- setSportGroupService()
 			- setUserService()
+			- setImageService(@articleImageService)

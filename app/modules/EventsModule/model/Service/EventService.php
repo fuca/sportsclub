@@ -134,6 +134,17 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
+    public function getEventParticipation($id) {
+	if (!is_numeric($id)) 
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
+	try {
+	    return $this->participationDao->find($id);
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 
     public function createEvent(Event $e) {
 	if ($e === NULL)

@@ -1,12 +1,39 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
+
+{* Articles module Public presenter *}
+
+{layout $layoutsPath."publicSectionBaseTemplate.latte"}
+
+{block #breadcrumbs}
+    {include #parent} 
+    <li><a href="{plink :Articles:Public:default}">{_ articlesModule.articles.heading}</a></li>
+    <li>{$data->getTitle()}</li>
+{/block}
+    
+{block #title}
+    {_ articlesModule.articles.heading} {$titleCrumbSeparator} {include #parent}
+{/}
+
+{block #subMenu}
+{/}
+
+{block #publicContent}
 
 {if $data}
     <article>
-	<h4>{$data->getTitle()}</h4>
-	<em>{$data->getUpdated()|date:"%d.%m.%Y %H:%M"} {$data->getEditor()}</em>
+	<div class="page-header">
+	    <h3>{$data->getTitle()}</h3>
+	</div>
+	
+	<p>
+	    <em><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>&nbsp;{$data->getUpdated()|date:"%d.%m.%Y %H:%M"}</em>
+	    <em>&nbsp;&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;
+		{$data->getEditor()->getName()} {$data->getEditor()->getSurName()}</em>
+	</p>
+	
+	<img class="img-responsive" src="{$basePath}/assets/images/{$data->getPicture()|thumb:"article", "700x400"}" />
+	
 	<p>{!$data->getContent()}</p>
+	
 	{control commentControl:form}
 	{control commentControl:comments}
     </article>

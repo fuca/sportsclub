@@ -4,7 +4,9 @@
 {layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ eventsModule.club.heading}</li>
+    {include #parent}
+    <li><a href="{plink :Events:Club:default}">{_ eventsModule.club.eventsSection}</a></li>
+    <li>{_ eventsModule.club.heading}</li>
 {/block}
 
 {block #title}
@@ -30,8 +32,12 @@
     </div>
     <div role="tabpanel" class="tab-pane fade" id="profile">
 	{if $data}
-    {foreach $data as $d}   
-	{$d->getTitle()}<br/>
+    {foreach $data as $d} 
+	<article>
+	    <p>
+		<a href="{plink showEvent, $d->getAlias()}">{$d->getTitle()}</a>
+	    </p>
+	</article>
     {/}
     {else}
 	{_eventsModule.protected.messages.noDataFound}

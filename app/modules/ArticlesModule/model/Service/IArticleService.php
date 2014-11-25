@@ -44,7 +44,7 @@ interface IArticleService {
 
     /**
      * Returns article entry from database/cache
-     * @param \App\Model\Entities\SportGroup $g
+     * @param \App\Model\Entities\SportGroup
      * @return Article
      * @throws Exceptions\NullPointerException
      * @throws Exceptions\DataErrorException
@@ -64,5 +64,13 @@ interface IArticleService {
      * @return \Grido\DataSources\Doctrine
      */
     function getArticlesDatasource();
+    
+    /**
+     * Returns highlighted articles
+     * @param integer $limit
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
+    function getHighLights();
     
 }

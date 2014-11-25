@@ -70,6 +70,9 @@ class WebProfile extends BaseEntity {
     /** @ORM\Column(type="string", nullable=true) */
     protected $aditionalInfo;
     
+    /** @ORM\Column(type="string", nullable=true) */
+    protected $picture;
+    
     /** @ORM\Column(type="datetime", nullable=false) */
     protected $updated;
     
@@ -205,5 +208,15 @@ class WebProfile extends BaseEntity {
 
     public function setSignature($signature) {
 	$this->signature = $signature;
+    }
+    
+    function getPicture() {
+	return $this->picture;
+    }
+
+    function setPicture($picture) {
+	if (($picture instanceof \Nette\Http\FileUpload && $picture == "") || empty($picture)) 
+	    return;
+	$this->picture = $picture;
     }
 }

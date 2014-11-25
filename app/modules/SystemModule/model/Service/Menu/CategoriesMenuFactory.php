@@ -74,9 +74,14 @@ class CategoriesMenuFactory extends BaseService {
 			    return false;
 			});
 	    $tmp = $tmp[0];
-	    $this->iterateChildren($tmp, $c->addNode($tmp->getName(), 
-		    $pres->link("this", $tmp->getAbbr()), FALSE, array(), 
-		    $tmp->getAbbr()), $pres, $c);
+	    $rootNode = $c->addNode($tmp->getName(), 
+		    $pres->link($this->linkModuleHelper($pres), $tmp->getAbbr()), 
+		    FALSE, array(), $tmp->getAbbr());
+	if ($pres->getParam('abbr') === null && 
+		$tmp->getAbbr() == $pres::ROOT_GROUP) {
+	    $c->setCurrentNode($rootNode);
+	}
+	$this->iterateChildren($tmp, $rootNode , $pres, $c);
 //	    $data = $c;
 //	    $opts = [Cache::TAGS=>[self::MENU_CONTROL, self::ENTITY_COLLECTION]];
 //	    $cache->save(self::MENU_CONTROL, $data, $opts);
@@ -87,17 +92,27 @@ class CategoriesMenuFactory extends BaseService {
     private function iterateChildren($rootGroup, $rootNode, $pres, $control) {
 	$children = $rootGroup->getChildren();
 	if ($children->isEmpty()) return;
+	$abbrParam = $pres->getParam('abbr');
 	foreach ($children as $c) {
 		$abbr = $c->getAbbr();
 		$name = $c->getName()." ({$c->getSportType()->getName()})";
-		$current = FALSE;
-		if ($pres->getParam('abbr') == $abbr) {
-		    $current = TRUE;
+		$current = false;
+		if ($abbrParam === $abbr) {
+		    $current = true;
+		} else {
+		    if ($abbrParam === null && $abbr == $pres::ROOT_GROUP) {
+			$current = true;
+		    }
 		}
-		$node = $rootNode->addNode($name, $pres->link("this", $abbr), FALSE, array(), $abbr);
+		
+		$node = $rootNode->addNode($name, $pres->link($this->linkModuleHelper($pres), $abbr), FALSE, array(), $abbr);
 		if ($current)
 		    $control->setCurrentNode($node);
 		$this->iterateChildren($c, $node, $pres, $control);
 	}
+    }
+    
+    private function linkModuleHelper($pres) {
+	return ":".$pres->getName().":default";
     }
 }

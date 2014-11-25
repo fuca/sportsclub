@@ -18,7 +18,5 @@ services:
 				- setCacheStorage(@usersModule.cacheStorage)
 				- setSalt(%models.salt%)
 				- setLogger()
-
-	# viz http://doc.nette.org/cs/2.2/di-extensions
-	# a http://pla.nette.org/cs/create-components-with-autowiring
+				- setImageService(@userImageService)
 

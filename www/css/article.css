@@ -1,0 +1,13 @@
+
+/*
+    ============
+	ADMIN
+    ============
+*/
+
+img.article-thumbnail {
+    width: 200px;
+    height: 100px;
+    border: 1px black;
+    background: transparent;
+}

@@ -8,7 +8,8 @@
 
 namespace App\SystemModule\Model\Service\Menu;
 
-use Nette\Object;
+use \Nette\Object,
+    \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Description of MenuItemData
@@ -31,6 +32,25 @@ class ItemData extends Object implements IItemData {
 
     /** @var mixed */
     private $data;
+    
+    /** @var \Doctrine\Common\Collections\ArrayCollection */
+    private $children;
+    
+    public function __construct() {
+	$this->children = new ArrayCollection();
+	$this->data = [];
+    }
+    
+    public function addItem(IItemData $item) {
+	$this->children->add($item);
+    }
+    
+    /**
+     * @return Doctrine\Common\Collections\ArrayCollection
+     */
+    public function getChildren() {
+	return $this->children;
+    }
 
     public function setLabel($label) {
 	$this->label = $label;
@@ -48,18 +68,12 @@ class ItemData extends Object implements IItemData {
 	$this->data = $data;
     }
 
-    /**
-     * Data getter
-     * @return mixed
-     */
+    /** @return mixed */
     public function getData() {
 	return $this->data;
     }
 
-    /**
-     * Url getter.
-     * @return string
-     */
+    /** @return string */
     public function getUrl() {
 
 	if (!isset($this->url))
@@ -68,10 +82,7 @@ class ItemData extends Object implements IItemData {
 	return $this->url;
     }
 
-    /**
-     * Url getter.
-     * @return string
-     */
+    /** @return string */
     public function getMode() {
 
 	if (!isset($this->mode))
@@ -80,10 +91,7 @@ class ItemData extends Object implements IItemData {
 	return $this->mode;
     }
 
-    /**
-     * Label getter.
-     * @return string
-     */
+    /** @return string */
     public function getLabel() {
 
 	if (!isset($this->label))

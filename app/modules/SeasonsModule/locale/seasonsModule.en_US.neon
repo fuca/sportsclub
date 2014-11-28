@@ -32,6 +32,7 @@ admin.error:
 	seasonAppIdDoesntExist: "Season applicaton #%id% does not exist"
 	seasonAppUniqueExist: "Season application for this user and group and season already exist"
 	appDeadlineExpired: "Sorry, but application deadline for this season and group expired"
+	noTaxForSeasonAndGroup: "Sorry, but you must create season tax for selected season and group first"
 
 seasonForm.errors:
 	labelAlreadyExist: "Season with label '%label%' already exist"

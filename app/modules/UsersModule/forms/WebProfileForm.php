@@ -48,6 +48,9 @@ final class WebProfileForm extends BaseForm {
 	$this->addUpload("picture", "usersModule.webProfForm.picture.label");
 	
 	$this->addTextArea('signature', 'usersModule.webProfForm.signature.label', $cols, $rows);
+	
+	$this->addCheckbox("publish", 'usersModule.webProfForm.publish.label');
+	
 	$this->addSelect("status", "usersModule.webProfForm.status.label", $wpStates);
 	
 	$this->addSubmit('submitButton', 'system.forms.submitButton.label');

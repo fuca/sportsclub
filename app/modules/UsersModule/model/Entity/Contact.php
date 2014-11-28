@@ -149,5 +149,4 @@ class Contact extends BaseEntity implements IIdentifiable {
     public function __toString() {
 	return "{$this->getId()}";
     }
-
 }

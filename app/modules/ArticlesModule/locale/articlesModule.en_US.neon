@@ -38,6 +38,7 @@ articleForm.errors:
 	articleAlreadyExist: "Article with given title already exist"
 
 
-public:
+publicMenu:
+	articles.label: "Articles"
 public.messages:
 	noArticles: "No articles were found for this category"

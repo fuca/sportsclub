@@ -20,7 +20,7 @@
     <h3>{_articlesModule.admin.updateArticle.heading}&nbsp;<em><small>{$article->getTitle()}</small></em></h3>
 </div>
 {form updateArticleForm}
-
+    {control $form errors}
     <div class="row">
 	<div class="col-md-8">
 

@@ -64,6 +64,11 @@ final class AdminPresenter extends SystemAdminPresenter {
      * @var \App\SystemModule\Model\Service\IStaticPageService
      */
     public $staticPageService;
+    
+    /**
+     * @var array
+     */
+    private $selectSportGroups;
 
     public function getSportGroupService() {
 	return $this->sportGroupService;
@@ -154,6 +159,19 @@ final class AdminPresenter extends SystemAdminPresenter {
 		->setSortable();
 	$headerAdded = $grid->getColumn('name')->headerPrototype;
 	$headerAdded->class[] = 'center';
+	
+	$y = $this->tt("system.common.yes");
+	$n = $this->tt("system.common.no");
+	$activeList = [true => $y, false => $n];
+	$grid->addColumnText('active', $this->tt("systemModule.admin.grid.active"))
+		->setSortable()	
+		->setReplacement([true => $y, 
+		    null => $n])
+		->setFilterSelect($activeList);
+		
+	$headerAct = $grid->getColumn('active')->headerPrototype;
+	$headerAct->class[] = 'center';
+	$headerAct->style['width'] = '0.1%';
 
 	$grid->addColumnText('note', $this->tt("systemModule.admin.grid.note"))
 		->setSortable();
@@ -258,11 +276,21 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    $this->handleDependencyDelete($id, "this", $ex);
 	}
     }
+    
+    protected function getSelectSportGroups() {
+	if (!isset($this->selectSportGroups)) {
+	    try {
+		$this->selectSportGroups = $this->sportGroupService->getSelectAllSportGroups();
+	    } catch (Exceptions\DataErrorException $ex) {
+		$this->handleDataLoad(null, null, $ex);
+	    }
+	}
+	return $this->selectSportGroups;
+    }
 
     public function createComponentSportGroupGrid($name) {
 	try {
 	    $sportTypes = [null=>null]+$this->sportTypeService->getSelectSportTypes();
-	    $sportGroups = [null=>null]+$this->sportGroupService->getSelectAllSportGroups();
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad(null, null, $ex);
 	}
@@ -293,7 +321,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	
 	$grid->addColumnText('parent', $this->tt("systemModule.admin.grid.parent"))	
 		->setSortable()
-		->setFilterSelect($sportGroups);
+		->setFilterSelect([null=>null]+$this->getSelectSportGroups());
 	$headerParent = $grid->getColumn('parent')->headerPrototype;
 	$headerParent->class[] = 'center';
 	
@@ -466,6 +494,12 @@ final class AdminPresenter extends SystemAdminPresenter {
 //		->setFilterSelect($pages);
 //	$headerParent = $grid->getColumn('parent')->headerPrototype;
 //	$headerParent->class[] = 'center';
+	
+	$grid->addColumnText('group', $this->tt("systemModule.admin.grid.group"))	
+		->setSortable()
+		->setFilterSelect([null=>null]+$this->getSelectSportGroups());
+	$headerParent = $grid->getColumn('group')->headerPrototype;
+	$headerParent->class[] = 'center';
 	
 	$grid->addColumnText('commentMode', $this->tt("systemModule.admin.grid.commMode"))	
 		->setSortable()

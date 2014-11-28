@@ -204,6 +204,7 @@ class UserService extends BaseService implements IUserService {
      * @throws Exceptions\DataErrorException
      */
     private function handleUpdateUser(User $uDb, User $formUser) {
+	$identifier = null;
 	try {
 	    $now = new DateTime();
 	    if ($formUser->getWebProfile() === null) {
@@ -235,9 +236,11 @@ class UserService extends BaseService implements IUserService {
 	    $this->entityManager->merge($uDb);
 	    $this->entityManager->flush();
 	} catch (DuplicateEntryException $e) {
+	    $this->imageService->removeResource($identifier);
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	} catch (\Exception $e) {
+	    $this->imageService->removeResource($identifier);
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}

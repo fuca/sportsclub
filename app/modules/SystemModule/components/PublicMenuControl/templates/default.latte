@@ -1,0 +1,85 @@
+
+{* PublicMenu control default template *}
+
+<nav class="navbar navbar-default" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	    <span class="sr-only">Toggle navigation</span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	</button>
+	{foreach $collectedData as $data}
+	    <a class="navbar-brand" href="{plink $data->getUrl()}">{_ $data->getLabel()}</a>
+	{/foreach}
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	    <ul class="nav navbar-nav">
+		{foreach $sportsData as $data}
+		    {var type => $data[App\SystemModule\Components\PublicMenuControl::TYPE_ID]}
+		    {var groups => $data[App\SystemModule\Components\PublicMenuControl::GROUPS_ID]}
+		    {var rootGroup => $data[App\SystemModule\Components\PublicMenuControl::ROOT_ID]}
+		    
+		    <li class="dropdown">
+			<!-- SPORT TYPE NAME DROPDOWN -->
+			<a tabindex="0" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			    {$type->getName()}<span class="caret"></span>
+			</a>
+			<!-- SPORT GROUPS -->
+			<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+				{foreach $groups as $g}
+				    {if $g->getParent()->getId() == $rootGroup->getId()}
+					{var pages => $g->getStaticPages()}
+					{var children => $g->getChildren()}
+				    <li class="dropdown-submenu
+					{if $children->isEmpty()}
+					    disabled
+					{/}">
+
+					<!-- GROUP DROPDOWN TITLE -->
+					<a href="#">{$g->getName()}</a>
+					{if !$children->isEmpty() || !$pages->isEmpty()}
+					    {block #treeDropDownSubMenu}
+					    <!-- GROUP DROPDOWN CONTENT -->
+						<ul class="dropdown-menu">
+						    {foreach $pages as $page}
+							<li><a href="{plink :System:Homepage:showStaticPage, $page->getAbbr()}">{$page->getTitle()}</a></li>
+						    {/foreach}
+
+							{if  !$pages->isEmpty() && !$children->isEmpty()}
+							    <li class="divider"></li>
+							{/if}
+							{foreach $children as $child}
+							    {if $child->getChildren()->isEmpty() && $child->getStaticPages()->isEmpty()}
+								<li class="dropdown-submenu disabled">	       
+								    <a href="#"> {$child->getName()}</a>
+								</li>
+							    {else}
+								<li class="dropdown-submenu">	       
+								    <a tabindex="0" data-toggle="dropdown" href="#">{$child->getName()}</a>
+								    {include #treeDropDownSubMenu, children=>$child->getChildren(), pages=>$child->getStaticPages()}
+								</li>
+							    {/if}
+							{/foreach}
+						</ul>
+					    {/block}
+					{/if}
+				    </li>
+				    {/if}
+				{/foreach}
+			</ul>
+		    </li>
+		{/foreach}
+	    </ul> <!-- /. nav navbar-nav-->
+	      
+	  <!-- /.navbar-collapse -->
+	</div>
+</nav>
+
+<script>
+    $('.dropdown-submenu > a').submenupicker();
+</script>

@@ -11,9 +11,9 @@ forms:
 
 messages:
 	badArgumentFormat: "Bad argument format, '%id%' given"
-	couldNotSaveData: "Unable to save data with id '%id%'"
-	couldNotLoadData: "Unable to load data with id '%id%'"
-	couldNotDeleteData: "Unable to delete data with id '%id%'"
+	couldNotSaveData: "Unable to save data|Unable to save data with id '%id%'"
+	couldNotLoadData: "Unable to load data|Unable to load data with id '%id%'"
+	couldNotDeleteData: "Unable to delete data|Unable to delete data with id '%id%'"
 	nothingToShow: "No data were found"
 
 admin.messages:

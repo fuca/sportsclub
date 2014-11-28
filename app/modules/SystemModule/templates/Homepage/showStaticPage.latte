@@ -1,0 +1,58 @@
+
+{* System module Homepage presenter *}
+
+{layout $layoutsPath."publicRootBase.latte"}
+
+{block #breadcrumbs}
+    {var group => $page->getGroup()}
+    {var parent => $group->getParent()}
+    
+    {block #loop}
+	{if $parent !== null}
+	    {include #loop, parent=>$parent->getParent(),}
+	    <li>
+		<a href="{plink :System:Homepage:showGroupPages, $parent->getAbbr()}">
+		    {$parent->getName()}
+		</a>
+	    </li>
+	    
+	{/if}
+    {/block}
+    <li><a href="{plink showGroupPages, $group->getAbbr()}">{$group->getName()}</a></li>
+    <li>{$page->getTitle()}</li>
+    
+{/block}
+
+{block #side}left{/block}
+
+{block #sideBlock}
+    {control staticPagesMenu:contentMenu, $layoutStyle, null, "hidden-xs hidden-sm"}
+    {control staticPagesGroupsMenu:contentMenu, "user", null}
+{/block}
+
+{block #mainBlock}
+
+
+    <article class="static-page">
+	
+
+	    
+	<div class="page-header">
+	    		<h2>{$page->getTitle()}</h2>
+<!--		<small>{$page->getGroup()->getName()}</small>-->
+	</div>
+
+
+
+	
+		<p>
+		    <span class="glyphicon glyphicon-time" aria-hidden="true" title="Updated">&nbsp;{$page->getUpdated()|date:$dateFormat}</span>
+		    &nbsp;&nbsp;
+		    <span class="glyphicon glyphicon-user" aria-hidden="true" title="Editor">&nbsp;{$page->getEditor()->getName()} {$page->getEditor()->getSurName()}
+		    </span>
+		</p>
+		<p>
+		    {!$page->getContent()}
+		</p>
+
+    </article>

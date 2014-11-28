@@ -15,14 +15,13 @@ services:
 		class:
 			App\SystemModule\Model\Service\SportTypeService
 		setup:
-		    		- setCacheStorage(@systemModule.cacheStorage)
+				- setCacheStorage(@systemModule.cacheStorage)
 
 	systemModule.sportGroupService:
 		class:
 			App\SystemModule\Model\Service\SportGroupService
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
-				- setSportTypeService()
 
 	systemModule.categoriesMenuFactory:
 		class:
@@ -36,7 +35,7 @@ services:
 		class:
 			App\SystemModule\Model\Service\Menu\AdminMenuControlFactory
 		setup:
-				#- setCacheStorage(@systemModule.cacheStorage)
+				- setCacheStorage(@systemModule.cacheStorage)
 
 	systemModule.protectedMenuControlFactory:
 		class:
@@ -50,10 +49,41 @@ services:
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
 
+
+	systemModule.publicMenuControlFactory:
+		class:
+			App\SystemModule\Model\Service\Menu\PublicMenuControlFactory
+		setup:
+				- setCacheStorage(@systemModule.cacheStorage)
+				- setSportGroupService()
+				- setSportTypeService()
+
 	systemModule.staticPageService:
 		class:
 			App\SystemModule\Model\Service\StaticPageService
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
-				- setSportGroupService()
 				- setUserService()
+
+# Event listeners
+
+	systemModule.sportGroupListener:
+		class:
+			App\SystemModule\Model\Listeners\SportGroupListener
+		tags: [kdyby.subscriber]
+		setup:	
+			- setPublicMenuFactory()
+
+	systemModule.sportTypeListener:
+		class:
+			App\SystemModule\Model\Listeners\SportTypeListener
+		tags: [kdyby.subscriber]
+		setup:	
+			- setPublicMenuFactory()
+
+	systemModule.staticPageListener:
+		class:
+			App\SystemModule\Model\Listeners\StaticPageListener
+		tags: [kdyby.subscriber]
+		setup:	
+			- setPublicMenuFactory()

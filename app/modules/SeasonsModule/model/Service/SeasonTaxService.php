@@ -24,6 +24,7 @@ use \Nette\DateTime,
     \App\Model\Entities\SportGroup,
     \App\Model\Entities\Season,
     \Kdyby\Monolog\Logger,
+    \Doctrine\ORM\NoResultException,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\Model\Misc\Exceptions,
     \Grido\DataSources\Doctrine,
@@ -228,10 +229,17 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
     
     public function getSeasonTaxSG(Season $s, SportGroup $sg) {
 	try {
-	    return $this->seasonTaxDao->createQueryBuilder("st")
-			->where("st.season = :season AND st.sportGroup = :group")
-			->setParameter("season", $s)->setParameter("group", $sg)
+	    $res = $this->seasonTaxDao->createQueryBuilder("st")
+			->where("st.season = :season")
+			->setParameter("season", $s)
+			->andWhere("st.sportGroup = :group")
+			->setParameter("group", $sg)
 			->getQuery()->getSingleResult();
+	    return $res;
+	} catch (NoResultException $ex) {
+	    $this->logWarning($ex->getMessage());
+	    throw new Exceptions\NoResultException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(

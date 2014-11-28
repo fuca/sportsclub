@@ -1,0 +1,44 @@
+
+{* System module Homepage presenter *}
+
+{layout $layoutsPath."publicRootBase.latte"}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {var parent => $group->getParent()}
+    
+    {block #loop}
+	{if $parent !== null}
+	    {include #loop, parent=>$parent->getParent()}
+	    <li>
+		<a href="{plink :System:Homepage:showGroupPages, $parent->getAbbr()}">
+		    {$parent->getName()}
+		</a>
+	    </li>
+	{/if}
+    {/block}
+    <li>{$group->getName()}</li>
+{/block}
+
+{block #sideBlock}
+    {control staticPagesMenu:contentMenu, $layoutStyle, null, "hidden-xs hidden-sm"}
+    {control staticPagesGroupsMenu:contentMenu, "user", null}
+{/block}
+
+{block #mainBlock}
+    <div class="row page-overview-wrapper">
+	<div class="col-md-1"></div>
+	    <div class="col-md-6">
+		<div class="list-group">
+		{foreach $pages as $page}
+		    <a href="{plink showStaticPage, $page->getAbbr()}" class="list-group-item">
+			<h4 class="list-group-item-heading">{$page->getTitle()}</h4>
+			<p class="list-group-item-text">{!$page->getContent()|truncate:80}</p>
+		    </a>
+		{/foreach}
+		</div>
+	    </div>
+	<div class="col-md-5"></div>
+    </div>
+{/block}

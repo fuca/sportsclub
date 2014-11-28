@@ -1,0 +1,23 @@
+
+{* System module Contact control *}
+
+<address>
+    <h2>{_ securityModule.contactControl.quick.heading}</h2>
+    <p></p>
+    <p><strong><big>{$title}</big></strong><br>{$street} {$number}, {$postCode} {$city}</p>
+    <p>
+	{if !empty($in)}
+	<strong>{_ securityModule.contactControl.identificationNumber.label}</strong> {$in}, &nbsp;
+	{/if}
+	{if !empty($tin)}
+	<strong>{_ securityModule.contactControl.taxIdentificationNumber.label}</strong> {$tin}
+	{/if}
+    </p>
+    <p>
+	{if !empty($account)}
+	<strong>{_ securityModule.contactControl.bankAccountNumber.label}</strong> &nbsp; {$account}
+	{/if}
+    </p>
+    <p style="text-align: right;">/ <a href="{plink $moreContactsLink}" title="{_ securityModule.contactControl.moreContacts.label}">
+	    {_ securityModule.contactControl.moreContacts.label}</a></p>
+</address>

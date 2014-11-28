@@ -125,10 +125,12 @@ class PositionService extends BaseService implements IPositionService {
 	if ($p === null)
 	    throw new Exceptions\NullPointerException("Argument Position was null");
 	try {
-	    $sgDb = $this->sportGroupService->getSportGroup($p->getGroup(), false);
-	    if ($sgDb !== null) {
-		$p->setGroup($sgDb);
+	    $group = null;
+	    $id = $this->getMixId($p->getGroup());
+	    if ($id !== null) {
+		$group = $this->sportGroupService->getSportGroup($id, false);	
 	    }
+	    $p->setGroup($group);
 	} catch (\Exception $e) {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -140,10 +142,12 @@ class PositionService extends BaseService implements IPositionService {
 	if ($p === null)
 	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
-	    $oDb = $this->userService->getUser($p->getOwner(), false);
-	    if ($oDb !== null) {
-		$p->setOwner($oDb);
+	    $owner = null;
+	    $id = $this->getMixId($p->getOwner());
+	    if ($id !== null) {
+		$owner = $this->userService->getUser($id, false);	
 	    }
+	    $p->setOwner($owner);
 	} catch (\Exception $e) {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -155,10 +159,12 @@ class PositionService extends BaseService implements IPositionService {
 	if ($p === null)
 	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
-	    $rDb = $this->roleService->getRole($p->getRole(), false);
-	    if ($rDb !== null) {
-		$p->setRole($rDb);
+	    $role = null;
+	    $id = $this->getMixId($p->getRole());
+	    if ($id !== null) {
+		$role = $this->roleService->getRole($id, false);
 	    }
+	    $p->setRole($role);
 	} catch (\Exception $e) {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -247,20 +253,20 @@ class PositionService extends BaseService implements IPositionService {
 	return $model;
     }
     
-    public function getPositionsWithinGroup($gid, $useCache = true) {
-	if (empty($gid) && !is_numeric($gid)) 
-	    throw new Exceptions\InvalidArgumentException("Argument gid was bad shaped, '{$gid}' given");
+    public function getPositionsWithinGroup(SportGroup $g, $useCache = true) {
+//	if (empty($gid) && !is_numeric($gid)) 
+//	    throw new Exceptions\InvalidArgumentException("Argument gid was bad shaped, '{$gid}' given");
 	try {
 	    $qb = $this->positionDao->createQueryBuilder();
-	    $sg = $this->sportGroupService->getSportGroup($gid, false);
 	    $qb->select("p")
-		    ->from("App\Model\Entities\Position","p")->where("p.group = :group")
-		    ->setParameter("group", $sg);
+		    ->from("App\Model\Entities\Position","p")
+		    ->where("p.group = :group")
+		    ->setParameter("group", $g);
 	    $q = $qb->getQuery();
 	    if (!$useCache) {
 		return $q->getResult();
 	    }
-	    $id = User::getClassName()."in".SportGroup::getClassName()."-".$gid;
+	    $id = User::getClassName()."in".SportGroup::getClassName()."-".$g->getId();
 	    $cache = $this->getEntityCache();
 	    $data = $cache->load($id);
 	    if ($data == null) {
@@ -275,16 +281,4 @@ class PositionService extends BaseService implements IPositionService {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
-    
-//        public function getPositionsOfGroup(SportGroup $g) {
-//	if ($g === null) 
-//	    throw new Exceptions\NullPointerException("Argument SportGroup was null");
-//	try {
-//	    return $this->positionDao->findAll(["group"=>$g->getId()]);
-//	} catch (\Exception $e) {
-//	    $this->logError($e);
-//	    throw new Exceptions\DataErrorException(
-//		    $e->getMessage(), $e->getCode(), $e->getPrevious());
-//	}
-//    }
 }

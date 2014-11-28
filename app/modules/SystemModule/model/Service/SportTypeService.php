@@ -25,27 +25,45 @@ use \App\Model\Entities\SportType,
     \Kdyby\Doctrine\DBALException,
     \Nette\Caching\Cache,
     \Kdyby\Monolog\Logger,
-    \Kdyby\Doctrine\DuplicateEntryException;
+    \Kdyby\Doctrine\DuplicateEntryException,
+    \App\SystemModule\Model\Service\IStaticPageService;
 
 /**
  * Service for managing system resources
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
-class SportTypeService extends BaseService implements ISportTypeService {
+final class SportTypeService extends BaseService implements ISportTypeService {
 
     /**
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $sportTypeDao;
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onCreate = [];
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onDelete = [];
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onUpdate = [];
 
     public function __construct(EntityManager $em, Logger $logger) {
 	parent::__construct($em, SportType::getClassName(), $logger);
 	$this->sportTypeDao = $em->getDao(SportType::getClassName());
     }
-
     
-    // <editor-fold desc="Administration of SPORT TYPES">
+    // <editor-fold desc="SPORT TYPES">
     
     public function createSportType(SportType $type) {
 	if ($type == null)
@@ -58,6 +76,7 @@ class SportTypeService extends BaseService implements ISportTypeService {
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+	$this->onCreate(clone $type);
     }
 
     public function deleteSportType($id) {
@@ -66,9 +85,11 @@ class SportTypeService extends BaseService implements ISportTypeService {
 	try {
 	    $db = $this->sportTypeDao->find($id);
 	    if ($db !== null) {
+		$this->onDelete(clone $db);
 		$this->sportTypeDao->delete($db);
+		$this->invalidateEntityCache($db);
 	    }
-	    $this->invalidateEntityCache($db);
+	    
 	} catch (DBALException $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DependencyException(
@@ -119,6 +140,7 @@ class SportTypeService extends BaseService implements ISportTypeService {
 		$this->entityManager->merge($dbType);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($dbType);
+		$this->onUpdate(clone $dbType);
 	    }
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());
@@ -139,7 +161,7 @@ class SportTypeService extends BaseService implements ISportTypeService {
 	    $data = $cache->load(self::SELECT_COLLECTION);
 	    if ($data === null) {
 		$data = $this->sportTypeDao->findPairs([], "name");
-		$opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
+		$opt = [Cache::TAGS => [self::SELECT_COLLECTION, self::ENTITY_COLLECTION]];
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
 	    return $data;
@@ -148,6 +170,33 @@ class SportTypeService extends BaseService implements ISportTypeService {
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+    }
+    
+    public function getAllSportTypes($useCache = true, $active = null) {
+	if (!is_null($active) && !is_bool($active))
+	    throw new Exceptions\InvalidStateException("Argument active has to be type of bool");
+	try {
+	    if (!$useCache) {
+		return $this->getAllSportTypesHelper($active);
+	    }
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load(self::ENTITY_COLLECTION);
+
+	    if (empty($data)) {
+		$data = $this->getAllSportTypesHelper($active);
+		$opt = [Cache::TAGS => [self::ENTITY_COLLECTION]];
+		$cache->save(self::ENTITY_COLLECTION, $data, $opt);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $data;
+    }
+    
+    private function getAllSportTypesHelper($active) {
+	return $this->sportTypeDao->findBy(is_bool($active)?["active"=>$active]:[],["name"=>"ASC"]);
     }
     
     // </editor-fold>

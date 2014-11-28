@@ -1,0 +1,145 @@
+
+{* Users module Public presenter *}
+
+{layout $layoutsPath."publicRootBase.latte"}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    <li><a href="{plink default}">{_ usersModule.public.rosters.bread}</a></li>
+    {var parent => $group->getParent()}
+    
+    {block #loop}
+	{if $parent !== null}
+	    {include #loop, parent=>$parent->getParent()}
+	    <li>
+		<a href="{plink :Users:Public:default, $parent->getAbbr()}">
+		    {$parent->getName()} 
+		    {var type => $parent->getSportType()}
+		    {if $type != null}
+			({$type->getName()})
+		    {/if}
+		</a>
+	    </li>
+	{/if}
+    {/block}
+    <li>
+    <a href="{plink :Users:Public:default, $group->getAbbr()}">
+		    {$group->getName()} ({$group->getSportType()->getName()})
+    </a>
+    </li>
+    <li>
+	{$name} {$surname}
+    </li>
+    
+{/block}
+
+{block #title}
+    {include #parent}
+{/block}
+
+{block #sideBlock}
+    {*control staticPagesMenu:contentMenu, $layoutStyle, null, "hidden-xs hidden-sm"*}
+    {control webProfileMenu:contentMenu, "public", null}
+{/block}
+
+{block #mainBlock}  
+<div class="row">
+    {if $publishable}
+	<div class="page-header">
+		<h3># {$profile->getJerseyNumber()}&nbsp;{$name}&nbsp;"{$nick}"&nbsp;{$surname}</h3>
+	    </div>
+	<div class="col-sm-5">
+	    
+	    <div class="list-group">
+		<span class="list-group-item">
+		    <h4 class="list-group-item-heading">{_ usersModule.webProfForm.personalLikes.label}</h4>
+		    <p class="list-group-item-text">{$profile->getPersonalLikes()}</p>
+		</span>
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.personalDisLikes.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getPersonalDislikes()}</p>
+		</span>
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.personalInterests.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getPersonalInterests()}</p>
+		</span>	
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.equipment.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getEquipment()}</p>
+		</span>
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.favBrand.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getFavouriteBrand()}</p>
+		</span>
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.favClub.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getFavouriteClub()}</p>
+		</span>
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.experience.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getSportExperience()}</p>
+		</span>
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.howGotThere.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getHowGotThere()}</p>
+		</span>
+		
+		
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.moreAboutMe.label}
+		    </h4>
+		    <p class="list-group-item-text">{$profile->getAditionalInfo()}</p>
+		</span>
+	    </div>  
+	    
+	</div>
+	    <div class="col-sm-1"></div>
+	<div class="col-sm-4">
+	    <div class="user-picture img-thumbnail text-center">
+		    <img src="{$basePath}/assets/images/{$profile->getPicture()|thumb:"user","230x280"}" class="user-picture img-responsive"/>
+	    </div>
+	    <div class="list-group">
+		<span class="list-group-item ">
+		    <h4 class="list-group-item-heading">
+			{_ usersModule.webProfForm.memberSince.label} {$since|date:"Y"}
+		    </h4>
+		    <p class="list-group-item-text"></p>
+		</span>
+	    </div>
+	    
+	</div>
+	<div class="col-sm-2"></div>
+	
+    {else}
+	<div class="page-header">
+	    <h3>{$nick}</h3>
+	</div>
+	<p>
+	{_ usersModule.public.webProfile.notPublished}
+	</p>
+    {/if}
+ </div>
+{/block}

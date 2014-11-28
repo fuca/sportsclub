@@ -38,13 +38,13 @@ a:hover {
 body.homepage a, 
 body.homepage a:visited {
     color: #105ac9;
-    text-decoration: underline;
+    xtext-decoration: underline;
 }
 
 body.public a, 
 body.public a:visited {
     color: #105ac9;
-    text-decoration: underline;
+    xtext-decoration: underline;
 }
 
 body.club #sectionbar { background: #D7060C; }
@@ -52,21 +52,21 @@ body.club #sectionbar { background: #D7060C; }
 body.club a, 
 body.club a:visited {
     color: #D7060C;
-    text-decoration: underline;
+    xtext-decoration: underline;
 }
 
 body.admin #sectionbar { background: #CC00CC; }
 body.admin a, 
 body.admin a:visited {
     color: #CC00CC;
-    text-decoration: underline;
+    xtext-decoration: underline;
 }
 
 body.user #sectionbar { background: #F97A09; }
 body.user a, 
 body.user a:visited {
     color: #F97A09;
-    text-decoration: underline;
+    xtext-decoration: underline;
 }
 
 

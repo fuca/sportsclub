@@ -1,0 +1,73 @@
+
+{* Security module Public presenter Contact page *}
+
+{layout $layoutsPath."publicRootBase.latte"}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    <li><a href="{plink default}">{_ securityModule.public.contacts.bread}</a></li>
+    {var parent => $group->getParent()}
+    
+    {block #loop}
+	{if $parent !== null}
+	    {include #loop, parent=>$parent->getParent()}
+	    <li>
+		<a href="{plink :Security:Public:default, $parent->getAbbr()}">
+		    {$parent->getName()}
+		</a>
+	    </li>
+	{/if}
+    {/block}
+    <li>{$group->getName()}</li>
+    
+{/block}
+
+{block #sideBlock}
+    {*control staticPagesMenu:contentMenu, $layoutStyle, null, "hidden-xs hidden-sm"*}
+    {control contactsGroupsMenu:contentMenu, "user", null}
+{/block}
+
+{block #mainBlock}  
+    <div class="page-header">
+    <h3>{_ securityModule.public.groupPositions.heading, null, ["group"=>"{$group->getName()}"]}
+	{if $group->getSportType() !== null}
+	    <small>&nbsp;({$group->getSportType()->getName()})</small>
+	{/if}
+    </h3>
+    </div>
+    
+    <div class="row">
+	<div class="col-md-6">
+	{if $data}
+	    {foreach $data as $p}
+		<div class="list-group">
+		    {if $p->getPublishContact()}
+		    <span class="list-group-item">
+			<h4 class="list-group-item-heading">{$p->getName()}</h4>
+			<p class="list-group-item-text">
+			    {var user => $p->getOwner()}
+			    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>{$user->getName()} {$user->getSurname()}</strong> <br/>
+			    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>&nbsp;{$user->getContact()->getEmail()}<br/>
+			    <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span>&nbsp;{$user->getContact()->getPhone()}<br/>
+			</p>
+		    </span>
+		    {/if}
+		</div>
+	    {/foreach}
+	{else}
+	    {_ system.messages.nothingToShow}
+	{/}
+	</div>
+	<div class="col-md-6">
+	    {control contactControl}
+	</div>
+    </div>
+{/block}
+
+
+
+
+
+
+

@@ -4,10 +4,63 @@
     ========================
 */
 
-#frm-commentControl-addCommentForm {
-    margin: 10% 0 0 0;
-}
+    #frm-commentControl-addCommentForm {
+	margin: 10% 0 0 0;
+    }
 
-#frm-commentControl-addCommentForm .form-group {
-    margin: 20px;
+    #frm-commentControl-addCommentForm .form-group {
+	margin: 20px;
+    }
+/*
+==============================
+PUBLIC MENU SUB DROPDOWN
+==============================
+*/
+
+    /*
+	Repair of color behavior during hover
+    */
+    
+    ul.nav.navbar-nav li:hover {
+	background-color: #555;
+    }
+
+    ul.nav.navbar-nav li.dropdown.open a:hover {
+	color: inherit !important;
+    }
+
+    ul.nav.navbar-nav ul.dropdown-menu li a:hover,
+    ul.nav.navbar-nav ul.dropdown-menu li.open a:hover {
+	color: #fff;
+    }
+
+    ul.nav.navbar-nav ul.dropdown-menu li.dropdown-submenu.open a:hover,
+    ul.nav.navbar-nav ul.dropdown-menu li.dropdown-submenu a:hover {
+	color: #000 !important;
+    }
+    
+    
+/*
+===============
+    GRIDS
+===============
+*/    
+    
+    table.table td {
+	padding: .5% .2% !important;
+	text-align: center;
+	
+    }
+    
+/*
+=====================
+    STATIC PAGES
+=====================
+*/
+
+.page-overview-wrapper {
+    min-height: 30rem;   
+}
+.page-overview-wrapper a.list-group-item p {
+    color: #555;
 }

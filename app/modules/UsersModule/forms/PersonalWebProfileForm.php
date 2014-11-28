@@ -46,6 +46,8 @@ final class PersonalWebProfileForm extends BaseForm {
 	
 	$this->addTextArea('signature', 'usersModule.webProfForm.signature.label', $cols, $rows);
 	
+	$this->addCheckbox("publish", 'usersModule.webProfForm.publish.label');
+	
 	$this->addSubmit('submitButton', 'system.forms.submitButton.label');
 	
 	$this->onSuccess[] = callback($this->presenter, 'webProfileFormSuccess');

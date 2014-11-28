@@ -46,8 +46,8 @@ class SportType extends BaseEntity implements IIdentifiable {
     /** @ORM\Column(type="string", nullable=false) */
     protected $name; 
     
-    /** @ORM\Column(type="string", nullable=true) */
-    protected $image;
+    /** @ORM\Column(type="boolean", nullable=true) */
+    protected $active;
     
     /** @ORM\Column(type="string", nullable=true) */
     protected $note;
@@ -65,10 +65,6 @@ class SportType extends BaseEntity implements IIdentifiable {
 	return $this->name;
     }
 
-    public function getImage() {
-	return $this->image;
-    }
-
     public function getNote() {
 	return $this->note;
     }
@@ -81,12 +77,16 @@ class SportType extends BaseEntity implements IIdentifiable {
 	$this->name = $name;
     }
 
-    public function setImage($imgName) {
-	$this->image = $imgName;
-    }
-
     public function setNote($note) {
 	$this->note = $note;
+    }
+    
+    function getActive() {
+	return $this->active;
+    }
+
+    function setActive($active) {
+	$this->active = $active;
     }
     
     public function __toString() {

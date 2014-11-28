@@ -252,17 +252,17 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerCurrent->class[] = 'center';
 
 	$grid->addActionHref('delete', '', 'deleteSeason!')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
 		->setIcon('trash')
 		->setConfirm(function($u) {
 		    return $this->tt("seasonsModule.admin.grid.reallyDeleteSeasonId", null, ["id" => $u->getId()]);
 		});
 	$grid->addActionHref('edit', '', 'updateSeason')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('pencil');
 
 	$grid->addActionHref('current', '', 'setSeasonCurrent!')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('check');
 
 	$grid->setOperation(["delete" => $this->tt("seasonsModule.admin.grid.delete")], null, $this->seasonsGridOperationsHandler);
@@ -554,8 +554,11 @@ class AdminPresenter extends SystemAdminPresenter {
 		    $this->updateSeasonApplicationHandle($values);
 		    break;
 	    }
-	} catch (Exceptions\InvalidStateException $ex) {
+	} catch (Exceptions\NoResultException $ex) {
 	    $this->logWarning($ex);
+	    $form->addError($this->tt("seasonsModule.admin.error.noTaxForSeasonAndGroup"));
+	} catch (Exceptions\InvalidStateException $ex) {
+	    $this->logWarning("SeasonApplicationForm /// ".$ex);
 	    $form->addError($this->tt("seasonsModule.admin.error.appDeadlineExpired"));
 	} catch (Exceptions\DuplicateEntryException $ex) {
 	    $this->logWarning($ex);

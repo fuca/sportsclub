@@ -24,6 +24,8 @@ use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\JoinColumn,    
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\IIdentifiable,
+    \App\Model\Entities\StaticPage,
+    \Doctrine\Common\Collections\ArrayCollection,
     \App\Model\Misc\EntityMapperTrait;
 
 
@@ -55,7 +57,7 @@ class SportGroup extends BaseEntity implements IIdentifiable {
     protected $abbr;
     
     /**
-     * @OneToMany(targetEntity="SportGroup", mappedBy="parent", cascade={"remove"})
+     * @OneToMany(targetEntity="SportGroup", mappedBy="parent", cascade={"remove"}, fetch="EAGER")
      */
     protected $children;
     
@@ -71,6 +73,12 @@ class SportGroup extends BaseEntity implements IIdentifiable {
     /** @ORM\Column(type="boolean", nullable=false) */
     protected $activity;
     
+    
+    /**
+     * @ORM\OneToMany(targetEntity="StaticPage", mappedBy="group", cascade={"remove"}, fetch="EAGER")
+     */
+    protected $staticPages;
+    
     /**
      * @ManyToOne(targetEntity="SportType")
      * @JoinColumn(name="sportType_id", referencedColumnName="id", nullable=true)
@@ -80,6 +88,7 @@ class SportGroup extends BaseEntity implements IIdentifiable {
     public function __construct(array $values = []) {
 	parent::__construct();
 	$this->activity = false;
+	$this->staticPages = new ArrayCollection();
 	$this->fromArray($values);
     }
     
@@ -155,6 +164,20 @@ class SportGroup extends BaseEntity implements IIdentifiable {
 	$this->sportType = $sportType;
     }
     
+    public function getStaticPages() {
+	return $this->staticPages;
+    }
+
+    public function setStaticPages($staticPages) {
+	$this->staticPages = $staticPages;
+    }
+    
+    public function addStaticPage(StaticPage $sp) {
+	$this->staticPages->add($sp);
+	if ($sp->getGroup()->getId() != $this->getId())
+	    $sp->setGroup($this);
+    }
+        
     public function __toString() {
 	return "{$this->getName()} ({$this->getId()})";
     }

@@ -34,6 +34,7 @@ sportTypeForm:
 	newGroup: "New sport type"
 	name: "Name "
 	note: "Note"
+	active: "Active"
 
 sportGroupForm:
 	name: "Name"
@@ -64,7 +65,7 @@ admin:
 	updateSportType.bread: "Sport type update"
 	staticPages.heading: "Static pages"
 	addStaticPage.heading: "New static page"
-	updateStaticPage.heading: "Update static page '%title%' of group '%group%'"
+	updateStaticPage.heading: "Update static page '%title%'"
 	updateStaticPage.bread: "Static page edit"
 	updateStaticPage.title: "Static page edit"
 
@@ -80,6 +81,7 @@ admin.grid:
 	abbr: "Abbr"
 	commMode: "Comments"
 	status: "Status"
+	group: "Group"
 	
 admin.grid.messages:
 	rlyDelSport: "Do you really want to delete sport #%id%"
@@ -113,3 +115,8 @@ staticPageForm:
 	updated: "Updated"
 	editor: "Editor"
 	pageAbbrExists: "Static page with given abbreviation already  exists"
+
+publicPages:
+	pagesMenuLabel: "Available information"
+	groupsMenu: "Groups"
+	    

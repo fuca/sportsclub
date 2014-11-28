@@ -31,33 +31,16 @@ use \App\Forms\BaseForm,
  */
 final class SportTypeForm extends BaseForm {
 
-    /**
-     * @var array of sport type ico paths
-     */
-    private $images;
-
-    public function getImages() {
-	if (!isset($this->images))
-	    $this->images = [];
-	return $this->images;
-    }
-
-    public function setImages($images) {
-	$this->images = $images;
-    }
-
     public function initialize() {
 	
 	$this->addHidden('id');
 	$this->addText('name', "systemModule.sportTypeForm.name")
 		->addRule(Form::FILLED, "systemModule.sportTypeForm.nameMustFill")
 		->setRequired(true);
-
-//	$this->addImageSelectBox('image', 'Ikona', $this->getImages())
-//		//->addRule(Form::FILLED, "Ikona musí být vybrána")
-//		->setPrompt("Vyberte ikonu..");
-
+	
 	$this->addTextArea('note', "systemModule.sportTypeForm.note", 30, 4);
+	
+	$this->addCheckbox("active", "systemModule.sportTypeForm.active");
 
 	$this->addSubmit('submit', "system.forms.submitButton.label");
 
@@ -79,7 +62,6 @@ final class SportTypeForm extends BaseForm {
 	    }
 	} catch (DuplicateEntryException $ex) {
 	    $name = $values->name;
-	    // TODO LOG
 	    $this->addError("Sport type with name {$name} already exists");
 	}
     }

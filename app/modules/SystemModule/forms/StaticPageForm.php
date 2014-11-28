@@ -50,7 +50,7 @@ final class StaticPageForm extends BaseForm {
     private $pages;
     
     public function getSportGroups() {
-	return $this->sportGroups;
+	return [null=>null]+$this->sportGroups;
     }
 
     public function setSportGroups($sportGroups) {

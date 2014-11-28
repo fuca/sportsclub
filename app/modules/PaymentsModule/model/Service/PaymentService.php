@@ -24,22 +24,16 @@ use \App\Model\Entities\Payment,
     \Nette\DateTime,
     \Nette\Caching\Cache,
     \Kdyby\Monolog\Logger,
-    \App\Model\Entities\SeasonApplication,
     \Kdyby\Doctrine\EntityManager,
-    \App\Services\Exceptions\NullPointerException,
     \App\Model\Misc\Exceptions,
     \App\Services\Exceptions\DataErrorException,
     \Kdyby\Doctrine\DuplicateEntryException,
-    \Nette\InvalidArgumentException,
     \Kdyby\Doctrine\DBALException,
     \App\Model\Service\BaseService,
     \App\SeasonsModule\Model\Service\ISeasonService,
-    \App\SeasonsModule\Model\Service\ISeasonTaxService,
     \App\PaymentsModule\Model\Service\IPaymentService,
-    \App\SystemModule\Model\Service\ISportGroupService,
     \App\UsersModule\Model\Service\IUserService,
-    \Grido\DataSources\Doctrine,
-    \App\Model\Entities\SportGroup;
+    \Grido\DataSources\Doctrine;
 
 /**
  * Description of Payment service

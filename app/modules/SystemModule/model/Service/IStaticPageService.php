@@ -18,7 +18,8 @@
 
 namespace App\SystemModule\Model\Service;
 
-use \App\Model\Entities\StaticPage;
+use \App\Model\Entities\StaticPage,
+    \App\Model\Entities\SportGroup;
 
 /**
  * Interface for Static pages service
@@ -31,7 +32,8 @@ interface IStaticPageService {
     function updateStaticPage(StaticPage $sp);
     function deleteStaticPage($id);
     function getStaticPage($id, $useCache = true);
+    function getStaticPageAbbr($abbr, $useCache = true);
     function getPagesDataSource();
+    function getGroupStaticPages(SportGroup $g);
     function getSelectStaticPages($id = null);
-    
 }

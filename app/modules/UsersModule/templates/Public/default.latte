@@ -1,0 +1,58 @@
+
+{* Users module Public presenter *}
+
+{layout $layoutsPath."publicRootBase.latte"}
+
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    <li><a href="{plink default}">{_ usersModule.public.rosters.bread}</a></li>
+    {var parent => $group->getParent()}
+    
+    {block #loop}
+	{if $parent !== null}
+	    {include #loop, parent=>$parent->getParent()}
+	    <li>
+		<a href="{plink :Users:Public:default, $parent->getAbbr()}">
+		    {$parent->getName()}
+		</a>
+	    </li>
+	{/if}
+    {/block}
+    <li>{$group->getName()}   ({$group->getSportType()->getName()})</li>
+    
+{/block}
+
+{block #sideBlock}
+    {*control staticPagesMenu:contentMenu, $layoutStyle, null, "hidden-xs hidden-sm"*}
+    {control rostersGroupsMenu:contentMenu, "user", null}
+{/block}
+
+{block #mainBlock}  
+<div class="row">
+    <div class="col-md-7">
+    <div class="list-group">
+    {foreach $data as $p} 
+	<a href="{plink :Users:Public:showWebProfile, $p->getOwner()->getId(), $p->getGroup()->getAbbr()}" class="list-group-item">
+
+	<h4 class="list-group-item-heading">
+	    {var jNum=>$p->getOwner()->getWebProfile()->getJerseyNumber()}
+	    {if !is_numeric(jNum)} 
+		<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+	    {else}
+		#{$jNum}
+	    {/if}
+	    {$p->getOwner()->getName()}
+	&nbsp;"{$p->getOwner()->getNick()}"
+	&nbsp;{$p->getOwner()->getSurName()}
+	</h4>
+	<p class="list-group-item-text">
+	    {$p->getName()}	    
+	</p>
+	</a>
+    {/foreach}
+    </div>
+    </div>
+    
+ </div>
+{/block}

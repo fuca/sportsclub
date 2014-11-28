@@ -26,14 +26,16 @@ use \Nette\PhpGenerator\ClassType,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\ArticlesModule\Model\Service\ArticleService,
     \Kdyby\Translation\DI\ITranslationProvider,
-    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider,
+    \App\SystemModule\Model\Service\Menu\IPublicMenuDataProvider;
 
 /**
  * ArticlesModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class ArticlesModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
+final class ArticlesModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider, IPublicMenuDataProvider {
 
     private $defaults = [
 	ArticleService::DEFAULT_IMAGE_PATH => "article",
@@ -73,6 +75,13 @@ final class ArticlesModuleExtension extends BaseModuleExtension implements ITran
 	$i = new ItemData();
 	$i->setLabel("articlesModule.adminMenuItem.label");
 	$i->setUrl(":Articles:Admin:default");
+	return [$i];
+    }
+    
+    public function getPublicItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("articlesModule.publicMenu.articles.label");
+	$i->setUrl(":Articles:Public:default");
 	return [$i];
     }
     

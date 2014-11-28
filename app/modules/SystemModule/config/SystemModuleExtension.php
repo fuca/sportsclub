@@ -25,6 +25,7 @@ use \Nette\DI\CompilerExtension,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IPublicMenuDataProvider,
     \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
@@ -78,6 +79,15 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 			    
 			    foreach($dataArray as $item) {
 				$publicFact->addSetup("addItem", [$item]);
+			    }
+			}
+			
+			if ($extension instanceof IPublicMenuDataProvider) {
+	    		    $adminFact = $builder->getDefinition($this->prefix("publicMenuControlFactory"));
+			    $dataArray = $extension->getPublicItemsResources();
+			    
+			    foreach($dataArray as $item) {
+				$adminFact->addSetup("addItem", [$item]);
 			    }
 			}
 		}

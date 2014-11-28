@@ -64,7 +64,7 @@
 	<div class="col-md-6">
 	    
 	    {if $form->isUpdate()}
-		<div class="user-picture">
+		<div class="user-picture img-thumbnail">
 		    <img src="{$basePath}/assets/images/{$profile->getPicture()|thumb:"user","230x280"}" class="user-picture img-responsive"/>
 		</div>
 	    {/if}
@@ -88,19 +88,18 @@
 		{label signature /}
 		{input signature class=>form-control}
 	    </div>
-
+	    
 	    <div class="form-group">
-		{label signature /}
-		{input signature class=>form-control}
+		    {label publish /}
+		    {input publish class=>form-control}
 	    </div>
-	    
-	    
 
 	</div>
     </div>
 	    <div class="row">
 	    <div class="col-md-3"></div>
 	    <div class="col-md-6">
+
 		<div class="form-group">
 		    {label status /}
 		    {input status class=>form-control}

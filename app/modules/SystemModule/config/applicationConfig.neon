@@ -28,7 +28,7 @@ parameters:
 	cacheDir: %tempDir%/cache/
 	modulesDir: %appDir%/modules/
 	libsDir: %appDir%/vendor/others/
-	imagesDir: %wwwDir%/img/
+	imagesDir: %wwwDir%/assets/images/
 
 	appName: sportsclub
 
@@ -49,6 +49,13 @@ facebook:
 	appId: "1234567890"
 	appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
 	permissions: [email]
+
+events:
+    debugger: # these are the default values
+        dispatchTree: off
+        dispatchLog: on
+        events: on
+        listeners: on
 	
 translation:
 	default: en
@@ -66,7 +73,7 @@ seasonsModule:
 	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem
 
 systemModule:
-	init:
+	init: #inicialni entity, ktere se musi pridat pri instalaci
 		group:
 			name: Club
 			description: "Root system group"
@@ -77,22 +84,23 @@ systemModule:
 			priority: 10 #hide
 			activity: true #hide
 		user:
-			name: Information
-			surname: System
-			password: admin
+			name: "FBC"
+			surname: "Mohelnice, o.s."
+			nick: "Informační systém"
+			password: "admin"
 			contact:
 				address: 
-					city: XXX
-					postCode: 78985
-					street: xxx
-					number: 111
-					accountNumber: 111
-				phone: x
-				email: x
+					city: "Mohelnice"
+					postCode: "789 85"
+					street: "Masarykova"
+					number: "546/25"
+					accountNumber: "2500140367/2010"
+				phone: "420732504156"
+				email: "michal.fuca.fucik@gmail.com"
 securityModule:
-	evDefRoleName: player
-	evDefComment: "Created by system"
-	deleteOldPositions: true
+	evDefRoleName: player # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
+	evDefComment: "Created by system" #defaultni comment pro vytvarenou pozici, aby bylo videt, ze to je tvorene systemem
+	deleteOldPositions: true # moznost vypnout mazani starych pozic pri pridavani nove
 
 	init:
 		roles:
@@ -201,7 +209,7 @@ services:
 				- setCacheStorage(@serviceEntityCache)
 				- setUserService()
 
-	imagesBackend: \Tomaj\Image\Backend\FileBackend(%wwwDir%, 'assets/images/') # to lomitko na konci musi byt, jinak se to povali do slozky /imagesarticles/
+	imagesBackend: \Tomaj\Image\Backend\FileBackend(%wwwDir%, %imagesDir%) # to lomitko na konci musi byt, jinak se to povali do slozky /imagesarticles/
 	articleImageService: 
 		class: \Tomaj\Image\ImageService(@imagesBackend, 'articles/:year/:month/:hash', ['340x200', '700x400', '1028x370'], 70)
 		autowired: no

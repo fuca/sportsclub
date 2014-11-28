@@ -19,13 +19,14 @@
 namespace App\SystemModule\Model\Service;
 
 use \App\Model\Entities\SportGroup,
+    \App\Model\Entities\SportType,
     \App\Model\Entities\User,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Misc\Exceptions,
+    \Kdyby\Monolog\Logger,
     \Nette\Caching\Cache,
-    \Kdyby\Doctrine\DuplicateEntryException,
-    \App\SystemModule\Model\Service\ISportGroupService;
+    \Kdyby\Doctrine\DuplicateEntryException;
 
 /**
  * Service for managing sport types
@@ -40,16 +41,39 @@ class SportGroupService extends BaseService implements ISportGroupService {
      * @var \Kdyby\Doctrine\EntityDao
      */
     private $groupDao;
-
+    
     /**
-     *
-     * @var \App\SystemModule\Model\Service\ISportTypeService
+     * @var \Kdyby\Doctrine\EntityDao
      */
-    private $sportTypeService;
+    private $sportTypeDao;
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onCreate = [];
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onDelete = [];
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onUpdate = [];
     
     private $prioritiesList;
+
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, SportGroup::getClassName(), $logger);
+	$this->groupDao = $em->getDao(SportGroup::getClassName());
+	$this->sportTypeDao = $em->getDao(SportType::getClassName());
+    }
     
-    // TODO zvazit jestli se to vubec vyuzije
+        // TODO zvazit jestli se to vubec vyuzije
     // jestli ne, tak to smazat i z cele sport group logiky
     public function getPriorities() { 
 	if (!isset($this->prioritiesList)) {
@@ -60,17 +84,6 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    $this->prioritiesList = $arr;
 	}
 	return $this->prioritiesList;
-    }
-    
-    public function setSportTypeService(ISportTypeService $s) {
-	if ($s === null)
-	    throw new Exceptions\NullPointerException("Argument ISportTypeService was null");
-	$this->sportTypeService = $s;
-    }
-
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, SportGroup::getClassName());
-	$this->groupDao = $em->getDao(SportGroup::getClassName());
     }
 
     // <editor-fold desc="Administration of GROUPS">
@@ -91,6 +104,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+	$this->onCreate(clone $g);
     }
 
     private function groupParentHandle(SportGroup $g) {
@@ -126,7 +140,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		}
 	    }
 	    $typeId = $g->getSportType();
-	    $typeDb = $this->sportTypeService->getSportType($typeId, false);
+	    $typeDb = $this->sportTypeDao->find($typeId);
 	    if ($typeDb !== null) {
 		$g->setSportType($typeDb);
 	    }
@@ -153,7 +167,9 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$this->entityManager->flush();
 	    }
 	    $this->entityManager->commit();
+	 
 	    $this->invalidateEntityCache($dbGroup);
+	    $this->onUpdate(clone $dbGroup);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -162,6 +178,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+	
     }
 
     public function deleteSportGroup($id) {
@@ -174,6 +191,7 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	    if ($db !== null) {
 		$this->groupDao->delete($db);
 		$this->invalidateEntityCache($db);
+		$this->onDelete(clone $db);
 	    }
 	} catch (\Kdyby\Doctrine\DBALException $ex) {
 	    $this->logWarning($ex);
@@ -236,19 +254,6 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$this->groupDao->createQueryBuilder('g'));
 	return $model;
     }
-
-    public function getGroupsWithUser(User $user) { // TODO tohle by logicky melo vratit vsechny skupiny, ve kterych tento uzivatel figuruje, coz by nemelo mit smysl !
-//	if ($user == null)
-//	    throw new Exceptions\NullPointerException("Argument User was null", 0);
-//	try {
-//	    //$res = $this->groupDao->findBy(array("owner" => $user->id));
-//	} catch (\Exception $ex) {
-//	    $this->logError($ex);
-//	    throw new Exceptions\DataErrorException(
-//		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-//	}
-//	return $res;
-    }
     
     public function getSelectApplicableGroups($id = null) {
 	$cache = $this->getEntityCache();
@@ -296,15 +301,21 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	}
     }
     
-    public function getAllSportGroups($root = null) {
+    public function getAllSportGroups($root = null, $active = null) {
+	if ($active !== null && !is_bool($active))
+	    throw new Exceptions\InvalidArgumentException("Argument active has to be type of bool, '$active' given");
 	try {
 	    if ($root !== null) {
 		$qb = $this->entityManager->createQueryBuilder();
-		$qb->select("g")
-		    ->from("App\Model\Entities\SportGroup", "g")
-		    ->where("g.parent = :parent")
-			->orderBy("ASC", "g.priority, g.name")
-		    ->setParameter("parent", $root);
+		$qb = $qb->select("g")
+			    ->from("App\Model\Entities\SportGroup", "g")
+			    ->where("g.parent = :parent");
+		if ($active !== null) {
+		    $qb = $qb->andWhere("g.activity = :act")
+			->setParameter("act", $active);
+		}
+		$qb = $qb->orderBy("ASC", "g.priority, g.name")
+			    ->setParameter("parent", $root);
 		return $qb->getQuery()->getResult();
 	    }  
 	    return $this->groupDao->findAll();
@@ -314,5 +325,6 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
     // </editor-fold>
 }

@@ -114,7 +114,7 @@ class RoleService extends BaseService implements IRoleService {
 	try {
 	    return $this->roleDao->createQueryBuilder("r")
 			->where("r.name = :name")->setParameter("name", $name)
-			->getQuery()->getResult();
+			->getQuery()->getSingleResult();
 	} catch (\Exception $e) {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());

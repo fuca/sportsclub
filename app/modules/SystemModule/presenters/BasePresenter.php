@@ -93,21 +93,27 @@ abstract class BasePresenter extends Presenter {
         
     /**
      * @inject
-     * @var \App\SystemModule\Model\Service\Menu\AdminMenuControlFactory
+     * @var \App\SystemModule\Model\Service\Menu\IAdminMenuControlFactory
      */
     public $adminMenuFactory;
     
     /**
      * @inject
-     * @var \App\SystemModule\Model\Service\Menu\ProtectedMenuControlFactory
+     * @var \App\SystemModule\Model\Service\Menu\IProtectedMenuControlFactory
      */
     public $protectedMenuFactory;
     
     /**
      * @inject
-     * @var \App\SystemModule\Model\Service\Menu\CommonMenuControlFactory
+     * @var \App\SystemModule\Model\Service\Menu\ICommonMenuControlFactory
      */
     public $commonMenuFactory;
+    
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\Menu\IPublicMenuControlFactory
+     */
+    public $publicMenuFactory;
     
 //    /**
 //     * @inject
@@ -199,7 +205,9 @@ abstract class BasePresenter extends Presenter {
 	$this->template->layoutsPath = $appDir . "/modules/SystemModule/templates/";
 	$this->template->layoutStyle = \App\Model\Misc\Enum\LayoutSectionStyle::INFO;
 	$this->template->breadCrumbSeparator = "/";
-	$this->template->titleCrumbSeparator = "/";
+	$this->template->titleCrumbSeparator = "«";
+	$this->template->dateFormat = self::DATE_FORMAT;
+	$this->template->dateTimeFormat = self::DATETIME_FORMAT;
 	//$this->template->_imagePipe = $this->imagePipe;
 	if ($this->isAjax()) {
 	    $this->redrawControl("flash");
@@ -244,6 +252,11 @@ abstract class BasePresenter extends Presenter {
     
     public function createComponentCommonMenu($name) {
 	$c = $this->commonMenuFactory->createComponent($this, $name);
+	return $c;
+    }
+    
+    public function createComponentPublicMenu($name) {
+	$c = $this->publicMenuFactory->createComponent($this, $name);
 	return $c;
     }
 
@@ -308,7 +321,7 @@ abstract class BasePresenter extends Presenter {
     private function handleProblem($id, $redirect, $message, \Exception $exception, $fmType) {
 	$sig = $this->signal;
 	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "! ";
-	$m = $this->tt($message, null, ["id" => $id]);
+	$m = $this->tt($message, !is_numeric($id)? null:1, ["id" => $id]);
 	$this->flashMessage($m, $fmType);
 	
 	switch($fmType) {

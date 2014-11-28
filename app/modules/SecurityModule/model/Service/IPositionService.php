@@ -21,6 +21,7 @@ namespace App\SecurityModule\Model\Service;
 use \App\Model\Entities\User,
     \App\Model\Entities\Position,
     \App\Model\Entities\Role,
+    \App\Model\Entities\SportGroup,
     \Kdyby\GeneratedProxy\__CG__\App\Model\Entities;
 
 /**
@@ -40,7 +41,7 @@ interface IPositionService {
     
     function getUserPositions(User $u);
     
-    function getPositionsWithinGroup($id);
+    function getPositionsWithinGroup(SportGroup $g, $useCache = null);
     
     function getPosition($id);
     

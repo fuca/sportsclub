@@ -24,14 +24,17 @@ use \Nette\DI\CompilerExtension,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \Kdyby\Translation\DI\ITranslationProvider,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \App\SystemModule\Model\Service\Menu\IPublicMenuDataProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * SecurityModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SecurityModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
+class SecurityModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPublicMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
 	"evDefRoleName" => "player", 
@@ -71,6 +74,13 @@ class SecurityModuleExtension extends BaseModuleExtension implements ITranslatio
 	$i->setUrl(":Security:Admin:default");
 	return [$i];
     }
+    
+    public function getPublicItemsResources() {
+	$i = new ItemData();
+	$i->setLabel("securityModule.public.menu.contacts.label");
+	$i->setUrl(":Security:Public:default");
+	return [$i];
+    }
 
     public function getProtectedItemsResources() {
 	$i = new ItemData();
@@ -79,5 +89,13 @@ class SecurityModuleExtension extends BaseModuleExtension implements ITranslatio
 	$i->setData(["separate"=>true,"headOnly"=>true]);
 	return [$i];
     }
+    
+    
+    public function getDatabaseTypes() {
+	return [
+	    "AclMode"=>"App\Model\Misc\Enum\AclMode",
+	    "AclPrivilege"=>"App\Model\Misc\Enum\AclPrivilege"];
+    }
+
 
 }

@@ -58,13 +58,19 @@ final class CommentControl extends Control {
      * @var \Kdyby\GeneratedProxy\__CG__\App\Model\Entities\User
      */
     private $user;
-
-    
     
     private $formTemplate;
     private $dataTemplate;
     private $templatesDir;
     private $adminTemplate;
+    
+    public function __construct(IContainer $parent = NULL, $name = NULL) {
+	parent::__construct($parent, $name);
+	$this->templatesDir = __DIR__ . "/templates/";
+	$this->dataTemplate = $this->templatesDir . "defaultData.latte";
+	$this->formTemplate = $this->templatesDir . "defaultForm.latte";
+	$this->adminTemplate = $this->templatesDir . "defaultGrid.latte";
+    }
 
     public function isCommenting() {
 	if (!isset($this->commenting)) {
@@ -132,14 +138,6 @@ final class CommentControl extends Control {
 
     public function setEntity(ICommentable $entity) {
 	$this->entity = $entity;
-    }
-
-    public function __construct(IContainer $parent = NULL, $name = NULL) {
-	parent::__construct($parent, $name);
-	$this->templatesDir = __DIR__ . "/templates/";
-	$this->dataTemplate = $this->templatesDir . "defaultData.latte";
-	$this->formTemplate = $this->templatesDir . "defaultForm.latte";
-	$this->adminTemplate = $this->templatesDir . "defaultGrid.latte";
     }
 
     public function render() {

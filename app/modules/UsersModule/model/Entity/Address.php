@@ -43,7 +43,7 @@ class Address extends BaseEntity {
     protected $city;
 
     /** @ORM\Column(nullable = false) */
-    protected $postalCode;
+    protected $postCode;
 
     /** @ORM\Column(nullable = false) */
     protected $street;
@@ -67,8 +67,8 @@ class Address extends BaseEntity {
 	return $this->city;
     }
 
-    public function getPostalCode() {
-	return $this->postalCode;
+    public function getPostCode() {
+	return $this->postCode;
     }
 
     public function getStreet() {
@@ -83,8 +83,8 @@ class Address extends BaseEntity {
 	$this->city = $city;
     }
 
-    public function setPostalCode($postalCode) {
-	$this->postalCode = $postalCode;
+    public function setPostCode($postCode) {
+	$this->postCode = $postCode;
     }
 
     public function setStreet($street) {
@@ -93,6 +93,10 @@ class Address extends BaseEntity {
 
     public function setNumber($number) {
 	$this->number = $number;
+    }
+    
+    public function provideAccountNumber() {
+	return $this->accountNumber;
     }
 
 //    public function setId($id) {

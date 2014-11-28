@@ -79,6 +79,9 @@ class WebProfile extends BaseEntity {
     /** @ORM\Column(type="WebProfileStatus") */
     protected $status;
     
+    /** @ORM\Column(type="boolean", nullable=true) */
+    protected $publish;
+    
     /** 
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="editor_id", referencedColumnName = "id", nullable=true)
@@ -210,13 +213,21 @@ class WebProfile extends BaseEntity {
 	$this->signature = $signature;
     }
     
-    function getPicture() {
+    public function getPicture() {
 	return $this->picture;
     }
 
-    function setPicture($picture) {
+    public function setPicture($picture) {
 	if (($picture instanceof \Nette\Http\FileUpload && $picture == "") || empty($picture)) 
 	    return;
 	$this->picture = $picture;
+    }
+    
+    public function getPublish() {
+	return $this->publish;
+    }
+
+    public function setPublish($publish) {
+	$this->publish = $publish;
     }
 }

@@ -26,3 +26,5 @@ composer.json
 /temp/
 app/config/config.local.neon
 /www/css/jquery/images/
+/www/img/
+/www/assets/images/

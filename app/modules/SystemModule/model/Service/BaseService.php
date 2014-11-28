@@ -67,15 +67,17 @@ abstract class BaseService extends Object {
      */
     protected $logger;
     
+    /**
+     * Holder for service's class name
+     * @var string 
+     */
     private $className;
     
+    /**
+     * Class name of managed entitiy
+     * @var string 
+     */
     private $entityClassName;
-    
-    private $onCreate;
-    
-    private $onDelete;
-    
-    private $onUpdate;
     
     protected function getCacheStorage() {
 	return $this->cacheStorage;
@@ -110,8 +112,14 @@ abstract class BaseService extends Object {
     }
     
     protected function getMixId($o) {
-	if ($o === null) return null;
-	return $o instanceof IIdentifiable ? $o->getId() : $o;
+	if (empty($o) || $o == "") 
+	    return null;
+	if (is_object($o) && $o instanceof IIdentifiable) {
+	    return $o->getId();
+	}
+	if (is_numeric($o)) 
+	    return (integer) $o;
+	throw new Exceptions\InvalidArgumentException("Unrecognizeable argument passed, sorry!");
     }
     
     /**
@@ -156,7 +164,7 @@ abstract class BaseService extends Object {
     // <editor-fold desc="LOGGING SUPPORT"> 
     
     private function prefixMessage($message, $type) {
-	return "###   ".$type."   ### ".$this->className." -->  \n".$message;
+	return "###   ".$type."   ### ".$this->getClassName()." -->  \n".$message;
     }
     
     protected function logError($message, array $context = []) {

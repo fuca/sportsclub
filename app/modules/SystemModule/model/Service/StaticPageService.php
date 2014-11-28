@@ -19,6 +19,7 @@
 namespace App\SystemModule\Model\Service;
 
 use \App\Model\Entities\StaticPage,
+    \App\Model\Entities\SportGroup,
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Misc\Exceptions,
@@ -44,17 +45,37 @@ final class StaticPageService extends BaseService implements IStaticPageService 
     private $pageDao;
     
     /**
-     * @var \App\SystemModule\Model\Service\ISportGroupService
+     * @var \Kdyby\Doctrine\EntityDao
      */
-    private $sportGroupService;
+    private $sportGroupDao;
     
     /**
      * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
     
-    function getSportGroupService() {
-	return $this->sportGroupService;
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onCreate = [];
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onDelete = [];
+    
+    /**
+     * Array of event callbacks
+     * @var array Array of callbacks
+     */
+    public $onUpdate = [];
+    
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, StaticPage::getClassName(), $logger);
+	$this->pageDao = $em->getDao(StaticPage::getClassName());
+	$this->sportGroupDao = $em->getDao(SportGroup::getClassName());
     }
 
     function getUserService() {
@@ -67,11 +88,6 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 
     function setUserService(IUserService $userService) {
 	$this->userService = $userService;
-    }
-    
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, StaticPage::getClassName(), $logger);
-	$this->pageDao = $em->getDao(StaticPage::getClassName());
     }
     
     public function createStaticPage(StaticPage $sp) {
@@ -92,6 +108,7 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+	$this->onCreate(clone $sp);
     }
 
     private function handleAbbrConsistency(StaticPage $sp, $checkOnly = false) {
@@ -125,7 +142,7 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 	    $group = null;
 	    $id = $this->getMixId($sp->getGroup());
 	    if ($id !== null) {
-		$group = $this->getSportGroupService()->getSportGroup($id, false);
+		$group = $this->sportGroupDao->find($id);
 	    }
 	    $sp->setGroup($group);
 	    return $sp;
@@ -142,6 +159,7 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 	try {
 	    $db = $this->pageDao->find($id);
 	    if ($db !== null) {
+		$this->onDelete(clone $db);
 		$this->pageDao->delete($db);
 	    }
 	    $this->invalidateEntityCache($db);
@@ -181,6 +199,30 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
+    function getStaticPageAbbr($abbr, $useCache = true) {
+	try {
+	    if (!$useCache) {
+		return $this->pageDao->findBy(["abbr"=>$abbr]);
+	    }
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($abbr);
+
+	    if (empty($data)) {
+		$data = $this->pageDao->findBy(["abbr"=>$abbr])[0]; // abbr is unique
+		$opt = [Cache::TAGS => [$this->getEntityClassName(), 
+					self::ENTITY_COLLECTION, 
+					self::SELECT_COLLECTION, 
+					$abbr, $data->getId()]];
+		$cache->save($abbr, $data, $opt);
+	    }
+	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 
     public function getPagesDataSource() {
 	$model = new \Grido\DataSources\Doctrine(
@@ -203,6 +245,7 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($dbPage);
 	    }
+	    $this->onUpdate(clone $dbPage);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());
 	    throw new Exceptions\DuplicateEntryException($ex);
@@ -226,6 +269,20 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }
 	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function getGroupStaticPages(SportGroup $g) {
+	try {
+	    $q = $this->pageDao->createQueryBuilder("sp")
+		    ->where("sp.group = :group")
+		    ->setParameter("group", $g->getId())
+		    ->getQuery();
+	    return $q->getResult();
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(

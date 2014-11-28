@@ -34,8 +34,7 @@ interface ISportGroupService {
     function getSportGroup($id);
     function getSportGroupAbbr($abbr);
     function getSportGroupsDatasource();
-    function getGroupsWithUser(User $u);
     function getSelectAllSportGroups($id = null);
     function getSelectApplicablegroups($id = null);
-    function getAllSportGroups($root = null);
+    function getAllSportGroups($root = null, $active = null);
 }

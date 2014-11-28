@@ -30,7 +30,8 @@ use \Nette\DI\CompilerExtension,
 abstract class BaseModuleExtension extends CompilerExtension {
     
     const   CACHE_DIR	= "cacheDir",
-	    LOCALE_DIR	= "locale";
+	    LOCALE_DIR	= "locale",
+	    IMAGES_DIR = "imagesDir";
     
     public function getModuleName() {
 	return $this->name;
@@ -42,6 +43,7 @@ abstract class BaseModuleExtension extends CompilerExtension {
 	$builder = $this->getContainerBuilder();
 	
 	$cacheDir = $builder->parameters[self::CACHE_DIR]; 
+	$imagesDir = $builder->parameters[self::IMAGES_DIR];
 	$servicesCacheDir = $cacheDir."services";
 	$moduleCacheDir = $servicesCacheDir."/".$this->getModuleName();
 	
@@ -58,6 +60,14 @@ abstract class BaseModuleExtension extends CompilerExtension {
 		FileSystem::createDir($moduleCacheDir);
 	    } catch (Nette\IOException $ex) {
 		throw new Exceptions\InsufficientPermissionException("Permission denied while creating $moduleCacheDir directory");
+	    }
+	}
+	
+	if (!file_exists($imagesDir)) {
+	    try {
+		FileSystem::createDir($imagesDir);
+	    } catch (Nette\IOException $ex) {
+		throw new Exceptions\InsufficientPermissionException("Permission denied while creating $imagesDir directory");
 	    }
 	}
     }

@@ -84,3 +84,19 @@ roleForm:
 
 navigation:
 	back: "Back"
+
+
+public:
+	contacts.bread: "Contacts"
+	contacts.groupsMenu: "Groups"
+	groupPositions.heading: "Contacts for group %group%"
+	menu.contacts.label: "Contact"
+	
+contactControl:
+	identificationNumber.label: "IN"
+	taxIdentificationNumber.label: "TIN"
+	bankAccountNumber.label: "Bank account"
+	moreContacts.label: "more contacts"
+	quick.heading: "Quick contact"
+	club.heading: "Club contact"
+	contactPerson.label: "Contact person"

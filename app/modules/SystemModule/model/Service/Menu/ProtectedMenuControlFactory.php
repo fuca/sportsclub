@@ -55,7 +55,7 @@ final class ProtectedMenuControlFactory extends BaseService implements IProtecte
 	parent::__construct($em, $this->getClassName(), $logger);
 	$this->items = new ArrayCollection();
     }
-    
+   
     public function createComponent($pres, $name) {
 	$c = new MenuControl($pres, $name);
 	$iterator = $this->items->getIterator();

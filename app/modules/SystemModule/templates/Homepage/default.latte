@@ -12,7 +12,7 @@
 	
 	<div  id="homepage-jumbotron-carousel" class="carousel slide" data-ride="carousel">
 	    {block indicators}
-	  <!-- Indicators -->
+<!-- Indicators -->
 	    <ol class="carousel-indicators">
 		{foreach $highlights as $key=>$a}
 		    <li data-target="#homepage-jumbotron-carousel" data-slide-to="{$key}" {if $iterator->isFirst()} class="active"{/} ></li>
@@ -20,7 +20,7 @@
 	    </ol>
 	    {/block}
 
-	  <!-- Wrapper for slides -->
+<!--  Wrapper for slides -->		
 		<div class="carousel-inner" role="listbox">
 		    {foreach $articles as $article}
 			<div class="item
@@ -43,7 +43,7 @@
 		    {/foreach}	
 		</div>
 	{/}     
-	      <!-- Controls -->
+<!-- Controls -->
 		    <a class="left carousel-control" href="#homepage-jumbotron-carousel" role="button" data-slide="prev">
 			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 			<span class="sr-only">Previous</span>
@@ -95,14 +95,8 @@
 		</div>
 
 		<div class="col-md-4">
-		    <div class="row">
-			<address>
-				<h3>Quick contact</h3>
-				<p><strong><big>FBC Mohelnice</big></strong>, o. s.<br />Masarykova 546/25, 789 85 Mohelnice</p>
-				<p><strong>IČ</strong> 228 90 785, &nbsp; <strong>DIČ</strong> CZ 228 90 785</p>
-				<p><strong>Bank. spojení</strong> &nbsp; 2500140367/2010 (Fio)</p>
-				<p style="text-align: right;">/ <a href="">more contacts</a></p>
-			</address>	
+		    <div class="row right-box">
+			{control contactControl:homepage}
 		    </div>
 		    
 		    <div id="map">

@@ -124,18 +124,25 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 
     public function createSeasonApplication(SeasonApplication $app) {
 	if ($app == null)
-	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null", 0);
+	    throw new Exceptions\NullPointerException("Argument SeasonApplication cannot be null");
+	
+	$now = new DateTime();
+	$this->applicationSeasonTypeHandle($app);
+	$this->applicationGroupTypeHandle($app);
+	
 	try {
-	    $now = new DateTime();
-	    $this->applicationSeasonTypeHandle($app);
-	    $this->applicationGroupTypeHandle($app);
 	    if (!$this->isApplicationTime($app)) 
 		throw new Exceptions\InvalidStateException("Deadline expired");
-	    $this->applicationPaymentTypeHandle($app);
-	    $this->applicationOwnerTypeHandle($app);
-	    $this->applicationEditorTypeHandle($app);
-	    $app->setUpdated($now);
-	    $app->setEnrolledTime($now);
+	} catch (Exceptions\NoResultException $ex) {
+	    throw new Exceptions\NoResultException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	
+	$this->applicationPaymentTypeHandle($app);
+	$this->applicationOwnerTypeHandle($app);
+	$this->applicationEditorTypeHandle($app);
+	$app->setUpdated($now);
+	$app->setEnrolledTime($now);
+	try {
 	    $this->seasonApplicationDao->save($app);
 	    $this->invalidateEntityCache($app);
 	} catch (DuplicateEntryException $ex) {
@@ -150,19 +157,15 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
     }
     
     public function isApplicationTime(SeasonApplication $app) {
-	try {
-	    $sTax = $this->seasonTaxService->getSeasonTaxSG($app->getSeason(), $app->getSportGroup());
-	    $appDate = $sTax->getAppDate();
-	    if ($appDate !== null) {
-		$now = new DateTime();
-		if ($now > $appDate)
-		    return false;
-	    }
-	    return true;
-	} catch (Exceptions\DataErrorException $ex) {
-	    $this->logError($ex->getMessage());
-	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	$sTax = $this->seasonTaxService
+		->getSeasonTaxSG($app->getSeason(), $app->getSportGroup());
+	$appDate = $sTax->getAppDate();
+	if ($appDate !== null) {
+	    $now = new DateTime();
+	    if ($now > $appDate)
+		return false;
 	}
+	return true;
     }
 
     public function getSeasonApplication($id, $useCache = true) {

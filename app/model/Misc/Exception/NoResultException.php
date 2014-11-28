@@ -29,7 +29,7 @@ class NoResultException extends \Exception implements IException {
     }
     
     public function __toString() {
-	return "### SERVICE LAYER ### - ". parent::__toString();
+	return "". parent::__toString();
     }
 
 }

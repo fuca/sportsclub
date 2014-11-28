@@ -253,7 +253,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $this->userService->updateUser($dbUser);
 	} catch (Exceptions\DataErrorException $e) {
 	    $this->logError($e);
-	    $m = $this->tt("usersModule.admin.webProfileUpdateFailed", ["id" => $values["id"]]);
+	    $m = $this->tt("usersModule.admin.messages.webProfileUpdateFailed", ["id" => $values["id"]]);
 	    $this->flashMessage($m, self::FM_ERROR);
 	}
 	$this->redirect("Admin:default");
@@ -422,7 +422,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
 
-	$grid->addColumnText("personalLikes", "usersModule.wpGrid.content.label")
+	$grid->addColumnText("personalLikes", "usersModule.admin.wpGrid.content.label")
 			->setTruncate(100)
 			->setCustomRender($this->wpDataRender)
 		->cellPrototype->class[] = 'center';
@@ -431,26 +431,39 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerData->class[] = 'center';
 	$headerData->style['width'] = '80%';
 	
-	$grid->addColumnText("personalDisLikes", "usersModule.wpGrid.photo.label")
+	$grid->addColumnText("personalDisLikes", "usersModule.admin.wpGrid.photo.label")
 		->setCustomRender($this->wpPhotoRender)
 		->cellPrototype->class[] = 'center';
 
 	$headerPhoto = $grid->getColumn('personalDisLikes')->headerPrototype;
 	$headerPhoto->class[] = 'center';
 	$headerPhoto->style['width'] = '5%';
+	
+	$y = $this->tt("system.common.yes");
+	$n = $this->tt("system.common.no");
+	$activeList = [null=>null]+[true => $y, false => $n];
+	$grid->addColumnText('publish', $this->tt("systemModule.admin.grid.active"))
+		->setSortable()	
+		->setReplacement([true => $y, 
+		    null => $n])
+		->setFilterSelect($activeList);
+		
+	$headerAct = $grid->getColumn('publish')->headerPrototype;
+	$headerAct->class[] = 'center';
+	$headerAct->style['width'] = '0.1%';
 
 	$grid->addActionHref('yes', '', "permitProfile!")
 		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.permitProfile")]))
 		->setIcon('ok')
 		->setConfirm(function($u) {
-		    return $this->tt("reallyPermitItem", null, ["id"=>$u->getId()]);
+		    return $this->tt("usersModule.admin.wpGrid.reallyPermitItem", null, ["id"=>$u->getId()]);
 		});
 
 	$grid->addActionHref('no', '', "denyProfile!")
 		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.denyProfile")]))
 		->setIcon('remove')
 		->setConfirm(function($u) {
-		    return $this->tt("reallyDenyItem", null, ["id"=>$u->getId()]);
+		    return $this->tt("usersModule.admin.wpGrid.reallyDenyItem", null, ["id"=>$u->getId()]);
 		});
 
 	$operation = array('yes' => 'Permit', 'no' => 'Deny');
@@ -481,7 +494,12 @@ class AdminPresenter extends SystemAdminPresenter {
     
     public function wpPhotoRender($e) {
 	
-	$url ="/sportsclub/www/assets/images/{$e->getPicture()}";
+	//$_SERVER["SCRIPT_FILE_NAME"];
+	$imagesDir = $this->context->parameters["imagesDir"]; 
+	
+	$imagesDir = substr($imagesDir, strlen(filter_input(INPUT_SERVER, "CONTEXT_DOCUMENT_ROOT")));
+
+	$url ="$imagesDir{$e->getPicture()}";
 	return \Nette\Utils\Html::el("img")
 		->addAttributes(["src" => $url, "class"=>"user-grid-thumbnail"]);
     }

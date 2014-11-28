@@ -25,7 +25,23 @@ namespace App\SystemModule\Model\Service\Menu;
  */
 interface IAdminMenuControlFactory {
     
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     function getItems();
     
+    /**
+     * Adds item into collection
+     * @param IItemData
+     * @throws Exceptions\InvalidStateException
+     */
     function addItem($item);
+    
+    /**
+     * Returns desired component
+     * @param \Nette\Application\UI\Presenter
+     * @param string 
+     * @return \App\Components\MenuControl
+     */
+    function createComponent($parent, $name);
 }

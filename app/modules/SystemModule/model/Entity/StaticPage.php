@@ -27,6 +27,7 @@ use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\UniqueConstraint,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
+    \App\Model\Entities\SportGroup,
     \App\Model\Misc\Enum\StaticPageStatus,
     \App\Model\Misc\EntityMapperTrait,
     \App\Model\IIdentifiable,
@@ -37,8 +38,8 @@ use \Doctrine\ORM\Mapping as ORM,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
- * @ORM\Table(name="StaticPage", uniqueConstraints={@UniqueConstraint(name="unique_static_page", columns={"group_fk", "abbr"})})
  */
+// @ORM\Table(name="StaticPage", uniqueConstraints={@UniqueConstraint(name="unique_static_page", columns={"group_fk", "abbr"})})
 class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
     
     use EntityMapperTrait;
@@ -91,7 +92,7 @@ class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
     
     /**
      * @ManyToOne(targetEntity="SportGroup")
-     * @JoinColumn(name="group_fk", referencedColumnName="id")
+     * @JoinColumn(name="group_fk", referencedColumnName="id", nullable = true)
      **/
     protected $group;
 
@@ -204,6 +205,9 @@ class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
 
     public function setGroup($group) {
 	$this->group = $group;
+	if ($group instanceof SportGroup)
+	    if (!$group->getStaticPages()->contains($this))
+		$group->addStaticPage($this);
     }
 
     public function setComments($comments) {

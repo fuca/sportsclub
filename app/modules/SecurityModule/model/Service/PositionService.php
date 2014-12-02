@@ -65,7 +65,21 @@ class PositionService extends BaseService implements IPositionService {
      * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
+    
+    /** @var Event dispatched every time after create of Position */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Position */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Position */
+    public $onDelete = [];
 
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Position::getClassName(), $logger);
+	$this->positionDao = $em->getDao(Position::getClassName());
+    }
+    
     public function setRoleService(IRoleService $roleService) {
 	$this->roleService = $roleService;
     }
@@ -78,11 +92,6 @@ class PositionService extends BaseService implements IPositionService {
 	$this->userService = $us;
     }
 
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, Position::getClassName(), $logger);
-	$this->positionDao = $em->getDao(Position::getClassName());
-    }
-
     public function createPosition(Position $p) {
 	if ($p === null)
 	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
@@ -92,7 +101,7 @@ class PositionService extends BaseService implements IPositionService {
 	    $this->posRoleTypeHandle($p);
 	    $this->positionDao->save($p);
 	    $this->invalidateEntityCache($p);
-	    
+	    $this->onCreate($p);
 	} catch (DuplicateEntryException $e) {
 	    $this->logWarning($e);
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -178,6 +187,7 @@ class PositionService extends BaseService implements IPositionService {
 	    $db = $this->positionDao->find($p->id);
 	    if ($db !== null) {
 		$this->positionDao->delete($db);
+		$this->onDelete($db);
 	    }
 	    $this->invalidateEntityCache($p);
 	} catch (\Exception $e) {
@@ -237,8 +247,10 @@ class PositionService extends BaseService implements IPositionService {
 		$this->posRoleTypeHandle($pDb);
 		$this->entityManager->merge($pDb);
 		$this->entityManager->flush();
+		
 	    }
 	    $this->entityManager->commit();
+	    $this->onUpdate($pDb);
 	    $this->invalidateEntityCache($pDb);
 	} catch (DuplicateEntryException $e) {
 	    $this->entityManager->rollback();

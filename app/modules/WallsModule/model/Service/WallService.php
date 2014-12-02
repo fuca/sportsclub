@@ -60,7 +60,21 @@ class WallService extends BaseService implements IWallService {
      * @var \App\SystemModule\Model\Service\ICommentService
      */
     public $commentService;
+    
+    /** @var Event dispatched every time after create of WallPost */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of WallPost */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of WallPost */
+    public $onDelete = [];
 
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, WallPost::getClassName(), $logger);
+	$this->wallDao = $em->getDao(WallPost::getClassName());
+    }
+    
     public function setCommentService(ICommentService $commentService) {
 	$this->commentService = $commentService;
     }
@@ -77,11 +91,6 @@ class WallService extends BaseService implements IWallService {
 	return $this->userService;
     }
 
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, WallPost::getClassName(), $logger);
-	$this->wallDao = $em->getDao(WallPost::getClassName());
-    }
-
     public function createWallPost(WallPost $w) {
 	if ($w == null)
 	    throw new Exceptions\NullPointerException("Argument WallPost cannot be null");
@@ -91,6 +100,7 @@ class WallService extends BaseService implements IWallService {
 	    $this->sportGroupsTypeHandle($w);
 	    $this->wallDao->save($w);
 	    $this->invalidateEntityCache();
+	    $this->onCreate(clone $w);
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -197,6 +207,7 @@ class WallService extends BaseService implements IWallService {
 	    $wpDb = $this->wallDao->find($id);
 	    if ($wpDb !== null) {
 		$this->wallDao->delete($wpDb);
+		$this->onDelete($wpDb);
 	    }
 	    $this->invalidateEntityCache($wpDb);
 	} catch (\Exception $ex) {
@@ -220,6 +231,7 @@ class WallService extends BaseService implements IWallService {
 		$this->entityManager->merge($wpDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($wpDb);
+		$this->onUpdate($w);
 	    }
 	    $this->entityManager->commit();
 	} catch (\Exception $ex) {

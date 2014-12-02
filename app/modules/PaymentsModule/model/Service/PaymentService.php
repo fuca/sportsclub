@@ -63,6 +63,15 @@ class PaymentService extends BaseService implements IPaymentService {
      */
     private $dueDate;
     
+    /** @var Event dispatched every time after create of Payment */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Payment */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Payment */
+    public $onDelete = [];
+    
     public function getDefaultDueDate() {
 	return new DateTime($this->dueDate);
     }
@@ -109,6 +118,8 @@ class PaymentService extends BaseService implements IPaymentService {
 	    $this->paymentDao->save($p);
 	    $this->invalidateEntityCache($p);
 	    $this->entityManager->commit();
+	    
+	    $this->onCreate($p);
 	} catch (DuplicateEntryException $ex) {
 	    $this->entityManager->rollback();
 	    $this->logWarning($ex);
@@ -198,6 +209,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	    if ($payment !== null && $payment->getStatus() !== PaymentStatus::SENT) {
 		$this->paymentDao->delete($payment);
 		$this->invalidateEntityCache($payment);
+		$this->onDelete($payment);
 	    }
 	} catch (DBALException $ex) {
 	    $this->logWarning($ex);
@@ -221,6 +233,7 @@ class PaymentService extends BaseService implements IPaymentService {
 		$this->paymentEditorTypeHandle($paymentDb);
 		$this->paymentDao->save($paymentDb);
 		$this->invalidateEntityCache($paymentDb);
+		$this->onUpdate($paymentDb);
 	    }
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {

@@ -54,7 +54,22 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
      * @var Kdyby\Doctrine\EntityDao
      */
     private $mailboxDao;
+    
+    /** @var Event dispatched every time after create of MailboxEntry */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of MailboxEntry */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of MailboxEntry */
+    public $onDelete = [];
 
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, MailBoxEntry::getClassName(), $logger);
+	$this->messageDao = $this->entityManager->getDao(PrivateMessage::getClassName());
+	$this->mailboxDao = $this->entityManager->getDao(MailBoxEntry::getClassName());
+    }
+    
     public function getUserService() {
 	return $this->userService;
     }
@@ -71,12 +86,6 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 	$this->messageDao = $messageDao;
     }
 
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, MailBoxEntry::getClassName(), $logger);
-	$this->messageDao = $this->entityManager->getDao(PrivateMessage::getClassName());
-	$this->mailboxDao = $this->entityManager->getDao(MailBoxEntry::getClassName());
-    }
-
     public function createEntry(MailBoxEntry $mb) {
 	try {
 	    foreach ($mb->getRecipient() as $toId) {
@@ -87,6 +96,7 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 	    $mb->setRecipient($mb->getOwner());
 	    $mb->setType(MailBoxEntryType::READ);
 	    $this->saveMailboxEntry($mb);
+	    $this->onCreate($mb);
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
@@ -148,11 +158,14 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
     public function deleteEntry($id) {
 	try {
 	    $mbDb = $this->mailboxDao->find($id);
-	    if ($mbDb->getType() == MailBoxEntryType::DELETED) {
-		$this->invalidateEntityCache($mbDb);
-		$this->mailboxDao->delete($mbDb);
-	    } else {
-		$this->markAsDeleted($id);
+	    if ($mbDb !== null) {
+		if ($mbDb->getType() == MailBoxEntryType::DELETED) {
+		    $this->invalidateEntityCache($mbDb);
+		    $this->mailboxDao->delete($mbDb);
+		} else {
+		    $this->markAsDeleted($id);
+		}
+		$this->onDelete($mbDb);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -234,5 +247,4 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 		);
 	return $model;
     }
-
 }

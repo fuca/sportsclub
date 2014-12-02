@@ -46,18 +46,27 @@ class SeasonService extends BaseService implements ISeasonService {
      * @var \App\UsersModule\Model\Service\IUserService
      */
     private $userService;
+    
+    /** @var Event dispatched every time after create of Season */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Season */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Season */
+    public $onDelete = [];
 
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Season::getClassName(), $logger);
+	$this->seasonDao = $em->getDao(Season::getClassName());
+    }
+    
     public function getUserService() {
 	return $this->userService;
     }
 
     public function setUserService(IUserService $userService) {
 	$this->userService = $userService;
-    }
-
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, Season::getClassName(), $logger);
-	$this->seasonDao = $em->getDao(Season::getClassName());
     }
 
     public function createSeason(Season $s) {
@@ -72,6 +81,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    //$s->setApplications([]);
 	    $this->seasonDao->save($s);
 	    $this->invalidateEntityCache($s);
+	    $this->onCreate($s);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException(
@@ -124,6 +134,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    if ($db !== null) {
 		$this->seasonDao->delete($db);
 		$this->invalidateEntityCache($db);
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -173,6 +184,7 @@ class SeasonService extends BaseService implements ISeasonService {
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($seasonDb);
+	    $this->onUpdate($s);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException(

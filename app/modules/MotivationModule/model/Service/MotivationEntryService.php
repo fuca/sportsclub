@@ -37,7 +37,6 @@ use \Kdyby\Doctrine\EntityDao,
  */
 final class MotivationEntryService extends BaseService implements IMotivationEntryService {
     
-    
     /**
      * @var \Kdyby\Doctrine\EntityDao
      */
@@ -53,17 +52,26 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
      */
     private $userService;
     
+    /** @var Event dispatched every time after create of MotivationEntry */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of MotivationEntry */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of MotivationEntry */
+    public $onDelete = []; 
+
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, MotivationEntry::getClassName(), $logger);
+	$this->entryDao = $em->getDao(MotivationEntry::getClassName());
+    }
+    
     public function setSeasonService(ISeasonService $seasonService) {
 	$this->seasonService = $seasonService;
     }
 
     public function setUserService(IUserService $userService) {
 	$this->userService = $userService;
-    }
-
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, MotivationEntry::getClassName(), $logger);
-	$this->entryDao = $em->getDao(MotivationEntry::getClassName());
     }
         
     public function createEntry(MotivationEntry $e) {
@@ -74,6 +82,7 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
 	    $this->entrySeasonTypeHandle($e);
 	    $this->entryDao->save($e);
 	    $this->invalidateEntityCache($e);
+	    $this->onCreate($e);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());
 	} catch (\Exception $ex) {
@@ -134,6 +143,7 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
 	    if ($db !== null) {
 		$this->invalidateEntityCache($db);
 		$this->entryDao->delete($db);
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -182,6 +192,7 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
 		$this->entityManager->merge($db);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($db);
+		$this->onUpdate($db);
 	    }
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());

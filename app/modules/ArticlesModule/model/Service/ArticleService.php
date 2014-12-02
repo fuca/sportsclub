@@ -89,6 +89,15 @@ class ArticleService extends BaseService implements IArticleService {
      */
     private $imageService;
     
+    /** @var Event dispatched every time after create of Article */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Article */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Article */
+    public $onDelete = [];
+    
     function setImageService(\Tomaj\Image\ImageService $imageService) {
 	$this->imageService = $imageService;
     }
@@ -145,6 +154,7 @@ class ArticleService extends BaseService implements IArticleService {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+	$this->onCreate($a);
     }
     
 
@@ -212,6 +222,7 @@ class ArticleService extends BaseService implements IArticleService {
 		$this->imageService->removeResource($identifier);
 		
 		$this->articleDao->delete($db);
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -327,6 +338,7 @@ class ArticleService extends BaseService implements IArticleService {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+	$this->onUpdate($a);
 	return $a;
     }
     

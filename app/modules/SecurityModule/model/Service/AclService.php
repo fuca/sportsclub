@@ -51,6 +51,10 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
      */
     private $resourcesService;
     
+    public function __construct(EntityManager $em) {
+	parent::__construct($em, "\Nette\Security\Permission");
+    }
+    
     public function setRolesService(IRoleService $rolesService) {
 	$this->rolesService = $rolesService;
     }
@@ -61,10 +65,6 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
 
     public function setResourcesService(IResourceService $resourcesService) {
 	$this->resourcesService = $resourcesService;
-    }
-    
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, "\Nette\Security\Permission");
     }
     
     public function invalidateCache() {

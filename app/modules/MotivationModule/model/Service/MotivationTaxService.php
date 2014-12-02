@@ -58,6 +58,20 @@ final class MotivationTaxService extends BaseService implements IMotivationTaxSe
      */
     private $sportGroupService;
     
+    /** @var Event dispatched every time after create of MotivationTax */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of MotivationTax */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of MotivationTax */
+    public $onDelete = [];
+        
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, MotivationTax::getClassName(), $logger);
+	$this->taxDao = $em->getDao(MotivationTax::getClassName());
+    }
+    
     public function setSeasonService(ISeasonService $seasonService) {
 	$this->seasonService = $seasonService;
     }
@@ -68,11 +82,6 @@ final class MotivationTaxService extends BaseService implements IMotivationTaxSe
 
     public function setSportGroupService(ISportGroupService $sportGroupService) {
 	$this->sportGroupService = $sportGroupService;
-    }
-        
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, MotivationTax::getClassName(), $logger);
-	$this->taxDao = $em->getDao(MotivationTax::getClassName());
     }
     
     public function createTax(MotivationTax $t) {
@@ -85,6 +94,8 @@ final class MotivationTaxService extends BaseService implements IMotivationTaxSe
 	    
 	    $this->taxDao->save($t);
 	    $this->invalidateEntityCache($t);
+	    
+	    $this->onCreate($t);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -148,6 +159,7 @@ final class MotivationTaxService extends BaseService implements IMotivationTaxSe
 	    if ($db !== null) {
 		$this->invalidateEntityCache($db);
 		$this->taxDao->delete($db);
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -193,6 +205,7 @@ final class MotivationTaxService extends BaseService implements IMotivationTaxSe
 		$this->entityManager->merge($db);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($db);
+		$this->onUpdate($db);
 	    }
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());

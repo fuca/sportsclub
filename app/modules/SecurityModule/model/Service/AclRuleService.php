@@ -46,16 +46,25 @@ class AclRuleService extends BaseService implements IAclRuleService {
      * @var \App\Model\Service\IRoleService
      */
     private $roleService;
-
-    public function setRoleService(IRoleService $roleService) {
-	if ($roleService === null)
-	    throw new Exceptions\NullPointerException("Argument IRoleService was null", 0);
-	$this->roleService = $roleService;
-    }
+    
+    /** @var Event dispatched every time after create of AclRule */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of AclRule */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of AclRule */
+    public $onDelete = [];
 
     public function __construct(EntityManager $em, Logger $logger) {
 	parent::__construct($em, AclRule::getClassName(), $logger);
 	$this->aclRuleDao = $em->getDao(AclRule::getClassName());
+    }
+    
+    public function setRoleService(IRoleService $roleService) {
+	if ($roleService === null)
+	    throw new Exceptions\NullPointerException("Argument IRoleService was null", 0);
+	$this->roleService = $roleService;
     }
 
     /**
@@ -75,6 +84,7 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	    $this->roleTypeHandle($arule);
 	    $this->aclRuleDao->save($arule);
 	    $this->invalidateEntityCache($arule);
+	    $this->onCreate($arule);
 	    
 	} catch (DuplicateEntryException $e) {
 	    $this->logWarning($e);
@@ -145,8 +155,10 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
 	try {
 	    $db = $this->aclRuleDao->find($id);
-	    if ($db !== null) 
+	    if ($db !== null) {
 		$this->aclRuleDao->delete($db);
+		$this->onDelete(clone $db);
+	    }
 	    $this->invalidateEntityCache($db);
 	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -164,9 +176,11 @@ class AclRuleService extends BaseService implements IAclRuleService {
 		$this->roleTypeHandle($dbRule);
 		$this->entityManager->merge($dbRule);
 		$this->entityManager->flush();
+		
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($dbRule);
+	    $this->onUpdate($dbRule);
 	} catch (DuplicateEntryException $e) {
 	    $this->entityManager->rollback();
 	    $this->logWarning($e);

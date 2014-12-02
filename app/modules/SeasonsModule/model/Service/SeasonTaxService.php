@@ -61,7 +61,21 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
      * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     private $seasonService;
+    
+    /** @var Event dispatched every time after create of SeasonTax */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of SeasonTax */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of SeasonTax */
+    public $onDelete = [];
 
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, SeasonTax::getClassName(), $logger);
+	$this->seasonTaxDao = $em->getDao(SeasonTax::getClassName());
+    }
+    
     public function getSeasonService() {
 	return $this->seasonService;
     }
@@ -86,11 +100,6 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	$this->userService = $userService;
     }
 
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, SeasonTax::getClassName(), $logger);
-	$this->seasonTaxDao = $em->getDao(SeasonTax::getClassName());
-    }
-
     public function createSeasonTax(SeasonTax $t) {
 	if ($t === null)
 	    throw new Exceptions\NullPointerException("Argument SeasonTax cannot be null", 0);
@@ -102,6 +111,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 
 	    $this->seasonTaxDao->save($t);
 	    $this->invalidateEntityCache($t);
+	    $this->onCreate($t);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException(
@@ -167,6 +177,7 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 	    if ($db !== null) {
 		$this->seasonTaxDao->delete($db);
 		$this->invalidateEntityCache($db);
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -189,9 +200,11 @@ class SeasonTaxService extends BaseService implements ISeasonTaxService {
 		
 		$this->entityManager->merge($tDb);
 		$this->entityManager->flush();
+		
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($t);
+	    $this->onUpdate($t);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException(

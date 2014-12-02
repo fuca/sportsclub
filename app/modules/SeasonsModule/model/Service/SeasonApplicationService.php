@@ -72,7 +72,18 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
     
     /** @var Event dispatched every time after create of SeasonApplication */
     public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of SeasonApplication */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of SeasonApplication */
+    public $onDelete = [];
 
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, SeasonApplication::getClassName(), $logger);
+	$this->seasonApplicationDao = $em->getDao(SeasonApplication::getClassName());
+    }
+    
     // <editor-fold desc="GETTERS AND SETTERS">
     
     public function getUserService() {
@@ -116,11 +127,6 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
     }
     
     // </editor-fold>
-
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, SeasonApplication::getClassName(), $logger);
-	$this->seasonApplicationDao = $em->getDao(SeasonApplication::getClassName());
-    }
 
     public function createSeasonApplication(SeasonApplication $app) {
 	if ($app == null)
@@ -284,6 +290,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    if ($appDb !== null) {
 		$this->seasonApplicationDao->delete($appDb);
 		$this->invalidateEntityCache($appDb);
+		$this->onDelete(clone $appDb);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -311,6 +318,7 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	    }
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($appDb);
+	    $this->onUpdate(clone $appDb);
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException(

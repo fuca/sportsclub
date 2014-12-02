@@ -72,6 +72,15 @@ class EventService extends BaseService implements IEventService, IEventModel {
      */
     public $commentService;
     
+    /** @var Event dispatched every time after create of Event, EventParticipation */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Event, EventParticipation */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Event, EventParticipation */
+    public $onDelete = [];
+    
     public function getUserService() {
 	return $this->userService;
     }
@@ -102,6 +111,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		$this->ownerTypeHandle($ep);
 		$this->participationDao->save($ep);
 		$this->invalidateEntityCache($ep->getEvent());
+		$this->onCreate($eDb);
 	    }
 	} catch (DBALException $ex) {
 	    $this->logWarning($ex);
@@ -126,6 +136,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 			->getSingleResult();
 		if ($pDb !== null) {
 		    $this->participationDao->delete($pDb);
+		    $this->onDelete($pDb);
 		}
 	    }
 	    $this->invalidateEntityCache($eDb);
@@ -156,6 +167,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    $this->sportGroupsTypeHandle($e);
 	    $this->eventDao->save($e);
 	    $this->invalidateEntityCache($e);
+	    $this->onCreate($e);
 	} catch (DBALException $ex) {
 	    $this->logWarning($ex);
 	    throw new Exceptions\DuplicateEntryException("Event with this title already exist");
@@ -241,6 +253,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    $dbE = $this->eventDao->find($id);
 	    if ($dbE !== null) {
 		$this->eventDao->delete($dbE);
+		$this->onDelete($dbE);
 	    }
 	} catch (DBALException $ex) {
 	    $this->logError($ex->getMessage());
@@ -316,6 +329,7 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		$this->entityManager->merge($eDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($eDb);
+		$this->onUpdate($eDb);
 	    }
 	    $this->entityManager->commit();
 	} catch (DuplicateEntryException $ex) {

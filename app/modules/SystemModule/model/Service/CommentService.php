@@ -44,17 +44,26 @@ class CommentService extends BaseService implements ICommentService {
      */
     private $userService;
     
+    /** @var Event dispatched every time after create of Comment */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Comment */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Comment */
+    public $onDelete = [];
+    
+    public function __construct(EntityManager $em) {
+	parent::__construct($em, Comment::getClassName());
+	$this->commentDao = $em->getDao(Comment::getClassName());
+    }
+    
     public function setUserService(IUserService $userService) {
 	$this->userService = $userService;
     }
 
     public function getUserService() {
 	return $this->userService;
-    }
-    
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, Comment::getClassName());
-	$this->commentDao = $em->getDao(Comment::getClassName());
     }
     
     public function createComment(Comment $c) {
@@ -66,6 +75,7 @@ class CommentService extends BaseService implements ICommentService {
 	    $c->setAuthor($c->getEditor());
 	    $this->commentDao->save($c);
 	    $this->invalidateEntityCache($c);
+	    $this->onCreate($c);
 	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
@@ -83,6 +93,7 @@ class CommentService extends BaseService implements ICommentService {
 		$this->entityManager->merge($cDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($c);
+		$this->onUpdate($c);
 	    }
 	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -117,6 +128,7 @@ class CommentService extends BaseService implements ICommentService {
 	    if ($cDb !== null) {
 		$this->commentDao->delete($cDb);
 		$this->invalidateEntityCache($cDb);
+		$this->onDelete($cDb);
 	    }
 	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());

@@ -48,6 +48,15 @@ class RoleService extends BaseService implements IRoleService {
      * @param \Kdyby\Doctrine\EntityDao
      */
     private $positionDao;
+    
+    /** @var Event dispatched every time after create of Role */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Role */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Role */
+    public $onDelete = [];
 
     public function __construct(EntityManager $em) {
 	parent::__construct($em, Role::getClassName());
@@ -63,7 +72,7 @@ class RoleService extends BaseService implements IRoleService {
 	    $r->setAdded(new DateTime());
 	    $this->roleDao->save($r);
 	    $this->invalidateEntityCache($r);
-	    
+	    $this->onCreate($r);
 	} catch (DuplicateEntryException $e) {
 	    $this->logWarning($e);
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -198,8 +207,10 @@ class RoleService extends BaseService implements IRoleService {
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	try {
 	    $db = $this->roleDao->find($id);
-	    if ($db !== null)
+	    if ($db !== null) {
 		$this->roleDao->delete($db);
+		$this->onDelete($db);
+	    }
 	    $this->invalidateEntityCache($db);
 	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -217,7 +228,8 @@ class RoleService extends BaseService implements IRoleService {
 		$dbRole->setParents($this->roleParentsCollSetup($r));
 		$this->entityManager->merge($dbRole);
 		$this->entityManager->flush();
-		$this->invalidateEntityCache($r);
+		$this->invalidateEntityCache($dbRole);
+		$this->onUpdate(clone $dbRole);
 	    }
 	} catch (DuplicateEntryException $e) {
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());

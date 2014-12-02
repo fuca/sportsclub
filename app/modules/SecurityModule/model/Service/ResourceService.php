@@ -54,6 +54,10 @@ class ResourceService extends BaseService implements IResourceService {
 
     /** @var string class name */
     private $className;
+
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Resource::getClassName(), $logger);
+    }
     
     public function setAnnotationsReader(Reader $reader) {
 	$this->annReader = $reader;
@@ -65,10 +69,6 @@ class ResourceService extends BaseService implements IResourceService {
 
     public function setPresenterTree(PresenterTree $pt) {
 	$this->presenterTree = $pt;
-    }
-
-    public function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, Resource::getClassName(), $logger);
     }
 
     /**

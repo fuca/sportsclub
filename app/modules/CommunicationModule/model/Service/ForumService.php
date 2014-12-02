@@ -71,19 +71,19 @@ class ForumService extends BaseService implements IForumService {
      */
     private $commentService;
 
-    /**
-     * @var string
-     */
-    private $defaultImgPath;
+    /** @var Event dispatched every time after create of Forum */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of Forum */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of Forum */
+    public $onDelete = [];
     
     public function setCommentService(ICommentService $commentService) {
 	$this->commentService = $commentService;
     }
-        
-    public function setDefaultImgPath($defaultImgPath) {
-	$this->defaultImgPath = $defaultImgPath;
-    }
-    
+
     public function setSportGroupService (ISportGroupService $sportGroupService) {
 	$this->sportGroupService = $sportGroupService;
     }
@@ -114,7 +114,7 @@ class ForumService extends BaseService implements IForumService {
 	    $this->forumThreadDao->save($t);
 	    $this->entityManager->commit();
 	    $this->invalidateEntityCache($t->getForum());
-	    
+	    $this->onCreate($t);
 	} catch (DBALException $ex) {
 	    $this->entityManager->rollback();
 	    $this->logWarning($ex);
@@ -135,6 +135,7 @@ class ForumService extends BaseService implements IForumService {
 	    if ($db !== NULL) {
 		$this->forumThreadDao->delete($db);
 		$this->invalidateEntityCache($db);
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -203,6 +204,7 @@ class ForumService extends BaseService implements IForumService {
 		$this->entityManager->merge($fDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($fDb);
+		$this->onUpdate($fDb);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -236,13 +238,12 @@ class ForumService extends BaseService implements IForumService {
 	    $f->setUpdated(new DateTime());
 	    $f->setAuthor($f->getEditor());
 	    $this->sportGroupsTypeHandle($f);
-	    if (empty($f->getImgName())) {
-		$f->setImgName($this->defaultImgPath);
-	    }
+	    
 	    $f->setAlias(Strings::webalize($f->getTitle()));
 	    
 	    $this->forumDao->save($f);
 	    $this->entityManager->commit();
+	    $this->onCreate($f);
 	} catch (DBALException $ex) {
 	    $this->entityManager->rollback();
 	    $this->logWarning($ex);
@@ -263,6 +264,7 @@ class ForumService extends BaseService implements IForumService {
 	    if ($db !== NULL) {
 		$this->forumDao->delete($db);
 		$this->invalidateEntityCache();
+		$this->onDelete($db);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -365,6 +367,7 @@ class ForumService extends BaseService implements IForumService {
 		$this->entityManager->merge($fDb);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($fDb);
+		$this->onUpdate($fDb);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());

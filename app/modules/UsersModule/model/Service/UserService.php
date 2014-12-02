@@ -82,6 +82,15 @@ class UserService extends BaseService implements IUserService {
      */
     private $imageService;
     
+    /** @var Event dispatched every time after create of User */
+    public $onCreate = [];
+    
+    /** @var Event dispatched every time after update of User, WebProfile */
+    public $onUpdate = [];
+    
+    /** @var Event dispatched every time after delete of User */
+    public $onDelete = [];
+    
     function setImageService(ImageService $imageService) {
 	$this->imageService = $imageService;
     }
@@ -151,10 +160,12 @@ class UserService extends BaseService implements IUserService {
 			$e->getPrevious());
 	} catch (\Exception $e) {
 	    $this->entityManager->rollback();
+	    $this->logError($e->getMessage());
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	$this->logInfo("User %user was successfully created", ["user" => $user]);
 	$this->notifService->newAccountNotification($user);
+	$this->onCreate(clone $user);
     }
 
     public function updateUser(User $formUser) {
@@ -165,13 +176,20 @@ class UserService extends BaseService implements IUserService {
 	$this->entityManager->beginTransaction();
 	$uDb = null;
 	$id = $formUser->getId();
-	$uDb = $this->getUser($id, false);
+	try {
+	    $uDb = $this->getUser($id, false);
+	    
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
 	
-	    if ($uDb !== null) {
+	if ($uDb !== null) {
 	    $this->handleUpdateContact($uDb, $formUser);
 	    $this->handleUpdateUser($uDb, $formUser);
 	    $this->invalidateEntityCache($uDb);
 	    $this->entityManager->commit();
+	    $this->onUpdate(clone $uDb);
 	}
     }
 
@@ -258,10 +276,12 @@ class UserService extends BaseService implements IUserService {
 		$this->imageService->removeResource($imageId);
 		
 		$this->userDao->delete($db);
+		
 	    } else {
 		throw new EntityNotFoundException("User with id '$id' does not exist", 2);
 	    }
 	    $this->entityManager->commit();
+	    $this->onDelete($db);
 	} catch (DBALException $ex) {
 	    throw new Exceptions\DependencyException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $e) {
@@ -410,6 +430,7 @@ class UserService extends BaseService implements IUserService {
 		$this->editorTypeHandle($wpDb);
 		$this->entityManager->merge($wpDb);
 		$this->entityManager->flush();
+		$this->onUpdate($wpDb);
 	    }
 	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -428,6 +449,7 @@ class UserService extends BaseService implements IUserService {
 		$this->editorTypeHandle($wpDb);
 		$this->entityManager->merge($wpDb);
 		$this->entityManager->flush();
+		$this->onUpdate($wpDb);
 	    }
 	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());

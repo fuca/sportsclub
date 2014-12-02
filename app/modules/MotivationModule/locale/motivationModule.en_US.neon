@@ -1,6 +1,9 @@
 adminMenuItem.label: "Motivation"
 protectedMenuItem.label: "Motivation"
 
+adminMenuItem.description: "Section for administration of motivation entries and motivation taxes."
+protectedMenuItem.description: "Overview of user related motivation resources."
+
 taxForm:
 	groupNew: "New motivation tax"
 	groupEdit: "Update motivation tax"

@@ -6,11 +6,17 @@
 {block #side}left{/block}
 
 {block #breadcrumbs}
-    {include #parent} <li>{_wallsModule.club.showWallPost.heading}</li>
+    {include #parent} 
+    <li>
+	<a href="{plink default, $abbr}">
+	    {_ wallsModule.club.heading, null, ["group"=>$groupLabel]}
+	</a>
+    </li>
+    <li>{_wallsModule.club.showWallPost.heading}</li>
 {/block}
 
 {block #title}
-      {_wallsModule.club.showWallPost.heading} / {include #parent}
+      {_wallsModule.club.showWallPost.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
@@ -20,9 +26,53 @@
 <div class="page-header">
     <h3>{$data->getTitle()}</h3>
 </div>
-    <p>{$data->getContent()}</p>
-    <p>{$data->getAuthor()}</p>
+    <div class="row">
+	<div class="col-sm-9">
+	    <p>{!$data->getContent()}</p>
+	</div>
+	<div class="col-sm-3">
+	    {var author => $data->getAuthor()}
+	    {var nick => $author->getNick()}
+	    <div title="{_wallsModule.club.author}">
+		&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+		&nbsp;
+		<a href="{plink :Users:Public:showWebProfile, $author->getId()}">
+		    {if empty($nick)}
+			{$author->getName()}&nbsp;{$author->getSurName()}
+		    {else}
+			{$nick}
+		    {/if}
+		</a>
+		<div class="hidden-xs"><br/></div>
+	    </div>
+	    <div title="{_wallsModule.club.changeTime}">
+		&nbsp;<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+		&nbsp; {$data->getUpdated()|date:$dateFormat}
+	    </div>
+		<div class="hidden-xs"><br/></div>
+	    {if !$data->getHighlight()}
+		<div title="{_wallsModule.club.showTo}">
+		    &nbsp;<span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+		    &nbsp;{$data->getShowTo()|date:$dateTimeFormat}
+		</div>
+	    {/if}
 
-    {control commentControl:form}
+	    
+	    <br/>
+	    <div title="{_wallsModule.club.relatedGroups}">
+	    {foreach $data->getGroups() as $g}
+		<strong><em>{$g->getName()}
+		{var type => $g->getSportType()}
+		{if $type !== null}
+		    <small>({$type->getName()})</small>
+		{/if}
+		    </em></strong>
+		<br/>
+	    {/foreach}
+	    </div>
+	</div>
+
+    </div>
+{control commentControl:form}
 {control commentControl:comments}
 {/}

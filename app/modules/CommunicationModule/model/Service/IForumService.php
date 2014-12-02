@@ -19,7 +19,10 @@
 namespace App\CommunicationModule\Model\Service;
 
 use \App\Model\Entities\Forum,
-    \App\Model\Entities\SportGroup;
+    \App\Model\Entities\ForumThread,
+    \App\Model\Entities\SportGroup,
+    \App\Model\Entities\Comment,
+    \App\SystemModule\Model\Service\ICommentable;
 
 /**
  * Interface for Event service
@@ -55,5 +58,21 @@ interface IForumService {
      */
     function getForums(SportGroup $g);
     
+    function getSelectForums($id = null);
+    
     function getForumDatasource();
+    
+    function createForumThread(ForumThread $t);
+    function deleteForumThread($id);
+    function getForumThread($id, $useCache = true);
+    function getForumThreadAlias($alias);
+    function updateForumThread(ForumThread $f);
+    function getForumThreadsDataSource();
+    
+    function createComment(Comment $c, ICommentable $e);
+    function updateComment(Comment $c, ICommentable $e);
+    function deleteComment(Comment $c, ICommentable $e);
+    
+    // oddelat metody, co zanikly pro forum
+    
 }

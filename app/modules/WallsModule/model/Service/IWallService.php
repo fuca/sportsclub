@@ -20,7 +20,8 @@ namespace App\WallsModule\Model\Service;
 
 use \App\Model\Entities\WallPost,
     \App\Model\Entities\SportGroup,
-    \App\SystemModule\Model\Service\ICommenting;
+    \App\SystemModule\Model\Service\ICommenting,
+    \App\Model\Misc\Enum\WallPostStatus;
 
 /**
  * Interface of Wall service
@@ -28,31 +29,21 @@ use \App\Model\Entities\WallPost,
  */
 interface IWallService extends ICommenting {
     
-    /**
-     * 
-     */
+
     function createWallPost(WallPost $w);
     
-    /**
-     * 
-     */
     function updateWallPost(WallPost $w);
     
-    /**
-     * 
-     */
     function removeWallPost($id);
     
-    /**
-     * 
-     */
     function getWallPost($id);
     
-    /**
-     * 
-     */
-    function getWallPosts(SportGroup $g);
+    function getWallPosts(SportGroup $g, $highlight = false, $published = null);
+    
+    function getHighlights(SportGroup $g = null, $rootAbbr = null, $published = null);
     
     function getWallPostsDatasource();
+    
+    function getOldWallPosts(SportGroup $g, $status = WallPostStatus::PUBLISHED);
     
 }

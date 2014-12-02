@@ -4,24 +4,56 @@
 {layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ wallsModule.club.heading}</li>
+    {include #parent}<li>{_ wallsModule.club.heading, null, ["group"=>$groupLabel]}</li>
 {/block}
     
 {block #title}
-    {_wallsModule.club.heading} / {include #parent}
-{/block}
+    {_wallsModule.club.heading, null, ["group"=>$groupLabel]} {$titleCrumbSeparator} {include #parent}
+{/block} 
 
 {block #subMenu}
 {/block}
     
 {block #clubContent}
-    <h3>{_ wallsModule.club.wallPosts.heading}</h3>
+    {control permanentWallPosts}
+    <div class="wall-content">
     {if $wallPosts}
-
 	{foreach $wallPosts as $wp}
-	    <a href="{plink showWallPost $wp->getId()}">{$wp->getTitle()}</a><br/>
+		<article class="wallpost-box">
+		    
+			<div class="wallpost-box-item active">
+			    <a href="{plink showWallPost, $wp->getId(), $abbr}"><strong>{$wp->getTitle()}</strong></a>
+			    <div class="pull-right" title="{_wallsModule.club.author}">				
+				{var author => $wp->getAuthor()}
+				{var nick => $author->getNick()}
+				<span class="glyphicon glyphicon-user" aria-hidden="true">
+
+				</span>&nbsp;
+				<a href="{plink :Users:Public:showWebProfile, $author->getId()}">
+				    {if empty($nick)}
+					{$author->getName()}&nbsp;{$author->getSurName()}
+				    {else}
+					{$nick}
+				    {/if}
+				</a>
+			    </div>
+			</div>
+				
+			<a href="{plink showWallPost, $wp->getId(), $abbr}" class="content">
+			    <div class="wallpost-box-item">
+				    {!$wp->getContent()|truncate: 300}
+			    </div>
+			</a>
+		</article>
+	    
 	{/}
-    {else}
-	{_wallsModule.club.messages.noWallPosts}
+	{else}
+	    
+	{_wallsModule.club.messages.noWallPosts}    
     {/}
+    </div>
+    
+    {control wallHistoryControl}
 {/block}
+  <strong>
+				

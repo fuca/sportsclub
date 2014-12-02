@@ -25,15 +25,16 @@ use \Nette\DI\CompilerExtension,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \Kdyby\Translation\DI\ITranslationProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * EventsModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class EventsModuleExtension extends BaseModuleExtension implements ITranslationProvider, 
-	IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider {
+class EventsModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [];
 
@@ -64,6 +65,7 @@ class EventsModuleExtension extends BaseModuleExtension implements ITranslationP
 	$i = new ItemData();
 	$i->setLabel("eventsModule.adminMenuItem.label");
 	$i->setUrl(":Events:Admin:default");
+	$i->setData(["desc"=>"eventsModule.adminMenuItem.description"]);
 	return [$i];
     }
 
@@ -71,6 +73,7 @@ class EventsModuleExtension extends BaseModuleExtension implements ITranslationP
 	$i = new ItemData();
 	$i->setLabel("eventsModule.userMenuItem.label");
 	$i->setUrl(":Events:User:default");
+	$i->setData(["desc"=>"eventsModule.userMenuItem.description"]);
 	return [$i];
     }
 
@@ -78,7 +81,13 @@ class EventsModuleExtension extends BaseModuleExtension implements ITranslationP
 	$i = new ItemData();
 	$i->setLabel("eventsModule.clubMenuItem.label");
 	$i->setUrl(":Events:Club:default");
+	$i->setData(["desc"=>"eventsModule.clubMenuItem.description"]);
 	return [$i];
     }
-
+    
+    public function getDatabaseTypes() {
+	return ["EventParticipationType"    =>	"App\Model\Misc\Enum\EventParticipationType",
+		"EventVisibility"	=>	"App\Model\Misc\Enum\EventVisibility",
+		"EventType"	=>  "App\Model\Misc\Enum\EventType"];
+    }
 }

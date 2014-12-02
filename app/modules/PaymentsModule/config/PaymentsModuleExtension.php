@@ -24,14 +24,16 @@ use \Nette\DI\CompilerExtension,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \Kdyby\Translation\DI\ITranslationProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * PaymentsModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class PaymentsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IProtectedMenuDataProvider, IAdminMenuDataProvider {
+class PaymentsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IProtectedMenuDataProvider, IAdminMenuDataProvider,
+ IDatabaseTypeProvider {
 
     private $defaults = [
 	"dueDate"=>"1 month"];
@@ -66,6 +68,7 @@ class PaymentsModuleExtension extends BaseModuleExtension implements ITranslatio
 	$i = new ItemData();
 	$i->setLabel("paymentsModule.protectedMenuItem.label");
 	$i->setUrl(":Payments:User:default");
+	$i->setData(["desc"=>"paymentsModule.protectedMenuItem.description"]);
 	return [$i];
     }
 
@@ -73,7 +76,12 @@ class PaymentsModuleExtension extends BaseModuleExtension implements ITranslatio
 	$i = new ItemData();
 	$i->setLabel("paymentsModule.adminMenuItem.label");
 	$i->setUrl(":Payments:Admin:default");
+	$i->setData(["desc"=>"paymentsModule.adminMenuItem.description"]);
 	return [$i];
     }
-
+    
+    public function getDatabaseTypes() {
+	return ["PaymentOwnerType"  =>	"App\Model\Misc\Enum\PaymentOwnerType",
+		"PaymentStatus"	    =>	"App\Model\Misc\Enum\PaymentStatus"];
+    }
 }

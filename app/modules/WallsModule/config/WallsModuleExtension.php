@@ -24,14 +24,16 @@ use \Nette\PhpGenerator\ClassType,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * WallsModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class WallsModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider {
+class WallsModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [];
 
@@ -62,6 +64,7 @@ class WallsModuleExtension extends BaseModuleExtension implements ITranslationPr
 	$i = new ItemData();
 	$i->setLabel("wallsModule.adminMenuItem.label");
 	$i->setUrl(":Walls:Admin:default");
+	$i->setData(["desc"=>"wallsModule.adminMenuItem.description"]);
 	return [$i];
     }
 
@@ -73,7 +76,12 @@ class WallsModuleExtension extends BaseModuleExtension implements ITranslationPr
 	$i = new ItemData();
 	$i->setLabel("wallsModule.protectedMenuItem.label");
 	$i->setUrl(":Walls:Protected:default");
+	$i->setData(["desc"=>"wallsModule.protectedMenuItem.description"]);
 	return [$i];
+    }
+    
+    public function getDatabaseTypes() {
+	return ["WallPostStatus"=>"App\Model\Misc\Enum\WallPostStatus"];
     }
 
 }

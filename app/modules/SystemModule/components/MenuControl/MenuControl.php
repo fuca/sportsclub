@@ -153,9 +153,14 @@ class MenuControl extends \Nette\Application\UI\Control {
     /**
      * Render grid menu method
      */
-    public function renderGrid() {
+    public function renderGrid($layoutStyle = null, $label = null, $wrapperClass = "") {
 	$this->template->setFile($this->gridTemplate);
-	$this->template->menuLabel = $this->label;
+	if ($label != null)
+	    $this->template->menuLabel = $label;
+	else 
+	    $this->template->menuLabel = $this->label;
+	$this->template->layoutStyle = $layoutStyle;
+	$this->template->wrapperClass = $wrapperClass;
 	$this->template->nodes = $this->rootNode->getComponents();
 	$this->template->render();
     }

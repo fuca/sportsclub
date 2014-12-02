@@ -1,5 +1,9 @@
 adminMenuItem.label: "Payments"
 protectedMenuItem.label: "Payments"
+
+adminMenuItem.description: "Payments resources administration section."
+protectedMenuItem.description: "Overview of payments related with current user."
+
 admin.grid.messages:
     rlyDelPayment: "Do you really delete payment #%id%?"
     rlyDelPaymentItems: "Do you really delete %i payments?"

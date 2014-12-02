@@ -2,6 +2,10 @@ adminMenuItem.label: "Users"
 protectedMenuDataItem.label: "Personal data"
 protectedMenuProfileItem.label: "Profile"
 
+adminMenuItem.description: "Administration of users and their web profiles."
+protectedMenuDataItem.description: "User's own administration of personal data."
+protectedMenuProfileItem.description: "User's own administration of web profile."
+
 common:
 
 passwordChangeForm:

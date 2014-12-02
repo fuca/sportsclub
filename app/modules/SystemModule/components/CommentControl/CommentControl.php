@@ -162,6 +162,7 @@ final class CommentControl extends Control {
 	});	
 	$cs = new ArrayCollection(iterator_to_array($iterator));
 	$this->template->data = $cs;
+	$this->template->userId = $this->getUser()->getId();
 	$this->template->render();
     }
 

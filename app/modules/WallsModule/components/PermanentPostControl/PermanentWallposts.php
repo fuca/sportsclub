@@ -17,7 +17,9 @@
  */
 
 namespace App\WallsModule\Components;
-use Nette\Application\UI\Control;
+
+use \Nette\Application\UI\Control,
+    \Nette\ComponentModel\IContainer;
 
 /**
  * PermanentWallposts
@@ -25,5 +27,61 @@ use Nette\Application\UI\Control;
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 final class PermanentWallposts extends Control {
-   
+    
+    /**
+     * @var string directory with templates
+     */
+    private $templatesDir;
+
+    /** @var string template file */
+    private $templateFile;
+    
+    /**
+     * Data for render
+     * @var [WallPost]
+     */
+    private $data;
+    
+    /**
+     * Param to pass into link
+     * @var string
+     */
+    private $param;
+    
+    public function __construct(IContainer $parent, $name) {
+	parent::__construct($parent, $name);
+	
+	$this->templatesDir = __DIR__ . "/templates/";
+	$this->templateFile = $this->templatesDir . "default.latte";
+	$this->data	    = [];
+    }
+    
+    public function getTemplateFile() {
+	return $this->templateFile;
+    }
+
+    public function setTemplateFile($template) {
+	if (!file_exists($this->templatesDir . $template))
+	    throw new \Nette\FileNotFoundException("Template file with name '$template' does not exist");
+	$this->templateFile = $template;
+    }
+    
+    public function getData() {
+	return $this->data;
+    }
+
+    public function setData(array $data) {
+	$this->data = $data;
+    }
+    
+    public function setParam($string) {
+	$this->param = $string;
+    }
+
+    public function render() {
+	$this->template->setFile($this->getTemplateFile());
+	$this->template->data = $this->getData();
+	$this->template->param = $this->param;
+	$this->template->render();
+    }
 }

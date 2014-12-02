@@ -1,7 +1,6 @@
 <?php
-
 /*
- * Copyright 2014 Michal Fučík <michal.fuca.fucik(at)gmail.com>.
+ * Copyright 2014 fuca.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +15,14 @@
  * limitations under the License.
  */
 
-namespace App\InfoModule\Presenters;
-use App\SystemModule\Presenters\BasePresenter;
+namespace App\Model\Entities;
+
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Public InfoPresenter
- *
+ * ORM persistable entity representing real forum comment
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
+ * @ORM\Entity
  */
-class PublicPresenter extends BasePresenter {
-    
-    public function actionDefault() {}
-
+class ForumThreadComment extends Comment {   
 }

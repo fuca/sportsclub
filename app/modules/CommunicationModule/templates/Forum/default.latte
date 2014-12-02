@@ -4,35 +4,61 @@
 {layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ communicationModule.club.heading}</li>
+    {include #parent}<li>{_ communicationModule.club.forum.heading, null, ["title"=>$groupLabel]}</li>
 {/block}
     
 {block #title}
-    {_communicationModule.club.heading} / {include #parent}
+    {_ communicationModule.club.forum.heading, null, ["title"=>$groupLabel]} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
 {/block}
     
 {block #clubContent}
-
+<div class="forum-content">
     {if $data}
+	
 	{foreach $data as $f}
-	    <article class="forum-thumbnail">
-		<h5><a href="{plink showForum, $f->getAlias()}">{$f->getTitle()}</a></h5>
-		<p>{$f->getDescription()}</p>
+	    <div class="clearFix"></div>
+	    <article class="forumpost-box">
+		
+		<div class="forumpost-box-item active">
+		    <!-- HLAVICKA -->
+		    <a href="{plink showForum, $f->getAlias(), $abbr}"><strong>{$f->getTitle()}</strong></a>
+
+		    <div class="pull-right" title="{_ communicationModule.club.author}">				
+			<span class="glyphicon glyphicon-bullhorn" aria-hidden="true">
+
+			</span>
+		    </div>
+		    <!-- ODKAZ TELO -->
+
+		</div>
+
+		<a href="{plink showForum, $f->getId(), $abbr}" class="content">
+		    <div class="forumpost-box-item">
+			{!$f->getDescription()|truncate: 300}
+		    </div>
+		</a>
+		    
 		{var act => $f->getLastActivity()}
-		<em>
-		{if $act}
-		    {_communicationModule.protected.lastChange} {$act|date:'%d.%m.%Y %H:%M'}
-		{else}
-		    {_communicationModule.protected.messages.noActivity}
-		{/}
-		</em>
+		
+		<div class="forumpost-box-item footer pull-right" titl="{_ communicationModule.club.lastActivity}">
+		    <em>
+			{if $act}
+			    {_communicationModule.protected.lastChange} {$act|date:'%d.%m.%Y %H:%M'}
+			{else}
+			    {_communicationModule.protected.messages.noActivity}
+			{/}
+		    </em>
+		</div>
+		    
 	    </article>
-	{/}
+	{/foreach}
+	
     {else}
 	{_communicationModule.protected.messages.noForum}
     {/}
+    </div>
 
 {/block}

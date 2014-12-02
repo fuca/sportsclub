@@ -19,6 +19,82 @@
     <div class="page-header">
 	<h3>{_ wallsModule.admin.addWallPost.heading}</h3>
     </div>
-    {control addWallPostForm}
+    {form addWallPostForm} 
+    {control $form errors}
+    <div class="row">
+	<div class="col-sm-8">
+
+	    <div class="form-group">
+		{label title /} 
+		{input title class=>form-control}
+	    </div>
+
+	    <div class="col-sm-5">
+		<div class="form-group">
+		    {label showFrom /} 
+		    {input showFrom class=>form-control}
+		</div>
+	    </div>
+		
+		<div class="col-sm-1">
+	    </div>
+
+	    <div class="col-sm-5">
+		<div class="form-group">
+		    {label showTo /} 
+		    {input showTo class=>form-control}
+		</div>
+	    </div>
+
+	    <div class="col-sm-12">
+
+		<div class="form-group">
+		    {label content /} 
+		    {input content class=>form-control}
+		</div>
+	    </div>
+	</div>
+
+	    <div class="col-sm-3 form-options">
+
+		<div class="form-group">
+		    {label highlight /} 
+		    {input highlight class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label status /} 
+		    {input status class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label commentMode /} 
+		    {input commentMode class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label groups /} <br/>
+		    {input groups }
+		</div>
+
+		{if $form->isUpdate()}
+		    <div class="form-group">
+			{label author /} 
+			{input author class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label editor /} 
+			{input editor class=>form-control}
+		    </div>
+		{/if}
+
+		<div class="form-group">
+		    {input submitButton class=>"form-control btn-primary"}
+		</div>    
+	    </div>
+	</div>
+
+    {/form}
     
 {/block}

@@ -142,16 +142,29 @@ abstract class BaseService extends Object {
     
     protected function invalidateEntityCache(BaseEntity $e = null, array $tags = [self::ENTITY_COLLECTION, self::SELECT_COLLECTION], $force = false) {
 	$cache = $this->getEntityCache();
-	if ($e === null) {
+	if (!$e instanceof IIdentifiable) {
 	    if ($force) {
 		$this->purgeCache();
 		return;
 	    }
 	    $cache->clean([Cache::TAGS => $tags]);
 	} else {
-	    $tags[] = $e->getId();
+	    $tags[] = $this->getCacheId($e);
 	    $cache->clean([Cache::TAGS => $tags]);
 	}
+    }
+    
+    protected function getCacheId($e) {
+	$base = "";
+	$id = "";
+	
+	$id = $this->getMixId($e);
+	
+	if ($e instanceof BaseEntity && 
+		($e->getClassName() != $this->getEntityClassName())) {	
+	    $base = $e::getClassName();
+	}
+	return $base."-{$id}";
     }
     
     /**

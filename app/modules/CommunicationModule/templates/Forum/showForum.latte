@@ -4,23 +4,51 @@
 {layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ communicationModule.club.forum.heading}</li>
+    {include #parent}
+    <li><a href="{plink Forum:default, $abbr}">{_ communicationModule.club.forum.heading, null, ["title"=>$groupLabel]}</a></li>
+    <li>{$forumTitle}</li>
 {/block}
     
 {block #title}
-    {_communicationModule.club.forum.heading} / {include #parent}
+    {$forumTitle} {$titleCrumbSeparator}
+    {_communicationModule.club.forum.heading, null, ["title"=>$groupLabel]} {$titleCrumbSeparator} 
+    {include #parent}
 {/block}
 
 {block #subMenu}
+    {control subMenu:contentSubMenu}
 {/block}
     
 {block #clubContent}
+<div class="page-header">
+    <h3>{$forumTitle}</h3>
+</div>
+    {foreach $data as $thread}
+	
+	
+	<div class="panel panel-default">
+	    <a href="{plink showThread, $thread->getAlias()}">
+	    <div class="panel-body">
+		<strong>{$thread->getTitle()}</strong>
+		<div class="pull-right">
+		    <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+		    {count($thread->getComments())}
+		    <span class="glyphicon glyphicon-user" aria-hidden="true" title="{_ communicationModule.club.author}"></span>
+		    {$thread->getAuthor()}
+		    <br/>
+		    
+		    <em title="{_ communicationModule.club.lastActivity}">
+			{var act => $thread->getLastActivity()}
+			{if $act}
+			    {_communicationModule.protected.lastChange} {$act|date:'%d.%m.%Y %H:%M'}
+			{else}
+			    {_communicationModule.protected.messages.noActivity}
+			{/}
+		    </em>
+		</div>
+	    </div>
+	    </a>
+	</div>
 
-    {if $data}
-	<article>
-	    <h4>{$data->getTitle()}</h4>
-	    <p>{$data->getDescription()}</p>
-	    {control commentControl}
-	</article>
-    {/}
+    {/foreach}
 {/block}

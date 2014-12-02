@@ -1,20 +1,20 @@
 
-	{$control->getLabel()}
-	{block #grid-menu}
-	<table>
+<div class="{$wrapperClass}">
+	<div class="list-group grid-menu {$layoutStyle}">
+	    <span class="list-group-item active">{_ $menuLabel}</span>
 		{foreach $nodes as $node}
-		
-		<tr>
-		    {var $data => $node->data}
-		    <td><img src="{if isset($data['img'])}{$data["img"]}{/if}"/></td>
-		    <td><a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}">{_ $node->label}</a>
-			<br/>
-			{if isset($data['img'])}{$data["desc"]}{/if}
-		    </td>
-		</tr>
-			{if count($node->getComponents()) > 0}
-				{include #grid-menu, nodes => $node->getComponents()}
-			{/if}
+		    {var headSet => isset($node->data["headOnly"])}
+		    {if !$headSet || ($headSet && !$node->data["headOnly"])}
+			{var data => $node->data}
+		    <a href="{if $node->mode} {plink $node->url} {else} {$node->url}{/if}" class="list-group-item">
+			<h4 class="list-group-item-heading">{_ $node->label}</h4>
+			<p class="list-group-item-text">{if isset($data['desc'])}{_ $data["desc"]}{/if}</p>
+		    </a>
+		    {/if}
 		{/foreach}
-	</table>
-	{/block}
+
+	</div>
+</div>
+    
+    
+  

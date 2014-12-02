@@ -75,6 +75,7 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider, IPublicMenu
 	$i = new ItemData();
 	$i->setLabel("articlesModule.adminMenuItem.label");
 	$i->setUrl(":Articles:Admin:default");
+	$i->setData(["desc"=>"articlesModule.adminMenuItem.description"]);
 	return [$i];
     }
     
@@ -82,6 +83,7 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider, IPublicMenu
 	$i = new ItemData();
 	$i->setLabel("articlesModule.publicMenu.articles.label");
 	$i->setUrl(":Articles:Public:default");
+	$i->setData(["desc"=>"articlesModule.publicMenu.articles.description"]);
 	return [$i];
     }
     

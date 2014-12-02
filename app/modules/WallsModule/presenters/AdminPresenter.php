@@ -24,7 +24,7 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Entities\WallPost,
     \App\WallsModule\Forms\WallPostForm,
     \App\Model\Misc\Enum\FormMode,
-    \App\Model\Misc\Enum\ArticleStatus,
+    \App\Model\Misc\Enum\WallPostStatus,
     \App\Model\Misc\Enum\CommentMode,
     \Nette\Application\UI\Form,
     \Nette\Utils\ArrayHash,
@@ -160,11 +160,12 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     public function createComponentWallPostsGrid($name) {
-	$articleStates = [null=>null]+ArticleStatus::getOptions();
-	$commentModes = [null=>null]+CommentMode::getOptions();
+	
+	$articleStates	= [null=>null] + WallPostStatus::getOptions();
+	$commentModes	= [null=>null] + CommentMode::getOptions();
 	
 	try {
-	    $users = [null=>null]+$this->usersService->getSelectUsers();    
+	    $users = [null=>null] + $this->usersService->getSelectUsers();    
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad(null, "default", $ex);
 	}
@@ -191,7 +192,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	
 	$grid->addColumnText('status', $this->tt("wallsModule.admin.grid.status"))
 		->setSortable()
-		->setReplacement($articleStates)
+		->setCustomRender($this->statusRender)
 		->setFilterSelect($articleStates);
 	$headerStatus = $grid->getColumn('status')->headerPrototype;
 	$headerStatus->class[] = 'center';
@@ -230,6 +231,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->setExport("admin-wallposts" . date("Y-m-d H:i:s", time()));
 
 	return $grid;
+    }
+    
+    public function statusRender($e) {
+	return $this->tt(WallPostStatus::getOptions()[$e->getStatus()]);
     }
     
     public function commentModeRender($el) {

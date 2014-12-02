@@ -2,6 +2,11 @@ adminMenuItem.label: "Events"
 clubMenuItem.label: "Events"
 userMenuItem.label: "My events"
 
+adminMenuItem.description: "Event resources administration section."
+clubMenuItem.description: "All accessible events overview."
+userMenuItem.description: "Provides overview of events participated by current user."
+
+
 evCalPopTitle: "Events for "
 eventsForDate: "Events taking place in %date%"
 eventEnds: "Ends at "

@@ -1,6 +1,7 @@
 readMore: "more.."
 
 adminMenuItem.label: "Articles"
+adminMenuItem.description: "Administration of article resources"
 publicMenuItem.label: "Articles"
 articles.heading: "Articles"
 

@@ -4,3 +4,4 @@ admin:
 
 forumForm.errors:
 	forumAlreadyExist: "Forum with given title already exist"
+

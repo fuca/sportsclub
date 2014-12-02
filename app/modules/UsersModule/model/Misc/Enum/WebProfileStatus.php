@@ -24,7 +24,7 @@ use \App\Model\Misc\Enum\EnumType;
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class WebProfileStatus extends EnumType implements IEnum {
+class WebProfileStatus extends EnumType implements IEnum {
 
     const 
 	BAD	    = "-1",
@@ -34,10 +34,10 @@ final class WebProfileStatus extends EnumType implements IEnum {
     protected $name = "WebProfileStatus";
     protected $values = [self::BAD, self::OK, self::UPDATED];
 
-     public static function getOptions() {
+    public static function getOptions() {
 	return array(
-	    self::BAD	    =>	"Opravit",
-	    self::OK	    =>	"V pořádku",
-	    self::UPDATED   =>	"Upraveno");
+	    self::BAD	    =>	"usersModule.webProfStatus.bad",
+	    self::OK	    =>	"usersModule.webProfStatus.ok",
+	    self::UPDATED   =>	"usersModule.webProfStatus.updated");
     }
 }

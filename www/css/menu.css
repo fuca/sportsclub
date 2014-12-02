@@ -466,3 +466,44 @@ ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/
 
 
 /* END OF CONTENT MENU */
+
+
+
+/*
+    ========================
+	MENU CONTROL GRIDS
+    ========================
+*/
+
+.list-group a .list-group-item-text {
+    color: #696969;
+    font-style: italic;
+}
+
+.list-group.grid-menu span.list-group-item.active {
+     border-top-left-radius: 3px;
+     border-top-right-radius: 3px;
+}
+
+.list-group.grid-menu .list-group-item:last-child{
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.list-group.grid-menu.admin span.list-group-item.active {
+     background: #CC00CC; 
+     border-color: #CC00CC;
+     text-shadow: 0 -1px 0 #AD00AD !important;
+}
+
+.list-group.grid-menu.club span.list-group-item.active {
+     background: #D7060C; 
+     border-color: #D7060C;
+     text-shadow: 0 -1px 0 #AD050A !important;
+}
+
+.list-group.grid-menu.user span.list-group-item.active {
+     background: #F97A09; 
+     border-color: #F97A09;
+     text-shadow: 0 -1px 0 #CF6608 !important;
+}

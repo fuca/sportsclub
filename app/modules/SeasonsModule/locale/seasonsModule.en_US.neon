@@ -1,4 +1,5 @@
 adminMenuItem.label: "Seasons"
+adminMenuItem.description: "Administration of seasons, season taxes and season applications."
 
 admin:
 	seasonAdd: "Add new season"

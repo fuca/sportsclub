@@ -5,49 +5,68 @@
 	<strong>{_systemModule.commentControl.noDataFound}</strong>
     {else}
 	{foreach $data as $c}
-	    <p><a id="comment-{$c->getId()}" href="#comment-{$c->getId()}">#{$c->getId()}</a>
-	    <strong>{$c->getTitle()} </strong> <a href="{link getCommentForm!, $c->getId()}" class="ajaxdialog">[E]</a><a href="{link deleteComment!, $c->getId()}">[X]</a><br/>
-	    {$c->getContent()}<br>
-	    {$c->getAuthor()} | {$c->getUpdated()|date:'%d.%m.%Y %H:%M'}<br/>
-	    </p>
-	    {/}
-    {/}
-{/snippet}
-    
-{snippet simpleForm}
-    {if isset($showSimpleForm)}{control updateCommentForm}{/if}
-{/snippet}
+	    <blockquote>
+		<p>
+		    <a id="comment-{$c->getId()}" href="#comment-{$c->getId()}">
+			<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+		    </a>
+		    <strong>{$c->getTitle()} </strong> 
+		    <br/> {$c->getContent()}
+		</p>
+		
+		<footer>
+		    <cite title="Source Title">{$c->getAuthor()}</cite> |
+		    {if $c->getAuthor()->getId() == $userId}
+			<a href="{link getCommentForm!, $c->getId()}" class="ajaxdialog">
+			    <span class="glyphicon glyphicon-pencil" aria-hidden="true">
+			</a>
+			<a href="{link deleteComment!, $c->getId()}">
+			    <span class="glyphicon glyphicon-remove" aria-hidden="true">
+			</a>
+		    {/if}
+		    |{$c->getUpdated()|date:'%d.%m.%Y %H:%M'}
+		</footer>
+	    </blockquote>
+	{/foreach}
+    {/if}
+	    {/snippet}
 
-<script>
-// aktivace odkazu na zobrazeni dialogu
-jQuery(function($) {
-    $('a.ajaxdialog').live('click', function(event) {
-        event.preventDefault();
-        $.post($.nette.href = this.href, function(data) {
-            // (mimo jine) injektovani formulare do HTML
-            $.nette.success(data);
-            // aktivace ajaxoveho submitu formulare
-            activateAjaxForm();
-	    cancelButton();
-            // zobrazeni formulare v dialogu
-            $("#snippet--updateCommentForm").dialog();
-        }, "json");
-    });
-});
+	    {snippet simpleForm}
+		{if isset($showSimpleForm)}
+		{control updateCommentForm}
+		{/if}
+	    {/snippet}
 
-// aktivace "ajaxoveho" formulare
-function activateAjaxForm () {
-    $("#snippet--updateCommentForm [name='submitButton']").click(function () {
-        $(this).ajaxSubmit();
-        $("#snippet--updateCommentForm").dialog( "destroy" ); // po submitnuti zavreme dialog
-        return false;
-    });
-}
+	    <script>
+		// aktivace odkazu na zobrazeni dialogu
+		jQuery(function ($) {
+		    $('a.ajaxdialog').live('click', function (event) {
+			event.preventDefault();
+			$.post($.nette.href = this.href, function (data) {
+			    // (mimo jine) injektovani formulare do HTML
+			    $.nette.success(data);
+			    // aktivace ajaxoveho submitu formulare
+			    activateAjaxForm();
+			    cancelButton();
+			    // zobrazeni formulare v dialogu
+			    $("#snippet--updateCommentForm").dialog();
+			}, "json");
+		    });
+		});
 
-function cancelButton () {
-    $(":submit[name='cancelButton']").click(function () {
-        $("#snippet--updateCommentForm").dialog( "destroy" ); // po submitnuti zavreme dialog
-        return false;
-    });
-}
-</script>
+		// aktivace "ajaxoveho" formulare
+		function activateAjaxForm() {
+		    $("#snippet--updateCommentForm [name='submitButton']").click(function () {
+			$(this).ajaxSubmit();
+			$("#snippet--updateCommentForm").dialog("destroy"); // po submitnuti zavreme dialog
+			return false;
+		    });
+		}
+
+		function cancelButton() {
+		    $(":submit[name='cancelButton']").click(function () {
+			$("#snippet--updateCommentForm").dialog("destroy"); // po submitnuti zavreme dialog
+			return false;
+		    });
+		}
+	    </script>

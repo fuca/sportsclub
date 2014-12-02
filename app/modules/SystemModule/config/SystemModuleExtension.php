@@ -101,11 +101,14 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 	$i = new \App\SystemModule\Model\Service\Menu\ItemData();
 	$i->setLabel("systemModule.adminMenuItem.label");
 	$i->setUrl(":System:Admin:default");
+	$i->setData(["desc"=>"systemModule.adminMenuItem.description"]);
 	return [$i];
     }
+    
     public function getDatabaseTypes() {
-	return ["StaticPageStatus"=>"App\Model\Misc\Enum\StaticPageStatus"];
+	return ["StaticPageStatus"  => "App\Model\Misc\Enum\StaticPageStatus",
+		"FormMode"	    => "App\Model\Misc\Enum\FormMode",
+		"CommentMode"	    => "App\Model\Misc\Enum\CommentMode"];
     }
-
 
 }

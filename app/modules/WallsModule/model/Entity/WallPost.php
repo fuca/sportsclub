@@ -26,7 +26,7 @@ use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\OneToMany,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
-    \App\Model\Misc\Enum\ArticleStatus,
+    \App\Model\Misc\Enum\WallPostStatus,
     \App\Model\Misc\EntityMapperTrait,
     \App\Model\IIdentifiable,
     \App\SystemModule\Model\Service\ICommentable;
@@ -74,7 +74,7 @@ class WallPost extends BaseEntity implements IIdentifiable, ICommentable {
     /** @ORM\Column(type="string", nullable = false) */
     protected $highlight;
 
-    /** @ORM\Column(type="ArticleStatus", nullable = false) */
+    /** @ORM\Column(type="WallPostStatus", nullable = false) */
     protected $status;
 
     /** @ORM\Column(type="datetime", nullable = false) */
@@ -103,7 +103,7 @@ class WallPost extends BaseEntity implements IIdentifiable, ICommentable {
     
     public function __construct(array $values = []) {
 	parent::__construct();
-	$this->status = ArticleStatus::DRAFT;
+	$this->status = WallPostStatus::DRAFT;
 	$this->commentMode = CommentMode::ALLOWED;
 	$this->fromArray($values);
     }

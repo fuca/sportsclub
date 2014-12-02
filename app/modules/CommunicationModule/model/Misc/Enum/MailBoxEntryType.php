@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2014 fuca.
  *
@@ -35,8 +36,8 @@ final class MailBoxEntryType extends EnumType implements IEnum {
     
     public static function getOptions() {
 	return array( 
-	    self::READ		=>  "Přečtené", 
-	    self::UNREAD	=>  "Nepřečtené",
-	    self::DELETED	=>  "Smazané");
+	    self::READ		=>  "communicationModule.mailboxType.read", 
+	    self::UNREAD		=>  "communicationModule.mailboxType.unread",
+	    self::DELETED	=>  "communicationModule.mailboxType.deleted");
     }
 }

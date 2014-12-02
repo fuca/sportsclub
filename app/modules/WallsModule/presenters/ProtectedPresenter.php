@@ -23,7 +23,10 @@ use \App\SystemModule\Presenters\SystemClubPresenter,
     \Nette\Utils\ArrayHash,
     \Nette\Utils\DateTime,
     \App\Model\Entities\WallpostComment,
-    \App\Model\Misc\Exceptions;
+    \App\WallsModule\Components\PermanentWallposts,
+    \App\Model\Misc\Exceptions,
+    \App\Model\Misc\Enum\WallPostStatus,
+    \App\WallsModule\Components\WallHistoryControl;
     
 
 /**
@@ -35,7 +38,7 @@ class ProtectedPresenter extends SystemClubPresenter {
 
     /**
      * @inject
-     * @var \App\WallsModule\Model\Service\WallService
+     * @var \App\WallsModule\Model\Service\IWallService
      */
     public $wallService;
     
@@ -54,25 +57,48 @@ class ProtectedPresenter extends SystemClubPresenter {
 		$sg = $this->sportGroupService->getSportGroupAbbr($abbr);
 	    elseif (is_numeric($abbr))
 		$sg = $this->sportGroupService->getSportGroup($abbr);
-	    $wps = $this->wallService->getWallPosts($sg);
+	    $wps = $this->wallService->getWallPosts($sg, false, WallPostStatus::PUBLISHED);
 	    $this->template->wallPosts = $wps;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handledataLoad($abbr, "default", $ex);
 	}
+	$type = $sg->getSportType();
+	if ($type !== null) 
+	    $type =  " ({$type->getName()})";
+	else 
+	    $type = "";
+	$this->template->groupLabel = $sg->getName().$type;
+	$this->template->abbr = $sg->getAbbr();
+	$this->template->group = $sg;
     }
 
     /**
      * 
      */
-    public function actionShowWallPost($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
+    public function actionShowWallPost($id, $abbr = self::ROOT_GROUP) {
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
+	$sg = null;
+	$wp = [];
 	try {
-	    $wp = [];
+	    if (is_string($abbr))
+		$sg = $this->sportGroupService->getSportGroupAbbr($abbr);
+	    elseif (is_numeric($abbr))
+		$sg = $this->sportGroupService->getSportGroup($abbr);
+
 	    $wp = $this->wallService->getWallPost($id);
 	    if ($wp !== null) {
 		$this->setEntity($wp);
 	    }
+
+	    $type = $sg->getSportType();
+	    if ($type !== null)
+		$type = " ({$type->getName()})";
+	    else
+		$type = "";
+	    $this->template->groupLabel = $sg->getName() . $type;
 	    $this->template->data = $wp;
+	    $this->template->abbr = $abbr;
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
 	}
@@ -125,6 +151,53 @@ class ProtectedPresenter extends SystemClubPresenter {
 	} else {
 	    $this->redirect("this");
 	}
+    }
+    
+    protected function createComponentPermanentWallPosts($name) {
+	$c = new PermanentWallposts($this, $name);
+	$data = $group = null;
+	try {
+	    $gid = empty($abbr = $this->getParameter("abbr"))?self::ROOT_GROUP:$abbr;
+	    
+	    if (is_numeric($gid))
+		$group = $this->sportGroupService->getSportGroup($gid);
+	    else 
+		$group = $this->sportGroupService->getSportGroupAbbr($gid);    
+	    
+	    $data = $this->wallService->getHighlights($group, self::ROOT_GROUP, true);
+//	    $filtered = array_filter($data, 
+//		    function ($e) {
+//			if ($e->getGroup())
+//			    return true;
+//			return false;
+//	    });
+//	    return $filtered;
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->presenter->handleDataLoad(null, ":System:Default:clubRoot", $ex);
+	}
+	$c->setData($data);
+	$c->setParam($gid);
+	return $c;
+    }
+    
+    
+    protected function createComponentWallHistoryControl($name) {
+	$c = new WallHistoryControl($this, $name);
+	$data = $group = null;
+	try {
+	    $gid = empty($abbr = $this->getParameter("abbr"))?self::ROOT_GROUP:$abbr;
+	    
+	    if (is_numeric($gid))
+		$group = $this->sportGroupService->getSportGroup($gid);
+	    else 
+		$group = $this->sportGroupService->getSportGroupAbbr($gid);
+	    $data = $this->wallService->getOldWallPosts($group);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->presenter->handleDataLoad(null, ":System:Default:clubRoot", $ex);
+	}
+	$c->setData($data);
+	$c->setParam($gid);
+	return $c;
     }
 
 }

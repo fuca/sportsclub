@@ -21,10 +21,12 @@ namespace App\CommunicationModule\Presenters;
 use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Misc\Enum\FormMode,
     \App\CommunicationModule\Forms\ForumForm,
+    \App\CommunicationModule\Forms\AdminForumThreadForm,
     \App\Model\Misc\Enum\CommentMode,
     \Nette\Application\UI\Form,
     \Nette\Utils\ArrayHash,
     \App\Model\Entities\Forum,
+    \App\Model\Entities\ForumThread,
     \Grido\Grid,
     \App\SecurityModule\Model\Misc\Annotations\Secured;
 
@@ -71,6 +73,7 @@ class AdminPresenter extends SystemAdminPresenter {
 			->map(function($e){return $e->getId();})->toArray();
 		$fDb->setGroups($grArr);
 		$form->setDefaults($fDb->toArray());
+		$this->template->forumTitle = $fDb->getTitle();
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
@@ -142,7 +145,6 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     public function createComponentForumGrid($name) {
-	$commentModes	= [null=>null]+CommentMode::getOptions();
 	$users		= [null=>null]+$this->getSelectUsers();
 	$grid = new Grid($this, $name);
 	
@@ -163,13 +165,6 @@ class AdminPresenter extends SystemAdminPresenter {
 		->setFilterText();
 	$headerTitle = $grid->getColumn('title')->headerPrototype;
 	$headerTitle->class[] = 'center';
-	
-	$grid->addColumnText('commentMode', "communicationModule.admin.grid.comments")
-		->setCustomRender($this->commentModeRender)
-		->setSortable()
-		->setFilterSelect($commentModes);
-	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
-	$headerStatus->class[] = 'center';
 	
 	$grid->addColumnText('author', "communicationModule.admin.grid.author")
 		->setSortable()
@@ -240,11 +235,183 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    // <editor-fold desc="FORUM THREAD ADMINISTRATION">
+    
+    public function actionUpdateForumThread($id) {
+	if (!is_numeric($id)) $this->handleBadArgument($id);
+	try {
+	    $fDb = $this->forumService->getForumThread($id);
+	    if ($fDb !== null) {
+		$form = $this->getComponent("updateForumThreadForm");
+		$form->setDefaults($fDb->toArray());
+		$this->template->title = $fDb->getTitle();
+	    }
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($id, "default", $ex);
+	}
+    }
+    
+    public function createForumThread(ArrayHash $values) {
+	try {
+	    $f = new ForumThread((array) $values);
+	    $f->setAuthor($this->getUser()->getIdentity());
+	    $this->forumService->createForumThread($f);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave(null, "this", $ex);
+	}
+	$this->redirect("default");
+    }
+    
+    public function updateForumThread(ArrayHash $values) {
+	try {
+	    $f = new ForumThread((array) $values);
+	    $this->forumService->updateForumThread($f);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, "this", $ex);
+	}
+	$this->redirect("default");
+    }
+    
+    public function handleDeleteForumThread($id) {
+	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	$this->doDeleteForumThread($id);
+	$this->redirect("this");
+    }
+    
+    private function doDeleteForumThread($id) {
+	try {
+	    $this->forumService->deleteForumThread($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($id, "this", $ex);
+	}
+    }
+    
+    public function createComponentAddForumThreadForm($name) {
+	$form = $this->prepareForumThreadForm($name);
+	$form->initialize();
+	return $form;
+    }
+    
+    public function createComponentUpdateForumThreadForm($name) {
+	$form = $this->prepareForumThreadForm($name);
+	$form->setMode(FormMode::UPDATE_MODE);
+	$form->initialize();
+	return $form;
+    }
+    
+    public function forumThreadFormSuccess(Form $form) {
+	$values = $form->getValues();
+	try {
+	    switch($form->getMode()) {
+		case FormMode::CREATE_MODE:
+		    $this->createForumThread($values);
+		    break;
+		case FormMode::UPDATE_MODE:
+		    $this->updateForumThread($values);
+		    break;
+	    }
+	} catch (Exceptions\DuplicateEntryException $ex) {
+	    $form->addError("forumModule.admin.forThrForm.errors.forumThrAlreadyExist");
+	}
+    }
+    
+    public function createComponentForumThreadsGrid($name) {
+	$commentModes	= [null=>null]+CommentMode::getOptions();
+	$users		= [null=>null]+$this->getSelectUsers();
+	$forums		= [null=>null]+(array)$this->getSelectForums();
+	$grid = new Grid($this, $name);
+	
+	$grid->setModel($this->forumService->getForumThreadsDataSource());
+	$grid->setTranslator($this->getTranslator());
+	$grid->setPrimaryKey("id");
+	
+	$grid->addColumnNumber("id", "#")
+		->cellPrototype->class[] = "center";
+	$headerId = $grid->getColumn("id")->headerPrototype;
+	$headerId->class[] = "center";
+	$headerId->rowspan = "2";
+	$headerId->style["width"] = '0.1%';
+	
+	$grid->addColumnText('title', "communicationModule.admin.grid.title")
+		->setTruncate(20)
+		->setSortable()
+		->setFilterText();
+	$headerTitle = $grid->getColumn('title')->headerPrototype;
+	$headerTitle->class[] = 'center';
+	
+	$grid->addColumnText('forum', "communicationModule.admin.grid.forum")
+		->setSortable()
+		->setFilterSelect($forums);
+	$headerPar = $grid->getColumn('forum')->headerPrototype;
+	$headerPar->class[] = 'center';
+	
+	$grid->addColumnText('commentMode', "communicationModule.admin.grid.comments")
+		->setCustomRender($this->commentModeRender)
+		->setSortable()
+		->setFilterSelect($commentModes);
+	$headerStatus = $grid->getColumn('commentMode')->headerPrototype;
+	$headerStatus->class[] = 'center';
+	
+	$grid->addColumnText('author', "communicationModule.admin.grid.author")
+		->setSortable()
+		->setFilterSelect($users);
+	$headerAuthor = $grid->getColumn('author')->headerPrototype;
+	$headerAuthor->class[] = 'center';
+	
+	$grid->addActionHref('delete', '', 'deleteForumThread!')
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return $this->tt("communicationModule.admin.grid.messages.rlyDelForumThr", null, ["id"=>$u->getId()]);
+		});
+		
+	$grid->addActionHref('edit', '', 'updateForumThread')
+		->setIcon('pencil');
+
+	$grid->setOperation(["delete"=>"communicationModule.admin.grid.delete"], 
+		$this->forumGridOpsHandler)
+		->setConfirm("delete", "communicationModule.admin.grid.messages.rlyDelForumThrItems");
+	$grid->setFilterRenderType($this->filterRenderType);
+	$grid->setExport("admin-forum" . date("Y-m-d H:i:s", time()));
+	return $grid;
+    }
+    
+    
+    public function forumThreadGridOpsHandler($op, $ids) {
+	switch($op) {
+	    case "delete":
+		foreach ($ids as $id) {
+		    $this->doDeleteForumThread($id);
+		}
+		break;
+	}
+	$this->redirect("this");
+    }
+    
+    private function prepareForumThreadForm($name) {
+	$form = new AdminForumThreadForm($this, $name, $this->getTranslator());
+	$form->setUsers($this->getSelectUsers());
+	$form->setForums($this->getSelectForums());
+	return $form;
+    }
+    
+    private function getSelectForums() {
+	$data = null;
+	try {
+	    $data = $this->forumService->getSelectForums();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, ":System:Default:adminRoot", $ex);
+	}
+	return $data;
+    }
+    
+    // </editor-fold>
+    
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
 	$c->addNode("communicationModule.admin.forumAdd",":Communication:Admin:addForum");
-	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	$c->addNode("communicationModule.admin.forumThrAdd",":Communication:Admin:addForumThread");
+	$c->addNode("systemModule.navigation.back",":Communication:Admin:default");
 	return $c;
     }
 }

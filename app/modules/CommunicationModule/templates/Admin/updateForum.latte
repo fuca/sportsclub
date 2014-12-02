@@ -17,7 +17,7 @@
 
 {block #adminContent}
     <div class="page-header">
-	<h3>{_ communicationModule.admin.updateForum.heading}</h3>
+	<h3>{_ communicationModule.admin.updateForum.heading, null, ["title"=>$forumTitle]}</h3>
     </div>
     {control updateForumForm}
 {/}

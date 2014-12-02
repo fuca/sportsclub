@@ -27,7 +27,12 @@
 				   {if $param === FALSE} 
 				       {plink $node->url} 
 				   {else} 
-				   {plink $node->url $param}{/if} {else} {$node->url}
+				    {if is_array($param)}
+				    {call_user_func_array($control->presenter->link, [$node->url, $param])}
+				    {else}   
+				    {plink $node->url, $param}
+				    {/if}
+				   {/if} {else} {$node->url}
 				       {/if}">
 					   {_ $node->label}
 				       </a>

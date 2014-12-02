@@ -1,0 +1,19 @@
+
+{* Walls module Permanent wallsposts control *}
+
+<div class="list-group">
+	<span class="list-group-item active">
+	 {_ wallsModule.club.wallpostHighlights}
+	    <div class="pull-right">
+		<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+	    </div>
+	</span>
+
+	{foreach $data as $w} 
+	    <a href="{plink showWallPost, $w->getId(), $param}" class="list-group-item">
+		<strong>{$w->getTitle()|upper|truncate:100}</strong></a>
+	{/foreach}
+	{if count($data) == 0}
+	    <span class="list-group-item"></span>
+	{/if}
+</div>

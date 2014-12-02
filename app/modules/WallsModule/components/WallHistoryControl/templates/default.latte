@@ -1,0 +1,42 @@
+
+{* Wall history control *}
+
+<!--<article class="wallpost-box history">
+    <div class="wallpost-box-item active">
+	{_ wallsModule.club.history.heading}
+    </div>
+    <div class="wallpost-box-item">
+    {*foreach $data as $wp*}
+	<a href="{*plink showWallPost, $wp->getId(), $param*}">{*$wp->getTitle()*}</a><br/>
+    {*/foreach*}
+    </div>
+</article>-->
+    
+    
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          {_ wallsModule.club.history.heading}
+	    <div class="pull-right">
+		<span class="glyphicon glyphicon-resize-vertical" aria-hidden="true"></span>
+	    </div>
+        </a>
+      </h4>
+    </div>
+    <div  id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+       {foreach $data as $wp}
+	<a href="{plink showWallPost, $wp->getId(), $param}">{$wp->getTitle()}</a><br/>
+    {/foreach}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+    $('.collapse').collapse();
+</script>

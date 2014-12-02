@@ -30,7 +30,7 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\PaymentOwnerType;
 
 /**
- * Form for creating and updating seasons
+ * Form for creating and updating forum
  *
  * @author Michal Fučík <michal.fuca.fucik@gmail.com>
  * @package sportsclub
@@ -75,21 +75,23 @@ class ForumForm extends BaseForm {
 	
 	$this->addHidden("id");
 	$this->addHidden("alias");
-	$this->addText("title", "Název")
-		->addRule(Form::FILLED, "Název fóra musí být zadán")
-		->setRequired("Název fóra musí být zadán");
-	$this->addTextArea("description", "Popis", 40, 10)
-		->addRule(Form::FILLED, "Popis fóra musí být zadán")
-		->setRequired("Popis fóra musí být zadán");
-	$this->addSelect("imgName", "Ikona", []); // TODO 
-	$this->addSelect("commentMode", "Komentáře", $this->getCommentModes());
-	$this->addCheckboxList("groups", "Skupiny", $this->getSportGroups());
+	
+	$this->addText("title", "communicationModule.forumForm.title")
+		->addRule(Form::FILLED, "communicationModule.forumForm.titleMustFill")
+		->setRequired("communicationModule.forumForm.titleMustFill");
+	
+	$this->addTextArea("description", "communicationModule.forumForm.description", 40, 10)
+		->addRule(Form::FILLED, "communicationModule.forumForm.descriptionMustFill")
+		->setRequired("communicationModule.forumForm.descriptionMustFill");
+	
+	$this->addCheckboxList("groups", "communicationModule.forumForm.groups", $this->getSportGroups());
+	
 	if ($this->isUpdate()) {
-	    $this->addDate("lastActivity", "Poslední aktivita", DateInput::TYPE_DATE);
-	    $this->addSelect("author", "Autor", $this->getUsers());
-	    $this->addSelect("editor", "Editor", $this->getUsers());
+	    $this->addDate("lastActivity", "communicationModule.forumForm.lastActivity", DateInput::TYPE_DATE);
+	    $this->addSelect("author", "communicationModule.forumForm.author", $this->getUsers());
+	    $this->addSelect("editor", "communicationModule.forumForm.editor", $this->getUsers());
 	}
-	$this->addSubmit("submitButton");
+	$this->addSubmit("submitButton", "system.forms.submitButton.label");
 	$this->onSuccess[] = callback($this->presenter, "forumFormSubmitted");
     }
     

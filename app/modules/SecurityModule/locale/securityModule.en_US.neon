@@ -1,5 +1,8 @@
 adminMenuItem.label: "Security"
+adminMenuItem.description: "Section designated for manipulate with all security resources of whole application."
 protectedMenuItem.label: "Sign out"
+protectedMenuItem.description: "Guess what :-)"
+
 messages:
 	givenPasswordsDontMatch: "Given new passwords do not match"
 

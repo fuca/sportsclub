@@ -24,14 +24,16 @@ use \Nette\PhpGenerator\ClassType,
     \Doctrine\DBAL\Types\Type,
     \App\SystemModule\Model\Service\Menu\ItemData,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
-    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider;
+    \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * MotivationModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class MotivationModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider {
+class MotivationModuleExtension extends BaseModuleExtension implements 
+ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
 	"dueDate"=>"1 month"];
@@ -65,6 +67,7 @@ class MotivationModuleExtension extends BaseModuleExtension implements ITranslat
 	$i = new ItemData();
 	$i->setLabel("motivationModule.adminMenuItem.label");
 	$i->setUrl(":Motivation:Admin:default");
+	$i->setData(["desc"=>"motivationModule.adminMenuItem.description"]);
 	return [$i];
     }
 
@@ -72,7 +75,11 @@ class MotivationModuleExtension extends BaseModuleExtension implements ITranslat
 	$i = new ItemData();
 	$i->setLabel("motivationModule.protectedMenuItem.label");
 	$i->setUrl(":Motivation:Protected:default");
+	$i->setData(["desc"=>"motivationModule.protectedMenuItem.description"]);
 	return [$i];
     }
-
+    
+    public function getDatabaseTypes() {
+	return ["MotivationEntryType"	=>  "App\Model\Misc\Enum\MotivationEntryType"];
+    }
 }

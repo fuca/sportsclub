@@ -26,14 +26,15 @@ use \Nette\PhpGenerator\ClassType,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\IProtectedMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
-    \Kdyby\Translation\DI\ITranslationProvider;
+    \Kdyby\Translation\DI\ITranslationProvider,
+    \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
  * ForumModuleExtension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class CommunicationModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider {
+class CommunicationModuleExtension extends BaseModuleExtension implements ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, ICommonMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = ["defaultImg" => "default-forum-ico.png"];
 
@@ -63,6 +64,7 @@ class CommunicationModuleExtension extends BaseModuleExtension implements ITrans
 	$i = new ItemData();
 	$i->setLabel("communicationModule.adminMenuItem.label");
 	$i->setUrl(":Communication:Admin:default");
+	$i->setData(["desc"=>"communicationModule.adminMenuItem.description"]);
 	return [$i];
     }
 
@@ -70,6 +72,7 @@ class CommunicationModuleExtension extends BaseModuleExtension implements ITrans
 	$y = new ItemData();
 	$y->setLabel("communicationModule.protectedMessagesMenuItem.label");
 	$y->setUrl(":Communication:Messaging:default");
+	$y->setData(["desc"=>"communicationModule.protectedMessagesMenuItem.description"]);
 	return [$y];
     }
 
@@ -77,7 +80,11 @@ class CommunicationModuleExtension extends BaseModuleExtension implements ITrans
 	$i = new ItemData();
 	$i->setLabel("communicationModule.protectedForumMenuItem.label");
 	$i->setUrl(":Communication:Forum:default");
+	$i->setData(["desc"=>"communicationModule.protectedForumMenuItem.description"]);
 	return [$i];
     }
-
+    
+    public function getDatabaseTypes() {
+	return ["MailBoxEntryType"  =>	"App\Model\Misc\Enum\MailBoxEntryType"];
+    }
 }

@@ -1,6 +1,10 @@
+
 adminMenuItem.label: "Forum"
+adminMenuItem.description: "Administration of communication resources."
 protectedForumMenuItem.label: "Forum"
+protectedForumMenuItem.description: "Provides overview of forums."
 protectedMessagesMenuItem.label: "Messages"
+protectedMessagesMenuItem.description: "Contains user management of private messages"
 
 admin:
 	forumAdd: "Add forum"
@@ -11,6 +15,13 @@ admin:
 	updateForum.heading: "Update forum %title%"
 	updateForum.bread: "Forum update"
 	updateForum.title: "Forum update"
+
+	forumThrAdd: "Add forum thread"
+	forumThread.heading: "Forum threads"
+	addForumThr.heading: "New forum thread"
+	updateForumThr.bread: "Forum thread update"
+	updateForumThr.title: "Forum thread update"
+	updateForumThr.heading: "Forum thread '%title%' update"
 
 admin.grid:
 	title: "Title"
@@ -46,6 +57,23 @@ pmForm:
 	sender: "Sender"
 	starred: "&#9733"
 
+forumForm: 
+	title: "Title"
+	description: "Description"
+	groups: "Groups"
+
+forThrForm:
+	title: "Title"
+	titleMustFill: "Title of forum thread must be filled"
+	description: "Description"
+	descriptionMustFill: "Description must be filled"
+	forum: "Forum"
+	lastActivity: "Last activity"
+	author: "Author"
+	editor: "Editor"
+	commentMode: "Comment mode"
+
+
 club:
 	heading: "Forum"
 	lastChange: "Last activity"
@@ -59,3 +87,6 @@ user:
 protected.messages:
 	noForum: "There is no forum available for chosen group"
 	noActivity: "No activity so far"
+
+protected:
+	lastChange: "Last change"

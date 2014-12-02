@@ -8,7 +8,7 @@
 {/block}
 
 {block #title}
-    {_ articlesModule.admin.heading} | {include #parent}
+    {_ articlesModule.admin.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}

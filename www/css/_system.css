@@ -5,16 +5,39 @@
 */
 
     #frm-commentControl-addCommentForm {
-	margin: 10% 0 0 0;
+	margin: 3% 0 0 0;
     }
 
     #frm-commentControl-addCommentForm .form-group {
-	margin: 20px;
+	margin: 0 20px 0;
     }
+    
+    #frm-commentControl-addCommentForm .form-control.comment {
+	margin-bottom: 10px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+    }
+    
+    #frm-commentControl-addCommentForm .form-control.title {
+	margin-bottom: -1px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+    }
+    
+    #frm-commentControl-addCommentForm input[type="submit"] {
+	margin-bottom: 30px;
+    }
+    
+    #frm-commentControl-addCommentForm .form-control:focus {
+	z-index: 5;
+    }
+
+    
+    
 /*
-==============================
-PUBLIC MENU SUB DROPDOWN
-==============================
+    ===============================
+	PUBLIC MENU SUB DROPDOWN
+    ===============================
 */
 
     /*
@@ -41,9 +64,9 @@ PUBLIC MENU SUB DROPDOWN
     
     
 /*
-===============
-    GRIDS
-===============
+    ===============
+	GRIDS
+    ===============
 */    
     
     table.table td {
@@ -53,9 +76,9 @@ PUBLIC MENU SUB DROPDOWN
     }
     
 /*
-=====================
-    STATIC PAGES
-=====================
+    =====================
+	STATIC PAGES
+    =====================
 */
 
 .page-overview-wrapper {

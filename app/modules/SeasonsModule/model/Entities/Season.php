@@ -21,8 +21,6 @@ use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\OneToMany,
     \Doctrine\ORM\Mapping\ManyToOne,
     \Kdyby\Doctrine\Entities\BaseEntity,
-    \App\Model\Misc\Enum\CommentMode,
-    \App\Model\Misc\Enum\ArticleStatus,
     \Doctrine\Common\Collections\ArrayCollection,
     \App\Model\IIdentifiable,
     \Nette\DateTime,
@@ -79,6 +77,7 @@ class Season extends BaseEntity implements IIdentifiable {
     public function __construct(array $values = []) {
 	parent::__construct();
 	$this->updated = new DateTime();
+	$this->applications = new ArrayCollection();
 	$this->fromArray($values);
     }
 

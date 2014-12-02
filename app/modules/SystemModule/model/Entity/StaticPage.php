@@ -64,7 +64,7 @@ class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
     
     protected $updated;
 
-    /** @ORM\Column(type="ArticleStatus", nullable = false) */
+    /** @ORM\Column(type="StaticPageStatus", nullable = false) */
     protected $status;
     
 //    /**

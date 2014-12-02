@@ -64,6 +64,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 	$i = new ItemData();
 	$i->setLabel("usersModule.adminMenuItem.label");
 	$i->setUrl(":Users:Admin:default");
+	$i->setData(["desc"=>"usersModule.adminMenuItem.description"]);
 	return [$i];
     }
 
@@ -71,15 +72,17 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 	$i = new ItemData();
 	$i->setLabel("usersModule.protectedMenuDataItem.label");
 	$i->setUrl(":Users:User:data");
+	$i->setData(["desc"=>"usersModule.protectedMenuDataItem.description"]);
 	
 	$y = new ItemData();
 	$y->setLabel("usersModule.protectedMenuProfileItem.label");
 	$y->setUrl(":Users:User:profile");
-	
+	$y->setData(["desc"=>"usersModule.protectedMenuProfileItem.description"]);
 	return [$i, $y];
     }
     
     public function getDatabaseTypes() {
-	return ["WebProfileStatus"=>"App\Model\Misc\Enum\WebProfileStatus"];
+	return ["WebProfileStatus"  =>	"App\Model\Misc\Enum\WebProfileStatus",
+		"CommentMode"	    => "App\Model\Misc\Enum\CommentMode"];
     }
 }

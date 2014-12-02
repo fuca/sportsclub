@@ -29,6 +29,7 @@ use \App\Model\Entities\WallPost,
     \Nette\Utils\DateTime,
     \Nette\Caching\Cache,
     \App\SystemModule\Model\Service\ICommentable,
+    \App\Model\Misc\Enum\WallPostStatus,
     \App\Model\Entities\Comment,
     \App\UsersModule\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ISportGroupService,
@@ -117,17 +118,72 @@ class WallService extends BaseService implements IWallService {
 	return $data;
     }
 
-    public function getWallPosts(SportGroup $g) {
+    public function getWallPosts(SportGroup $g, $highlight = false, $status = WallPostStatus::PUBLISHED) {
+	$now = new DateTime();
 	try {
-	    if (empty($g)) {
-		return $this->wallDao->findAll();
-	    } else {
-		$qb = $this->wallDao->createQueryBuilder("w")
-			->innerJoin('w.groups', 'g')
+
+	    $qb = $this->wallDao->createQueryBuilder("w");
+	    if (!empty($g)) {
+		$qb->innerJoin('w.groups', 'g')
 			->where('g.id = :gid')
 			->setParameter("gid", $g->id);
-		return $qb->getQuery()->getResult();
 	    }
+	    $qb->andWhere("w.showFrom <= :now")
+		    ->setParameter("now", $now)
+		    ->andWhere("w.showTo >= :now")
+		    ->setParameter("now", $now)
+		    ->andWhere("w.status = :status")
+			->setParameter("status", $status);
+	    $qb->andWhere("w.highlight = :high")
+		    ->setParameter("high", $highlight);
+	    return $qb->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function getOldWallPosts(SportGroup $g, $status = WallPostStatus::PUBLISHED) {
+	$now = new DateTime();
+	try {
+	    $qb = $this->wallDao->createQueryBuilder("w");
+	    if (!empty($g)) {
+		$qb->innerJoin('w.groups', 'g')
+			->where('g.id = :gid')
+			->setParameter("gid", $g->id);
+	    }
+	    $qb->andWhere("w.showTo < :now")
+		    ->setParameter("now", $now)
+		    ->andWhere("w.status = :status")
+		    ->setParameter("status", $status)
+		    ->andWhere("w.highlight = :high")
+		    ->setParameter("high", false)
+		    ->orderBy("w.showTo", "DESC");
+	    return $qb->getQuery()->getResult();
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    
+    public function getHighlights(SportGroup $g = null, $rootAbbr = null, $published = null) {
+	try {
+	    $qb = $this->wallDao->createQueryBuilder("w");
+	    if ($g !== null) {
+		$qb->innerJoin('w.groups', 'g')
+		    ->where('g.id = :gid')
+			->setParameter("gid", $g->getId())
+		    ->orWhere("g.abbr = :abbr")
+			->setParameter("abbr", $rootAbbr);
+	    }
+	    if ($published !== null)
+		$qb->andWhere("w.status = :status")
+		    ->setParameter("status", WallPostStatus::PUBLISHED);
+	    $qb->andWhere("w.highlight = true")
+			->orderBy("w.title", "ASC");
+	    return $qb->getQuery()->getResult();
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());

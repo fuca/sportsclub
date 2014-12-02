@@ -1,6 +1,22 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
+
+{* System module Default presenter *}
+
+{layout ./oneColBase.latte}
+
+{block #breadcrumbs}
+    <li>{_ systemModule.navigation.clubModule}</li>
+{/block}
+    
+{block #title}
+    <li>{_ systemModule.navigation.clubModule}</li> {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #mainBlock}
+
 <div class="row">
-{control commonMenu:grid}
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+	{control commonMenu:grid, "club", "systemModule.protected.rootPage.clubMenuHeading"}
+    </div>
+    <div class="col-sm-3"></div>
 </div>

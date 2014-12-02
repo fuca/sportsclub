@@ -5,11 +5,11 @@ namespace App\WallsModule\Forms;
 use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\FormMode,
     \Nette\Application\UI\Form,
-    \App\Services\Exceptions\DuplicateEntryException,
+    \App\Services\Exceptions,
     \Nette\DateTime,
     Vodacek\Forms\Controls\DateInput,
     \App\Model\Misc\Enum\CommentMode,
-    \App\Model\Misc\Enum\ArticleStatus;
+    \App\Model\Misc\Enum\WallPostStatus;
 
 /**
  * Form for creating and updating wallposts
@@ -26,7 +26,7 @@ final class WallPostForm extends BaseForm {
     private $users;
     
     public function getStates() {
-	return ArticleStatus::getOptions();
+	return WallPostStatus::getOptions();
     }
 
     private function getCommentModes() {
@@ -35,7 +35,7 @@ final class WallPostForm extends BaseForm {
 
     private function getSportGroups() {
 	if (!isset($this->sportGroups)) {
-	    throw new \Nette\InvalidStateException("Property sportGroups is not setted up correctly, use appropriate setter first");
+	    throw new Exceptions\InvalidStateException("Property sportGroups is not setted up correctly, use appropriate setter first");
 	}
 	return $this->sportGroups;
     }
@@ -55,35 +55,34 @@ final class WallPostForm extends BaseForm {
     public function initialize() {
 	
 	$this->addHidden("id");
-	$this->addHidden("counter");
 	
-	$this->addText("title", "Titulek")
-		->addRule(Form::FILLED, "Titulek musí být zadán")
-		->setRequired("Titulek musí být zadán");
+	$this->addText("title", "wallsModule.admin.wallPostForm.title")
+		->addRule(Form::FILLED, "wallsModule.admin.wallPostForm.titleMustFill")
+		->setRequired("wallsModule.admin.wallPostForm.titleMustFill");
 	
-	$this->addDate("showFrom", "Zobrazit od", DateInput::TYPE_DATE)
-		->addRule(Form::FILLED, "Začátek zobrazení musí být zadán")
-		->setRequired("Začátek zobrazení musí být zadán");
+	$this->addDate("showFrom", "wallsModule.admin.wallPostForm.showFrom", DateInput::TYPE_DATE)
+		->addRule(Form::FILLED, "wallsModule.admin.wallPostForm.showFromMustFill")
+		->setRequired("wallsModule.admin.wallPostForm.showFromMustFill");
 	
-	$this->addDate("showTo", "Zobrazit do", DateInput::TYPE_DATE)
-		->addRule(Form::FILLED, "Konec zobrazení musí být zadán")
-		->setRequired("Konec zobrazení musí být zadán");
+	$this->addDate("showTo", "wallsModule.admin.wallPostForm.showTo", DateInput::TYPE_DATE)
+		->addRule(Form::FILLED, "wallsModule.admin.wallPostForm.showToMustFill")
+		->setRequired("wallsModule.admin.wallPostForm.showToMustFill");
 	
-	$this->addTextArea("content", "Obsah", 50, 8)
-		->addRule(Form::FILLED, "Obsah musí být zadán")
-		->setRequired("Obsah musí být zadán");
+	$this->addTextArea("content", "wallsModule.admin.wallPostForm.content", 55, 15)
+		->addRule(Form::FILLED, "wallsModule.admin.wallPostForm.contentMustFill")
+		->setRequired("wallsModule.admin.wallPostForm.contentMustFill");
 	
-	$this->addCheckbox("highlight", "Zvýraznit");
+	$this->addCheckbox("highlight", "wallsModule.admin.wallPostForm.highlight");
 	
-	$this->addSelect("status", "Stav", $this->getStates());
+	$this->addSelect("status", "wallsModule.admin.wallPostForm.status", $this->getStates());
 	
-	$this->addSelect("commentMode", "Komentáře", $this->getCommentModes());
+	$this->addSelect("commentMode", "wallsModule.admin.wallPostForm.commentMode", $this->getCommentModes());
 	
-	$this->addCheckboxList("groups", "Skupiny", $this->getSportGroups());
+	$this->addCheckboxList("groups", "wallsModule.admin.wallPostForm.groups", $this->getSportGroups());
 	
 	if ($this->isUpdate()) {
-	    $this->addSelect("author", "Autor", $this->getUsers());
-	    $this->addSelect("editor", "Poslední změna", $this->getUsers());
+	    $this->addSelect("author", "wallsModule.admin.wallPostForm.author", $this->getUsers());
+	    $this->addSelect("editor", "wallsModule.admin.wallPostForm.editor", $this->getUsers());
 	}
 	
 	$this->addSubmit("submitButton", "system.forms.submitButton.label");

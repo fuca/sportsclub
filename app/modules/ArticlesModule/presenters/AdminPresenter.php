@@ -181,15 +181,15 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerId->style["width"] = '0.1%';
 	
 	$grid->addColumnText('title', $this->tt("articlesModule.admin.grid.title"))
-		->setTruncate(20)
 		->setSortable()
+		->setCustomRender($this->titleRender)
 		->setFilterText();
 	$headerTitle = $grid->getColumn('title')->headerPrototype;
 	$headerTitle->class[] = 'center';
 	
 	$grid->addColumnText('status', $this->tt("articlesModule.admin.grid.state"))
 		->setSortable()
-		->setReplacement($articleStates)
+		->setCustomRender($this->statusRender)
 		->setFilterSelect($articleStates);
 	
 	$headerStatus = $grid->getColumn('status')->headerPrototype;
@@ -239,6 +239,16 @@ class AdminPresenter extends SystemAdminPresenter {
     
     public function actionGoToArticle($id) {
 	$this->redirect("Public:showArticle", $id);
+    }
+    
+    public function titleRender($e) {
+	return \Nette\Utils\Html::el("span")
+		->addAttributes(["title"=>$e->getTitle()])
+		->setText(\Nette\Utils\Strings::truncate($e->getTitle(), 20));
+    }
+    
+    public function statusRender($e) {
+	return $this->tt(ArticleStatus::getOptions()[$e->getStatus()]);
     }
     
     public function commentModeRender($el) {

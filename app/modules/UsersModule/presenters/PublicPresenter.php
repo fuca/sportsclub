@@ -82,7 +82,6 @@ final class PublicPresenter extends SystemPublicPresenter {
 		});
 	$this->template->group = $group;
 	$this->template->data = $filtered;
-	// show some grid to access users web profiles
     }
     
     public function actionShowWebProfile($uid, $gid) {

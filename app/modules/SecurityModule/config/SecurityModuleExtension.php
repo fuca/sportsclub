@@ -33,7 +33,7 @@ use \Nette\DI\CompilerExtension,
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class SecurityModuleExtension extends BaseModuleExtension implements 
+final class SecurityModuleExtension extends BaseModuleExtension implements 
 ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPublicMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
@@ -72,6 +72,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	$i = new ItemData();
 	$i->setLabel("securityModule.adminMenuItem.label");
 	$i->setUrl(":Security:Admin:default");
+	$i->setData(["desc"=>"securityModule.adminMenuItem.description"]);
 	return [$i];
     }
     
@@ -79,6 +80,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	$i = new ItemData();
 	$i->setLabel("securityModule.public.menu.contacts.label");
 	$i->setUrl(":Security:Public:default");
+	$i->setData(["desc"=>"securityModule.public.menu.contacts.description"]);
 	return [$i];
     }
 
@@ -86,16 +88,12 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	$i = new ItemData();
 	$i->setLabel("securityModule.protectedMenuItem.label");
 	$i->setUrl(":Security:Auth:out");
-	$i->setData(["separate"=>true,"headOnly"=>true]);
+	$i->setData(["separate"=>true,"headOnly"=>true, "desc"=>"securityModule.protectedMenuItem.description"]);
 	return [$i];
     }
     
-    
     public function getDatabaseTypes() {
-	return [
-	    "AclMode"=>"App\Model\Misc\Enum\AclMode",
-	    "AclPrivilege"=>"App\Model\Misc\Enum\AclPrivilege"];
+	return ["AclMode"   =>	"App\Model\Misc\Enum\AclMode",
+		"AclPrivilege"	=>  "App\Model\Misc\Enum\AclPrivilege"];
     }
-
-
 }

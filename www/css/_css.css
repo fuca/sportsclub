@@ -29,22 +29,36 @@
     Try to override existing style definitions by own besides changing them.
 */
 
-    /* SYSTEM MODULE */
-    @import url("basic-elements.css");
+    /* APPLICATION COMMON STYLES */
     @import url("wireframe.css");
+    @import url("basic-elements.css"); 
     @import url("menu.css");
     @import url("temp.css");
+    
+    /* SYSTEM MODULE */
     @import url("_forms.css");
     @import url("_system.css");
 
+    
     /* AUTH MODULE */
     @import url("_auth.css"); 
+    
 
     /* ARTICLES MODULE */
     @import url("_article.css");
+    
 
     /* EVENTS MODULE */
     @import url("_events.css");
+    
 
     /* USERS MODULE */
     @import url("_users.css");
+    
+    
+    /* WALLS MODULE */
+    @import url("_walls.css");
+    
+    
+    /* COMMUNICATION MODULE */
+    @import url("_communication.css");   

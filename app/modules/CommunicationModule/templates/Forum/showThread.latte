@@ -1,0 +1,59 @@
+
+{* Communication module Forum presenter *}
+
+{layout $layoutsPath.'clubSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}
+    <li><a href="{plink Forum:default, $abbr}">{_ communicationModule.club.forum.heading, null, ["title"=>$groupLabel]}</a></li>
+    <li><a href="{plink showForum, $forumAlias, $abbr}">{$forumTitle}</a></li>
+    <li>{$thread->getTitle()|truncate:20}</li>
+{/block}
+    
+{block #title}
+    {$thread->getTitle()} {$titleCrumbSeparator}
+    {$forumTitle} {$titleCrumbSeparator}
+    {_communicationModule.club.forum.heading, null, ["title"=>$groupLabel]} {$titleCrumbSeparator} 
+    {include #parent}
+{/block}
+
+{block #subMenu}
+    {*control subMenu:contentSubMenu*}
+{/block}
+    
+{block #clubContent}
+
+<div class="page-header">
+    <h3>{$thread->getTitle()}</h3>
+</div>
+<div class="row">
+    <div class="col-sm-8">
+	{$thread->getDescription()}
+    </div>
+    
+    <div class="col-sm-3">
+	<span class="glyphicon glyphicon-user" aria-hidden="true">
+	    {$thread->getAuthor()->getName()} {$thread->getAuthor()->getSurName()}
+	</span>
+	{if $thread->getLastActivity()}
+	    <span class="glyphicon glyphicon-time" aria-hidden="true">
+		{$thread->getLastActivity()|date:$dateTimeFormat}
+	    </span>
+	{/if}
+	
+	<span class="glyphicon glyphicon-comment" aria-hidden="true">
+	    &nbsp;{count($thread->getComments())}
+	</span>
+	
+    </div>
+</div>
+
+	    <div class="row">
+		<div class="col-sm-2"></div>
+		    
+		<div class="col-sm-8">
+{control commentControl:form}
+{control commentControl:comments}
+</div>
+</div>
+{/block}

@@ -1,0 +1,72 @@
+
+{* Seasons module Admin presenter Default action *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ communicationModule.admin.updateForumThr.bread}</li>
+{/block}
+
+{block #title}
+    {_ communicationModule.admin.updateForumThr.title} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ communicationModule.admin.updateForumThr.heading, null, ["title"=>$title]}</h3>
+    </div>
+    
+    <div class="row">
+    
+	{form updateForumThreadForm}
+	    {control $form errors}
+	    <div class="col-sm-8">
+		<div class="form-group">
+		    {label title/}
+		    {input title class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label description/}
+		    {input description class=>form-control}
+		</div>
+	    </div>
+
+	    <div class="col-sm-3 form-options">
+		<div class="form-group">
+		    {label forum/}
+		    {input forum class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label lastActivity/}
+		    {input lastActivity class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label author/}
+		    {input author class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label editor/}
+		    {input editor class=>form-control}
+		</div>
+		
+		<div class="form-group">
+		    {label commentMode/}
+		    {input commentMode class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {input submitButton class=>"btn btn-block btn-primary"}
+		</div>
+	    </div>
+	{/form}
+    
+    </div>
+{/}

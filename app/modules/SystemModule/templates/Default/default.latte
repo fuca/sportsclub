@@ -1,20 +1,32 @@
-{* Latte template *}
 
-{layout ./base.latte}
+{* System module Default presenter *}
+
+{layout ./oneColBase.latte}
 
 {block #breadcrumbs}
-    <li>IS</li>
+    <li>{_ "systemModule.default.signpost.bread"}</li>
 {/block}
+    {block #title}
+	<li>{_ "systemModule.default.signpost.bread"}</li> {$titleCrumbSeparator} {include #parent}
+    {/block}
+    
+    {block #side}
+    right
+    {/block}
+    
+    {block #sideBlock}
+    {/block}
 
-{block #sectionContent}
+{block #mainBlock}
+
 <div class="row">
     <div class="col-md-4">
-	{control adminMenu:grid}
+	{control protectedMenu:grid, "user", "systemModule.protected.rootPage.userMenuHeading"}
     </div>
     <div class="col-md-4">
-	{control protectedMenu:grid}
+	{control commonMenu:grid, "club", "systemModule.protected.rootPage.clubMenuHeading"}
     </div>
     <div class="col-md-4">
-	{control commonMenu:grid}
+	{control adminMenu:grid, "admin", "systemModule.protected.rootPage.adminMenuHeading"}
     </div>
 </div>

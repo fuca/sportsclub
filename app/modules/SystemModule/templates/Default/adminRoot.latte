@@ -1,14 +1,22 @@
 
-{* Latte template *}
+{* System module Default presenter *}
 
-{layout ./base.latte}
+{layout ./oneColBase.latte}
 
 {block #breadcrumbs}
     <li>{_ systemModule.navigation.adminModule}</li>
 {/block}
+    
+{block #title}
+	<li>{_ systemModule.navigation.adminModule}</li> {$titleCrumbSeparator} {include #parent}
+{/block}
 
-{block #sectionContent}
+{block #mainBlock}
 
 <div class="row">
-    {control adminMenu:grid}
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+	{control adminMenu:grid, "admin", "systemModule.protected.rootPage.adminMenuHeading"}
+    </div>
+    <div class="col-sm-3"></div>
 </div>

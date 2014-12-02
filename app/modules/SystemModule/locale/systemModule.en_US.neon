@@ -1,5 +1,6 @@
 groupPositions: "Positions within group"
 adminMenuItem.label: "System"
+adminMenuItem.description: "Sport groups, sport types and static pages administration."
 club: "Club"
 profile: "Profile"
 administrator: "Administration"
@@ -95,7 +96,7 @@ commentMode:
 	group: "Group only"
 	allowed: "Allowed"
 	restricted: "Restricted"
-	signedIn: "Signed in only"
+	signedIn: "Signed in"
 
 statPageStatus:
 	draft: "Draft"
@@ -120,3 +121,12 @@ publicPages:
 	pagesMenuLabel: "Available information"
 	groupsMenu: "Groups"
 	    
+
+protected.rootPage: 
+	adminMenuHeading: "Admin section navigation"
+	userMenuHeading: "User section navigation"
+	clubMenuHeading: "Club section navigation"
+
+default:
+	signpost.bread: "Application signpost"
+	sectionSignpost.bread: "Section signpost"

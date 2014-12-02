@@ -23,10 +23,12 @@ use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\JoinTable,
     \Doctrine\ORM\Mapping\ManyToMany,
     \Doctrine\ORM\Mapping\ManyToOne,
+    \Doctrine\ORM\Mapping\OneToMany,
     \Kdyby\Doctrine\Entities\BaseEntity,
-    \App\Model\Misc\Enum\CommentMode,
+    \Doctrine\Common\Collections\ArrayCollection,
     \App\Model\Misc\EntityMapperTrait,
-    \App\SystemModule\Model\Service\ICommentable;
+    \App\Model\Entities\ForumThread,
+    \App\Model\IIdentifiable;
 
 /**
  * ORM persistable entity representing real forum thread
@@ -34,7 +36,7 @@ use \Doctrine\ORM\Mapping as ORM,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  * @ORM\Entity
  */
-class Forum extends BaseEntity implements ICommentable {
+class Forum extends BaseEntity implements IIdentifiable {
 
     use EntityMapperTrait;
 
@@ -91,27 +93,13 @@ class Forum extends BaseEntity implements ICommentable {
     protected $description;
 
     /**
-     * @ORM\Column(type="string", nullable = true)
+     * @OneToMany(targetEntity="ForumThread", mappedBy="forum", cascade={"remove", "persist"}, fetch="EAGER")
      */
-    protected $imgName;
-
-    /**
-     * @ORM\Column(type="CommentMode", nullable = false)
-     */
-    protected $commentMode;
-
-    /**
-     * ONE TO MANY
-     * @ManyToMany(targetEntity="Comment", cascade={"all"})
-     * @JoinTable(name="Comment_Forum",
-     *      joinColumns={@JoinColumn(name="forum_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})
-     */
-    protected $comments;
+    protected $threads;
 
     public function __construct(array $values = []) {
 	parent::__construct();
-	$this->commentMode = CommentMode::SIGNED;
+	$this->threads = new ArrayCollection();
 	$this->fromArray($values);
     }
 
@@ -147,18 +135,6 @@ class Forum extends BaseEntity implements ICommentable {
 	return $this->description;
     }
 
-    public function getImgName() {
-	return $this->imgName;
-    }
-
-    public function getCommentMode() {
-	return $this->commentMode;
-    }
-
-    public function getComments() {
-	return $this->comments;
-    }
-
     public function setId($id) {
 	$this->id = $id;
     }
@@ -190,18 +166,6 @@ class Forum extends BaseEntity implements ICommentable {
     public function setDescription($description) {
 	$this->description = $description;
     }
-
-    public function setImgName($imgName) {
-	$this->imgName = $imgName;
-    }
-
-    public function setCommentMode($commentMode) {
-	$this->commentMode = $commentMode;
-    }
-
-    public function setComments($comments) {
-	$this->comments = $comments;
-    }
     
     public function getAuthor() {
 	return $this->author;
@@ -210,10 +174,24 @@ class Forum extends BaseEntity implements ICommentable {
     public function setAuthor($author) {
 	$this->author = $author;
     }
+    
+    function getThreads() {
+	return $this->threads;
+    }
 
+    function setThreads($threads) {
+	$this->threads = $threads;
+    }
+    
+    public function addThread(ForumThread $thread) {
+	$this->threads->add($thread);
+	if ($thread->getForum() !== $this) {
+	    $thread->setForum($this);
+	}
+    }
     
     public function __toString() {
-	return "{$this->getTitle()} (#{$this->getId()})";
+	return "{$this->getTitle()} ({$this->getId()})";
     }
 
 }

@@ -2,6 +2,9 @@
 adminMenuItem.label: "Walls"
 protectedMenuItem.label: "Walls"
 
+adminMenuItem.description: "Administration of sport group's wall posts."
+protectedMenuItem.description: "Overview of all accessible sport group's walls and wall posts related with them."
+
 admin:
 	wallPostNew: "New wallpost"
 	wallPostAdd: "Add wallpost"
@@ -11,25 +14,55 @@ admin:
 	updateWallPost.heading: "Update wallpost"
 	updateWallPost: "Update wallpost"
 
+admin.wallPostForm:
+	title: "Title"
+	showFrom: "Show since"
+	showTo: "Show till"
+	content: "Content"
+	highlight: "Announcement"
+	status: "Status"
+	commentMode: "Comment mode"
+	groups: "Groups"
+	author: "Author"
+	editor: "Editor of last change"
+	titleMustFill: "Title has to be filled"
+	showFromMustFill: "Show from date must be filled"
+	showToMustFill: "Show till date must be filled"
+	contentMustFill: "Content of wallpost must be filled"
+	
+	
+
 admin.wallPostForm.errors:
 	wallPostAlreadyExist: "Wallpost with given title already exist"
 
 admin.grid:
-    title: "Title"
-    status: "Status"
-    cmntMode: "Comments"
-    author: "Author"
-    change: "Change"
-
+	title: "Title"
+	status: "Status"
+	cmntMode: "Comments"
+	author: "Author"
+	change: "Change"
 
 admin.grid.messages:
 	rlyDelWallPost: "Do you really want to delete wall post #%id%"
 
 club:
-    heading: "Walls"
-    wallPosts.heading: "Wall posts for %cat% category"
-    showWallPost.heading: "Wall post detail"
-
+	heading: "Wall of %group%"
+	wallPosts.heading: "Wall posts for %cat% category"
+	showWallPost.heading: "Wall post detail"
+	changeTime: "Last change"
+	author: "Author"
+	relatedGroups: "Related groups"
+	showTo: "Show till"
+	history.heading: "Wall record"
+	wallpostHighlights: "Announcements and alerts"
 
 club.messages:
-    noWallPosts: "There are no wall posts at this wall"
+	noWallPosts: "There are no wall posts at this wall"
+
+postStatus:
+	draft: "Draft"
+	published: "Published"
+	notPub: "Not published"
+
+
+    

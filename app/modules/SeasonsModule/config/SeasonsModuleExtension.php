@@ -64,6 +64,7 @@ class SeasonsModuleExtension extends BaseModuleExtension implements ITranslation
 	$i = new ItemData();
 	$i->setLabel("seasonsModule.adminMenuItem.label");
 	$i->setUrl(":Seasons:Admin:default");
+	$i->setData(["desc"=>"seasonsModule.adminMenuItem.description"]);
 	return [$i];
     }
 

@@ -4,51 +4,61 @@
 {layout $layoutsPath.'clubSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}
-    <li><a href="{plink :Events:Club:default}">{_ eventsModule.club.eventsSection}</a></li>
-    <li>{_ eventsModule.club.heading}</li>
-{/block}
+{include #parent}
+<li><a href="{plink :Events:Club:default}">{_ eventsModule.club.eventsSection}</a></li>
+<li>{_ eventsModule.club.heading}</li>
+    {/block}
 
 {block #title}
-    {_eventsModule.club.heading} {$titleCrumbSeparator} {include #parent}
+{_eventsModule.club.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
-    
+
 {block #subMenu}
 {/block}
 
 {block #clubContent}
 <div role="tabpanel">
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">{_ eventsModule.club.calendarTab.label}</a></li>
-    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{_ eventsModule.club.agendaTab.label}</a></li>
-  </ul>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+	<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">{_ eventsModule.club.calendarTab.label}</a></li>
+	<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{_ eventsModule.club.agendaTab.label}</a></li>
+    </ul>
 
-  <!-- Tab panes -->
-  <div class="tab-content">
-    <div role="tabpanel" class="tab-pane fade in active" id="home">
-    {control calendar}
+    <!-- Tab panes -->
+    <div class="tab-content">
+	<div role="tabpanel" class="tab-pane fade in active" id="home">
+	    {control calendar}
+	</div>
+	<div role="tabpanel" class="tab-pane fade" id="profile">
+	    {if $data}
+		{foreach $data as $d} 
+		    <article class="event-agenda-box">
+			<a href="{plink showEvent, $d->getAlias()}">
+			    <span class="event-agenda-item-header">
+				<strong>{$d->getTitle()}</strong><small>&nbsp;({$d->getEventType()|eventType})</small>
+			    </span>
+			</a>
+			<span class="event-agenda-item-body">
+			    <span class="glyphicon glyphicon-calendar" aria-hidden="true" title="{_ eventsModule.event.takingPlaceSince.title}"></span>
+			    &nbsp;{$d->getTakePlaceSince()|date:$dateTimeFormat}&nbsp;|
+			    &nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true" title="{_ eventsModule.event.participators.title}"></span>
+			    &nbsp; {count($d->getParticipations())}&nbsp;|
+			    &nbsp;<span class="glyphicon glyphicon-time" aria-hidden="true" title="{_ eventsModule.event.confirmUntil.title}"></span>
+			    &nbsp;{$d->getConfirmUntil()|date:$dateTimeFormat}
+			</span>
+		    </article>
+		{/foreach}
+	    {else}
+		{_eventsModule.protected.messages.noDataFound}
+		{/}
+	    </div>
+	</div>
+
     </div>
-    <div role="tabpanel" class="tab-pane fade" id="profile">
-	{if $data}
-    {foreach $data as $d} 
-	<article>
-	    <p>
-		<a href="{plink showEvent, $d->getAlias()}">{$d->getTitle()}</a>
-	    </p>
-	</article>
-    {/}
-    {else}
-	{_eventsModule.protected.messages.noDataFound}
-{/}
-    </div>
-  </div>
-
-</div>
-
-    
 
 
 
-{/block}
+
+
+    {/block}

@@ -9,3 +9,49 @@ p.event-description {
     text-indent: 2%;
     margin: 10% 0;
 }
+
+/*
+    =====================
+	Event agenda
+    =====================
+*/
+
+article.event-agenda-box {
+    margin: 10px 0 10px;
+}
+
+article.event-agenda-box a:hover {
+    color: #fff !important;
+}
+
+.event-agenda-box a span:first-child {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.event-agenda-box span:last-child {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.event-agenda-item-header {
+    background-color: #D7060C;
+    display: block;
+    color: #fff;
+    line-height: 2.5em;
+    padding: 0 2% 0 2%;
+    border: none;
+    text-shadow: 0 -1px 0 #8f0000;
+}
+
+.event-agenda-item-header a:hover {
+    color: #fff !important;
+}
+
+.event-agenda-item-body {
+    display: block;
+    line-height: 2.5em;
+    padding: 0 2% 0 2%;
+    border: 1px solid #aaa;
+    border-top: none;
+}

@@ -12,28 +12,31 @@
 {block #title}
     {_eventsModule.club.showEventDay.heading} | {include #parent}
 {/block}
-    
+
 {block #subMenu}
 {/block}
 
 {block #clubContent}
     <div class="page-header">
-    <h3>{_eventsModule.eventsForDate, null, [date=>$date]}</h3>
+	<h3>{_eventsModule.eventsForDate, null, [date=>$date]}</h3>
     </div>
     {if $data}
 	{foreach $data as $d}
-
-	    <article>
-		<header>
-		    <a href="{plink showEvent, $d->getAlias()}">{$d->getTitle()}</a>
-		</header>
-	    <p>
-		{$d->getDescription()|truncate:100:""}<a href="{plink showEvent, $d->getAlias()}"> {_ eventsModule.readMore}</a>
-	    </p>
-	    <footer>
-		{_ eventsModule.eventEnds}{$d->getTakePlaceTill()|date:'H:i j.n.Y'}
-	    </footer>
-	    </article>
-	{/}
-    {/}
-{/}
+		    <article class="event-agenda-box">
+			<a href="{plink showEvent, $d->getAlias()}">
+			    <span class="event-agenda-item-header">
+				<strong>{$d->getTitle()}</strong><small>&nbsp;({$d->getEventType()|eventType})</small>
+			    </span>
+			</a>
+			<span class="event-agenda-item-body">
+			    <span class="glyphicon glyphicon-calendar" aria-hidden="true" title="{_ eventsModule.event.takingPlaceTill.title}"></span>
+			    &nbsp;{$d->getTakePlaceTill()|date:$dateTimeFormat}&nbsp;|
+			    &nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true" title="{_ eventsModule.event.participators.title}"></span>
+			    &nbsp; {count($d->getParticipations())}&nbsp;|
+			    &nbsp;<span class="glyphicon glyphicon-time" aria-hidden="true" title="{_ eventsModule.event.confirmUntil.title}"></span>
+			    &nbsp;{$d->getConfirmUntil()|date:$dateTimeFormat}
+			</span>
+		    </article>
+	{/foreach}
+    {/if}
+{/block}

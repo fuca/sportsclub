@@ -21,7 +21,7 @@ namespace App\SystemModule\Components;
 use \Nette\Application\UI\Control,
     \App\SystemModule\Forms\LoginForm,
     \Nette\ComponentModel\IContainer,
-    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities\User,
+    \App\Model\Entities\User,
     \Nette\Application\UI\Form,
     \App\SystemModule\Forms\CommentForm,
     \Nette\Security\AuthenticationException,

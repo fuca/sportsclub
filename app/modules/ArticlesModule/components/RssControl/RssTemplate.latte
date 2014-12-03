@@ -1,0 +1,19 @@
+{contentType application/rss+xml charset=utf-8}
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+	<channel>
+		{block #properties}
+		{foreach $channelProperties as $key => $property}
+		<{$key}>{if is_array($property)}{include #properties 'channelProperties' => $property}{else}{$property}{/if}</{$key}>
+		{/foreach}
+		{/block}
+
+		{foreach $items as $item}
+		<item>
+			{foreach $item as $key => $property}
+			<{$key}>{$property}</{$key}>
+			{/foreach}
+		</item>
+		{/foreach}
+	</channel>
+</rss>

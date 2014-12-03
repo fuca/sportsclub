@@ -147,7 +147,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $season->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonService()->createSeason($season);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave(null, null, $ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -163,7 +163,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		$form->setDefaults($dbSeason->toArray());
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -173,7 +173,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $season->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonService()->updateSeason($season);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($season->getId(), null, $ex);
+	    $this->handleDataSave($season->getId(), "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -280,7 +280,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->seasonService->setSeasonCurrent($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($id, null, $ex);
+	    $this->handleDataSave($id, "this", $ex);
 	}
 	$this->redirect("this");
     }
@@ -337,7 +337,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $tax->setEditor($this->getUser()->getIdentity());	
     $this->getSeasonTaxService()->createSeasonTax($tax);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleError(null, null, $ex);
+	    $this->handleError(null, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -356,7 +356,7 @@ class AdminPresenter extends SystemAdminPresenter {
 			$this->tt("seasonsModule.admin.errors.seasonTaxIdDoesntExist", null, ["id" => $id]), self::FM_WARNING);
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -366,7 +366,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $tax->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonTaxService()->updateSeasonTax($tax);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($values->id, null, $ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -399,7 +399,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $seasons = $this->getSeasonService()->getSelectSeasons();
 	    
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad(null, null, $ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
 	$form->setSportGroups($sportGroups);
 	$form->setSeasons($seasons);
@@ -496,7 +496,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->getSeasonApplicationService()->createSeasonApplication($app);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($app->getId(), null, $ex);
+	    $this->handleDataSave($app->getId(), "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -515,7 +515,7 @@ class AdminPresenter extends SystemAdminPresenter {
 			$this->tt("seasonsModule.admin.error.seasonAppIdDoesntExist", null, ["id" => $id]));
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -525,7 +525,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $app->setEditor($this->getUser()->getIdentity());
 	    $this->getSeasonApplicationService()->updateSeasonApplication($app);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($app->getId(), null, $ex);
+	    $this->handleDataSave($app->getId(), "default", $ex);
 	}
 	$this->redirect("default");
     }
@@ -576,13 +576,8 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $form->setUsers($users);
 	    $form->setSportGroups($groups);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad(null, null, $ex);
+	    $this->handleDataLoad(null, "default", $ex);
 	}
-
-// TODO 
-// AJAX po vyberu uzivatele vyjet selectbox s dokumentama k nemu prilozenejma
-// pokud se budou vyuzivat dokumenty, tak by se hodila reuse tech prihlasek
-// nebo zavest prihlasku do klubu jeste ze by byla prihlaska do klubu a s tim paralelne do kazde sezony zvlast
 	return $form;
     }
 

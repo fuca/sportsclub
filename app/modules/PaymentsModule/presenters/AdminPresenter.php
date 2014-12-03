@@ -119,7 +119,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		$payment->setEditor($this->getUser()->getIdentity());
 		$this->getPaymentService()->createPayment($payment);
 	    } catch (Exceptions\DataErrorException $ex) {
-		$this->handleDataSave($id, null, $ex);
+		$this->handleDataSave($id, "this", $ex);
 	    }
 	}
 	$this->redirect("default");
@@ -135,7 +135,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		$form->setDefaults($dbPayment->toArray());
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "this", $ex);
 	}
     }
 
@@ -145,7 +145,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $payment->setEditor($this->getUser()->getIdentity());
 	    $this->getPaymentService()->updatePayment($payment);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($values->id, null, $ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -156,7 +156,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->getPaymentService()->deletePayment($id);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDependencyDelete($id, null, $ex);
+	    $this->handleDependencyDelete($id, "this", $ex);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataDelete($id, "this", $ex);
 	}

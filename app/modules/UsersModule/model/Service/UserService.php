@@ -37,7 +37,6 @@ use \App\UsersModule\Model\Service\IUserService,
     \App\Model\Entities\Contact,
     \App\Model\Entities\WebProfile,
     \Doctrine\Common\Collections\Criteria,
-    \App\Model\Service\INotificationService,
     \Tomaj\Image\ImageService;
 
 /**
@@ -46,6 +45,8 @@ use \App\UsersModule\Model\Service\IUserService,
  * @author <michal.fuca.fucik(at)gmail.com>
  */
 class UserService extends BaseService implements IUserService {
+    
+    const RANDOM_PASS_LENGTH = 8;
 
     /**
      * @var \Kdyby\Doctrine\EntityDao
@@ -68,11 +69,6 @@ class UserService extends BaseService implements IUserService {
     private $webProfileDao;
 
     /**
-     * @var \App\Model\Service\INotificationService
-     */
-    private $notifService;
-
-    /**
      * @var string
      */
     private $salt;
@@ -91,7 +87,24 @@ class UserService extends BaseService implements IUserService {
     /** @var Event dispatched every time after delete of User */
     public $onDelete = [];
     
-    function setImageService(ImageService $imageService) {
+    /** @var Event dispatched every time after activation of User account */
+    public $onActivate = [];
+    
+    /** @var Event dispatched every time after deactivation of User account */
+    public $onDeactivate = [];
+    
+    /** @var Event dispatched every time after password regeneration */
+    public $onPasswordRegenerate = [];
+
+    public function __construct(EntityManager $em) {
+	parent::__construct($em, User::getClassName());
+	$this->userDao = $em->getDao(User::getClassName());
+	$this->addressDao = $em->getDao(Address::getClassName());
+	$this->contactDao = $em->getDao(Contact::getClassName());
+	$this->webProfileDao = $em->getDao(WebProfile::getClassName());
+    }
+    
+    public function setImageService(ImageService $imageService) {
 	$this->imageService = $imageService;
     }
     
@@ -104,34 +117,20 @@ class UserService extends BaseService implements IUserService {
 	    throw new Exceptions\InvalidArgumentException("Argument salt has to be non empty string", 1);
 	$this->salt = $salt;
     }
-
-    public function setNotifService(INotificationService $ns) {
-	$this->notifService = $ns;
-    }
-
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, User::getClassName());
-	$this->userDao = $em->getDao(User::getClassName());
-	$this->addressDao = $em->getDao(Address::getClassName());
-	$this->contactDao = $em->getDao(Contact::getClassName());
-	$this->webProfileDao = $em->getDao(WebProfile::getClassName());
-    }
     
     public function generateNewPassword($word = null) {
-	$word = $word? $word: Strings::random();
+	$word = $word? $word: Strings::random(self::RANDOM_PASS_LENGTH);
 	$o = ['salt'=>$this->salt, 'cost'=>4];
 	$hashedPassword = Passwords::hash($word, $o);
 	return $hashedPassword;
     }
 
     public function createUser(User $user) {
-	if ($user == null)
-	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
 
 	$this->entityManager->beginTransaction();
 	$now = new DateTime();
-	
-	$user->setPassword($this->generateNewPassword());
+	$rawPass = Strings::random(self::RANDOM_PASS_LENGTH);
+	$user->setPassword($this->generateNewPassword($rawPass));
 	$user->setCreated($now);
 	$user->setUpdated($now);
 	$user->setWebProfile(new WebProfile());
@@ -164,7 +163,7 @@ class UserService extends BaseService implements IUserService {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	$this->logInfo("User %user was successfully created", ["user" => $user]);
-	$this->notifService->newAccountNotification($user);
+	$user->insertRawPassword($rawPass);
 	$this->onCreate(clone $user);
     }
 
@@ -377,36 +376,37 @@ class UserService extends BaseService implements IUserService {
 
     public function regeneratePassword($id) {
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
 
 	try {
 	    $this->entityManager->beginTransaction();
 	    $user = $this->getUser($id, false);
-	    $newPw = Strings::random();
-	    $options = ["salt" => $this->salt];
-	    $hash = Passwords::hash($newPw, $options);
-	    $user->setPassword($hash);
+	    
+	    $newPw = Strings::random(self::RANDOM_PASS_LENGTH);
+	    $user->setPassword($this->generateNewPassword($newPw));
 	    $user->setPasswordChangeRequired(true);
+	    
 	    $this->entityManager->merge($user);
 	    $this->entityManager->flush();
+	    
 	    $this->invalidateEntityCache($user);
 	    $this->entityManager->commit();
 	} catch (\Exception $e) {
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
-
-	$this->notifService->sendPasswordNotification($user);
-	return $hash;
+	$this->onPasswordRegenerate($user->insertRawPassword($newPw));
     }
 
     public function toggleUser($id) {
 	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
+	    $active = null;
 	try {
 	    $this->entityManager->beginTransaction();
 	    $user = $this->getUser($id, false);
-	    $user->setActive($result = !$user->getActive());
+	    $active = $user->getActive();
+	    $user->setActive($result = !$active);
 	    $this->entityManager->merge($user);
 	    $this->entityManager->flush();
 	    $this->invalidateEntityCache($user);
@@ -415,7 +415,12 @@ class UserService extends BaseService implements IUserService {
 	    $this->entityManager->rollback();
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
-	$this->notifService->sendToggleNotification($user);
+	if (!$active) {
+	    $this->onActivate($user);
+	} else {
+	    $this->onDeactivate($user);
+	}
+	
     }
 
     public function permitWebProfile($id, Entities\User $u) {

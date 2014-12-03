@@ -337,7 +337,9 @@ abstract class BasePresenter extends Presenter {
 	    default:
 		$this->logDebug($exception ? $exception : $prefix . $m);
 	}
-	$this->redirect($redirect? $redirect: "default");
+	
+	if ($redirect !== null)
+	    $this->redirect($redirect);
     }
     
 

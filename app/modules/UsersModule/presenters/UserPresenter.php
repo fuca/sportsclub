@@ -34,7 +34,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
     \App\Model\Misc\Exceptions;
 
 /**
- * Protected presenter
+ * Presenter for maintain User section of Users module
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -45,10 +45,12 @@ class UserPresenter extends SystemUserPresenter {
      * @var \App\UsersModule\Model\Service\IUserService
      */
     public $userService;
-
-    public function actionDefault() {
-	
-    }
+    
+    /**
+     * @inject 
+     * @var \App\SystemModule\Model\Service\INotificationService
+     */
+    public $notifService;  
 
     public function actionData() {
 	$uUser = null;
@@ -131,6 +133,7 @@ class UserPresenter extends SystemUserPresenter {
 	    $this->handleDataSave($user->getId(), "default", $ex);
 	}
 	$this->flashMessage($this->tt("usersModule.messages.passwordChanged"), self::FM_SUCCESS);
+	$this->notifService->notifyPasswordChange($user->insertRawPassword($values->new1));
 	$this->redirect("this");
     }
 

@@ -103,7 +103,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->roleService->createRole($r);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave(null, null, $ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
 	$this->redirect('default');
     }
@@ -139,7 +139,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		$this->handleEntityNotExists($id);
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -225,7 +225,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $roles = $this->roleService->getSelectRoles($id !== null ? $id : null);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
 	$form->setRoles($roles);
 	return $form;
@@ -343,7 +343,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		$this->handleEntityNotExists($id);
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -406,7 +406,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->ruleService->createRule($r);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($r->getId(), null, $ex);
+	    $this->handleDataSave($r->getId(), "this", $ex);
 	}
 	$this->redirect('default');
     }

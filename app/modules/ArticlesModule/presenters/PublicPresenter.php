@@ -53,7 +53,7 @@ class PublicPresenter extends SystemPublicPresenter {
 		$sg = $this->sportGroupService->getSportGroup($abbr);
 	    $data = $this->articleService->getArticles($sg);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($abbr, null, $ex);
+	    $this->handleDataLoad($abbr, ":System:Homepage:default", $ex);
 	}
 	$this->template->data = $data;
     }

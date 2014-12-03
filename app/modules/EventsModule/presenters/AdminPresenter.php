@@ -101,7 +101,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $e->setAuthor($this->getUser()->getIdentity());
 	    $this->eventsService->createEvent($e);
 	} catch (\Exception $ex) {
-	    $this->handleDataSave(null, null, $ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -112,7 +112,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $e->setEditor($this->getUser()->getIdentity());
 	    $this->eventsService->updateEvent($e);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave(null, null, $ex);
+	    $this->handleDataSave(null, "this", $ex);
 	}
 	$this->redirect("default");
     }

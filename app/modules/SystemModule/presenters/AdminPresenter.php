@@ -109,7 +109,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 		$form->setDefaults($dbType->toArray());
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
     }
 
@@ -233,7 +233,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->sportGroupService->createSportGroup($type);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($values->id, null, $ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -258,7 +258,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->sportGroupService->updateSportGroup($type);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($values->id, null, $ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -292,7 +292,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $sportTypes = [null=>null]+$this->sportTypeService->getSelectSportTypes();
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad(null, null, $ex);
+	    $this->handleDataLoad(null, ":System:Default:adminRoot", $ex);
 	}
 	
 	$grid = new Grid($this, $name);
@@ -409,7 +409,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->staticPageService->createStaticPage($page);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($values->id, null, $ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -436,7 +436,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	try {
 	    $this->staticPageService->updateStaticPage($page);
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataSave($values->id, null, $ex);
+	    $this->handleDataSave($values->id, "this", $ex);
 	}
 	$this->redirect("default");
     }
@@ -463,7 +463,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    $states	= [null=>null] + StaticPageStatus::getOptions();
 	    $commModes	= [null=>null] + CommentMode::getOptions();
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad(null, null, $ex);
+	    $this->handleDataLoad(null, ":System:Default:adminRoot", $ex);
 	}
 	
 	$grid = new Grid($this, $name);

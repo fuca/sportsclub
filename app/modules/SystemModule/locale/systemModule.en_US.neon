@@ -130,3 +130,28 @@ protected.rootPage:
 default:
 	signpost.bread: "Application signpost"
 	sectionSignpost.bread: "Section signpost"
+
+
+notifications:
+	accActivated.subject: "Account activated at %host%"
+	accActivated.body: "Dear %name% %surname%, Your account has been activated. You can sign in with credentials as you were used to."
+
+	accDeactivated.subject: "Account deactivated at %host%"
+	accDeactivated.body: "Dear %name% %surname%, Your account has been deactivated. It is now impossible for you to sign in until it is activated again."
+
+	accCreated.subject: "Account created at %host%"
+	accCreated.body: "Dear %name% %surname%, this is information message about creating your account within our information system. You can sign in with email you provided within application and password: %pass%."
+
+	newMessage.subject: "New private message at %host%"
+	newMessage.body: "Dear %name% %surname%, this is information message about receiving new private message. Sign in to our system for further details."
+
+	newPayment.subject: "New payment added at %host%"
+	newPayment.body: "Dear %name% %surname%, this is information message about adding new payment request to your account. Please sign in for further details."
+
+	newApplication.subject: "New season application created at %host%"
+	newApplication.body: "Dear %name% %surname%, this is information message about applying you for season %season% into group %group%. Please sign in to our system for further details."
+	
+	passwordChange.subject: "User password changed at %host%"
+	passwordChange.body: "Dear %name% %surname%, this is information message about changing your account password to %pass%"
+	newPassword.subject: "New password generated at %host%"
+	newPassword.body: "Dear %name% %surname%, this is information message about regenerating your system password to %pass%. You can change it to desired password after sign in."

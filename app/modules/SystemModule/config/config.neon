@@ -65,6 +65,17 @@ services:
 				- setCacheStorage(@systemModule.cacheStorage)
 				- setUserService()
 
+	systemModule.notificationService:
+		class:
+			App\SystemModule\Model\Service\EmailNotificationService
+
+	systemModule.commentService:
+		class: 
+			App\SystemModule\Model\Service\CommentService
+		setup:
+				- setCacheStorage(@systemModule.cacheStorage)
+				- setUserService()
+
 # Event listeners
 
 	systemModule.sportGroupListener:
@@ -87,3 +98,23 @@ services:
 		tags: [kdyby.subscriber]
 		setup:	
 			- setPublicMenuFactory()
+
+	systemModule.applicationListener:
+		class:
+			App\SystemModule\Model\Listeners\ApplicationsListener
+		tags: [kdyby.subscriber]
+
+	systemModule.messagesListener:
+		class:
+			App\SystemModule\Model\Listeners\MessagesListener
+		tags: [kdyby.subscriber]
+
+	systemModule.paymentsListener:
+		class:
+			App\SystemModule\Model\Listeners\PaymentsListener
+		tags: [kdyby.subscriber]
+	systemModule.userListener:
+		class:
+			App\SystemModule\Model\Listeners\UsersListener
+		tags: [kdyby.subscriber]
+		setup:	

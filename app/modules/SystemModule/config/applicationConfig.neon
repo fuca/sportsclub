@@ -75,9 +75,9 @@ seasonsModule:
 systemModule:
 	init: #inicialni entity, ktere se musi pridat pri instalaci
 		group:
-			name: Club
+			name: "Club"
 			description: "Root system group"
-			abbr: root # tohle musi byt root!!!!, takze to oddelat z nastaveni a natvrdo to tam mit vzdy
+			abbr: "root" # tohle musi byt root!!!!, takze to oddelat z nastaveni a natvrdo to tam mit vzdy
 			children: null #hide
 			appDate: null #hide
 			parent: null #hide 
@@ -97,8 +97,13 @@ systemModule:
 					accountNumber: "2500140367/2010"
 				phone: "420732504156"
 				email: "michal.fuca.fucik@gmail.com"
+	notifications:
+			senderMail: "misan.128@seznam.cz" # povinne, kdyz neni tu, bere se z init usera
+			hostName: "FBC Mohelnice" # povinne, kdyz neni tu, bere se z init usera
+			smtpOptions: [] # nepovinne
+			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # nepovinne
 securityModule:
-	evDefRoleName: player # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
+	evDefRoleName: "player" # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
 	evDefComment: "Created by system" #defaultni comment pro vytvarenou pozici, aby bylo videt, ze to je tvorene systemem
 	deleteOldPositions: true # moznost vypnout mazani starych pozic pri pridavani nove
 
@@ -186,33 +191,17 @@ services:
 	router: @App\RouterFactory::createRouter
 
 	cacheStorage: # redefinovani cache pro system, at je v tom poradek
-		class: Nette\Caching\Storages\FileStorage(%tempDir%)
+		class: 
+			Nette\Caching\Storages\FileStorage(%tempDir%)
 
-	serviceEntityCache: 
-		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/)
-		autowired: no
-	
-	-
+	imagesBackend: 
 		class:
-			App\SystemModule\Model\Service\EmailNotificationService
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-	-
-		class: 
-			App\SystemModule\Model\Service\Localization\Translator
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-	-
-		class: 
-			App\SystemModule\Model\Service\CommentService
-		setup:
-				- setCacheStorage(@serviceEntityCache)
-				- setUserService()
+			\Tomaj\Image\Backend\FileBackend(%wwwDir%, %imagesDir%)
 
-	imagesBackend: \Tomaj\Image\Backend\FileBackend(%wwwDir%, %imagesDir%) # to lomitko na konci musi byt, jinak se to povali do slozky /imagesarticles/
 	articleImageService: 
 		class: \Tomaj\Image\ImageService(@imagesBackend, 'articles/:year/:month/:hash', ['340x200', '700x400', '1028x370'], 70)
 		autowired: no
+
 	userImageService: 
 		class: \Tomaj\Image\ImageService(@imagesBackend, 'users/:year/:hash', ['230x280'], 80)
 		autowired: no

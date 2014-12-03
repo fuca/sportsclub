@@ -85,6 +85,8 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
     
     /** @ORM\Column(type="datetime", nullable=true) */
     protected $updated;
+    
+    private $rawPassword;
 
     /**
      * @OneToOne(targetEntity = "Contact", cascade={"all"}, orphanRemoval=true, fetch="EAGER")
@@ -258,6 +260,15 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
 
     public function setUpdated($updated) {
 	$this->updated = $updated;
+    }
+    
+    public function insertRawPassword($pw) {
+	$this->rawPassword = $pw;
+	return $this;
+    }
+    
+    public function provideRawPassword() {
+	return $this->rawPassword;
     }
 
     public function __toString() {

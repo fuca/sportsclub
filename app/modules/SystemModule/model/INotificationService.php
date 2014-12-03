@@ -16,16 +16,28 @@
  * limitations under the License.
  */
 
-namespace App\Model\Service;
-use App\SystemModule\Model\Service\NotificationMessage;
+namespace App\SystemModule\Model\Service;
+
+use \App\Model\Entities\User,
+    \App\Model\Entities\Payment,
+    \App\Model\Entities\MailBoxEntry,
+    \App\Model\Entities\SeasonApplication;
 
 /**
  * Interface of Notification service
  * contacting users about changes, dealing with mass emails
  * @author <michal.fuca.fucik(at)gmail.com>
+ * 
  * @package sportsclub
  */
 interface INotificationService {
     
-    function send(NotificationMessage $n);
+    function notifyNewPassword(User $u);
+    function notifyNewAccount(User $u);
+    function notifyAccountDeactivated(User $u);
+    function notifyAccountActivated(User $u);
+    function notifyNewPayment(Payment $u);    
+    function notifyNewMessage(MailBoxEntry $entry);
+    function notifyNewSeasonApplication(SeasonApplication $app);
+    function notifyPasswordChange(User $u);
 }

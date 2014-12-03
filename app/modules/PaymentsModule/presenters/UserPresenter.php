@@ -52,7 +52,7 @@ class UserPresenter extends SystemUserPresenter {
 	    $payment = $this->paymentService->getPayment($id);
 	    
 	} catch (Exception $ex) {
-	    $this->handleDataLoad($id, null, $ex);
+	    $this->handleDataLoad($id, "default", $ex);
 	}
 	$this->template->data = $payment;
     }
@@ -72,7 +72,7 @@ class UserPresenter extends SystemUserPresenter {
 	try {
 	    $seasons = $this->seasonService->getSelectSeasons();
 	} catch (Exceptions\DataErrorException $ex) {
-	    $this->handleDataLoad(null, null, $ex);
+	    $this->handleDataLoad(null, ":System:Default:userRoot", $ex);
 	}
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->paymentService->getPaymentsDataSource($this->getUser()->getIdentity()));

@@ -127,9 +127,16 @@ class UserService extends BaseService implements IUserService {
 
     public function createUser(User $user) {
 
-	$this->entityManager->beginTransaction();
 	$now = new DateTime();
-	$rawPass = Strings::random(self::RANDOM_PASS_LENGTH);
+	$rawPass = null;
+	
+	if (empty($user->getPassword())) {
+	    $rawPass = Strings::random(self::RANDOM_PASS_LENGTH);    
+	} else {
+	    $rawPass = $user->getPassword();
+	}
+	$this->entityManager->beginTransaction();
+	
 	$user->setPassword($this->generateNewPassword($rawPass));
 	$user->setCreated($now);
 	$user->setUpdated($now);

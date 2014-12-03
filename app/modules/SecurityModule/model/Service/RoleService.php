@@ -27,6 +27,7 @@ use \App\Model\Entities\User,
     \Nette\DateTime,
     \Doctrine\Common\Collections\ArrayCollection,
     \Nette\Caching\Cache,
+    \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Service\BaseService,
     \Grido\DataSources\Doctrine;
@@ -44,7 +45,6 @@ class RoleService extends BaseService implements IRoleService {
     private $roleDao;
     
     /**
-     * 
      * @param \Kdyby\Doctrine\EntityDao
      */
     private $positionDao;
@@ -58,8 +58,8 @@ class RoleService extends BaseService implements IRoleService {
     /** @var Event dispatched every time after delete of Role */
     public $onDelete = [];
 
-    public function __construct(EntityManager $em) {
-	parent::__construct($em, Role::getClassName());
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Role::getClassName(), $logger);
 	$this->roleDao = $em->getDao(Role::getClassName());
 	$this->positionDao = $em->getDao(Position::getClassName());
     }
@@ -71,7 +71,7 @@ class RoleService extends BaseService implements IRoleService {
 	    $r->setParents($this->roleParentsCollSetup($r));
 	    $r->setAdded(new DateTime());
 	    $this->roleDao->save($r);
-	    $this->invalidateEntityCache($r);
+	    $this->invalidateEntityCache();
 	    $this->onCreate($r);
 	} catch (DuplicateEntryException $e) {
 	    $this->logWarning($e);
@@ -124,6 +124,9 @@ class RoleService extends BaseService implements IRoleService {
 	    return $this->roleDao->createQueryBuilder("r")
 			->where("r.name = :name")->setParameter("name", $name)
 			->getQuery()->getSingleResult();
+	} catch (\Doctrine\ORM\NoResultException $ex) {
+	    $this->logInfo($ex->getMessage());
+	    throw new Exceptions\NoResultException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $e) {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());

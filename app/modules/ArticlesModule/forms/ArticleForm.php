@@ -82,7 +82,7 @@ class ArticleForm extends BaseForm {
 	    ->addRule(Form::FILLED, "Titulek musí být zadán")
 	    ->setRequired("Titulek musí být zadán");
 	
-	$this->addTextArea("content", "Obsah", 45, 35)
+	$this->addTextArea("content", "Obsah", 45, 25)
 	    ->addRule(Form::FILLED, "Obsah musí být zadán")
 	    ->setRequired("Obsah musí být zadán");
 	

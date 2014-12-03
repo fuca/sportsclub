@@ -72,9 +72,5 @@ abstract class SystemPublicPresenter extends BasePresenter {
 	$c->setUser($user);
 	return $c;
     }
-    
-    protected function createComponentRss() {
-	return new \RssControl();
-    }
 
 }

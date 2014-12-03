@@ -16,3 +16,8 @@ services:
 			- setSportGroupService()
 			- setUserService()
 			- setImageService(@articleImageService)
+
+	articlesModule.rssPresenter:
+		class: 
+			App\ArticlesModule\Presenters\RssPresenter
+		

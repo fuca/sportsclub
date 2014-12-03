@@ -242,6 +242,9 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		$cache->save($abbr, $data, $opts);
 	    }
 	    return $data;
+	} catch (\Doctrine\ORM\NoResultException $ex) {
+	    throw new Exceptions\NoResultException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
@@ -286,7 +289,12 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	$data = $cache->load(self::SELECT_COLLECTION);
 	try {
 	    if ($data === null) {
-		$data = $this->groupDao->findPairs([], 'name');
+		$all = $this->groupDao->findAll();
+		$data = [];
+		foreach ($all as $g) {
+		    $type = $g->getSportType();
+		    $data = $data+[$g->getId()=>$g->getName().($type!== null?" ({$type->getName()})":"")];
+		}
 		$opt = [Cache::TAGS => [self::SELECT_COLLECTION]];
 		$cache->save(self::SELECT_COLLECTION, $data, $opt);
 	    }

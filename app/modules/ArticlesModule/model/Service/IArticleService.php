@@ -72,5 +72,4 @@ interface IArticleService {
      * @throws Exceptions\DataErrorException
      */
     function getHighLights();
-    
 }

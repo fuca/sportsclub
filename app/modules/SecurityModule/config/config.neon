@@ -63,8 +63,11 @@ services:
 				- setRolesService()
 				- setUsersService()
 				- setLogger()
-factories:
-# factories jsou od 2.1 sloceny do services
-	# viz http://doc.nette.org/cs/2.2/di-extensions
-	# a http://pla.nette.org/cs/create-components-with-autowiring
+
+
+# Initializer
+	securityModule.initializer:
+			class:
+				App\SecurityModule\Config\Initializer
+			tags: [run]
 

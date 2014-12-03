@@ -125,12 +125,30 @@ class PositionService extends BaseService implements IPositionService {
 	    }
 	} catch (\Exception $e) {
 	    $this->logError($e);
-	    throw new DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	return $data;
     }
+    
+    public function getUniquePosition(User $u, SportGroup $g, Role $r) {
+	try {
+	    $qb = $this->positionDao->createQueryBuilder("p")
+		    ->where("p.owner = :owner")
+		    ->andWhere("p.group = :group")
+		    ->andWhere("p.role = :role")
+		    ->setParameters(["owner"=>$u->getId(), "group"=>$g->getId(), "role"=>$r->getId()]);
+		    
+	    return $qb->getQuery()->getSingleResult();
+	} catch (\Doctrine\ORM\NoResultException $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\NoResultException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex);
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 
-    private function posGroupTypeHandle(Position $p) {
+        private function posGroupTypeHandle(Position $p) {
 	if ($p === null)
 	    throw new Exceptions\NullPointerException("Argument Position was null");
 	try {

@@ -53,7 +53,7 @@ class RssControl extends \Nette\Application\UI\Control
 		@$this->onPrepareProperties($properties);
 		// check
 		if (empty($properties["title"]) || empty($properties["description"]) || empty($properties["link"])) {
-			throw new InvalidStateException("At least one of mandatory properties title, description or link was not set.");
+			throw new \Nette\InvalidStateException("At least one of mandatory properties title, description or link was not set.");
 		}
 
 		// items
@@ -63,7 +63,7 @@ class RssControl extends \Nette\Application\UI\Control
 
 			// check
 			if (empty($item["title"]) && empty($item["description"])) {
-				throw new InvalidStateException("One of title or description has to be set.");
+				throw new \Nette\InvalidStateException("One of title or description has to be set.");
 			}
 		}
 
@@ -80,7 +80,8 @@ class RssControl extends \Nette\Application\UI\Control
 	public function renderBar() {
 		
 		$this->template->setFile(__DIR__ . '/rssBar.latte');
-		$this->template->link = $this->presenter->link(':Front:Rss:default');
+		$this->template->link = $this->presenter->link(':Articles:Rss:default');
+		$this->template->render();
 	}
 
 	/**

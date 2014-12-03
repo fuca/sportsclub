@@ -1,10 +1,28 @@
 #
-# ENSURE NOT EXPOSURING THIS FILE TO CLIENT SIDE USERS
+# #######################################################
+#	MAIN CONFIGURATION FILE OF WHOLE APPLICATION
+#		 SPORTSCLUB IS APPLICATION
+#	  DIPLOMA THESIS @ MASARYK UNIVERSITY BRNO
+#		    Bc. Michal Fučík
+#		michal.fuca.fucik@gmail.com
+# #######################################################
 #
-#   %field from paramaters%
+
+#
+# WARNINIG: ENSURE TO NOT EXPOSURE CONTENT OF THIS FILE TO CLIENT SIDE USERS
+#
+
+#   SYNTAX HELP
+#   ------------
+#   %<field from paramaters>%
 #   @service
 #
+
+
 #
+# ==============================
+#	FRAMEWORK SETTINGS
+# ==============================
 
 includes:
 	# - nazev.neon ## nejnizsi priorita
@@ -31,101 +49,9 @@ parameters:
 	imagesDir: %wwwDir%/assets/images/
 
 	appName: sportsclub
+	appDefaultEmail: "michal.fuca.fucik@gmail.com"
 
-doctrine:
-	metadata:
-		App: %appDir%
-		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
 
-annotations: # configure of annotations extension
-	ignore:	[hideInTree] # array of ignored annotations
-	debug: yes
-
-php:
-	date.timezone: Europe/Prague
-	# zlib.output_compression: yes
-
-facebook:
-	appId: "1234567890"
-	appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
-	permissions: [email]
-
-events:
-    debugger: # these are the default values
-        dispatchTree: off
-        dispatchLog: on
-        events: on
-        listeners: on
-	
-translation:
-	default: en
-	whitelist: [cs, en, de] #....
-	fallback: [cs_CZ, cs]
-	debugger: on
-	dirs: 
-		#- %appDir%/modules/SystemModule/locale # every module has own locale dir
-	resolvers:
-		session: on
-		request: off # checking locale from request
-		header: on # accept language header preferred locales 
-
-seasonsModule:
-	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem
-
-systemModule:
-	init: #inicialni entity, ktere se musi pridat pri instalaci
-		group:
-			name: "Club"
-			description: "Root system group"
-			abbr: "root" # tohle musi byt root!!!!, takze to oddelat z nastaveni a natvrdo to tam mit vzdy
-			children: null #hide
-			appDate: null #hide
-			parent: null #hide 
-			priority: 10 #hide
-			activity: true #hide
-		user:
-			name: "FBC"
-			surname: "Mohelnice, o.s."
-			nick: "Informační systém"
-			password: "admin"
-			contact:
-				address: 
-					city: "Mohelnice"
-					postCode: "789 85"
-					street: "Masarykova"
-					number: "546/25"
-					accountNumber: "2500140367/2010"
-				phone: "420732504156"
-				email: "michal.fuca.fucik@gmail.com"
-	notifications:
-			senderMail: "misan.128@seznam.cz" # povinne, kdyz neni tu, bere se z init usera
-			hostName: "FBC Mohelnice" # povinne, kdyz neni tu, bere se z init usera
-			smtpOptions: [] # nepovinne
-			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # nepovinne
-securityModule:
-	evDefRoleName: "player" # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
-	evDefComment: "Created by system" #defaultni comment pro vytvarenou pozici, aby bylo videt, ze to je tvorene systemem
-	deleteOldPositions: true # moznost vypnout mazani starych pozic pri pridavani nove
-
-	init:
-		roles:
-			-
-				name: administrator
-				children: null
-				parents: null
-				note: "Default system administrator"
-				added: null
-			-
-				name: player  # potreba role pro automaticky vytvareny pozice dle prihlasek, viz v nastaveni securityModule
-				children: null
-				parents: null
-				note: "Default system player"
-				added: null
-				    # mozna by se mohl pridat guest, member, player, executive a ten admin jako defaultni role
-
-paymentsModule:
-	dueDate: "1 month"
-			
 nette:
 	application:
 		errorPresenter: Public:Error
@@ -166,14 +92,125 @@ nette:
 			
 		blueScreen: # panely do Laděnky
 			#- DoctrinePanel::renderException
+
+php:
+	date.timezone: Europe/Prague
+	# zlib.output_compression: yes
+
+#
+# =========================================
+#	3RD PARTY EXTENSIONS SETTINGS
+# =========================================
+#
+
+doctrine:
+	metadata:
+		App: %appDir%
+		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
+
+annotations: # configure of annotations extension
+	ignore:	[hideInTree] # array of ignored annotations
+	debug: yes
+
+
+
 monolog:
 	name: %appName%
 	registerFallback: yes # zapne logovani do souboru
 
 	handlers:
 		- Monolog\Handler\SyslogHandler(%appName%, 'local4') # unix syslog handler
+
+facebook:
+	appId: "1234567890"
+	appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
+	permissions: [email]
+
+events:
+    debugger: # these are the default values
+        dispatchTree: off
+        dispatchLog: on
+        events: on
+        listeners: on
 	
+translation:
+	default: en
+	whitelist: [cs, en, de] #....
+	fallback: [cs_CZ, cs]
+	debugger: on
+	dirs: 
+		#- %appDir%/modules/SystemModule/locale # every module has own locale dir
+	resolvers:
+		session: on
+		request: off # checking locale from request
+		header: on # accept language header preferred locales 
+
+#
+# ===================================
+#	APP EXTENSIONS SETTINGS
+# ===================================
+#
+
+articlesModule:
+	rss:
+	    title: "FBC Mohelnice"
+	    description: "Webová prezentace florbalového klubu FBC Mohelnice, o.s."
+	    category: "aktuality,články,novinky,RSS"
+	    copyright: "FBC Mohelnice"
+	    managingEditor: "editor@fbcmohelnice.cz"
+	    webmaster: "webmaster@fbcmohelnice.cz"
+
+seasonsModule:
+	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem # AKTIVNI
+
+systemModule:
+	init:
+		group: # AKTIVNI
+			name: "Club"
+			description: "Root system group"
 		
+	notifications:
+			senderMail: "misan.128@seznam.cz" # povinne, kdyz neni tu, bere se z init usera #AKTIVNI
+			hostName: "FBC Mohelnice" # povinne, kdyz neni tu, bere se z init usera # AKTIVNI
+			smtpOptions: [] # nepovinne # AKTIVNI
+			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # nepovinne # AKTVNI
+securityModule:
+	defRoleAppEvents: "player" # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
+	defCommentAppEvents: "Created by system" #defaultni comment pro vytvarenou pozici, aby bylo videt, ze to je tvorene systemem
+	deleteOldPositions: true # moznost vypnout mazani starych pozic pri pridavani nove
+	defaultUserEmail: %appDefaultEmail% # povinne
+
+	init:
+		roles: ["admin", "player", "guest", "member", "executive"] # AKTIVNI 			
+
+paymentsModule:
+	dueDate: "1 month" # AKTIVNI
+
+usersModule: 
+	init:
+		user: #init uzivatel, hlavni admin # AKTIVNI
+			name: "FBC"
+			surname: "Mohelnice, o.s."
+			nick: "Informační systém"
+			password: "admin"
+			contact:
+				address: 
+					city: "Mohelnice"
+					postCode: "789 85"
+					street: "Masarykova"
+					number: "546/25"
+					accountNumber: "2500140367/2010"
+				phone: "420732504156"
+				email: %appDefaultEmail%
+	    
+			
+	
+#
+# =====================================
+#	COMMON SERVICES SETTINGS
+# =====================================
+#
+	
 services:
 	#- App\Model\UserManager
 
@@ -190,7 +227,7 @@ services:
 	- App\RouterFactory
 	router: @App\RouterFactory::createRouter
 
-	cacheStorage: # redefinovani cache pro system, at je v tom poradek
+	cacheStorage: # redefinovani cache pro system, at je v tom poradek (nemusi to tu byt)
 		class: 
 			Nette\Caching\Storages\FileStorage(%tempDir%)
 
@@ -206,6 +243,13 @@ services:
 		class: \Tomaj\Image\ImageService(@imagesBackend, 'users/:year/:hash', ['230x280'], 80)
 		autowired: no
 
+#
+# ===================================
+#	EXTENSIONS REGISTRATION
+# ===================================
+#
+
+
 extensions:
 
 	# 3rd party extensions
@@ -217,10 +261,9 @@ extensions:
 	facebook: Kdyby\Facebook\DI\FacebookExtension
 	translation: Kdyby\Translation\DI\TranslationExtension
 	monolog: Kdyby\Monolog\DI\MonologExtension
-	#images: Brabijan\Images\DI\ImagesExtension // nepouzivat nahrazeno imageService od tomaj
 	
 
-	# Application modules
+	# Application extensions (modules)
 	systemModule: App\SystemModule\Config\SystemModuleExtension
 	usersModule: App\UsersModule\Config\UsersModuleExtension
 	securityModule: App\SecurityModule\Config\SecurityModuleExtension

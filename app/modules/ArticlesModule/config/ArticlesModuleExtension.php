@@ -38,9 +38,10 @@ final class ArticlesModuleExtension extends BaseModuleExtension implements
 ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider, IPublicMenuDataProvider {
 
     private $defaults = [
-	ArticleService::DEFAULT_IMAGE_PATH => "article",
-	ArticleService::DEFAULT_THUMBNAIL => "articleThumbDefault.png",
-	ArticleService::DEFAULT_IMAGE => "articleImageDefault.png"];
+	ArticleService::DEFAULT_IMAGE_PATH  => "article",
+	ArticleService::DEFAULT_THUMBNAIL   => "articleThumbDefault.png",
+	ArticleService::DEFAULT_IMAGE	    => "articleImageDefault.png",
+	ArticleService::DEFAULT_RSS_LIMIT   => 50];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -55,8 +56,12 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider, IPublicMenu
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
 	// $translator = $builder->getDefinition("translation.default"); // for example obtaining of service // 
 	
-	$artService = $builder->getDefinition("articlesModule.articleService");
+	// Article service configuration
+	$artService = $builder->getDefinition($this->prefix("articleService"));
 	$artService->addSetup("setConfig", [$config]);
+	
+	$rssPresenter = $builder->getDefinition($this->prefix("rssPresenter"));
+	$rssPresenter->addSetup("setRssPropertiesConfig", [$config["rss"]]);
     }
 
     public function getTranslationResources() {

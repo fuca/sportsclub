@@ -28,14 +28,30 @@ use \Nette\DI\CompilerExtension,
     \Kdyby\Doctrine\DI\IDatabaseTypeProvider;
 
 /**
- * UsersModuleExtension
+ * UsersModule compiler extension
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class UsersModuleExtension extends BaseModuleExtension implements 
 ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatabaseTypeProvider {
 
-    private $defaults = [];
+     private $defaults = [
+	"init"=>[
+		"user"=>[ // this configuration is here only for demonstration
+			"name"=>"FBC",
+			"surname"=>"Mohelnice, o.s.",
+			"nick"=>"Informační systém",
+			"password"=>"admin",
+			"contact"=>[
+				"address"=>[
+					"city"=>"Mohelnice",
+					"postCode"=>"789 85",
+					"street"=>"Masarykova",
+					"number"=>"546/25",
+					"accountNumber"=>"2500140367/2010"],
+				"phone"=>"420732504156",
+				"email"=>"michal.fuca.fucik@gmail.com"]]],
+    ];
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -46,6 +62,12 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
+	
+	// Initializer setup
+	$initializer = $builder->getDefinition($this->prefix("initializer"));
+	$initializer->addSetup("setUserValues", [$config["init"]["user"]])
+		    ->addSetup("userInit");
+	
     }
 
     public function getTranslationResources() {
@@ -83,6 +105,6 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
     
     public function getDatabaseTypes() {
 	return ["WebProfileStatus"  =>	"App\Model\Misc\Enum\WebProfileStatus",
-		"CommentMode"	    => "App\Model\Misc\Enum\CommentMode"];
+		"CommentMode"	    =>	"App\Model\Misc\Enum\CommentMode"];
     }
 }

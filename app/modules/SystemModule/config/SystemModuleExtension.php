@@ -18,9 +18,9 @@
 
 namespace App\SystemModule\Config;
 
-use \Nette\DI\CompilerExtension,
-    \Nette\PhpGenerator\ClassType,
+use \Nette\PhpGenerator\ClassType,
     \App\Config\BaseModuleExtension,
+    \App\Model\Misc\Exceptions,
     \Kdyby\Translation\DI\ITranslationProvider,
     \App\SystemModule\Model\Service\Menu\IAdminMenuDataProvider,
     \App\SystemModule\Model\Service\Menu\ICommonMenuDataProvider,
@@ -40,32 +40,13 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
     private $defaults = [
 	"init"=>[
 	    "group"=>[
-			"name"=>"Club",
-			"description"=>"Root system group",
-			"abbr"=>"root", // tohle musi byt root!!!!, takze to oddelat z nastaveni a natvrdo to tam mit vzdy
-			"children"=>null, // hide - > musi byt null, kdyz ma byt root
-			"appDate"=>null, //hide -> ke klubu se neprihlasuje
-			"parent"=>null, //hide -> nemuz mit parenta, kdyz je root
-			"priority"=> \App\Model\Service\BaseService::MAX_PRIORITY, //hide tohle tu asi ani nema byt, ale je to na max
-			"activity"=>true //hide jasne. ze bude aktivni
-			],
-		"user"=>[
-			"name"=>"FBC",
-			"surname"=>"Mohelnice, o.s.",
-			"nick"=>"Informační systém",
-			"password"=>"admin",
-			"contact"=>[
-				"address"=>[
-					"city"=>"Mohelnice",
-					"postCode"=>"789 85",
-					"street"=>"Masarykova",
-					"number"=>"546/25",
-					"accountNumber"=>"2500140367/2010"],
-				"phone"=>"420732504156",
-				"email"=>"michal.fuca.fucik@gmail.com"]]],
+			"name"		=> "Club",
+			"description"	=> "Root system group"
+			]],
 	"notifications"=>[
-			"smtpOptions"=>[],
-			"desiredMailerType"=> \App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND]
+			"hostName"	    => "SPORTS CLUB IS",
+			"smtpOptions"	    => [],
+			"desiredMailerType" => \App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND]
     ];
 
     public function loadConfiguration() {
@@ -79,17 +60,21 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 	
 	// EMAIL NOTIFICATION SERVICE SETUP
 	$notifService = $builder->getDefinition($this->prefix("notificationService"));
-	$user = $config["init"]["user"];
-	$notifService->addSetup("setHostName", 
-		!isset($config["notifications"]["hostName"])?
-		[$config["notifications"]["hostName"]]
-		:["{$user["name"]} {$user["surname"]}"]);
-	$notifService->addSetup("setSenderEmail", 
-		!isset($config["notifications"]["senderMail"])?
-		[$config["notifications"]["senderMail"]]
-		:[$user["contact"]["email"]]);
+	$notifService->addSetup("setHostName", [$config["notifications"]["hostName"]]);
+	$notifService->addSetup("setSenderEmail", [$config["notifications"]["senderMail"]]);
 	$notifService->addSetup("setSmtpOptions", [$config["notifications"]["smtpOptions"]]);
 	$notifService->addSetup("setDesiredMailerType", [$config["notifications"]["desiredMailerType"]]);
+	
+	// INITIALIZER SETUP
+	$initializer = $builder->getDefinition($this->prefix("initializer"));
+	$gVals = ["name"	=> $config["init"]["group"]["name"],
+		  "description"	=> $config["init"]["group"]["description"],
+		  "abbr"	=> "root",
+		  "priority"	=>  \App\Model\Service\BaseService::MAX_PRIORITY,
+		  "activity"    => true];
+	$initializer->addSetup("setGroupValues", [$gVals])
+		    ->addSetup("groupInit");
+	
     }
 
     public function getTranslationResources() {
@@ -143,6 +128,7 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 
     public function afterCompile(ClassType $class) {
 	parent::afterCompile($class);
+	
     }
 
     public function getAdminItemsResources() {

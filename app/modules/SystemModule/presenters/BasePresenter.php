@@ -216,13 +216,13 @@ abstract class BasePresenter extends Presenter {
 
     // <editor-fold desc="COMMON COMPONENT FACTORIES">
 
-    public function createComponentLoginControl($name) {
+    protected function createComponentLoginControl($name) {
 	$c = new LogInControl($this, $name);
 	$c->setLogInTarget(":System:Homepage:default");
 	return $c;
     }
 
-    public function createComponentCommentControl($name) {
+    protected function createComponentCommentControl($name) {
 	$c = new CommentControl($this, $name);
 	$c->setEntity($this->getEntity());
 	$c->setUser($this->getUser()->getIdentity());
@@ -230,17 +230,17 @@ abstract class BasePresenter extends Presenter {
 	return $c;
     }
     
-    public function createComponentGroupsFilterMenu($name) {
+    protected function createComponentGroupsFilterMenu($name) {
 	$c = $this->catMenuFactory->createComponent($this, $name);
 	return $c;
     }
     
-    public function createComponentMailMenu($name) {
+    protected function createComponentMailMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	return $c;
     }
     
-        public function createComponentAdminMenu($name) {
+    public function createComponentAdminMenu($name) {
 	$c = $this->adminMenuFactory->createComponent($this, $name);
 	return $c;
     }
@@ -255,9 +255,13 @@ abstract class BasePresenter extends Presenter {
 	return $c;
     }
     
-    public function createComponentPublicMenu($name) {
+    protected function createComponentPublicMenu($name) {
 	$c = $this->publicMenuFactory->createComponent($this, $name);
 	return $c;
+    }
+    
+    protected function createComponentRss() {
+	return new \RssControl();
     }
 
     // </editor-fold>

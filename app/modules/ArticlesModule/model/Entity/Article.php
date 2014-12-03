@@ -28,6 +28,7 @@ use \Doctrine\ORM\Mapping as ORM,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\EntityMapperTrait,
     \App\Model\IIdentifiable,
+    \Nette\Utils\DateTime,
     \App\SystemModule\Model\Service\ICommentable;
 
 /**
@@ -62,6 +63,9 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
     /** @ORM\Column(type="text", nullable = false) */
     protected $content;
 
+     /** @ORM\Column(type="datetime", nullable = false) */
+    protected $created;
+    
     /** @ORM\Column(type="datetime", nullable = false) */
     protected $updated;
 
@@ -105,6 +109,7 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
     
     public function __construct(array $values = []) {
 	parent::__construct();
+	$this->created = new DateTime();
 	$this->status = ArticleStatus::DRAFT;
 	$this->commentMode = CommentMode::SIGNED;
 	$this->highlight = false;
@@ -222,6 +227,14 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
 
     public function setEditor($editor) {
 	$this->editor = $editor;
+    }
+        
+    public function getCreated() {
+	return $this->created;
+    }
+
+    public function setCreated($created) {
+	$this->created = $created;
     }
 
     public function __toString() {

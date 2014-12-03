@@ -118,3 +118,10 @@ services:
 			App\SystemModule\Model\Listeners\UsersListener
 		tags: [kdyby.subscriber]
 		setup:	
+
+# Initialize
+	
+	systemModule.initializer:
+		class:
+			App\SystemModule\Config\Initializer
+		tags: [run]

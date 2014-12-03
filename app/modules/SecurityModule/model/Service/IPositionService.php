@@ -45,6 +45,8 @@ interface IPositionService {
     
     function getPosition($id);
     
+    function getUniquePosition(User $u, SportGroup $g, Role $r);
+    
     function getPositionsDatasource();
     
 }

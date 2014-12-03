@@ -18,8 +18,7 @@
 
 namespace App\ArticlesModule\Presenters;
 
-use \App\SystemModule\Presenters\SystemPublicPresenter,
-    \App\ArticlesModule\Components\RssControl\IRssModel;
+use \App\SystemModule\Presenters\SystemPublicPresenter;
 
 /**
  * Rss presenter of articles module
@@ -29,7 +28,7 @@ use \App\SystemModule\Presenters\SystemPublicPresenter,
 final class RssPresenter extends SystemPublicPresenter {
     
     /**
-     *  @var RssControl 
+     * @var RssControl 
      */
     private $rssControl;
 
@@ -37,7 +36,21 @@ final class RssPresenter extends SystemPublicPresenter {
      * @inject
      * @var \App\ArticlesModule\Components\RssControl\IRssModel
      */
-    private $model;
+    public $model;
+    
+    /**
+     * Rss section from module configuration
+     * @var array $rssPropertiesConfig
+     */
+    private $rssPropertiesConfig;
+    
+    public function getRssPropertiesConfig() {
+	return $this->rssPropertiesConfig;
+    }
+
+    public function setRssPropertiesConfig(array $rssPropertiesConfig) {
+	$this->rssPropertiesConfig = $rssPropertiesConfig;
+    }
 
     public function getRss() {
 	if (!isset($this->rssControl)) {
@@ -54,15 +67,18 @@ final class RssPresenter extends SystemPublicPresenter {
 
 	$this->setLayout(FALSE);
 
+	$scrUri = filter_input(INPUT_SERVER, "SCRIPT_URI");
+	$slashOff = substr($scrUri, 0, strrpos($scrUri, '/'));
+	$appUrl = substr($slashOff, 0, strrpos($slashOff, '/'));
 	// properties
-	$this->rss->setChannelProperty('title', "TJ Sokol Moravičany");
-	$this->rss->setChannelProperty('description', "Webová prezentace Tělovýchovné jednoty Sokol Moravičany.");
-	$this->rss->setChannelProperty('link', 'http://www.sokolmoravicany.cz');
-	$this->rss->setChannelProperty("category", "aktuality,články,novinky,RSS");
-	$this->rss->setChannelProperty("language", "cs");
-	$this->rss->setChannelProperty("copyright", "TJ Sokol Moravičany");
-	$this->rss->setChannelProperty('managingEditor', "editor@sokolmoravicany.cz");
-	$this->rss->setChannelProperty('webmaster', "webmaster@sokolmoravicany.cz");
+	$this->rss->setChannelProperty('title', $this->getRssPropertiesConfig()["title"]);
+	$this->rss->setChannelProperty('description', $this->getRssPropertiesConfig()["description"]);
+	$this->rss->setChannelProperty('link', $appUrl);
+	$this->rss->setChannelProperty("category", $this->getRssPropertiesConfig()["category"]);
+	$this->rss->setChannelProperty("language", $this->getTranslator()->getLocale());
+	$this->rss->setChannelProperty("copyright", $this->getRssPropertiesConfig()["copyright"]);
+	$this->rss->setChannelProperty('managingEditor', $this->getRssPropertiesConfig()["managingEditor"]);
+	$this->rss->setChannelProperty('webmaster', $this->getRssPropertiesConfig()["webmaster"]);
 	$this->rss->setChannelProperty("lastBuildDate", date('r', time()));
 
 	$items = $this->model->getNews();
@@ -70,9 +86,10 @@ final class RssPresenter extends SystemPublicPresenter {
 	$its = array();
 	foreach ($items as $item) {
 	    $tmp = array();
-	    $tmp["link"] = 'http://www.sokolmoravicany.cz' . $this->link(":Front:Article:show", $item['article_id']);
-	    $tmp["title"] = $item['article_title'];
-	    $tmp["category"] = "články,aktuality,novinky";
+	    
+	    $tmp["link"] = $appUrl . $this->link(":Articles:Public:showArticle", $item->getAlias());
+	    $tmp["title"] = $item->getTitle();
+	    $tmp["category"] = $this->getRssPropertiesConfig()["category"];
 	    array_push($its, $tmp);
 	}
 

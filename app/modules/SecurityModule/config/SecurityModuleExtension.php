@@ -37,9 +37,12 @@ final class SecurityModuleExtension extends BaseModuleExtension implements
 ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPublicMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
-	"evDefRoleName" => "player", 
-	"evDefComment" => "created by system",
-	"deleteOldPositions" => false];
+	"defRoleAppEvents"	=> "player", 
+	"defCommentAppEvents"	=> "created by system",
+	"deleteOldPositions"	=> false,
+	    "init"  =>	[
+		"roles"	=>  ["admin", "player"]]];
+		    
 
     public function loadConfiguration() {
 	parent::loadConfiguration();
@@ -51,9 +54,18 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	// načtení konfiguračního souboru pro rozšíření
 	$this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/config.neon'));
 	
+	// Listener of Season application's events setup
 	$builder->getDefinition($this->prefix("applicationsListener"))
-		->addSetup("setDefaultRoleName", [$config["evDefRoleName"]])
-		->addSetup("setDefaultComment", [$config["evDefComment"]]);
+		->addSetup("setDefaultRoleName", [$config["defRoleAppEvents"]])
+		->addSetup("setDefaultComment", [$config["defCommentAppEvents"]]);
+	
+	
+	$rValues = array_unique(array_merge($config["init"]["roles"], [$config["defRoleAppEvents"]], ["admin"]));
+	$builder->getDefinition($this->prefix("initializer"))
+		->addSetup("setRolesValues", [$rValues])
+		->addSetup("setDefaultUserEmail", [$config["defaultUserEmail"]])
+		->addSetup("rolesInit")
+		->addSetup("positionsInit");
     }
 
     public function getTranslationResources() {

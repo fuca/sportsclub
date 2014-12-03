@@ -19,3 +19,11 @@ services:
 				- setSalt(%models.salt%)
 				- setLogger()
 				- setImageService(@userImageService)
+
+
+# Initializer
+
+	usersModule.initializer:
+			class:
+				App\UsersModule\Config\Initializer
+			tags: [run]

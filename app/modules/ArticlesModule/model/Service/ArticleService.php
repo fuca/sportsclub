@@ -35,24 +35,27 @@ use \App\Model\Entities\SportGroup,
     \Kdyby\Monolog\Logger,
     \App\SystemModule\Model\Service\ICommentable,  
     \App\Model\Entities\Comment,
-    \Tomaj\Image\ImageService;
-    //\Brabijan\Images\ImageStorage;
+    \App\ArticlesModule\Components\RssControl\IRssModel;
 
 /**
  * Service for dealing with Article entities
  *
  * @author <michal.fuca.fucik(at)g.com>
  */
-class ArticleService extends BaseService implements IArticleService {
+class ArticleService extends BaseService implements IArticleService, IRssModel {
     
-    // image storage extension
+    // Image storage extension trait
     use \Brabijan\Images\TImagePipe;
     
-    const   DEFAULT_IMAGE_PATH = "defaultImagePath",
-	    DEFAULT_THUMBNAIL = "defafaultThumbnail",
-	    DEFAULT_IMAGE = "defaultImage";
+    const   
+	    DEFAULT_IMAGE_PATH	    = "defaultImagePath",
+	    DEFAULT_THUMBNAIL	    = "defafaultThumbnail",
+	    DEFAULT_IMAGE	    = "defaultImage",
+	    DEFAULT_RSS_LIMIT	    = "defaultRssLimit";
     
-    const COLLECTION_HIGHLIGHTS  = "highlight";
+    const   
+	    COLLECTION_HIGHLIGHTS   = "highlight",
+	    COLLECTION_NEWS	    = "articleNewsCollection";
     
     /**
      * @var \Kdyby\Doctrine\EntityDao
@@ -98,7 +101,12 @@ class ArticleService extends BaseService implements IArticleService {
     /** @var Event dispatched every time after delete of Article */
     public $onDelete = [];
     
-    function setImageService(\Tomaj\Image\ImageService $imageService) {
+    public function __construct(EntityManager $em, Logger $logger) {
+	parent::__construct($em, Article::getClassName(), $logger);
+	$this->articleDao = $em->getDao(Article::getClassName());
+    }
+    
+    public function setImageService(\Tomaj\Image\ImageService $imageService) {
 	$this->imageService = $imageService;
     }
     
@@ -122,9 +130,8 @@ class ArticleService extends BaseService implements IArticleService {
 	$this->sportGroupService = $sportGroupService;
     }
     
-    function __construct(EntityManager $em, Logger $logger) {
-	parent::__construct($em, Article::getClassName(), $logger);
-	$this->articleDao = $em->getDao(Article::getClassName());
+    public function getDefaultRssLimit() {
+	return $this->getConfig()[self::DEFAULT_RSS_LIMIT];
     }
 
     public function createArticle(Article $a) {
@@ -436,5 +443,25 @@ class ArticleService extends BaseService implements IArticleService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-
+    
+    /* ======================== IRssModel interface ========================= */
+    
+    public function getNews() {
+	try {
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load(self::COLLECTION_NEWS);
+	    if ($data === null) {
+		$data = $this->articleDao->createQueryBuilder("a")
+			    ->orderBy("a.created", "DESC")
+			    ->setMaxResults($this->getDefaultRssLimit())
+			    ->getQuery()->getResult();
+		$opts = [Cache::TAGS=>[self::ENTITY_COLLECTION, self::SELECT_COLLECTION, self::COLLECTION_NEWS], Cache::SLIDING=>true];
+		$cache->save(self::COLLECTION_NEWS, $data, $opts);
+	    }
+	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 }

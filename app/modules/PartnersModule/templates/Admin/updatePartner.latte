@@ -1,0 +1,84 @@
+
+{* Partners module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+{include #parent}<li>{_ partnersModule.admin.updatePartner.bread}</li>
+    {/block}
+
+{block #title}
+{_ partnersModule.admin.updatePartner.bread} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+{control backSubMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>
+	{_ partnersModule.admin.updatePartner.heading, null, ["name"=>$partner->getName()]}
+	</h3>
+    </div>
+    {form updatePartnerForm}
+	{control $form errors}
+	<div class="row">
+	    <div class="col-sm-7">
+		<div class="form-group">
+		    {label name/}
+		    {input name class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label link/}
+		    {input link class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label note/}
+		    {input note class=>form-control}
+		</div>
+
+
+	    </div>
+
+	    <div class="col-sm-3 form-options">
+		<div class="form-group">
+		    {label active/}
+		    {input active class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label referrer/}
+		    {input referrer class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label picture/}
+		    {input picture}
+		</div>
+
+		{if $form->isUpdate()}
+		    <div>
+			<img src="{$basePath}/assets/images/{$partner->getPicture()}" class="partner-thumbnail img-responsive"/>
+		    </div>
+		    
+		    <div class="form-group">
+			{label updated/}
+			{input updated class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label editor/}
+			{input editor class=>form-control}
+		    </div>
+		{/if}
+		<div class="form-group">
+		    {input submitButton class=>"btn btn-primary btn-block"}
+		</div>
+
+	    </div>
+	</div>
+    {/form}
+{/block}

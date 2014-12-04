@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace App\MotivationModule\Model\Service;
 
 use \Kdyby\Doctrine\EntityDao,
@@ -90,50 +91,6 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
-    private function entrySeasonTypeHandle(MotivationEntry $t) {
-	if ($t == null)
-	    throw new Exceptions\NullPointerException("Argument MotivationTax cannot be null");
-	try {
-	    $season = $this->getMixId($t->getSeason());
-	    $sportGroup = $this->seasonService->getSeason($season, false);
-	    $t->setSeason($sportGroup);
-	    return $t;
-	} catch (\Exception $ex) {
-	    $this->logError($ex->getMessage());
-	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-	}
-    }
-    
-    private function entryOwnerTypeHandle(MotivationEntry $p) {
-	try {
-	    $oId = $this->getMixId($p->getOwner());
-	    if ($oId !== null) {
-		$owner = $this->userService->getUser($oId, false);
-		$p->setOwner($owner);
-	    }
-	} catch (\Exception $ex) {
-	    $this->logError($ex->getMessage());
-	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-	}
-	return $p;
-    }
-    
-    private function entryEditorTypeHandle(MotivationEntry $t) {
-	if ($t == null)
-	    throw new Exceptions\NullPointerException("Argument MotivationTax cannot be null");
-	try {
-	    $u = $this->getMixId($t->getEditor());
-	    if ($u !== null) {
-		$editor = $this->userService->getUser($u, false);
-		$t->setEditor($editor);
-	    }
-	} catch (\Exception $ex) {
-	    $this->logError($ex->getMessage());
-	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-	}
-	return $t;
-    }
 
     public function deleteEntry($id) {
 	if (!is_numeric($id))
@@ -200,6 +157,50 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
+    }
+    
+    private function entrySeasonTypeHandle(MotivationEntry $t) {
+	if ($t == null)
+	    throw new Exceptions\NullPointerException("Argument MotivationTax cannot be null");
+	try {
+	    $season = $this->getMixId($t->getSeason());
+	    $sportGroup = $this->seasonService->getSeason($season, false);
+	    $t->setSeason($sportGroup);
+	    return $t;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    private function entryOwnerTypeHandle(MotivationEntry $p) {
+	try {
+	    $oId = $this->getMixId($p->getOwner());
+	    if ($oId !== null) {
+		$owner = $this->userService->getUser($oId, false);
+		$p->setOwner($owner);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $p;
+    }
+    
+    private function entryEditorTypeHandle(MotivationEntry $t) {
+	if ($t == null)
+	    throw new Exceptions\NullPointerException("Argument MotivationTax cannot be null");
+	try {
+	    $u = $this->getMixId($t->getEditor());
+	    if ($u !== null) {
+		$editor = $this->userService->getUser($u, false);
+		$t->setEditor($editor);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	return $t;
     }
 
 }

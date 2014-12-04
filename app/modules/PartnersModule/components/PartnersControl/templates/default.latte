@@ -1,0 +1,21 @@
+
+{* Partners control default template *}
+
+<div class="partners">
+    <ul>
+    {foreach $partners as $p}
+	<li>
+	    <a href="{$p->getLink()}" title="{$p->getName()}">
+		<img src="{$basePath}/assets/images/{$p->getPicture()}" class="img-responsive"/>
+		<p>{$p->getName()}</p>
+	    </a>
+	</li>
+    {/foreach}
+    </ul>
+</div>
+    
+<script>
+    $(function() {
+	$('.partners').unslider();
+    });
+</script>

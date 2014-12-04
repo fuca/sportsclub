@@ -213,10 +213,10 @@ class PaymentService extends BaseService implements IPaymentService {
 	    }
 	} catch (DBALException $ex) {
 	    $this->logWarning($ex);
-	    throw new DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	    throw new Exceptions\DependencyException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
-	    throw new DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -243,7 +243,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	} catch (\Exception $ex) {
 	    $this->entityManager->rollback();
 	    $this->logError($ex->getMessage());
-	    throw new DataErrorException(
+	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }

@@ -26,6 +26,7 @@
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/jquery/jquery-ui.min.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/jquery/theme.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/ui-timepicker-addon.css">
+	<script src="//unslider.com/unslider.min.js"></script>
 	<!--link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap.min.css"-->
 	<!--link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap-theme.min.css"-->
 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
@@ -76,7 +77,6 @@
 	    
 	    <script n:if="$ajax" src="{$basePath}/js/main.ajax.js"></script>
 	    <script n:if="!$ajax" src="{$basePath}/js/main.js"></script>
-	    
 	{/}
 	<div class="container">
 <!----------------------------------------------------------------------------------->	
@@ -135,32 +135,18 @@
 		    
 <!----------------------------------------------------------------------------------->	
 		    <footer class="footer">
-			<div class="partners row">
-				<div class="col-md-3">
-				    <a href="">
-					<img src="{$basePath}/img/partner_hella.jpg" title="dsadasd" height="125" width="200" />
-					<p>Hella Autotechnik</p></a>
-				</div>
-				<div class="col-md-3"><a href=""><img src="{$basePath}/img/partner_futurpol.jpg" height="125" width="200" />
-					<p>Futurpol</p></a>
-				</div>
-				<div class="col-md-3">
-				    <a href=""><img src="{$basePath}/img/partner_a3sport.jpg" height="125" width="200" /><p>A3 Sport</p></a>
-				</div>
-				<div class="col-md-3">
-				    <a href=""><img src="{$basePath}/img/partner_jersey53.jpg" height="125" width="200" /><p>Jersey53</p>
-				    </a>
-				</div>
-			    </div>
+			<div class="row">
+			{control partners}
+			</div>
 			<div class="row appendix">
 			    <div class="col-md-6">
 				<small class="copyright">&copy; 2014 SportsClub</small>
 			    </div>
 			    <div class="col-md-6">
 				    <nav>
-					<a href="">Homepage</a> &nbsp;&nbsp;{$breadCrumbSeparator}&nbsp;&nbsp; 
-					<a href="">Sitemap</a>  &nbsp;&nbsp;{$breadCrumbSeparator}&nbsp;&nbsp;  
-					<a href="">Contacts</a>
+					<a href="{plink :System:Homepage:default}">{_ systemModule.homepage.homepage}</a> &nbsp;&nbsp;{$breadCrumbSeparator}&nbsp;&nbsp; 
+					<a href="#">{_ systemModule.homepage.sitemap}</a>  &nbsp;&nbsp;{$breadCrumbSeparator}&nbsp;&nbsp;  
+					<a href="{plink :Security:Public:contacts}">{_ systemModule.homepage.contacts}</a>
 				    </nav>
 			    </div>
 			</div>

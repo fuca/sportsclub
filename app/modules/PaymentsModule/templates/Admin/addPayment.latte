@@ -8,11 +8,11 @@
 {/block}
 
 {block #title}
-    {_ paymentsModule.admin.addPayment.heading} {$breadCrumbSeparator} {include #parent}
+    {_ paymentsModule.admin.addPayment.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+        {control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}

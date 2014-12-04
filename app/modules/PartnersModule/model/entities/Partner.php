@@ -23,15 +23,15 @@ use \Doctrine\ORM\Mapping as ORM,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\MotivationEntryType,
     \App\Model\IIdentifiable,
+    \Nette\Utils\DateTime,
     \App\Model\Misc\EntityMapperTrait;
 
 /**
- * ORM persistable entity motivation entry
- *
- * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
+ * Partner entity
  * @ORM\Entity
+ * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class MotivationEntry extends BaseEntity implements IIdentifiable {
+class Partner extends BaseEntity implements IIdentifiable {
     
     use EntityMapperTrait;
 
@@ -41,19 +41,25 @@ class MotivationEntry extends BaseEntity implements IIdentifiable {
      * @ORM\GeneratedValue
      */
     protected $id;
-
-    /**
-     * @ManyToOne(targetEntity="Season", fetch = "LAZY")
-     * @JoinColumn(nullable = false, name = "season_fk")
-     */
-    protected $season;
+    
+    /** @ORM\Column(type="string", nullable = false, unique = true) */
+    protected $name;
+    
+    /** @ORM\Column(type="text", nullable = false) */
+    protected $link;
+    
+    /** @ORM\Column(type="boolean", nullable = false) */
+    protected $active;
+    
+    /** @ORM\Column(type="string", nullable = false) */
+    protected $picture;
     
     /**
-     * @ManyToOne(targetEntity="User", fetch = "LAZY")
-     * @JoinColumn(nullable = false, name = "owner_fk")
+     * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
+     * @JoinColumn(nullable = false, name = "referrer_fk")
      */
-    protected $owner;
-
+    protected $referrer;
+    
     /**
      * @ManyToOne(targetEntity="User", fetch = "LAZY", cascade = {"MERGE"})
      * @JoinColumn(nullable = true, name = "editor_fk")
@@ -63,17 +69,13 @@ class MotivationEntry extends BaseEntity implements IIdentifiable {
     /** @ORM\Column(type="datetime", nullable = false) */
     protected $updated;
     
-    /** @ORM\Column(type="integer", nullable = false) */
-    protected $amount;
-    
-    /** @ORM\Column(type="MotivationEntryType", nullable = false) */
-    protected $type;
-    
-    /** @ORM\Column(type="string", nullable = false) */
-    protected $subject;
+    /** @ORM\Column(type="text", nullable = false) */
+    protected $note;
     
     public function __construct(array $values = []) {
 	parent::__construct();
+	$this->updated = new DateTime();
+	$this->note = "";
 	$this->fromArray($values);
     }
     
@@ -81,68 +83,75 @@ class MotivationEntry extends BaseEntity implements IIdentifiable {
 	return $this->id;
     }
 
-    public function getSeason() {
-	return $this->season;
+    public function getName() {
+	return $this->name;
+    }
+
+    public function getLink() {
+	return $this->link;
+    }
+
+    public function getActive() {
+	return $this->active;
+    }
+
+    public function getPicture() {
+	return $this->picture;
+    }
+
+    public function getReferrer() {
+	return $this->referrer;
     }
 
     public function getEditor() {
 	return $this->editor;
     }
 
+    public function getUpdated() {
+	return $this->updated;
+    }
+
+    public function getNote() {
+	return $this->note;
+    }
+
     public function setId($id) {
 	$this->id = $id;
     }
 
-    public function setSeason($season) {
-	$this->season = $season;
+    public function setName($name) {
+	$this->name = $name;
+    }
+
+    public function setLink($link) {
+	$this->link = $link;
+    }
+
+    public function setActive($active) {
+	$this->active = $active;
+    }
+
+    public function setPicture($picture) {
+	$this->picture = $picture;
+    }
+
+    public function setReferrer($referrer) {
+	$this->referrer = $referrer;
     }
 
     public function setEditor($editor) {
 	$this->editor = $editor;
     }
-    
-    public function getAmount() {
-	return $this->amount;
-    }
-
-    public function getType() {
-	return $this->type;
-    }
-
-    public function setAmount($amount) {
-	$this->amount = $amount;
-    }
-
-    public function setType($type) {
-	$this->type = $type;
-    }
-    
-    public function getUpdated() {
-	return $this->updated;
-    }
 
     public function setUpdated($updated) {
 	$this->updated = $updated;
     }
-    
-    public function getOwner() {
-	return $this->owner;
+
+    public function setNote($note) {
+	$this->note = $note;
     }
 
-    public function setOwner($owner) {
-	$this->owner = $owner;
-    }
-    
-    public function getSubject() {
-	return $this->subject;
-    }
-
-    public function setSubject($subject) {
-	$this->subject = $subject;
-    }
-    
     public function __toString() {
-	return "{$this->getType()} {$this->getAmount()} (#{$this->getId()})";
+	return "{$this->getName()}";
     }
-    
 }

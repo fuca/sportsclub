@@ -27,7 +27,7 @@ use \App\Forms\BaseForm,
     \App\Model\Misc\Enum\MotivationEntryType;
 
 /**
- * Form for creating and updating seasons
+ * Form for creating and updating motivation entry
  *
  * @author Michal Fučík <michal.fuca.fucik@gmail.com>
  * @package sportsclub

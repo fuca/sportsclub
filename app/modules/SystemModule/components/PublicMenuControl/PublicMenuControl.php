@@ -29,7 +29,7 @@ use \App\Model\Misc\Exceptions,
  * PublicMenuControl
  *
  * @author Michal Fučík <michal.fuca.fucik@gmail.com>
- * @package MenuControl
+ * @package sportsclub
  */
 final class PublicMenuControl extends \Nette\Application\UI\Control {
     
@@ -49,12 +49,12 @@ final class PublicMenuControl extends \Nette\Application\UI\Control {
     /**
      * @var \App\SystemModule\Model\Service\ISportGroupService 
      */
-    private $sportGroupService;
+    //private $sportGroupService;
 
     /**
      * @var \App\SystemModule\Model\Service\ISportTypeService
      */
-    private $sportTypeService;
+    //private $sportTypeService;
 
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
@@ -73,8 +73,8 @@ final class PublicMenuControl extends \Nette\Application\UI\Control {
 	    ISportTypeService $typeService) {
 	
 	parent::__construct($parent, $name);
-	$this->sportGroupService    = $groupService;
-	$this->sportTypeService	    = $typeService;
+	//$this->sportGroupService    = $groupService;
+	//$this->sportTypeService	    = $typeService;
 	$this->templatesDir	    = __DIR__ . "/templates/";
 	$this->templateFile	    = $this->templatesDir . "default.latte";
     }

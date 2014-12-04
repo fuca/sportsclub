@@ -1,0 +1,21 @@
+#   
+# Config file for Partners module
+#
+
+services:
+
+	partnersModule.imageService: 
+		class: \Tomaj\Image\ImageService(@imagesBackend, 'partners/:year/:hash', ['200x125'], 70)
+		autowired: no
+		    
+	partnersModule.cacheStorage: 
+		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/partnersModule)
+		autowired: no
+
+	partnersModule.partnerService:
+		class:
+			App\PartnersModule\Model\Service\PartnerService
+		setup:
+			- setCacheStorage(@partnersModule.cacheStorage)
+			- setUserService()
+			- setImageService(@partnersModule.imageService)

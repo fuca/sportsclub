@@ -12,12 +12,14 @@
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+        {control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
     <div class="page-header">
+	<h3>
 	{_ paymentsModule.admin.updatePayment.heading}
+	</h3>
     </div>
 	
     {control updatePaymentForm}

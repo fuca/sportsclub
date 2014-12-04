@@ -153,16 +153,20 @@ class AdminPresenter extends SystemAdminPresenter {
     public function handleDeletePayment($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);
+	$this->doDeletePayment($id);
+	$this->redirect("this");
+    }
+    
+    private function doDeletePayment($id) {
 	try {
 	    $this->getPaymentService()->deletePayment($id);
-	} catch (Exceptions\DataErrorException $ex) {
+	} catch (Exceptions\DependencyException $ex) {
 	    $this->handleDependencyDelete($id, "this", $ex);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataDelete($id, "this", $ex);
 	}
-	$this->redirect("this");
     }
-
+	    
     public function createComponentAddPaymentForm($name) {
 	$form = $this->preparePaymentForm($name);
 	$form->initialize();
@@ -335,5 +339,12 @@ class AdminPresenter extends SystemAdminPresenter {
 	$c->addNode("paymentsModule.admin.paymentAdd", ":Payments:Admin:addPayment");
 	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
 	return $c;	
+    }
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back",":Payments:Admin:default");
+	return $c;
     }
 }

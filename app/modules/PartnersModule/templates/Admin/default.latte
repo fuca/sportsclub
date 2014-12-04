@@ -1,0 +1,23 @@
+
+{* Partners module Admin presenter *}
+
+{layout $layoutsPath.'adminSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+    {include #parent}<li>{_ partnersModule.admin.heading}</li>
+{/block}
+
+{block #title}
+    {_ partnersModule.admin.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control subMenu:contentSubMenu}
+{/block}
+
+{block #adminContent}
+    <div class="page-header">
+	<h3>{_ partnersModule.admin.partner.heading}</h3>
+    </div>
+    {control partnersGrid}
+{/block}

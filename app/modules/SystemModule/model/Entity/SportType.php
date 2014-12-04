@@ -36,7 +36,7 @@ class SportType extends BaseEntity implements IIdentifiable {
     use EntityMapperTrait;
     
     /**
-     * @Id
+     * @ORM\Id
      * @ORM\Column(type="integer")
      * @GeneratedValue
      * @var int

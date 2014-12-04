@@ -155,3 +155,9 @@ notifications:
 	passwordChange.body: "Dear %name% %surname%, this is information message about changing your account password to %pass%"
 	newPassword.subject: "New password generated at %host%"
 	newPassword.body: "Dear %name% %surname%, this is information message about regenerating your system password to %pass%. You can change it to desired password after sign in."
+
+
+homepage:
+	contacts: "Contacts"
+	sitemap: "Sitemap"
+	homepage: "Homepage"

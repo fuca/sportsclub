@@ -26,6 +26,7 @@ use \Nette,
     \Grido\Components\Filters\Filter,
     \App\Model\Misc\Enum\CommentMode,
     \App\SystemModule\Components\CommentControl,
+    \App\SystemModule\Components\PartnersControl,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\SecurityModule\Components\LogInControl,
     \App\SystemModule\Model\Service\ICommentable;
@@ -114,6 +115,12 @@ abstract class BasePresenter extends Presenter {
      * @var \App\SystemModule\Model\Service\Menu\IPublicMenuControlFactory
      */
     public $publicMenuFactory;
+    
+    /**
+     * @inject
+     * @var \App\PartnersModule\Model\Service\IPartnerService
+     */
+    public $partnerService;
     
 //    /**
 //     * @inject
@@ -263,6 +270,16 @@ abstract class BasePresenter extends Presenter {
     protected function createComponentRss() {
 	return new \RssControl();
     }
+    
+    protected function createComponentPartners($name) {
+	$data = [];
+	try {
+	    $data = $this->partnerService->getActivePartners();
+	} catch (Exception $ex) {
+	    $this->handleDataLoad(null, null, $ex);
+	}
+	return new PartnersControl($this, $name, $data);
+    }
 
     // </editor-fold>
     // <editor-fold desc="LOGGING SUPPORT"> 
@@ -325,7 +342,7 @@ abstract class BasePresenter extends Presenter {
     private function handleProblem($id, $redirect, $message, \Exception $exception, $fmType) {
 	$sig = $this->signal;
 	$prefix = $this->getName() . " / " . $this->getAction() . " / " . $sig[1] . "! ";
-	$m = $this->tt($message, !is_numeric($id)? null:1, ["id" => $id]);
+	$m = $this->tt($message, !is_numeric($id)? null:10, ["id" => $id]);
 	$this->flashMessage($m, $fmType);
 	
 	switch($fmType) {

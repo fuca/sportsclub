@@ -1,21 +1,37 @@
 
 {* Partners control default template *}
-
 <div class="partners">
-    <ul>
-    {foreach $partners as $p}
-	<li>
-	    <a href="{$p->getLink()}" title="{$p->getName()}">
-		<img src="{$basePath}/assets/images/{$p->getPicture()}" class="img-responsive"/>
-		<p>{$p->getName()}</p>
-	    </a>
-	</li>
-    {/foreach}
-    </ul>
+	<div class="bxslider">
+
+	    {foreach $partners as $p}
+		<div class="slide" style="display:inline-block;">
+		    <a href="{$p->getLink()}" title="{$p->getName()}">
+			<img src="{$basePath}/assets/images/{$p->getPicture()}" class="img-responsive"/>
+			<p>{$p->getName()}</p>
+		    </a>
+		</div>
+	    {/foreach}
+	</div>
 </div>
-    
+
 <script>
-    $(function() {
-	$('.partners').unslider();
+    $(document).ready(function () {
+	$('.bxslider').bxSlider({
+	    auto: true,
+	    infiniteLoop: true,
+	    randomStart: true,
+	    responsive: true,
+	    pager: false,
+	    controls: false,
+	    autoControls: false,
+	    minSlides: 2,
+	    maxSlides: 5,
+	    slideMargin: 30,
+	    slideWidth: 160,
+	    moveSlides: 1,
+	    mode: 'horizontal',
+	    speed: 1000,
+	    pause: 5000
+	});
     });
 </script>

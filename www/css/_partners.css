@@ -18,25 +18,14 @@ img.partner-thumbnail {
    ===================================*/
    
 div.partners {
-  overflow: auto;
-  position: relative;
-  padding: 20px 15px 20px 15px;
-  margin: 0 auto;
-  background: #46474D url('../img/footer_bg.png') repeat-x left top;
+  
+  padding: 0;
   -webkit-border-radius:  0 0 3px 3px;
   -moz-border-radius:  0 0 3px 3px;
   border-radius: 0 0 3px 3px;
 }
 
-.partners ul li {
-    float: left;
-}
-
-.partners li {
-    list-style: none;
-}
-
-.partners ul li a img {
+.partners .slide a img {
   border: 3px solid #222;
   box-shadow: 2px 2px 10px #222;
   -webkit-border-radius: 3px;
@@ -47,11 +36,11 @@ div.partners {
   opacity: 0.8;
 }
 
-.partners ul li a:hover img {
+.partners .slide a:hover img {
   opacity: 1;
 }
 
-.partners ul li p {
+.partners .slide p {
   color: #ccc;
   font-size: 1.25em;
   margin: 5px 0;
@@ -59,7 +48,7 @@ div.partners {
   text-shadow: 0 -1px 0 #46474D;
 }
 
-.partners ul li a, 
-.partners ul li a:visited {
+.partners .slide a, 
+.partners .slide a:visited {
   text-decoration: none;
 }

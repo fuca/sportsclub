@@ -1,28 +1,33 @@
 
-/* Articles module Public presenter */
+{* System module Search presenter *}
 
-{layout $layoutsPath.'publicSectionBaseTemplate.latte'}
+{layout $layoutsPath."oneColBase.latte"}
 
 {block #breadcrumbs}
-    {include #parent} 
-    <li>{_articlesModule.articles.heading}</li>
-    
+<li>{_ systemModule.searchResults.heading, null, ["keyword"=>$keyword]}</li>
+    {/block}
+    {block #title}
+<li>{_ systemModule.searchResults.title}</li> {$titleCrumbSeparator} {include #parent}
+    {/block}
+
+{block #side}
+right
 {/block}
 
-{block #title}
-    {_articlesModule.articles.heading} 
-    {$titleCrumbSeparator}
-    {include #parent} 
+{block #sideBlock}
 {/block}
 
-{block #subMenu}
-{/}
+{block #mainBlock}
+<div class="page-header">
+    <h4>
+	{_ systemModule.searchResults.articles.heading}
+    </h4>
+</div>
 
-{block #publicContent}
-    {if $data}
-	{foreach $data as $a}
-	    <article class="search-result-box">
-	    <div class="item-image">
+{foreach $articles as $a}
+    <article class="search-result-box">
+
+	<div class="item-image">
 	    <a href="{plink :Articles:Public:ShowArticle $a->getAlias()}">
 		<img src="{$a->getPicture()}" class="img-responsive img-thumbnail" />
 	    </a>
@@ -50,8 +55,5 @@
 	</div>
 	<div class="clearFix"></div>
     </article>
-	{/}
-    {else}
-	{_articlesModule.public.messages.noArticles}
-    {/}
-
+{/foreach}
+{/block}

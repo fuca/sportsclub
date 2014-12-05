@@ -78,3 +78,5 @@ eventType:
 	teambuilding: "Teambuilding"
 	meeting: "Meeting"
 
+user:
+	userEvents.heading: "User events"

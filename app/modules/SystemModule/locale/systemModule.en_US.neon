@@ -161,3 +161,21 @@ homepage:
 	contacts: "Contacts"
 	sitemap: "Sitemap"
 	homepage: "Homepage"
+
+searchForm: 
+	submit: "Find"
+	keywordPlaceholder: "Enter text for search"
+
+
+searchResults:
+	heading: "Search results for '%keyword%'"
+	title: "Search results"
+	articles.heading: "Results within Articles"
+
+
+appealControl:
+	profileFillRequired: "Please fill in your web profile"
+	profileLink.title: "Web profile"
+
+	passwordChangeRequired: "Please change your password due to security reasons"
+	pwChangeLink.title: "Password change"

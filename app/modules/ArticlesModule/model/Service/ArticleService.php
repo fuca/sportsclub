@@ -142,6 +142,7 @@ class ArticleService extends BaseService implements IArticleService, IRssModel {
 	    
 	    $a->setAuthor($a->getEditor());
 	    $a->setUpdated(new DateTime());
+	    $a->setCreated(new DateTime());
 	    $this->sportGroupsTypeHandle($a);
 	    $a->setAlias(Strings::webalize($a->getTitle()));
 	    
@@ -441,6 +442,22 @@ class ArticleService extends BaseService implements IArticleService, IRssModel {
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function fulltextSearch($keyword) {
+	try {
+	    $qb = $this->articleDao->createQueryBuilder("a");
+	    $qb->where($qb->expr()->like('a.title', ':keyword'))
+		    ->orWhere($qb->expr()->like('a.content', ':keyword'))
+		    ->setParameter("keyword", '%' . $keyword . '%');
+		    
+	    $res = $qb->getQuery()->getResult();
+	    return $res;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
     

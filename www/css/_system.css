@@ -87,3 +87,38 @@
 .page-overview-wrapper a.list-group-item p {
     color: #555;
 }
+
+
+/*
+    =====================
+	SEARCH RESULT
+    =====================
+*/
+
+.search-result-box {
+    background-color: #F3F2FA; 
+    margin-top: 2%;
+}
+
+.search-result-box span {
+
+}
+
+.search-result-box .item-body {
+    
+}
+
+.search-result-box .item-info {
+    margin-top: 1%;
+}
+
+.search-result-box .item-title {
+    padding-top: 1%;
+}
+
+.search-result-box .item-image img {
+    margin-right: 1%;
+    width: 150px;
+    height: 110px;
+    float: left;
+}

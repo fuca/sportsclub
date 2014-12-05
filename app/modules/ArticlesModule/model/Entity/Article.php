@@ -35,6 +35,7 @@ use \Doctrine\ORM\Mapping as ORM,
  * ORM persistable entity representing real article
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
+ * 
  * @ORM\Entity
  */
 class Article extends BaseEntity implements IIdentifiable, ICommentable {

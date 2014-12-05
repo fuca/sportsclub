@@ -97,14 +97,14 @@
 			    {control loginControl}
 			    <div class="row">
 				<div class="search">
-				    <form class="form-inline" role="form">
+				    {form searchForm class=>form-inline}
 					<div class="form-group">
 					    <div class="input-group">
-						<input type="text" class="textfield" class="col-sm-6 form-control" placeholder="Enter text for search"/>
-						<input type="submit" class="button" value="Find" class="col-sm-6" />
+						{input keyword, class=>textfield}
+						{input submit class=>button}
 					    </div>
 					</div>
-				    </form> 
+				    {/form}
 				</div>
 			    </div>
 			</div>

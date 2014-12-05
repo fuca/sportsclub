@@ -31,6 +31,7 @@ use \Doctrine\ORM\Mapping as ORM,
  * ORM persistable entity representing real position in club
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
+ * 
  * @ORM\Entity
  * @ORM\Table(name="Position", uniqueConstraints={@UniqueConstraint(name="unique_position", columns={"owner_fk", "group_fk", "role_fk"})})
  */

@@ -25,11 +25,14 @@ use \Nette,
     \Nette\Application\UI\Presenter,
     \Grido\Components\Filters\Filter,
     \App\Model\Misc\Enum\CommentMode,
+    \App\Model\Misc\Enum\FormMode,
+    \Nette\Application\UI\Form,
     \App\SystemModule\Components\CommentControl,
     \App\SystemModule\Components\PartnersControl,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\SecurityModule\Components\LogInControl,
-    \App\SystemModule\Model\Service\ICommentable;
+    \App\SystemModule\Model\Service\ICommentable,
+    \App\SystemModule\Components\AppealControl;
 
 /**
  * Base presenter for all application presenters.
@@ -220,6 +223,18 @@ abstract class BasePresenter extends Presenter {
 	    $this->redrawControl("flash");
 	}
     }
+    
+        
+    public function searchFormSuccess(Form $form) {
+	$values = $form->getValues();
+	switch ($form->getMode()) {
+	    case FormMode::CREATE_MODE:
+		$this->redirect(":System:Search:default", $values->keyword);
+		break;
+	    case FormMode::UPDATE_MODE:
+		break;
+	}
+    }
 
     // <editor-fold desc="COMMON COMPONENT FACTORIES">
 
@@ -279,6 +294,17 @@ abstract class BasePresenter extends Presenter {
 	    $this->handleDataLoad(null, null, $ex);
 	}
 	return new PartnersControl($this, $name, $data);
+    }
+    
+    protected function createComponentSearchForm($name) {
+	$c = new \App\SystemModule\Forms\SearchForm($this, $name, $this->getTranslator());
+	$c->initialize();
+	return $c;
+    }
+    
+    protected function createComponentAppealControl($name) {
+	$c = new AppealControl($this, $name, $this->getUser()->getIdentity());
+	return $c;
     }
 
     // </editor-fold>

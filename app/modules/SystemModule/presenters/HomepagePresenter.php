@@ -21,6 +21,8 @@ use \App\SystemModule\Presenters\BasePresenter,
     \App\Model\Entities\SportGroup,
     \App\Model\Entities\StaticPage,
     \App\Model\Misc\Exceptions,
+    \Nette\Application\UI\Form,
+    \App\Model\Misc\Enum\FormMode,
     \App\SystemModule\Components\ContactControl,
     \App\ArticlesModule\Model\Service\IArticleService;
 
@@ -169,18 +171,5 @@ class HomepagePresenter extends SystemPublicPresenter {
 	}
 	return $c;
     }
-    
-    public function actionContacts() {
-	
-	// jak dostat do controlu ICO a DIC?
-	// 
-	// udelat contact page
-	// 
-	// vypsat kontakty u skupin z positions (udelat menu skupin)
-	// asi mit na vyber kterou skupinu otevrit
-	// a sekretare s opet obsahem quick contactu - tohle bude na kazde strance prezentovane jako kontakt na klub
-	// KONTAKTY UZ MA NACRTLE TADY AKCE V PRESENTERU
-	// my to jen presuneme do auth public
-    }
-
+   
 }

@@ -128,6 +128,7 @@ class UserPresenter extends SystemUserPresenter {
 	}
 	try {
 	    $hash = $this->userService->generateNewPassword($values->new1);
+	    $user->setPasswordChangeRequired(false);
 	    $this->userService->updateUser($user->setPassword($hash));
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataSave($user->getId(), "default", $ex);

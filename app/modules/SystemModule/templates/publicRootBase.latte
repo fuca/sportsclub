@@ -12,14 +12,6 @@
     </div>
 	
     <div class="col-md-8 col-lg-9">
-	    {*if $webProfilePrompt != "" || $passwordResetPrompt != ""}
-		<div class="prompt">
-		    <ul>
-			{if $passwordResetPrompt != ""}<li>{$passwordResetPrompt} (<a href="{plink User:changePassword}">Změna hesla</a>)</li>{/if}
-			{if $webProfilePrompt != ""}<li>{$webProfilePrompt} (<a href="{plink User:editProfile}">Editace profilu</a>)</li>{/if}
-		    </ul>
-		</div>
-	    {/if*}
 
 	    {snippet flash}
 		<div n:foreach="$flashes as $flash" class="{$flash->type}">

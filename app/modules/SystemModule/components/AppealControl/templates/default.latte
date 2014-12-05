@@ -1,0 +1,19 @@
+
+{* Appeal control *}
+
+
+{if $changePassword}
+    <div class="alert alert-warning" role="alert">
+	<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    {_ systemModule.appealControl.passwordChangeRequired}&nbsp;&raquo;&nbsp;<a href="{plink :Users:User:data}">{_ systemModule.appealControl.pwChangeLink.title}</a>
+    </div>
+{/if}
+
+{if $fillProfile}
+    <div class="alert alert-info" role="alert">
+	<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    {_ systemModule.appealControl.profileFillRequired}&nbsp;&raquo;&nbsp;<a href="{plink :Users:User:profile}">{_ systemModule.appealControl.profileLink.title}</a>
+    </div>
+{/if}

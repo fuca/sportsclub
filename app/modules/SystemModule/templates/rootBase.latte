@@ -13,21 +13,7 @@
     </div>
 	
     <div class="col-md-8 col-lg-9">
-	    {*if $webProfilePrompt != "" || $passwordResetPrompt != ""}
-		<div class="prompt">
-		    <ul>
-			{if $passwordResetPrompt != ""}<li>{$passwordResetPrompt} (<a href="{plink User:changePassword}">Změna hesla</a>)</li>{/if}
-			{if $webProfilePrompt != ""}<li>{$webProfilePrompt} (<a href="{plink User:editProfile}">Editace profilu</a>)</li>{/if}
-		    </ul>
-		</div>
-	    {/if*}
-
-	    {snippet flash}
-		<div n:foreach="$flashes as $flash" class="{$flash->type}">
-		    <button type="button" class="close" data-dismiss="alert">×</button>
-		    {$flash->message}
-		</div>
-	    {/snippet}
+	    
 	    <ol class="breadcrumb">
 		<li class="breadcrumb-top">
 		    <a href="{plink :System:Homepage:default}" class="home">&nbsp;</a> 
@@ -35,6 +21,16 @@
 		<li><a href="{plink :System:Default:default}">IS</a></li>
 		{include #breadcrumbs}
 	    </ol>
+	    
+	    {snippet flash}
+		<div n:foreach="$flashes as $flash" class="{$flash->type}">
+		    <button type="button" class="close" data-dismiss="alert">×</button>
+		    {$flash->message}
+		</div>
+	    {/snippet}
+	    
+	    {control appealControl}
+	    
 	    {include #mainBlock}
     </div>
 

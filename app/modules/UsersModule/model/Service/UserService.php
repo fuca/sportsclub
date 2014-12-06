@@ -32,7 +32,6 @@ use \App\UsersModule\Model\Service\IUserService,
     \Grido\DataSources\Doctrine,
     \App\Model\Misc\Enum\WebProfileStatus,
     \App\Model\Entities\User,
-    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities,
     \App\Model\Entities\Address,
     \App\Model\Entities\Contact,
     \App\Model\Entities\WebProfile,
@@ -430,7 +429,7 @@ class UserService extends BaseService implements IUserService {
 	
     }
 
-    public function permitWebProfile($id, Entities\User $u) {
+    public function permitWebProfile($id, User $u) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
 	try {
@@ -449,7 +448,7 @@ class UserService extends BaseService implements IUserService {
 	}
     }
 
-    public function denyWebProfile($id, Entities\User $u) {
+    public function denyWebProfile($id, User $u) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given", 1);
 	try {

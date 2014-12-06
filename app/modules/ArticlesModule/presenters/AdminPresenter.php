@@ -25,12 +25,14 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\ArticlesModule\Forms\ArticleForm,
     \App\Model\Misc\Enum\ArticleStatus,
     \App\Model\Misc\Enum\CommentMode,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \Nette\Utils\ArrayHash,
     \Nette\Application\UI\Form,
     \Grido\Grid;
 
 /**
  * ArticleAdminPresenter
+ * @Secured(resource="ArticlesAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SystemAdminPresenter {
@@ -60,6 +62,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	// form render
     }
     
+    /**
+     * @Secured(resource="ArticlesAdmin-Default")
+     */
     public function actionUpdateArticle($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {

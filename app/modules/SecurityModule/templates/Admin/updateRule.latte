@@ -8,17 +8,44 @@
 {/block}
 
 {block #title}
-    {_ securityModule.admin.updateRule.heading} | {include #parent}
+    {_ securityModule.admin.updateRule.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
     {control backSubMenu:contentSubMenu}
 {/block}
 
-{block scripts}
+{block #scripts}
     {include parent}
-{/}
+{/block}
 
 {block #adminContent}
-    {control updateRuleForm}
-{/}
+    <div class="row">
+	<div class="col-sm-3"></div>
+	<div class="col-sm-6">
+	{form updateRuleForm}
+	    {control $form errors}
+	    <div class="form-group">
+		{label resource /} 
+		{input resource class=>form-control}
+	    </div>
+	    <div class="form-group">
+		{label privilege /} 
+		{input privilege class=>form-control}
+	    </div>
+	    <div class="form-group">
+		{label role /} 
+		{input role class=>form-control}
+	    </div>
+	    <div class="form-group">
+		{label mode /}
+		{input mode class=>form-control}
+	    </div>
+	    <div class="form-group">
+	    {input submitButton class=>"btn btn-primary btn-block"}
+	    </div>
+	{/form}
+	</div>
+	<div class="col-sm-3"></div>
+    </div>
+{/block}

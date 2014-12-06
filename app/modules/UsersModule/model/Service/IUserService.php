@@ -18,8 +18,7 @@
 
 namespace App\UsersModule\Model\Service;
 
-use \App\Model\Entities\User,
-    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities;
+use \App\Model\Entities\User;
 
 /**
  * Interface for User service
@@ -69,9 +68,9 @@ interface IUserService {
     
     function toggleUser($id);
     
-    function permitWebProfile($id, Entities\User $user);
+    function permitWebProfile($id, User $user);
     
-    function denyWebProfile($id, Entities\User $user);
+    function denyWebProfile($id, User $user);
     
     function generateNewPassword($word = null);
     

@@ -84,6 +84,7 @@ roleForm:
 	parents: "Parent roles"
 	note: "Note"
 	newRoleGroup: "New role"
+	editRoleGroup: "Role update"
 
 navigation:
 	back: "Back"

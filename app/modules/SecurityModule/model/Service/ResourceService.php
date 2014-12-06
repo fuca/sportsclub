@@ -86,6 +86,10 @@ class ResourceService extends BaseService implements IResourceService {
 	return $data;
     }
     
+    /**
+     * Returns flattened object tree
+     * @return array
+     */
     public function getSelectResources() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
@@ -98,6 +102,11 @@ class ResourceService extends BaseService implements IResourceService {
 	return $data;
     }
 
+    /**
+     * Returns resource by given id
+     * @param string $id
+     * @return \App\SecurityModule\Model\Resource
+     */
     public function getResource($id) {
 	$cache = $this->getEntityCache();
 	$data = $cache->load($id);
@@ -110,6 +119,10 @@ class ResourceService extends BaseService implements IResourceService {
 	return $data;
     }
     
+    /**
+     * Creates tree of Secured annotated resources
+     * @return array of \App\SecurityModule\Model\Resource
+     */
     private function buildTree() {
 	$pt = $this->presenterTree;
 	$data = [];
@@ -139,6 +152,12 @@ class ResourceService extends BaseService implements IResourceService {
 	return $data;
     }
 
+    /**
+     * Recursively search thru resource tree for occurence of resource with given id
+     * @param string $id
+     * @param array $tree of resources
+     * @return \App\SecurityModule\Model\Resource
+     */
     private function deepSearch($id, $tree) {
 	$res = null;
 	foreach ($tree as $r) {
@@ -152,6 +171,11 @@ class ResourceService extends BaseService implements IResourceService {
 	return $res;
     }
 
+    /**
+     * Recursively transform object tree into array tree
+     * @param type $tree
+     * @return type
+     */
     private function deepFlatten($tree) {
 	$selList = [];
 	foreach ($tree as $r) {

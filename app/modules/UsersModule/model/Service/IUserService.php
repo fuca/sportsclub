@@ -74,6 +74,8 @@ interface IUserService {
     
     function generateNewPassword($word = null);
     
+    function updateLastLogin(User $u);
+    
     /**
      * Returns collection of Users according to given SportGroup
      */

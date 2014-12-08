@@ -28,11 +28,12 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Entities\MotivationEntry,
     \App\Model\Misc\Enum\MotivationEntryType,
     \App\MotivationModule\Forms\MotivationEntryForm,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\MotivationModule\Forms\MotivationTaxForm;
 
 /**
  * MotivationAdminPresenter
- *
+ * @Secured(resource="MotivationAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 final class AdminPresenter extends SystemAdminPresenter {
@@ -71,17 +72,26 @@ final class AdminPresenter extends SystemAdminPresenter {
     private $selectSeasons;
     private $selectUsers;
     
-    
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() {
 	
     }
     
     // <editor-fold desc="Motivation tax management">
     
+    
+    /**
+     * @Secured(resource="createTax")
+     */
     public function actionCreateTax() {
 	// render form
     }
     
+    /**
+     * @Secured(resource="updateTax")
+     */
     public function actionUpdateTax($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
@@ -117,6 +127,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * @Secured(resource="deleteTax")
+     */
     public function handleDeleteTax($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteTax($id);
@@ -255,10 +268,16 @@ final class AdminPresenter extends SystemAdminPresenter {
     
     // <editor-fold desc="Motivation entry management">
     
+    /**
+     * @Secured(resource="createMotivationEntry")
+     */
     public function actionCreateEntry() {
 	// render form
     }
     
+    /**
+     * @Secured(resource="updateMotivationEntry")
+     */
     public function actionUpdateEntry($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
@@ -297,6 +316,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * @Secured(resource="deleteMotivationEntry")
+     */
     public function handleDeleteEntry($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteEntry($id);

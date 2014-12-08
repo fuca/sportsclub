@@ -4,12 +4,14 @@ namespace App\SecurityModule\Config;
 
 use \App\SystemModule\Model\Service\ISportGroupService,
     \App\SecurityModule\Model\Service\IPositionService,
+    \App\Model\Service\IAclRuleService,
     \App\Model\Service\IRoleService,
     \App\UsersModule\Model\Service\IUserService,
     \App\Model\Misc\Exceptions,
     \Kdyby\Monolog\Logger,
     \App\Model\Entities\Position,
-    \App\Model\Entities\Role;
+    \App\Model\Entities\Role,
+    \App\Model\Entities\AclRule;
    
 
 /**
@@ -41,6 +43,11 @@ final class Initializer {
     private $roleService;
     
     /**
+     * @var \App\Model\Service\IAclRuleService
+     */
+    private $ruleService;
+    
+    /**
      * @var \Kdyby\Monolog\Logger
      */
     private $logger;
@@ -61,12 +68,13 @@ final class Initializer {
     
     public function __construct(ISportGroupService $groupService, 
 	    IPositionService $positionService, IUserService $userService, 
-	    IRoleService $roleService, Logger $logger) {
+	    IRoleService $roleService, IAclRuleService $ruleService, Logger $logger) {
 	
 	$this->groupService	= $groupService;
 	$this->positionService	= $positionService;
 	$this->userService	= $userService;
 	$this->roleService	= $roleService;
+	$this->ruleService	= $ruleService;
 	$this->logger		= $logger;
     }
    
@@ -118,7 +126,7 @@ final class Initializer {
 	try {
 	    $pos = $this->positionService->getUniquePosition($user, $group, $role);
 	} catch (Exceptions\NoResultException $ex) {
-	    $this->logger->addDebug($ex); 
+	    $this->logger->addDebug($ex->getMessage()); 
 	}
 	if ($pos === null) {
 	    $this->logger->addInfo("Security module initializer - Position - no position with user $user, role $role and group $group found. New one is gonna be created.");
@@ -129,6 +137,27 @@ final class Initializer {
 	    $pos->setName("Webmaster");
 	    $pos->setComment("System created");
 	    $this->positionService->createPosition($pos);
+	}
+	
+    }
+    
+    public function rulesInit() {
+	$role = $this->roleService->getRoleName("admin");
+	$rule = null;
+	try {
+	    $rule = $this->ruleService->getUniqueRule($role);
+	} catch (Exceptions\NoResultException $ex) {
+	    $this->logger->addDebug($ex->getMessage());
+	}
+	
+	if ($rule === null) {
+	    $this->logger->addInfo("Security module initializer - AclRules - no godlike Rule for role $role found. New one is gonna be created.");
+	    $rule = new AclRule();
+	    $rule->setRole($role);
+	    $rule->setResource(null);
+	    $rule->setPrivilege(null);
+	    $rule->setMode(\App\Model\Misc\Enum\AclMode::PERMIT);
+	    $this->ruleService->createRule($rule);
 	}
 	
     }

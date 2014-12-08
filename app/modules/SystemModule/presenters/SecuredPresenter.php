@@ -17,7 +17,9 @@
  */
 
 namespace App\SystemModule\Presenters;
-use \App\SystemModule\Presenters\BasePresenter;
+
+use \App\SystemModule\Presenters\BasePresenter,
+    \Nette\Security\User;
 
 /**
  * SecuredPresenter
@@ -30,7 +32,7 @@ abstract class SecuredPresenter extends BasePresenter {
 	parent::startup();
 	$user = $this->getUser();
 	if (!$user->isLoggedIn()) {
-	    if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
+	    if ($user->getLogoutReason() === User::INACTIVITY) {
 		$this->flashMessage($this->tt("securityModule.loginControl.messages.outCosInactive"), self::FM_WARNING);
 	    }
 

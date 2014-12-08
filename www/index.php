@@ -6,14 +6,14 @@
 function dd() {
     dump(func_get_args());
 }
-//
+
 //define('WWW_DIR', dirname(__FILE__));
 //
 //// absolute filesystem path to the cache storage
 //define('CACHE_DIR', WWW_DIR . '/../temp/cache');
 //
 //// absolute filesystem path to the application root
-//define('APP_DIR', WWW_DIR . '/../app');
+//define('TEMP_DIR', dirname(__FILE__) . '/../temp'); // due to error from presenterTree
 //
 //// absolute filesystem path to the application root
 //define('LAYOUTS_DIR', APP_DIR . '/../templates');

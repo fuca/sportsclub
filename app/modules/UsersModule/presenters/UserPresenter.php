@@ -21,6 +21,7 @@ namespace App\UsersModule\Presenters;
 use \App\SystemModule\Presenters\SystemUserPresenter,
     \App\UsersModule\Forms\PersonalWebProfileForm,
     \App\UsersModule\Model\Misc\Utils\UserEntityManageHelper,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\UsersModule\Forms\PersonalUserForm,
     \App\Model\Misc\Enum\FormMode,
     \App\Model\Entities\WebProfile,
@@ -35,7 +36,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
 
 /**
  * Presenter for maintain User section of Users module
- *
+ * @Secured(resource="UsersUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class UserPresenter extends SystemUserPresenter {
@@ -51,7 +52,14 @@ class UserPresenter extends SystemUserPresenter {
      * @var \App\SystemModule\Model\Service\INotificationService
      */
     public $notifService;  
-
+    
+    /**
+     * @Secured(resource="default")
+     */
+    public function actionDefault() {
+	
+    }
+    
     public function actionData() {
 	$uUser = null;
 	try {

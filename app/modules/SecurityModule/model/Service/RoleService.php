@@ -138,7 +138,10 @@ class RoleService extends BaseService implements IRoleService {
 	$data = $cache->load(self::ENTITY_COLLECTION);
 	try {
 	    if ($data == null) {
-		$data = $this->roleDao->findAll();
+		$data = $this->roleDao->createQueryBuilder("r")
+			->orderBy("r.added", "ASC")
+			->getQuery()
+			->getResult();
 		$opt = [
 		    Cache::TAGS => [self::ENTITY_COLLECTION],
 		    Cache::SLIDING => true];
@@ -162,7 +165,10 @@ class RoleService extends BaseService implements IRoleService {
 	    $cache = $this->getEntityCache();
 	    $data = $cache->load($id);
 	    if ($data === null) {
-		$data = $this->positionDao->findBy(array("owner" => $user->getId()));
+		$coll = $this->positionDao->findBy(array("owner" => $user->getId()));
+		foreach ($coll as $p) {
+		    $data[] = $p->getRole()->getName();
+		}
 		$opts = [Cache::TAGS => [self::ENTITY_COLLECTION, $id],
 			Cache::SLIDING => true];
 		$cache->save($id, $data, $opts);
@@ -229,6 +235,7 @@ class RoleService extends BaseService implements IRoleService {
 	
 		$dbRole->fromArray($r->toArray());
 		$dbRole->setParents($this->roleParentsCollSetup($r));
+		$dbRole->setAdded(new \Nette\Utils\DateTime());
 		$this->entityManager->merge($dbRole);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($dbRole);

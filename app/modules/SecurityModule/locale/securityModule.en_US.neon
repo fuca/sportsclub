@@ -55,6 +55,14 @@ admin.grid:
 	rlyDeleteRule: "Do you really want to delete rule '%pos%'"
 	rlyDeleteRole: "Do you really want to delete role '%pos%'"
 
+	deny: "Deny"
+	permit: "Permit"
+
+	role: "Role"
+	resource: "Resource"
+	privilege: "Action"
+	mode: "Mode"
+
 aclForm:
 	roleSelect: "Select role .."
 	actionSelect: "Select action .."
@@ -104,3 +112,8 @@ contactControl:
 	quick.heading: "Quick contact"
 	club.heading: "Club contact"
 	contactPerson.label: "Contact person"
+
+
+authorization:
+	noPrivilegesAction: "You are not permitted to perform this action!"
+	noPrivilegesSection: "You are not permitted to access this section!"

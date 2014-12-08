@@ -19,6 +19,7 @@
 namespace App\Model\Service;
 
 use \App\Model\Entities\AclRule,
+    \App\Model\Entities\Role,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\Model\Misc\Exceptions,
     \Nette\DateTime,
@@ -84,7 +85,6 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	    $this->roleTypeHandle($arule);
 	    $this->aclRuleDao->save($arule);
 	    $this->invalidateEntityCache($arule);
-	    $this->onCreate($arule);
 	    
 	} catch (DuplicateEntryException $e) {
 	    $this->logWarning($e);
@@ -93,6 +93,7 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
+	$this->onCreate($arule);
     }
     
     private function roleTypeHandle(AclRule $e) {
@@ -148,6 +149,30 @@ class AclRuleService extends BaseService implements IAclRuleService {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
 	return $data;
+    }
+    
+    public function getUniqueRule(Role $r, $resource = null, $priv = null) {
+	try {
+	    $qb = $this->aclRuleDao->createQueryBuilder("r")
+		    ->where("r.role = :role")
+		    ->setParameter("role", $r->getId());
+	    if ($resource === null)
+		$qb->andWhere("r.resource IS NULL");
+	    else 
+		$qb->andWhere("r.resource = :res")
+		    ->setParameter("res", $resource);
+	    
+	    if ($priv === null)
+		    $qb->andWhere("r.privilege IS NULL");
+	    else 
+		    $qb->andWhere("r.privilege = :priv")
+		    ->setParameter("priv", $priv);
+		    
+	    return $qb->getQuery()->getSingleResult();
+	} catch (\Doctrine\ORM\NoResultException $e) {
+	    $this->logError($e);
+	    throw new Exceptions\NoResultException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
     }
 
     public function deleteRule($id) {

@@ -50,7 +50,7 @@ class Position extends BaseEntity {
     protected $name;
     
     /**
-     * @ManyToOne(targetEntity="User")
+     * @ManyToOne(targetEntity="User", cascade={"merge"})
      * @JoinColumn(nullable = false, name = "owner_fk")
      */
     protected $owner;

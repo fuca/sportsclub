@@ -23,6 +23,7 @@ use \App\SystemModule\Presenters\SystemClubPresenter,
     \App\EventsModule\Model\Service\IEventService,
     \App\Model\Misc\Enum\EventType,
     \App\EventsModule\Forms\EventParticipationForm,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Entities\EventParticipation,
     \App\Model\Misc\Enum\EventParticipationType,
     \App\Model\Entities\EventComment,
@@ -33,7 +34,7 @@ use \App\SystemModule\Presenters\SystemClubPresenter,
 
 /**
  * Protected Event Presenter
- *
+ * @Secured(resource="EventsClub")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class ClubPresenter extends SystemClubPresenter {
@@ -64,7 +65,9 @@ class ClubPresenter extends SystemClubPresenter {
 	return $template;
     }
     
-    
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault($abbr = self::ROOT_GROUP) {	
 	$data = null;
 	try {
@@ -81,6 +84,9 @@ class ClubPresenter extends SystemClubPresenter {
 	$this->template->commentable = true;
     }
     
+    /**
+     * @Secured(resource="showEvent")
+     */
     public function actionShowEvent($id) {
 	$event = null;
 	try {
@@ -166,6 +172,10 @@ class ClubPresenter extends SystemClubPresenter {
 	return $cal;
     }
     
+    
+    /**
+     * @Secured(resource="showEventDay")
+     */
     public function actionShowEventDay($year, $month, $day) {
 	try {
 	    $data = $this->eventService->getForDate($year, $month, $day);
@@ -215,6 +225,9 @@ class ClubPresenter extends SystemClubPresenter {
 	}
     } 
     
+    /**
+     * @Secured(resource="cancelParticipation")
+     */
     public function handleCancelParticipation() {
 	try {
 	    $this->eventService

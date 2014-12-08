@@ -32,7 +32,7 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
 
 /**
  * AdminSectionCommunicationPresenter
- * @Secured(resource="ForumAdmin")
+ * @Secured(resource="CommunicationAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SystemAdminPresenter {
@@ -55,14 +55,23 @@ class AdminPresenter extends SystemAdminPresenter {
      */
     public $sportGroupService;
     
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() { // grid
 	
     }
     
+    /**
+     * @Secured(resource="addForum")
+     */
     public function actionAddForum() { // form
 	
     }
     
+    /**
+     * @Secured(resource="updateForum")
+     */
     public function actionUpdateForum($id) {
 	if (!is_numeric($id)) $this->handleBadArgument($id);
 	try {
@@ -101,6 +110,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * @Secured(resource="deleteForum")
+     */
     public function handleDeleteForum($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteForum($id);
@@ -237,6 +249,16 @@ class AdminPresenter extends SystemAdminPresenter {
     
     // <editor-fold desc="FORUM THREAD ADMINISTRATION">
     
+    /**
+     * @Secured(resource="addForumThread")
+     */
+    public function actionAddForumThread() {
+	
+    }
+    
+    /**
+     * @Secured(resource="updateForumThread")
+     */
     public function actionUpdateForumThread($id) {
 	if (!is_numeric($id)) $this->handleBadArgument($id);
 	try {
@@ -272,6 +294,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * @Secured(resource="deleteForumThread")
+     */
     public function handleDeleteForumThread($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteForumThread($id);

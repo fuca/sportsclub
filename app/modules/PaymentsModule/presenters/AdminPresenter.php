@@ -91,7 +91,17 @@ class AdminPresenter extends SystemAdminPresenter {
     public function getSportGroupsService() {
 	return $this->sportGroupsService;
     }
+    
+    /**
+     * @Secured(resource="default")
+     */
+    public function actionDefault() {
+	// render grid
+    }
 
+    /**
+     * @Secured(resource="createPayment")
+     */
     public function actionCreatePayment() {
 	// render form
     }
@@ -125,6 +135,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updatePayment")
+     */
     public function actionUpdatePayment($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);
@@ -150,6 +163,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deletePayment")
+     */
     public function handleDeletePayment($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);

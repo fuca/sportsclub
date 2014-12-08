@@ -17,12 +17,15 @@
  */
 
 namespace App\MotivationModule\Presenters;
-use \App\SystemModule\Presenters\SystemUserPresenter,
- Grido\Grid, App\Model\Misc\Enum\MotivationEntryType;
+use	
+    \App\SystemModule\Presenters\SystemUserPresenter,
+    \Grido\Grid,    
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
+    \App\Model\Misc\Enum\MotivationEntryType;
 
 /**
  * MotivationProtectedPresenter
- *
+ * @Secured(resource="MotivationUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 final class ProtectedPresenter extends SystemUserPresenter {
@@ -39,6 +42,10 @@ final class ProtectedPresenter extends SystemUserPresenter {
      */
     public $entryService;
     
+    
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() {
 	// grid render
     }

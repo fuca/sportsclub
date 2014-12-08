@@ -136,7 +136,15 @@ class ResourceService extends BaseService implements IResourceService {
 		foreach ($p->getActions() as $key => $a) {
 		    $actionName = substr(preg_replace("/:/", '\\', $key), 1);
 		    
-		    $refMeth = new Method($p->getClass(), "action" . ucfirst($a));
+		    try {
+			$refMeth = new Method($p->getClass(), "action" . ucfirst($a));
+		    } catch (\ReflectionException $ex) {
+			try {
+			    $refMeth = new Method($p->getClass(), "handle" . ucfirst($a));    
+			} catch (\ReflectionException $ex) {
+			    continue;
+			}
+		    }
 		    
 		    $secAnnMeth = $this->getAnnotationsReader()->getMethodAnnotation($refMeth, self::SECURED_AN_NAME);
 		    if ($secAnnMeth) {
@@ -172,17 +180,18 @@ class ResourceService extends BaseService implements IResourceService {
     }
 
     /**
-     * Recursively transform object tree into array tree
+     * Recursively transform object tree into array tree.
+     * Used for filling select lists.
      * @param type $tree
-     * @return type
+     * @return array (one level array of all resources found within Secured annotations)
      */
     private function deepFlatten($tree) {
 	$selList = [];
 	foreach ($tree as $r) {
 	    $selList[$r->getId()] = $r->getLabel();
-	    $subRs = $r->getSubResources();
-	    if (!empty($subRs))
-		$selList = $selList + $this->deepFlatten($subRs);
+//	    $subRs = $r->getSubResources(); // we need only presenters now
+//	    if (!empty($subRs))
+//		$selList = $selList + $this->deepFlatten($subRs);
 	}
 	return $selList;
     }

@@ -27,6 +27,7 @@ use \Doctrine\ORM\Mapping as ORM,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\AclMode,
     \App\Model\Misc\EntityMapperTrait,
+    \App\Model\IIdentifiable,
     \Doctrine\ORM\PersistentCollection;
 
 /**
@@ -36,9 +37,9 @@ use \Doctrine\ORM\Mapping as ORM,
  * @ORM\Entity
  * @ORM\Table(name="AclRule", 
  * uniqueConstraints={
- *  @UniqueConstraint(name="unique_aclRule", columns={"role_fk", "resource"})})
+ *  @UniqueConstraint(name="unique_aclRule", columns={"role_fk", "resource", "privilege"})})
  */
-class AclRule extends BaseEntity {
+class AclRule extends BaseEntity implements IIdentifiable {
     
     use EntityMapperTrait;
     
@@ -63,7 +64,7 @@ class AclRule extends BaseEntity {
     /**
      * @ORM\Column(type="string", nullable = true)
      */
-    protected $privilege; // tohle by mela byt kolekce nebo sikovny string
+    protected $privilege;
 
     /**
      * @ORM\Column(type="AclMode")
@@ -107,7 +108,7 @@ class AclRule extends BaseEntity {
 	$this->resource = $resource;
     }
 
-    public function setPrivileges($privilege) {
+    public function setPrivilege($privilege) {
 	$this->privilege = $privilege;
     }
 
@@ -127,13 +128,10 @@ class AclRule extends BaseEntity {
 	return $this->getResource() != null;
     }
     
-    public function hasPrivileges() {
-	$ps =$this->getPrivileges();
-	if ($ps instanceof PersistentCollection) {
-	    return !$ps->isEMpty();
-	} else {
-	    return !empty($ps);
-	}
+    public function hasPrivilege() {
+	if (!empty($this->getPrivilege()))
+		return true;
+	return false;
     }
     
     public function __toString() {

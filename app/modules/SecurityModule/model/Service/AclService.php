@@ -68,7 +68,7 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
     }
     
     public function invalidateCache() {
-	$this->invalidateEntityCache();
+	$this->invalidateEntityCache(null, [self::ENTITY_ID]);
     }
     
     private function setRoles(Permission $p) {
@@ -92,9 +92,7 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
 	try {
 	$resources = $this->resourcesService->getResources();
 	} catch (Exceptions\DataErrorException $e) {
-	    dd($e);
-	    // TODO co s tím? LOG a nic víc? jak upozornit uživatele,
-	    // že nemůže být přihlášen?
+	    $this->logError($e->getMessage());
 	}
 	foreach ($resources as $res) {
 	    if ($res->hasParent()) {
@@ -106,34 +104,27 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
     }
 
     private function setRules(Permission $p) {
-	// ACL pomoci kompozice hodit do servisy, ktera si to bude cachovat protoze tohle je moc narocny pocitani, tohle nam umozni chytat vyjimky z construktoru pri tomhle vytvareni a muzeme byt schopni v ty service nejak reagovat na to, ze se nepodari sestavit strom ACL
-	// 
-	// dal ta servisa musi umoznovat mazani kese zvenku, ptz pridani role, pravidla, ji muze ovlivnit
-	
-	// do administrace acl pravidla je potreba pridat moznost dynamicke editace privileges
-	// privileges u aclRule musi byt mnozina a ne jen jedno
 	try {
 	    $rules = $this->rulesService->getRules();
 	} catch (Exceptions\DataErrorException $e) {
-	    dd($e);
-	    // TODO co s tím? LOG a nic víc? jak upozornit uživatele,
-	    // že nemůže být přihlášen?
+	    $this->logError($e->getMessage());
 	}
 	foreach ($rules as $r) {
 	    if ($r->isPermit()) {
 		$p->allow(
-			$r->getRole(), 
+			$r->getRole()->getName(), 
 			$r->hasResource() ? $r->getResource() : Permission::ALL, 
-			$r->hasPrivileges() ? $r->getPrivileges() : Permission::ALL);
+			$r->hasPrivilege() ? $r->getPrivileges() : Permission::ALL);
 	    } else {
 		$p->deny(
-			$r->getRole(), 
+			$r->getRole()->getName(), 
 			$r->hasResource() ? $r->getResource() : Permission::ALL, 
-			$r->hasPrivileges() ? $r->getPrivileges() : Permission::ALL);
+			$r->hasPrivilege() ? $r->getPrivileges() : Permission::ALL);
 	    }
 	}
     }
-    
+
+
     // iiiiiiiiiiiiiiiiiiiii IAclService iiiiiiiiiiiiiiiiiiiiiii
     
     public function getAcl() {
@@ -145,7 +136,6 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
 	    $this->setResources($data);
 	    $this->setRules($data);
 	    $opt = [Cache::TAGS => [self::ENTITY_ID]];
-	    // kdyz zavedu constanty ROLE_COLLECTION atd.. tak muzu dat i taady tomu flag ROLE_COLLECTION a on se to pak smaze samo, to je lepsi jak volat metodu, ikdyz to je jiny namespace, takze nesmaze, takze proto jsem to chtel dat cely modul do jednoho namespace
 	    $cache->save(self::ENTITY_ID, $data, $opt);
 	}
 	return $data;
@@ -155,11 +145,4 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
     public function isAllowed($role, $resource, $privilege) {
 	return $this->getAcl()->isAllowed($role, $resource, $privilege);
     }
-    
-    
-    // pokud to nebude fungovat, tak se to da zaregistrovat jak jsem si myslel, ale mit to jako zabalenou servisu s prekrytou metodou se mi zda cistejsi
-//    services:
-//    database:
-//        class: Nette\Database\Connection
-//        factory: DbFactory::createConnection
 }

@@ -15,6 +15,12 @@ services:
 				- setPositionService()
 				- setRoleService()
 
+	securityModule.aclRuleListener:
+		class:
+			App\SecurityModule\Model\Listeners\AclRuleListener
+		tags: [kdyby.subscriber]
+		setup:
+
 	securityModule.cacheStorage:
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/securityModule/)
 		autowired: false
@@ -43,6 +49,7 @@ services:
 		class:
 			App\SecurityModule\Model\Service\AclService
 		setup:
+				- setCacheStorage(@securityModule.cacheStorage)
 				- setRolesService()
 				- setRulesService()
 				- setResourcesService()

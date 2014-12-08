@@ -45,7 +45,7 @@ parameters:
 	#wwwDir: %appDir%/../ # defined within framework
 	cacheDir: %tempDir%/cache/
 	modulesDir: %appDir%/modules/
-	libsDir: %appDir%/vendor/others/
+	libsDir: %appDir%/../vendor/others
 	imagesDir: %wwwDir%/assets/images/
 
 	appName: sportsclub
@@ -215,12 +215,17 @@ services:
 	#- App\Model\UserManager
 
 	# tohle uz neni treba je to nahrazeno 
-	#robotLoader:
-	#	class: Nette\Loaders\RobotLoader
-	#	setup:
-	#		- setCacheStorage
+	robotLoader:
+		class: Nette\Loaders\RobotLoader
+		setup:
+			- setCacheStorage
+			- addDirectory(%libsDir%)
+			- addDirectory(%appDir%)
+			- register()
 
-	presenterTree:	Kdyby\PresenterTree
+
+	presenterTree:	
+		class: Kdyby\PresenterTree
 
 	#- Nette\Caching\Storages\MemcachedStorage()
 	

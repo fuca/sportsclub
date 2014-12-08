@@ -86,7 +86,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * Default presenter action
-     * @Secured(resource="SecurityAdminDefault", privileges={"viewAll"})
+     * @Secured(resource="default")
      */
     public function actionDefault() {
 	
@@ -110,7 +110,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * Action for creating role page
-     * @Secured(resource="CreateRole", privileges={"createRole"})
+     * @Secured(resource="addRole")
      */
     public function actionAddRole() {
 	
@@ -118,7 +118,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * Presenter action for role update page
-     * @Secured(resource="UpdateRole", privileges={"updateRole"})
+     * @Secured(resource="updateRole")
      * @param integer $id
      */
     public function actionUpdateRole($id) {
@@ -159,7 +159,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * Delete role signal handler
-     * @Secured(resource="DeleteRole", privileges={"delete"})
+     * @Secured(resource="deleteRole")
      * @param integer $id
      */
     public function handleDeleteRole($id) {
@@ -236,7 +236,7 @@ class AdminPresenter extends SystemAdminPresenter {
      * @param string $name
      */
     public function createComponentRolesGrid($name) {
-
+	
 	$grid = new \Grido\Grid($this, $name);
 	$grid->setModel($this->roleService->getRolesDatasource());
 
@@ -328,10 +328,16 @@ class AdminPresenter extends SystemAdminPresenter {
     // </editor-fold >
     // <editor-fold desc="Administration of RULES">
 
+    /**
+     * @Secured(resource="addRule")
+     */
     public function actionAddRule() {
 	
     }
 
+    /**
+     *  @Secured(resource="updateRule")     
+     */
     public function actionUpdateRule($id) {
 	if (!$id) $this->handleBadArgument($id);
 	try {
@@ -351,6 +357,8 @@ class AdminPresenter extends SystemAdminPresenter {
 	$resourcesSelect = $this->resourcesService->getSelectResources();
 	
 	if ($value) {
+	    // 100% PresenterResource, becouse we changed deepFlatten method
+	    
 	    $resource = $this->resourcesService->getResource($value);
 	    $privileges = $resource->getPrivileges();
 	    
@@ -377,6 +385,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redrawControl("privilegesSnippet");
     }
 
+    /**
+     *  @Secured(resource="deleteRule")     
+     */
     public function handleDeleteRule($id) {
 	if (!$id) $this->handleBadArgument($id);
 	$this->doDeleteRule($id);
@@ -412,8 +423,10 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     public function createComponentRulesGrid($name) {
+	
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->ruleService->getRulesDatasource());
+	$grid->setTranslator($this->getTranslator());
 
 	$grid->addColumnNumber('id', '#')
 		->cellPrototype->class[] = 'center';
@@ -422,30 +435,34 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
 
-	$grid->addColumnText('role', 'Role')
+	$grid->addColumnText('role', "securityModule.admin.grid.role")
 		->setSortable()
-		->setFilterText();
-
+		->setFilterSelect([null=>null]+$this->getSelectRoles());
 	$headerParent = $grid->getColumn('role')->headerPrototype;
 	$headerParent->class[] = 'center';
 
-	$grid->addColumnText('resource', 'Zdroj')
+	$grid->addColumnText('resource', "securityModule.admin.grid.resource")
 		->setSortable()
+		->setCustomRender($this->resourceRender)
 		->setFilterText();
 	$headerAdded = $grid->getColumn('resource')->headerPrototype;
 	$headerAdded->class[] = 'center';
 
-	$grid->addColumnText('privilege', 'Akce')
+	$grid->addColumnText('privilege', "securityModule.admin.grid.privilege")
 		->setSortable()
+		->setCustomRender($this->privilegeRender)
 		->setTruncate(15)
 		->setFilterText();
 	$headerNote = $grid->getColumn('privilege')->headerPrototype;
 	$headerNote->class[] = 'center';
 
-	$grid->addColumnText('mode', 'Mód')
+	
+	$modesList = [null=>null]+AclMode::getOptions();
+	$grid->addColumnText('mode', "securityModule.admin.grid.mode")
 		->setSortable()
+		->setCustomRender($this->modeRender)
 		->setTruncate(15)
-		->setFilterText();
+		->setFilterSelect($modesList);
 	$headerNote = $grid->getColumn('mode')->headerPrototype;
 	$headerNote->class[] = 'center';
 
@@ -459,6 +476,47 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->ruleGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-rules " . date("Y-m-d H:i:s", time()));
+    }
+    
+    protected function getSelectRoles($id = null) {
+	try {
+	    return $this->roleService->getSelectRoles($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, ":System:Default:adminRoot", $ex);
+	}
+    }
+    
+    protected function getSelectUsers() {
+	try {
+	    return $this->userService->getSelectUsers();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, ":System:Default:adminRoot", $ex);
+	}
+    }
+    
+    protected function getSelectGroups($id = null) {
+	try {
+	    return $this->sportGroupService->getSelectApplicablegroups($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, ":System:Default:adminRoot", $ex);
+	}
+    }
+    
+    public function privilegeRender($e) {
+	$priv = $e->getPrivilege();
+	return \Nette\Utils\Html::el("span")
+		->addAttributes(["title"=>$priv])
+		->setText(substr($priv, strrpos($priv, "\\"), strlen($priv)));
+    }
+    
+    public function resourceRender($e) {
+	$res = $e->getResource();
+	$text = str_replace("Presenter", "",str_replace("App\\", "", str_replace("Presenters", "", str_replace("Module\\", "", $res))));
+	return \Nette\Utils\Html::el("span")->addAttributes(["title"=>$res])->setText($text);
+    }
+    
+    public function modeRender($e) {
+	return $this->tt(AclMode::getOptions()[$e->getMode()]);
     }
 
     public function ruleGridOpsHandler($op, $ids) {
@@ -502,11 +560,10 @@ class AdminPresenter extends SystemAdminPresenter {
     // </editor-fold>
     // <editor-fold desc="Administration of POSITIONS">
 
+    /**
+     * @Secured(resource="addPosition")
+     */
     public function actionAddPosition() {
-	
-    }
-
-    public function renderAddPosition() {
 	
     }
 
@@ -520,6 +577,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updatePosition")
+     */
     public function actionUpdatePosition($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);
@@ -559,15 +619,15 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addColumnText('owner', 'Uživatel')
 		->setSortable()
-		->setFilterText();
+		->setFilterSelect([null=>null]+$this->getSelectUsers());
 
 	$grid->addColumnText('group', 'Skupina')
 		->setSortable()
-		->setFilterText();
+		->setFilterSelect([null=>null]+$this->getSelectGroups());
 
 	$grid->addColumnText('role', 'Role')
 		->setSortable()
-		->setFilterText();
+		->setFilterSelect([null=>null]+$this->getSelectRoles());
 
 	$grid->addColumnText('comment', 'Komentář')
 		->setCustomRender($this->commentGridRender)
@@ -646,6 +706,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 
+    /**
+     *  @Secured(resource="deletePosition")     
+     */
     public function handleDeletePosition($id) {
 	if (!$id)
 	    $this->handleBadArgument($id);

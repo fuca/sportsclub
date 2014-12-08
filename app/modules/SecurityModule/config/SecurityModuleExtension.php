@@ -60,12 +60,13 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 		->addSetup("setDefaultComment", [$config["defCommentAppEvents"]]);
 	
 	
-	$rValues = array_unique(array_merge($config["init"]["roles"], [$config["defRoleAppEvents"]], ["admin"]));
+	$rValues = array_unique(array_merge($config["init"]["roles"], [$config["defRoleAppEvents"]], ["admin","authenticated"]));
 	$builder->getDefinition($this->prefix("initializer"))
 		->addSetup("setRolesValues", [$rValues])
 		->addSetup("setDefaultUserEmail", [$config["defaultUserEmail"]])
 		->addSetup("rolesInit")
-		->addSetup("positionsInit");
+		->addSetup("positionsInit")
+		->addSetup("rulesInit");
     }
 
     public function getTranslationResources() {

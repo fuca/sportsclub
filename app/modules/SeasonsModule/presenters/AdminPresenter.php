@@ -107,22 +107,20 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $this->seasonService;
     }
 
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() {
-	// pak do protected sekce pridat asi prehled prihlasek ci tak neco, nad tim se zamyslet
-	// projit servisy tohodle modulu a to je asi vse
-	//throw new \Exception();
-//	$app = new SeasonApplication();
-//	$app->setEditor($this->getUser());
-//	$app->setUpdated(new \Nette\Utils\DateTime);
-//	$app->setOwner($this->getUser());
-//	$app->setSeason(2);
-//	$this->seasonApplicationService->createSeasonApplication($app);
+	// render grid
     }
 
 // <editor-fold desc="Administration of SPORT SEASONS">
 
+    /**
+     * @Secured(resource="addSeason")
+     */
     public function actionAddSeason() {
-// form render
+	// form render
     }
 
     public function seasonFormSubmitHandle(Form $form) {
@@ -152,6 +150,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updateSeason")
+     */
     public function actionUpdateSeason($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -178,6 +179,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deleteSeason")
+     */
     public function handleDeleteSeason($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -273,6 +277,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $grid;
     }
 
+    /**
+     * @Secured(resource="setSeasonCurrent")
+     */
     public function handleSetSeasonCurrent($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -309,6 +316,9 @@ class AdminPresenter extends SystemAdminPresenter {
 // </editor-fold>
 // <editor-fold desc="Administration of SEASON TAXES">
 
+    /**
+     * @Secured(resource="createSeasonTax")
+     */
     public function actionCreateSeasonTax() {
 	// render form
     }
@@ -335,13 +345,16 @@ class AdminPresenter extends SystemAdminPresenter {
 	$tax = new SeasonTax((array) $values);
 	try {
 	    $tax->setEditor($this->getUser()->getIdentity());	
-    $this->getSeasonTaxService()->createSeasonTax($tax);
+	    $this->getSeasonTaxService()->createSeasonTax($tax);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleError(null, "this", $ex);
 	}
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updateSeasonTax")
+     */
     public function actionUpdateSeasonTax($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -371,6 +384,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deleteSeasonTax")
+     */
     public function handleDeleteSeasonTax($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -487,8 +503,11 @@ class AdminPresenter extends SystemAdminPresenter {
 // </editor-fold>
 // <editor-fold desc="Administration of SEASON APPLICATIONS">
 
+    /**
+     * @Secured(resource="createSeasonApplication")
+     */
     public function actionCreateSeasonApplication() {
-// render form
+	// render form
     }
 
     public function createSeasonApplicationHandle(ArrayHash $values) {
@@ -501,6 +520,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updateSeasonApplication")
+     */
     public function actionUpdateSeasonApplication($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -530,6 +552,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deleteSeasonApplication")
+     */
     public function handleDeleteSeasonApplication($id) {
 	if (!is_numeric($id)) {
 	    $this->handleBadArgument($id);
@@ -642,14 +667,14 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerNote->class[] = 'center';
 
 	$grid->addActionHref('delete', '', 'deleteSeasonApplication!')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
 		->setIcon('trash')
 		->setConfirm(function($u) {
 		    return $this->tt("seasonsModule.admin.grid.reallyDeleteAppId", null, ["id" => $u->getId()]);
 		});
 
 	$grid->addActionHref('edit', '', 'updateSeasonApplication')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('pencil');
 
 	$grid->setOperation(

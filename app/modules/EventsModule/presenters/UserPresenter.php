@@ -23,6 +23,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
     \App\EventsModule\Model\Service\IEventService,
     \App\Model\Misc\Enum\EventType,
     \App\EventsModule\Forms\EventParticipationForm,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Entities\EventParticipation,
     \App\Model\Misc\Enum\EventParticipationType,
     \App\Model\Entities\EventComment,
@@ -33,7 +34,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
 
 /**
  * Protected Event Presenter
- *
+ * @Secured(resource="EventsUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class UserPresenter extends SystemUserPresenter {
@@ -50,7 +51,10 @@ class UserPresenter extends SystemUserPresenter {
      */
     public $sportGroupService;
     
-    public function defaults() {
+    /**
+     * @Secured(resource="default")
+     */
+    public function actionDefault() {
 	// grid render
     }
     

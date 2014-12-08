@@ -36,7 +36,7 @@ final class AclMode extends EnumType implements IEnum {
 
     public static function getOptions() {
 	return array(
-	    self::PERMIT    => "Permit",
-	    self::DENY	    => "Deny");
+	    self::PERMIT    => "securityModule.admin.grid.permit",
+	    self::DENY	    => "securityModule.admin.grid.deny");
     }
 }

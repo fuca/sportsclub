@@ -34,7 +34,7 @@ use \App\SystemModule\Presenters\SystemClubPresenter,
 
 /**
  * ForumPresenter
- * @Secured(resource="ForumAdmin")
+ * @Secured(resource="ForumClub")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class ForumPresenter extends SystemClubPresenter {
@@ -54,6 +54,9 @@ class ForumPresenter extends SystemClubPresenter {
      */
     public $sportGroupService;
     
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault($abbr = self::ROOT_GROUP) {
 	$data = $gDb = null;
 	try {
@@ -80,6 +83,9 @@ class ForumPresenter extends SystemClubPresenter {
 	$this->template->data = $data;
     }
     
+    /**
+     * @Secured(resource="showForum")
+     */
     public function actionShowForum($id, $abbr = self::ROOT_GROUP) {
 	$data = $sg = null;
 	try {
@@ -114,6 +120,9 @@ class ForumPresenter extends SystemClubPresenter {
 	$this->template->data = $data->getThreads();
     }
     
+    /**
+     * @Secured(resource="addForumThread")
+     */
     public function actionAddForumThread($f, $abbr = self::ROOT_GROUP) {
 	$forum = $sg = null;
 	try {
@@ -177,6 +186,9 @@ class ForumPresenter extends SystemClubPresenter {
 	$this->redirect("showThread", [$thread->getAlias(), $abbr]);
     }
     
+    /**
+     * @Secured(resource="showThread")
+     */
     public function actionShowThread($id, $abbr) {
 	$thread = $sg = null;
 	try {

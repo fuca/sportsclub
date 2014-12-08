@@ -1,5 +1,21 @@
 <?php
 
+/*
+ * Copyright 2014 Michal Fučík <michal.fuca.fucik(at)gmail.com>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 namespace App\SecurityModule\Forms;
 
 use \App\Forms\BaseForm,
@@ -37,8 +53,6 @@ class AclRuleForm extends BaseForm {
     }
 
     public function getPrivileges() {
-//	if ($this->presenter->isAjax())
-//	    $this->privileges = $this->presenter->getPrivileges();
 	return $this->privileges;
     }
 
@@ -77,28 +91,20 @@ class AclRuleForm extends BaseForm {
 
 
 	$this->addSelect('resource', 'securityModule.aclForm.resource', $this->getResources())
-		->setPrompt(self::SLCT_RESOURCE)
-		->addRule(Form::FILLED, self::SLCT_RESOURCE);
+		->setPrompt(self::SLCT_RESOURCE);
 
 	$this->addSelect('privilege', 'securityModule.aclForm.action', $this->getPrivileges())
-		->setPrompt(self::SLCT_ACTION)
-		->addRule(Form::FILLED, self::SLCT_ACTION)
-		->setRequired(true);
+		->setPrompt(self::SLCT_ACTION);
 
 	$this->addSelect('role', 'securityModule.aclForm.role', $this->getRoles())
 		->setPrompt(self::SLCT_ROLE)
-		->addRule(Form::FILLED, self::SLCT_ROLE)
-		->setRequired(true);
-
-//	$privSelect = $this->addDependentSelectBox('privilege', 'Akce', $resSelect, callback($this,'getPrivileges'))
-//		->setPrompt(self::SLCT_ACTION)
-//		->addRule(Form::FILLED, self::SLCT_ACTION)
-//		->setRequired(true);
+		->addRule(Form::FILLED, 'securityModule.aclForm.roleMustFill')
+		->setRequired('securityModule.aclForm.roleMustFill');
 
 	$this->addSelect('mode', 'securityModule.aclForm.mode', $this->getModes())
 		->setPrompt(self::SLCT_MODE)
-		->addRule(Form::FILLED, self::SLCT_MODE)
-		->setRequired(true);
+		->addRule(Form::FILLED, 'securityModule.aclForm.modeMustFill')
+		->setRequired('securityModule.aclForm.modeMustFill');
 
 //	if($this->presenter->isAjax()) {
 //	    $privSelect->addOnSubmitCallback(callback($this, "invalidateControl"), "privilegesSnippet");
@@ -106,30 +112,28 @@ class AclRuleForm extends BaseForm {
 
 	$this->addSubmit('submitButton', 'system.forms.submitButton.label');
 
-	$this->onSuccess[] = callback($this, 'ruleFormSubmitted');
-	$this->onSubmit[] = $this->submitHandler;
+	$this->onSubmit[] = $this->ruleFormSuccess;
     }
 
-    public function submitHandler(Form $form) {
+    public function ruleFormSuccess(Form $form) {
 	$privilege = $form->getHttpData($form::DATA_TEXT, 'privilege');
 	$role = $form->getHttpData($form::DATA_TEXT, 'role');
 	$mode = $form->getHttpData($form::DATA_TEXT, 'mode');
 	$resource = $form->getHttpData($form::DATA_TEXT, 'resource');
 	
-	//$form->validate();
 	$error = false;
 	if (empty($role)) {
 	    $form['role']->addError("This field is required");
 	    $error = true;
 	}
-	if (empty($resource)) {
-	    $form['resource']->addError("This field is required");
-	    $error = true;
+	if (!empty($resource)) {
+	
+	    if ($privilege === null) {
+		$form['privilege']->addError("This field is required");
+		$error = true;
+	    }
 	}
-	if ($privilege === null) {
-	    $form['privilege']->addError("This field is required");
-	    $error = true;
-	}
+	
 	if (empty($mode)) {
 	    $form['mode']->addError("This field is required");
 	    $error = true;
@@ -153,34 +157,4 @@ class AclRuleForm extends BaseForm {
 		    $this->tt("securityModule.aclForm.messages.ruleRoleResExists", null, ["role" => $roleName[$values->role], "resource" => $values->resource]));
 	}
     }
-
-    /**
-     * Form success submission handler
-     * @param \Nette\Application\UI\Form $form
-     */
-//    public function ruleFormSubmitted(Form $form) {
-//	//$this->presenter->redirect("default");
-//	$values = $form->getValues();
-//
-//	$ajaxSelect = $form->getHttpData($form::DATA_TEXT, 'resource');
-//	if (empty($ajaxSelect)) {
-//	    $form['resource']->addError("todle vypln");
-//	    return;
-//	}
-//	try {
-//	    switch ($this->getMode()) {
-//		case FormMode::CREATE_MODE:
-//		    $this->presenter->createRule($values);
-//		    break;
-//		case FormMode::UPDATE_MODE:
-//		    $this->presenter->updateRule($values);
-//		    break;
-//	    }
-//	} catch (DuplicateEntryException $e) {
-//	    $roleName = $this->getRoles();
-//	    $this->addError(
-//		    $this->tt("securityModule.aclForm.messages.ruleRoleResExists", null, ["role" => $roleName[$values->role], "resource" => $values->resource]));
-//	}
-//    }
-
 }

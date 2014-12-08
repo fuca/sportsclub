@@ -20,11 +20,12 @@ namespace App\PaymentsModule\Presenters;
 
 use \App\SystemModule\Presenters\SystemUserPresenter,
     \Grido\Grid,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Misc\Exceptions,
     \App\Model\Misc\Enum\PaymentStatus;
 /**
  * PaymentPresenter
- *
+ * @Secured(resource="PaymentsUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class UserPresenter extends SystemUserPresenter {
@@ -41,6 +42,9 @@ class UserPresenter extends SystemUserPresenter {
      */
     public $seasonService;
     
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() {
 	// render grid
     }

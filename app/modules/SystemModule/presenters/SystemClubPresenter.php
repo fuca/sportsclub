@@ -30,32 +30,27 @@ abstract class SystemClubPresenter extends SecuredPresenter {
 
     public function checkRequirements($element) {
 	parent::checkRequirements($element);
-	$user = $this->getUser();
-	if (!$user->isLoggedIn()) {
-	    if ($user->getLogoutReason() === \Nette\Security\User::INACTIVITY) {
-		$this->flashMessage($this->tt("securityModule.loginControl.messages.outCosInactive"), self::FM_WARNING);
+	
+	if ($element instanceof \Nette\Application\UI\PresenterComponentReflection) {
+	    $secAnn = $this->annotationReader->getClassAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
+	    if ($secAnn) {
+		if (!$this->getUser()->isAllowed($element->getName())) {
+		    $this->flashMessage("securityModule.authorization.noPrivilesSection", self::FM_ERROR);
+		    $this->redirect(':System:Default:clubRoot');
+		}
 	    }
-
-	    $backlink = $this->storeRequest();
-	    $this->redirect(':Security:Auth:in', ['backlink' => $backlink]);
 	}
 
 	if ($element instanceof \Nette\Reflection\Method) {
 	    $secAnn = $this->annotationReader->getMethodAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
+	    if ($secAnn) {
+		if (!$this->getUser()->isAllowed($element->getDeclaringClass()->name, $element->getName())) {
+		    $this->flashMessage("securityModule.authorization.noPrivilesAction", self::FM_ERROR);
+		    $this->redirect('default');
+		}
+	    }
 	}
-	if ($element instanceof \Nette\Application\UI\PresenterComponentReflection) {
-	    $secAnn = $this->annotationReader->getClassAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
-	}
-
-	if ($secAnn) {
-
-//	    if (!$user->isAllowed($element->getName(), $secAnn->getPrivileges())) {
-//		$this->flashMessage('Na vstup do této sekce nemáte dostatečné oprávnění!', self::FM_WARNING);
-//                $this->redirect('Homepage:default');
-//	    }
-	    // asi by se tu mely proverovat ty skupinovy a vlastnicky prava, ci co..
-	}
-    }
+    }  
 
     protected function beforeRender() {
 	parent::beforeRender();

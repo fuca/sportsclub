@@ -19,6 +19,7 @@
 namespace App\CommunicationModule\Presenters;
 use \App\CommunicationModule\Forms\PrivateMessageForm,
     \App\SystemModule\Presenters\SystemUserPresenter,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Entities\PrivateMessage,
     \App\Model\Entities\MailBoxEntry,
     \App\Model\Misc\Exceptions,
@@ -30,6 +31,7 @@ use \App\CommunicationModule\Forms\PrivateMessageForm,
 
 /**
  * MessagingPresenter
+ * @Secured(resource="MessagingUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 final class MessagingPresenter extends SystemUserPresenter {
@@ -51,11 +53,12 @@ final class MessagingPresenter extends SystemUserPresenter {
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $groupService;
+   
     
     public function actionDefault() {
 	$this->redirect("inbox");
     }
-    
+        
     public function actionInbox() {
 	// render grid
     }

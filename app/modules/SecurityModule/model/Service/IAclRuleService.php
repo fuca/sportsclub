@@ -18,7 +18,8 @@
 
 namespace App\Model\Service;
 
-use \App\Model\Entities\AclRule;
+use \App\Model\Entities\AclRule,
+    \App\Model\Entities\Role;
 
 /**
  * Interface for AclRule service
@@ -33,4 +34,5 @@ interface IAclRuleService {
     function deleteRule($id);
     function updateRule(AclRule $arule);
     function getRulesDatasource();
+    function getUniqueRule(Role $g, $resource = null, $priv = null);
 }

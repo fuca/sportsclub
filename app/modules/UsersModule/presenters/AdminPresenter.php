@@ -38,7 +38,7 @@ use \App\UsersModule\Forms\UserForm,
 
 /**
  * UserPresenter
- *
+ * @Secured(resource="UsersAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SystemAdminPresenter {
@@ -51,6 +51,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * User admin presenter action of Default request
+     * @Secured(resource="default")
      */
     public function actionDefault() {
 	// grid
@@ -60,6 +61,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * User admin presenter action of New user request
+     * @Secured(resource="newUser")
      */
     public function actionNewUser() {
 	// form
@@ -71,17 +73,6 @@ class AdminPresenter extends SystemAdminPresenter {
      * @throws DuplicateEntryException
      */
     public function createUser(ArrayHash $values) {
-
-
-	// SEND NOTIFICATION
-//	$mailer = new SendmailMailer();
-//	$mail = new Message();
-//	$mail->setFrom("sportsclub@gmail.com");
-//	$mail->setSubject("New registration");
-//	$mail->setContentType('text/html');
-//	$mail->setBody("Vazeny uzivateli, byl vam vytvoren ucet v nasem sportovniho klubu XY\n\n Heslo: $newPassword a login vas email");
-//	$mail->addTo("misan.128@seznam.cz");
-//	$mailer->send($mail);
 
 	$nu = $this->hydrateUserFromUserForm($values);
 	try {
@@ -96,9 +87,10 @@ class AdminPresenter extends SystemAdminPresenter {
 
     // </editor-fold>
     // <editor-fold desc="REMOVE USER">
-
+    
     /**
      * Delete user handler (topdown)
+     * @Secured(resource="deleteUser")
      * @param numeric $id
      */
     public function handleDeleteUser($id) {
@@ -128,7 +120,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     /**
      * Action for filling updateUserForm control by values from database
-     * @Secured()
+     * @Secured(resource="updateUser")
      * @param numeric $id
      */
     public function actionUpdateUser($id) {
@@ -189,6 +181,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $form;
     }
 
+    /**
+     * @Secured(resource="regeneratePassword")
+     */
     public function handleRegenPassword($id) {
 	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	try {
@@ -218,6 +213,9 @@ class AdminPresenter extends SystemAdminPresenter {
     // </editor-fold>
     // <editor-fold desc="Web profile manage">
 
+    /**
+     * @Secured(resource="updateWebProfile")
+     */
     public function actionUpdateWebProfile($id) {
 	if (!is_numeric($id)) $this->handleBadArgument($id, "Admin:default");
 	try {
@@ -286,14 +284,12 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->addColumnText('surname', 'Příjmení')
 		->setSortable()
 		->setFilterText();
-	//$grid->getColumn('surname')->getEditableControl()->setRequired('Surname is required.');
 	$headerSurname = $grid->getColumn('surname')->headerPrototype;
 	$headerSurname->class[] = 'center';
 
 	$grid->addColumnText('name', 'Jméno')
 		->setSortable()
 		->setFilterText();
-	//$grid->getColumn('name')->getEditableControl()->setRequired('Name is required.');
 	$headerName = $grid->getColumn('name')->headerPrototype;
 	$headerName->class[] = 'center';
 
@@ -329,29 +325,6 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerCreated = $grid->getColumn('created')->headerPrototype;
 	$headerCreated->class[] = 'center';
 
-	//$grid->getColumn('lastLogin')->getCellPrototype()->class('textsmall');
-//	$seas = $this->getActualSeasonId();
-//	try {
-//	    $seas = $this->getSeasonsModel()->getSeason($seas);
-//	} catch (\Nette\IOException $ex) {
-//	    Debugger::log($ex->getMessage(), Debugger::ERROR);
-//	}
-//	
-//	if ($seas != FALSE)
-//	    $seas = $seas->label;
-//
-//	if ($this->user->isAllowed("Admin:users", "update"))
-//	    $grid->setOperations(array('deactivate' => 'De/aktivovat', 'application' => 'Přihlásit na sezónu '. $seas), callback($this, 'usersGridOperationsHandler'))
-//		 ->setConfirm('deactivate', 'Určitě chcete vybráné členy de/aktivovat?')
-//		 ->setConfirm('application', 'Určitě chcete vybráné členy přihlásit na nejbližší sezónu?');
-//	if ($this->user->isAllowed("Admin:users", "update")) {
-//	    $grid->addAction('edit', '[Edit]', Action::TYPE_HREF, 'editUser');
-//	} else {
-//	    if ($this->user->isAllowed("Admin:users", "view"))
-//	    $grid->addAction('show', '[Zobraz] ', Action::TYPE_HREF, 'showUser');
-//	}
-	//$grid->addActionHref('application', '[Prihl]', 'userApplications');
-	// setDisable() - nastavi callback, kdy ma byt vypnuto - vhodne pri overovani opravneni
 	$grid->addActionHref("regenPassword", "", 'regenPassword!')
 		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("usersModule.admin.grid.pwRegen")]))
 		->setIcon('lock')
@@ -494,9 +467,7 @@ class AdminPresenter extends SystemAdminPresenter {
     
     public function wpPhotoRender($e) {
 	
-	//$_SERVER["SCRIPT_FILE_NAME"];
 	$imagesDir = $this->context->parameters["imagesDir"]; 
-	
 	$imagesDir = substr($imagesDir, strlen(filter_input(INPUT_SERVER, "CONTEXT_DOCUMENT_ROOT")));
 
 	$url ="$imagesDir{$e->getPicture()}";
@@ -504,11 +475,17 @@ class AdminPresenter extends SystemAdminPresenter {
 		->addAttributes(["src" => $url, "class"=>"user-grid-thumbnail"]);
     }
 
+    /**
+     * @Secured(resource="denyProfile")
+     */
     public function handleDenyProfile($id) {
 	$this->doDenyProfile($id);
 	$this->redirect("this");
     }
 
+    /**
+     * @Secured(resource="permitProfile")
+     */
     public function handlePermitProfile($id) {
 	$this->doPermitProfile($id);
 	$this->redirect("this");

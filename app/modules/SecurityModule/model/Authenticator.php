@@ -101,11 +101,9 @@ final class Authenticator extends Object implements IAuthenticator {
 	    throw new AuthenticationException("securityModule.loginControl.messages.userUnactive");
 	}
 
-	$user->lastLogin = new DateTime();
-	$user->setWebProfile(null);
-	$this->usersService->updateUser($user);
-	$roles = $this->rolesService->getUserRoles($user);
-	$user->setRoles($roles);
+	$this->usersService->updateLastLogin($user);
+//	$roles = $this->rolesService->getUserRoles($user);
+//	$user->setRoles($roles);
 	$identity = $user;
 
 	return $identity;

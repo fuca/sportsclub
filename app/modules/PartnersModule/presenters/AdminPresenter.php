@@ -54,7 +54,17 @@ class AdminPresenter extends SystemAdminPresenter {
     public function getPartnerService() {
 	return $this->partnerService;
     }
-
+    
+    /**
+     * @Secured(resource="default")
+     */
+    public function actionDefault() {
+	// render grid
+    }
+    
+    /**
+     * @Secured(resource="createPartner")
+     */
     public function actionCreatePartner() {
 	// render form
     }
@@ -73,6 +83,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updatePartner")
+     */
     public function actionUpdatePartner($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);
@@ -99,6 +112,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deletePartner")
+     */
     public function handleDeletePartner($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);

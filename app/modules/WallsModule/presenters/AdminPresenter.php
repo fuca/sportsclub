@@ -55,13 +55,22 @@ class AdminPresenter extends SystemAdminPresenter {
      */
     public $sportGroupService;
     
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() { // grid render
 	
     }
     
+    /**
+     * @Secured(resource="addWallpost")
+     */
     public function actionAddWallPost() { // form render
     }
     
+    /**
+     * @Secured(resource="updateWallPost")
+     */
     public function actionUpdateWallPost($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
@@ -100,6 +109,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * @Secured(resource="deleteWallPost")
+     */
     public function handleDeleteWallPost($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteWallPost($id);

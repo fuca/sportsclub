@@ -55,15 +55,21 @@ class AdminPresenter extends SystemAdminPresenter {
      */
     public $usersService;
     
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() {
     }
     
+    /**
+     *  * @Secured(resource="addArticle")
+     */
     public function actionAddArticle() {
 	// form render
     }
     
     /**
-     * @Secured(resource="ArticlesAdmin-Default")
+     * @Secured(resource="updateArticle")
      */
     public function actionUpdateArticle($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
@@ -81,6 +87,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    /**
+     * @Secured(resource="deleteArticle")
+     */
     public function handleDeleteArticle($id) {
 	if (!is_numeric($id)) $this->handleBadArgument($id);
 	$this->doDeleteArticle($id);

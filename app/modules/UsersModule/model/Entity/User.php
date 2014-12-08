@@ -20,12 +20,14 @@ namespace App\Model\Entities;
 
 use \Doctrine\ORM\Mapping as ORM,
     \Doctrine\ORM\Mapping\OneToOne,
+    \Doctrine\ORM\Mapping\OneToMany,
     \Doctrine\ORM\Mapping\JoinColumn,
     \Doctrine\ORM\Mapping\JoinTable,
     \Doctrine\ORM\Mapping\ManyToMany,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\Model\Misc\Enum\CommentMode,
     \App\Model\Misc\Enum\WebProfileStatus,
+    \Doctrine\Common\Collections\ArrayCollection,
     \Nette\Security\IIdentity,
     \Nette\DateTime,
     \App\Model\IIdentifiable,
@@ -112,20 +114,26 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
      */
     protected $comments;
     
+    /**
+     * @OneToMany(targetEntity="Position", mappedBy="owner", fetch="EAGER")
+     */
+    protected $positions;
+    
     public function __construct(array $values = []) {
 	parent::__construct();
-	$this->created = new DateTime();
-	$this->commentMode = CommentMode::ALLOWED;
-	$this->active = false;
-	$this->passwordChangeRequired = true;
+	$this->created			= new DateTime();
+	$this->commentMode		= CommentMode::ALLOWED;
+	$this->active			= false;
+	$this->passwordChangeRequired	= true;
+	$this->positions		= new ArrayCollection();
 	$this->fromArray($values);
     }
     
-    protected $roles;
+//    protected $roles;
 
-    public function setRoles(array $roles) {
-	$this->roles = $roles;
-    }
+//    public function setRoles(array $roles) {
+//	$this->roles = $roles;
+//    }
 
     /* implementation of IIdentity */
 
@@ -134,7 +142,13 @@ class User extends BaseEntity implements IIdentity, IIdentifiable {
     }
 
     public function getRoles() {
-	return [];
+	$data = [];
+	if (isset($this->positions)) {
+	    foreach ($this->positions as $p) {
+		$data[] = $p->getRole()->getName();
+	    }
+	    return $data;
+	}
     }
 
     public function getPassword() {

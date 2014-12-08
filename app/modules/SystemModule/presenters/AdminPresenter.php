@@ -79,12 +79,16 @@ final class AdminPresenter extends SystemAdminPresenter {
     }
     
     /**
-     * @Secured()
+     * @Secured(resource="default")
      */
     public function actionDefault() {
     }
 
     // <editor-fold desc="Administration of SPORT TYPES">
+    
+    /**
+     * @Secured(resource="addSportType")
+     */
     public function actionAddSportType() {
 	
     }
@@ -100,6 +104,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updateSportType")
+     */
     public function actionUpdateSportType($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
@@ -124,6 +131,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deleteSportType")
+     */
     public function handleDeleteSportType($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteSportType($id);
@@ -227,6 +237,13 @@ final class AdminPresenter extends SystemAdminPresenter {
     // </editor-fold>
     // <editor-fold desc="Administration of GROUPS">
 
+    /**
+     * @Secured(resource="addSportGroup")
+     */
+    public function actionAddSportGroup() {
+	
+    }
+
     public function createSportGroup(ArrayHash $values) {
 	$type = new SportGroup();
 	$type->fromArray((array) $values);
@@ -238,6 +255,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updateSportGroup")
+     */
     public function actionUpdateSportGroup($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
@@ -263,6 +283,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deleteSportGroup")
+     */
     public function handleDeleteSportGroup($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteSportGroup($id);
@@ -399,6 +422,9 @@ final class AdminPresenter extends SystemAdminPresenter {
     //</editor-fold>
     // <editor-fold desc="Administration of STATIC PAGES">
     
+    /**
+     * @Secured(resource="createStaticPage")
+     */
     public function actionCreateStaticPage() {
 	// render form
     }
@@ -414,6 +440,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="updateStaticPage")
+     */
     public function actionUpdateStaticPage($id) {
 	if (!is_numeric($id)) 
 	    $this->handleBadArgument ($id);
@@ -441,7 +470,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
-    
+    /**
+     * @Secured(resource="deleteStaticPage")
+     */
     public function handleDeleteStaticPage($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$this->doDeleteStaticPage($id);

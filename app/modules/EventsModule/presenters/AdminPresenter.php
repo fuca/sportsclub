@@ -22,6 +22,7 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\EventsModule\Model\Service\EventService,
     \App\SystemModule\Model\Service\ISportGroupService,
     \App\UsersModule\Model\Service\IUserService,
+    \App\SecurityModule\Model\Misc\Annotations\Secured,
     \Nette\Utils\ArrayHash,
     \App\Model\Entities\Event,
     \App\EventsModule\Forms\EventForm,
@@ -33,6 +34,7 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
 
 /**
  * AdminEventPresenter
+ * @Secured(resource="EventsAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AdminPresenter extends SystemAdminPresenter {
@@ -55,14 +57,23 @@ class AdminPresenter extends SystemAdminPresenter {
      */
     public $userService;
 
+    /**
+     * @Secured(resource="default")
+     */
     public function actionDefault() {
 	// render grid
     }
 
+    /**
+     * @Secured(resource="addEvent")
+     */
     public function actionAddEvent() {
 	// render form
     }
 
+    /**
+     * @Secured(resource="updateEvent")
+     */
     public function actionUpdateEvent($id) {
 	try {
 	    $e = $this->eventsService->getEvent($id);
@@ -82,6 +93,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    /**
+     * @Secured(resource="updateParticipation")
+     */
     public function actionUpdateParticipation($id) {
 	try {
 	    $e = $this->eventsService->getEvent($id);
@@ -117,6 +131,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
 
+    /**
+     * @Secured(resource="deleteEvent")
+     */
     public function handleDeleteEvent($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument($id);

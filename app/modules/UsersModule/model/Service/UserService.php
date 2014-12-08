@@ -428,6 +428,23 @@ class UserService extends BaseService implements IUserService {
 	}
 	
     }
+    
+    public function updateLastLogin(User $u) {
+	try {
+	    $user = $this->getUser($u->getId(), false);
+	    $user->setLastLogin(new \Nette\Utils\DateTime());
+	    
+	    $this->entityManager->merge($user);
+	    $this->entityManager->flush();
+	    $this->invalidateEntityCache($user);
+	} catch (\Exception $e) {
+	    
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+	$this->onUpdate($u);
+	return $u;
+    }
+    
 
     public function permitWebProfile($id, User $u) {
 	if (!is_numeric($id))

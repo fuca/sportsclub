@@ -70,6 +70,5 @@ Form::extensionMethod('addImageSelectBox', function(Form $_this, $name, $label =
 //};
 
 $container = $configurator->createContainer();
-$container->addService('robotLoader', $robotLoader); // tohle tu musi byt skrz PresenterTree
-
+$container->addService('robotLoader', $robotLoader);
 return $container;

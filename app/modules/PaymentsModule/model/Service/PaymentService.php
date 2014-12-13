@@ -19,8 +19,8 @@
 namespace App\PaymentsModule\Model\Service;
 
 use \App\Model\Entities\Payment,
+    \App\Model\Entities\User,
     \App\Model\Misc\Enum\PaymentStatus,
-    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities,
     \Nette\DateTime,
     \Nette\Caching\Cache,
     \Kdyby\Monolog\Logger,
@@ -248,7 +248,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	}
     }
 
-    public function getPaymentsDatasource(Entities\User $u = null) {
+    public function getPaymentsDatasource(User $u = null) {
 	
 	$model = $this->paymentDao->createQueryBuilder('pa');
 	if ($u !== null) {
@@ -257,17 +257,17 @@ class PaymentService extends BaseService implements IPaymentService {
 	return new Doctrine($model);
     }
 
-    public function markAsDoneSent($id, Entities\User $user) {
+    public function markAsDoneSent($id, User $user) {
 	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	$this->markAs($id, $user, PaymentStatus::SENT);
     }
     
-    public function markAsDoneAcc($id, Entities\User $user) {
+    public function markAsDoneAcc($id, User $user) {
 	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	$this->markAs($id, $user, PaymentStatus::YES_ACCOUNT);
     }
     
-    public function markAsDoneCash($id, Entities\User $user) {
+    public function markAsDoneCash($id, User $user) {
 	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
 	$this->markAs($id, $user, PaymentStatus::YES_CASH);
     }
@@ -278,7 +278,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	return $p->getVs();
     }
    
-    private function markAs($id, Entities\User $user, $as) {
+    private function markAs($id, User $user, $as) {
 	try {
 	    $db = $this->paymentDao->find($id);
 	    if ($db !== null) {

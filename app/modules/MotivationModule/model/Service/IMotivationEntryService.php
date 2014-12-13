@@ -18,7 +18,8 @@
 
 namespace App\MotivationModule\Model\Service;
 
-use \App\Model\Entities\MotivationEntry;
+use \App\Model\Entities\MotivationEntry,
+    \App\Model\Entities\User;
 
 /**
  * Interface for MotivationEntryService
@@ -30,6 +31,6 @@ interface IMotivationEntryService {
     function updateEntry(MotivationEntry $e);
     function deleteEntry($id);
     function getEntry($id);
-    function getEntriesDataSource();
+    function getEntriesDataSource(User $u = null);
     
 }

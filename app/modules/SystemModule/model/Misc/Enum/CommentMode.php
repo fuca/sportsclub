@@ -27,17 +27,15 @@ final class CommentMode extends EnumType implements IEnum {
     const 
 	ALLOWED	    = "yes",
 	RESTRICTED  = "no",
-	SIGNED	    = "sig",
-	GROUP	    = "grp";
+	SIGNED	    = "sig";
     
     protected $name = "CommentMode";
-    protected $values = [self::ALLOWED, self::RESTRICTED, self::SIGNED, self::GROUP];
+    protected $values = [self::ALLOWED, self::RESTRICTED, self::SIGNED];
     
     public static function getOptions() {
-	return array(
+	return [
 	    self::ALLOWED	=>  "systemModule.commentMode.allowed", 
 	    self::RESTRICTED	=>  "systemModule.commentMode.restricted", 
-	    self::SIGNED	=>  "systemModule.commentMode.signedIn", 
-	    self::GROUP		=>  "systemModule.commentMode.group");
+	    self::SIGNED		=>  "systemModule.commentMode.signedIn"];
     }
 }

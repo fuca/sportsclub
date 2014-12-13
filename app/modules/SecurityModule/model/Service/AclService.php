@@ -82,9 +82,7 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
 		}
 	    }
 	} catch (Exceptions\DataErrorException $e) {
-	    dd($e);
-	    // TODO co s tím? LOG a nic víc? jak upozornit uživatele,
-	    // že nemůže být přihlášen?
+	    $this->logError($e->getMessage());
 	}
     }
 

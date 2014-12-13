@@ -11,9 +11,9 @@
 {/block}
     
 {block #title}
-    {$thread->getTitle()} {$titleCrumbSeparator}
-    {$forumTitle} {$titleCrumbSeparator}
-    {_communicationModule.club.forum.heading, null, ["title"=>$groupLabel]} {$titleCrumbSeparator} 
+    {$thread->getTitle()}  {$titleCrumbSeparator} 
+    {$forumTitle}  {$titleCrumbSeparator} 
+    {_communicationModule.club.forum.heading, null, ["title"=>$groupLabel]}  {$titleCrumbSeparator}  
     {include #parent}
 {/block}
 

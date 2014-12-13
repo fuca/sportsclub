@@ -1,6 +1,22 @@
 {var $robots = noindex}
 
-{block content}
-<h1 n:block=title>Oops...</h1>
+{* System module Error presenter *}
 
-<p>Your browser sent a request that this server could not understand or process.</p>
+{layout $layoutsPath."oneColBase.latte"}
+
+{block #breadcrumbs}
+    <li>{_ systemModule.error.error5xx.heading}</li>
+{/block}
+    
+{block #title}
+    {_ systemModule.error.error5xx.heading} 
+     {$titleCrumbSeparator}  
+    {include #parent}
+{/block}
+
+{block #mainBlock}
+<h1>{_ systemModule.error.error5xx.heading}</h1>
+
+<p>{_ systemModule.error.error5xx.content}</p>
+
+<p><small>{_ systemModule.error.error5xx.code}</small></p>

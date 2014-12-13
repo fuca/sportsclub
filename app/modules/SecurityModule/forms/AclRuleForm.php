@@ -102,7 +102,6 @@ class AclRuleForm extends BaseForm {
 		->setRequired('securityModule.aclForm.roleMustFill');
 
 	$this->addSelect('mode', 'securityModule.aclForm.mode', $this->getModes())
-		->setPrompt(self::SLCT_MODE)
 		->addRule(Form::FILLED, 'securityModule.aclForm.modeMustFill')
 		->setRequired('securityModule.aclForm.modeMustFill');
 

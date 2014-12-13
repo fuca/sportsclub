@@ -44,9 +44,6 @@ use \App\Model\Entities\SportGroup,
  */
 class ArticleService extends BaseService implements IArticleService, IRssModel {
     
-    // Image storage extension trait
-    use \Brabijan\Images\TImagePipe;
-    
     const   
 	    DEFAULT_IMAGE_PATH	    = "defaultImagePath",
 	    DEFAULT_THUMBNAIL	    = "defafaultThumbnail",

@@ -5,6 +5,30 @@ club: "Club"
 profile: "Profile"
 administrator: "Administration"
 
+error:
+	heading: "Error"
+	accessDenied.heading: "Access denied"
+	accessDenies.content: "You do not have permission to view this page. Please try contact the web site administrator if you believe you should be able to view this page."
+	accessDenied.code: "error 403"
+
+	pageNotFound404.heading: "Page Not Found"
+	pageNotFound404.content: "The page you requested could not be found. It is possible that the address is incorrect, or that the page no longer exists. Please use a search engine to find what you are looking for."
+	pageNotFound404.code:  "error 404"
+
+	methodNotAllowed.heading: "Method Not Allowed"
+
+	methodNotAllowed.content: "The requested method is not allowed for the URL."
+	methodNotAllowed.code: "error 405"
+
+
+	pageNotFound410.heading: "Page Not Found"
+	pageNotFound410.content: "The page you requested has been taken off the site. We apologize for the inconvenience."
+	pageNotFound410.code:  "error 404"
+
+	error5xx.heading: "Oops..."
+	error5xx.content: "Your browser sent a request that this server could not understand or process."
+	error5xx.code: ""
+
 navigation:
 	options: "/ Options"
 	back: "Back"

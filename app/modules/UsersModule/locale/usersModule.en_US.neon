@@ -12,8 +12,11 @@ passwordChangeForm:
 	group: "Password change"
 	oldPwDoesntMatch: "Old password does not match"
 	newPwsDontMatch: "New passwords do not match"
-	
 
+	oldPw: "Old password"
+	new1: "New password"
+	new2: "New password once more"
+	
 
 messages:
 	badArgumentFormat: "Bad format of user id, '%id%' given"
@@ -112,3 +115,4 @@ public:
 	rosters.bread: "Rosters"
 	rosters.groupsMenu: "Groups"
 	rosterMenu.label: "Roster of %group%"
+	

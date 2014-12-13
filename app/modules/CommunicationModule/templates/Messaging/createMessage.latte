@@ -8,7 +8,7 @@
 {/block}
     
 {block #title}
-    {_communicationModule.user.createMessage.heading} / {include #parent}
+    {_communicationModule.user.createMessage.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}

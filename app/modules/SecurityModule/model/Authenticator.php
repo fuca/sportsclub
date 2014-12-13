@@ -102,8 +102,6 @@ final class Authenticator extends Object implements IAuthenticator {
 	}
 
 	$this->usersService->updateLastLogin($user);
-//	$roles = $this->rolesService->getUserRoles($user);
-//	$user->setRoles($roles);
 	$identity = $user;
 
 	return $identity;

@@ -1,8 +1,22 @@
 {var $robots = noindex}
 
-{block content}
-<h1 n:block=title>Page Not Found</h1>
+{* System module Error presenter *}
 
-<p>The page you requested has been taken off the site. We apologize for the inconvenience.</p>
+{layout $layoutsPath."oneColBase.latte"}
 
-<p><small>error 410</small></p>
+{block #breadcrumbs}
+    <li>{_ systemModule.error.pageNotFound410.heading}</li>
+{/block}
+    
+{block #title}
+    {_ systemModule.error.pageNotFound410.heading} 
+     {$titleCrumbSeparator}  
+    {include #parent}
+{/block}
+
+{block #mainBlock}
+<h1>{_ systemModule.error.pageNotFound410.heading}</h1>
+
+<p>{_ systemModule.error.pageNotFound410.content}</p>
+
+<p><small>{_ systemModule.error.pageNotFound410.code}</small></p>

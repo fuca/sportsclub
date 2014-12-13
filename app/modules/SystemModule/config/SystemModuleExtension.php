@@ -39,6 +39,7 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 
     private $defaults = [
 	"init"=>[
+	    "turnOff"=>false,
 	    "group"=>[
 			"name"		=> "Club",
 			"description"	=> "Root system group"
@@ -72,9 +73,9 @@ ITranslationProvider, IAdminMenuDataProvider, IDatabaseTypeProvider {
 		  "abbr"	=> "root",
 		  "priority"	=>  \App\Model\Service\BaseService::MAX_PRIORITY,
 		  "activity"    => true];
-	$initializer->addSetup("setGroupValues", [$gVals])
-		    ->addSetup("groupInit");
-	
+	$initializer->addSetup("setGroupValues", [$gVals]);
+	if (!$config["init"]["turnOff"])
+		    $initializer->addSetup("groupInit");
     }
 
     public function getTranslationResources() {

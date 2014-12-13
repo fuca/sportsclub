@@ -3,13 +3,6 @@
 use \Nette\Forms\Form,
     \Vodacek\Forms\Controls\DateInput,
     \Doctrine\DBAL\Types\Type;
-	
-
-//if (!class_exists('Tester\Assert')) {
-//	echo "Install Nette Tester using `composer update --dev`\n";
-//	exit(1);
-//}
-//Tester\Environment::setup();
 
 $composer = require __DIR__ . '/../vendor/autoload.php';
 
@@ -25,7 +18,8 @@ $robotLoader = $configurator->createRobotLoader()
 	->addDirectory(__DIR__)
 	->register();
 //$composer->addClassMap($robotLoader->getIndexedClasses());
-//$configurator->addConfig(__DIR__ . '/config/config.local.neon'); // nahrazeni includem v config.neon
+
+$configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConfig.local.neon');
 $configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConfig.neon');
 
 // enum types registering for database use (MUST BE ACCESSIBLE HERE DUE TO CONSOLE COMMAND USAGE)
@@ -56,19 +50,12 @@ Type::addType("WallPostStatus", "\App\Model\Misc\Enum\WallPostStatus");
 
 // form extensions
 DateInput::register($configurator);
-Form::extensionMethod('addImageSelectBox', function(Form $_this, $name, $label = NULL, array $items = NULL, $size = NULL) {
-  return $_this[$name] = new RadekDostal\NetteComponents\ImageSelectBox($label, $items, $size);
-});
+//Form::extensionMethod('addImageSelectBox', function(Form $_this, $name, $label = NULL, array $items = NULL, $size = NULL) {
+//  return $_this[$name] = new RadekDostal\NetteComponents\ImageSelectBox($label, $items, $size);
+//});
 
-\DependentSelectBox\DependentSelectBox::register();
-\DependentSelectBox\JsonDependentSelectBox::register();
-
-// regitration of app modules
-
-//$configurator->onCompile[] = function (Configurator $config, Compiler $compiler) {
-//    $compiler->addExtension('usersModule', new \App\UsersModule\Config\UsersModuleExtension());
-//};
+\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader("class_exists");
 
 $container = $configurator->createContainer();
-$container->addService('robotLoader', $robotLoader);
+$container->addService('robotLoader', $robotLoader); // presenter tree
 return $container;

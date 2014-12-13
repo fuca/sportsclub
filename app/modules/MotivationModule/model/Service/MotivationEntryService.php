@@ -23,7 +23,7 @@ use \Kdyby\Doctrine\EntityDao,
     \App\MotivationModule\Model\Service\IMotivationEntryService,
     \Nette\Utils\DateTime,
     \Grido\DataSources\Doctrine,
-    \Kdyby\GeneratedProxy\__CG__\App\Model\Entities,
+    \App\Model\Entities\User,
     \Kdyby\Monolog\Logger,
     \App\SeasonsModule\Model\Service\ISeasonService,
     \App\UsersModule\Model\Service\IUserService,
@@ -108,7 +108,7 @@ final class MotivationEntryService extends BaseService implements IMotivationEnt
 	}
     }
 
-    public function getEntriesDataSource(Entities\User $u = null) {
+    public function getEntriesDataSource(User $u = null) {
 	$qb = $this->entryDao->createQueryBuilder("e");
 	if ($u === null) {
 	    $model = $qb;

@@ -37,6 +37,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 
      private $defaults = [
 	"init"=>[
+		"turnOff"=>false,
 		"user"=>[ // this configuration is here only for demonstration
 			"name"=>"FBC",
 			"surname"=>"Mohelnice, o.s.",
@@ -65,8 +66,9 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 	
 	// Initializer setup
 	$initializer = $builder->getDefinition($this->prefix("initializer"));
-	$initializer->addSetup("setUserValues", [$config["init"]["user"]])
-		    ->addSetup("userInit");
+	$initializer->addSetup("setUserValues", [$config["init"]["user"]]);
+	if (!$config["init"]["turnOff"])
+	    $initializer->addSetup("userInit");
 	
     }
 

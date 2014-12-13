@@ -9,8 +9,10 @@ body {
     padding: 0;
     font-size: 15px;
     font-family: 'Open Sans',arial,sans-serif;
-    background: #eee;
-/*    background-color: #000 !important;*/
+    background: #eee url("../img/bg.png") no-repeat;
+    background-size: 110% auto;
+    background-position-x: center;
+    background-position-y: top;
    
 }
 

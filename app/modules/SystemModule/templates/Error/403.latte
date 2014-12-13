@@ -1,9 +1,22 @@
 {var $robots = noindex}
 
-{block content}
-<h1 n:block=title>Access Denied</h1>
+{* System module Error presenter *}
 
-<p>You do not have permission to view this page. Please try contact the web
-site administrator if you believe you should be able to view this page.</p>
+{layout $layoutsPath."oneColBase.latte"}
 
-<p><small>error 403</small></p>
+{block #breadcrumbs}
+    <li>{_ systemModule.error.accessDenied.heading}</li>
+{/block}
+    
+{block #title}
+    {_ systemModule.error.accessDenied.heading} 
+     {$titleCrumbSeparator}  
+    {include #parent}
+{/block}
+
+{block #mainBlock}
+<h1>{_ systemModule.error.accessDenied.heading}</h1>
+
+<p>{_ systemModule.error.accessDenied.content}</p>
+
+<p><small>{_ systemModule.error.accessDenied.code}</small></p>

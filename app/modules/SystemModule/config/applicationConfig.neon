@@ -27,13 +27,10 @@
 includes:
 	# - nazev.neon ## nejnizsi priorita
 	# - nazev.neon ## vyssi priorita
-	- applicationConfig.local.neon
+	# - applicationConfig.local.neon ##nejvyssi priorita
 
 parameters:
 	database:
-		dsn: 'mysql:host=127.0.0.1;dbname=sportsclub'
-		user: root
-		password: pw
 		options: 
 			lazy: true
 	models:
@@ -42,7 +39,7 @@ parameters:
 	debugger: 
 		email: "michal.fuca.fucik@gmail.com"
 
-	#wwwDir: %appDir%/../ # defined within framework
+	wwwDir: %appDir%/../www/
 	cacheDir: %tempDir%/cache/
 	modulesDir: %appDir%/modules/
 	libsDir: %appDir%/../vendor/others
@@ -76,22 +73,17 @@ nette:
 	security:
 		#frames: yes ## default no (SAMEORIGIN)
 		
-	#mailer: smtp ## default je sendMailer
+	# mailer: smtp ## default je sendMailer
 
 	forms:
-		#EQUAL: 'Please enter %s' ## we can change default messages here
+		#EQUAL: 'Please enter %s' ## you can change default messages here
 	container:
-		debugger: false #dumps whole DI container
+		debugger: false #dumps whole DI container -> laggy
 	debugger:
 		email: %debugger.email%
 		strictMode: true
 		editor: sublime
 		browser: chromium-browser
-		bar:
-			#- Nette\DI\Diagnostics\ContainerPanel ## already on from container:debugger:true
-			
-		blueScreen: # panely do Laděnky
-			#- DoctrinePanel::renderException
 
 php:
 	date.timezone: Europe/Prague
@@ -111,8 +103,6 @@ doctrine:
 annotations: # configure of annotations extension
 	ignore:	[hideInTree] # array of ignored annotations
 	debug: yes
-
-
 
 monolog:
 	name: %appName%

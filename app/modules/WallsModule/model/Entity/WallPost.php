@@ -213,6 +213,6 @@ class WallPost extends BaseEntity implements IIdentifiable, ICommentable {
     }
 
     public function __toString() {
-	return "{$this->getTitle()} (#{$this->getId()})";
+	return "{$this->getTitle()} ({$this->getId()})";
     }
 }

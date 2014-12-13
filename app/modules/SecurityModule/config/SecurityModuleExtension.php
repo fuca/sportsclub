@@ -41,6 +41,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	"defCommentAppEvents"	=> "created by system",
 	"deleteOldPositions"	=> false,
 	    "init"  =>	[
+		"turnOff"=>false,
 		"roles"	=>  ["admin", "player"]]];
 		    
 
@@ -61,10 +62,12 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	
 	
 	$rValues = array_unique(array_merge($config["init"]["roles"], [$config["defRoleAppEvents"]], ["admin","authenticated"]));
-	$builder->getDefinition($this->prefix("initializer"))
+	$initializer = $builder->getDefinition($this->prefix("initializer"))
 		->addSetup("setRolesValues", [$rValues])
-		->addSetup("setDefaultUserEmail", [$config["defaultUserEmail"]])
-		->addSetup("rolesInit")
+		->addSetup("setDefaultUserEmail", [$config["defaultUserEmail"]]);
+	
+	if (!$config["init"]["turnOff"])
+	    $initializer->addSetup("rolesInit")
 		->addSetup("positionsInit")
 		->addSetup("rulesInit");
     }

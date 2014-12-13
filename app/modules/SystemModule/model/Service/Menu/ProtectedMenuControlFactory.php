@@ -65,10 +65,10 @@ final class ProtectedMenuControlFactory extends BaseService implements IProtecte
 	$this->items = new ArrayCollection(iterator_to_array($iterator));
 	foreach ($this->items as $i) {
 	    $node = $c->addNode($i->getLabel(), $i->getUrl(), $i->getMode(), $i->getData(), $i->getName());
-	    $expl = explode(":", $i->getUrl());
-	    array_pop($expl);
-	    if (implode($expl, ":") == ":".$pres->getName())
+	    
+	    if ($i->getUrl() == ":".$pres->getName().":".$pres->getAction()) {
 		    $c->setCurrentNode ($node);
+	    }
 	}
 	return $c;
     }

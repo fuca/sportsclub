@@ -85,16 +85,6 @@ final class CommentControl extends Control {
 		case CommentMode::SIGNED:
 		    return $this->getUser()->isLoggedIn();
 		    break;
-		case CommentMode::GROUP:
-		    return true; // TODO
-		    $eg = $this->getEntity()->getGroups();
-		    $ug = $this->getUser()->getGroups();
-		    foreach ($eg as $g) {
-			if ($ug->contains($g)) return true;
-			// ptam se, jestli ta skupina je v eg
-			// musim zjistit uzivatelovy skupiny, podivam se do positions a vemu skupiny
-		    }
-		    break;
 	    }
 	}
 	return $this->commenting;

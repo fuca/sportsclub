@@ -1,8 +1,22 @@
 {var $robots = noindex}
 
-{block content}
-<h1 n:block=title>Method Not Allowed</h1>
+{* System module Error presenter *}
 
-<p>The requested method is not allowed for the URL.</p>
+{layout $layoutsPath."oneColBase.latte"}
 
-<p><small>error 405</small></p>
+{block #breadcrumbs}
+    <li>{_ systemModule.error.methodNotAllowed.heading}</li>
+{/block}
+    
+{block #title}
+    {_ systemModule.error.methodNotAllowed.heading} 
+     {$titleCrumbSeparator}  
+    {include #parent}
+{/block}
+
+{block #mainBlock}
+<h1>{_ systemModule.error.methodNotAllowed.heading}</h1>
+
+<p>{_ systemModule.error.methodNotAllowed.content}</p>
+
+<p><small>{_ systemModule.error.methodNotAllowed.code}</small></p>

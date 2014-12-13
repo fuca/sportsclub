@@ -4,7 +4,7 @@
 {block content}
 
 {define title}
-    {_securityModule.loginControl.loginForm.title} / {include parent}
+    {_securityModule.loginControl.loginForm.title} {$titleCrumbSeparator} {include parent}
 {/}
 
 {control loginControl:form}

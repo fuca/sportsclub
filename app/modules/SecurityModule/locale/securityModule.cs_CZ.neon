@@ -1,19 +1,119 @@
+adminMenuItem.label: "Bezpečnost"
+adminMenuItem.description: "Sekce pro správu bezpečnostních prvků"
+protectedMenuItem.label: "Odhlásit"
+protectedMenuItem.description: "Hádej co :-)"
+
 messages:
-	givenPasswordsDontMatch: "Given new passwords do not match"
+	givenPasswordsDontMatch: "Zadaná hesla se neshodují."
 
 loginControl:
-	userLogIn: "Log in"
-	userLogOut: "Log out"
-	userLoggedOut: "Logged out"
-	userLoggedIn: "Logged in as %name%"
+	userLogIn: "Přihlásit"
+	userLogOut: "Odhlásit"
+	user: "Uživatel"
+	notSignedIn: "není přihlášen."
+	userLoggedIn: "Přihlášen jako"
 
 loginControl.messages:
-	userInactive: "Inactive account. If you feel this information is invalid, feel free to contact our office."
-	invalidCredentials: "Wrong username or password"
+	userInactive: "Neaktivní účet. Pokud se domníváte, že tato informace není správná, kontaktujte naši kancelář."
+	invalidCredentials: "Špatný email či heslo"
+	uWereLoggedOut: "Byl jste odhlášen."
+	outCosInactive: "Maximální doba nečinnosti vypršela. Z bezpečnostních důvodů jste byl odhlášen."
 
 loginControl.loginForm:
-	title: "Log in"
-	remember: "Remember me"
+	title: "Přihlásit"
+	heading: "Prosím, přihlaste se."
+	remember: "Zapamatovat"
 	email: "Email:"
-	password: "Password:"
-	submit: "           Let me in           "
+	password: "Heslo:"
+	submit: "Přihlásit"
+	plsPutEmail: "Prosím, zadejte email."
+	plsPutPassword: "Prosím, zadejte heslo."
+	emailPlaceholder: "Emailová adresa"
+	passwordPlaceholder: "Heslo"
+	
+
+admin:
+	roleAdd: "Přidat novou roli"
+	ruleAdd: "Přidat nové pravidlo"
+	posAdd: "Přidat novou pozici"
+	heading: "Správa bezpečnosti"
+	roles.heading: "Uživatelská role"
+	rules.heading: "Pravidla"
+	pos.heading: "Pozice uživatele ve skupině"
+	addPosition.heading: "Nová pozice"
+	addRule.heading: "Nové pravidlo"
+	addRole.heading: "Nová role"
+	updateRole.heading: "Upravit roli"
+	updateRule.heading: "Upravit pravidlo"
+	updatePosition.heading: "Upravit pozici"
+
+admin.messages:
+	roleNameExists: "Role '%name%' již existuje."
+
+admin.grid:
+	rlyDeletePosition: "Opravdu chcete smazat pozici '%pos%'?"
+	rlyDeleteRule: "Opravdu chcete smazat pravidlo '%pos%'?"
+	rlyDeleteRole: "Opravdu chcete smazat roli '%pos%'?"
+
+	deny: "Zamítnout"
+	permit: "Povolit"
+
+	role: "Role"
+	resource: "Zdroj"
+	privilege: "Akce"
+	mode: "Mód"
+
+aclForm:
+	roleSelect: "Vyberte roli .."
+	actionSelect: "Vyberte akci .."
+	modeSelect: "Vyberte mód .."
+	resourceSelect: "Vyberte zdroj .."
+	
+	role: "Role"
+	action: "Akce"
+	mode: "Mód"
+	resource: "Zdroj"
+
+posForm:
+	editPosGroup: "Upravit pozici"
+	user: "Uživatel"
+	role: "Role"
+	group: "Skupina"
+	note:	"Poznámka"
+	publishContact: "Zobrazit v kontaktech"
+	name: "Jméno"
+	userSelect: "Vyber uživatele .."
+	groupSelect: "Vyber skupinu .."
+	roleSelect: "vyber roli .. "
+	newPosGroup: "Nová pozice"
+
+roleForm:
+	name: "Jméno"
+	parents: "Nadřazená role"
+	note: "Poznámka"
+	newRoleGroup: "Nová role"
+	editRoleGroup: "Upravit roli"
+
+navigation:
+	back: "Zpět"
+
+
+public:
+	contacts.bread: "Kontakty"
+	contacts.groupsMenu: "Skupiny"
+	groupPositions.heading: "Kontakty pro skupinu %group%"
+	menu.contacts.label: "Kontakty"
+	
+contactControl:
+	identificationNumber.label: "IČ"
+	taxIdentificationNumber.label: "DIČ"
+	bankAccountNumber.label: "Číslo účtu"
+	moreContacts.label: "více kontaktů"
+	quick.heading: "Rychlý kontakt"
+	club.heading: "Kontakt na klub"
+	contactPerson.label: "Kontaktní osoba"
+
+
+authorization:
+	noPrivilegesAction: "Na provedení této akce nemáte potřebné oprávnění!"
+	noPrivilegesSection: "Na vstup do této sekce nemáte potřebné oprávnění!"

@@ -124,7 +124,7 @@ events:
         listeners: on
 	
 translation:
-	default: en
+	default: cs
 	whitelist: [cs, en, de] #....
 	fallback: [cs_CZ, cs]
 	debugger: on
@@ -133,7 +133,7 @@ translation:
 	resolvers:
 		session: on
 		request: off # checking locale from request
-		header: on # accept language header preferred locales 
+		header: off # accept language header preferred locales 
 
 #
 # ===================================

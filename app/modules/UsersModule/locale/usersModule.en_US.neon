@@ -2,9 +2,9 @@ adminMenuItem.label: "Users"
 protectedMenuDataItem.label: "Personal data"
 protectedMenuProfileItem.label: "Profile"
 
-adminMenuItem.description: "Administration of users and their web profiles."
-protectedMenuDataItem.description: "User's own administration of personal data."
-protectedMenuProfileItem.description: "User's own administration of web profile."
+adminMenuItem.description: "Administration of users and their web profiles"
+protectedMenuDataItem.description: "User's own administration of personal data"
+protectedMenuProfileItem.description: "User's own administration of web profile"
 
 common:
 
@@ -37,11 +37,11 @@ admin:
 	
 
 admin.messages:
-	dependencyErrorDelete: "You cannot delete entity, which is still in use"
-	newPwSuccess: "New password for user with id '%id%' was generated"
-	newPwFailed: "Generating of new password for user '%id%' failed"
-	createUserFailed: "Saving of new user failed"
-	webProfileUpdateFailed: "Update of web profile #%id% failed"
+	dependencyErrorDelete: "You cannot delete entity, which is still in use."
+	newPwSuccess: "New password for user with id '%id%' was generated."
+	newPwFailed: "Generating of new password for user '%id%' failed."
+	createUserFailed: "Saving of new user failed."
+	webProfileUpdateFailed: "Update of web profile #%id% failed."
 
 admin.grid:
 	never: "Never"
@@ -51,15 +51,15 @@ admin.grid:
 	updateWp: "Update user's web profile"
 	denyProfile: "Deny web profile changes"
 	permitProfile: "Permit web profile changes"
-	reallyDeleteItems: "Are you sure you want to delete %i items?"
+	reallyDeleteItems: "Do you really want to delete %i items?"
 	
 admin.wpGrid:
 	photo.label: "Photo"
 	content.label: "Content"
-	reallyPermitItems: "Do you really want to permit %i items"
-	reallyPermitItem: "Do you really want to PERMIT web profile #%id%"
-	reallyDenyItems: "Do you really want to deny %i items"
-	reallyDenyItem: "Do you really want to DENY web profile #%id%"
+	reallyPermitItems: "Do you really want to permit %i items?"
+	reallyPermitItem: "Do you really want to PERMIT web profile #%id%?"
+	reallyDenyItems: "Do you really want to deny %i items?"
+	reallyDenyItem: "Do you really want to DENY web profile #%id%?"
 
 webProfForm:
 	personalLikes.label: "Personal likes"
@@ -111,7 +111,7 @@ protected:
 	userProfile: "Web profile edit"
 
 public:
-	webProfile.notPublished: "Content of this web profile is not desired to be displayed"
+	webProfile.notPublished: "Content of this web profile is not desired to be displayed."
 	rosters.bread: "Rosters"
 	rosters.groupsMenu: "Groups"
 	rosterMenu.label: "Roster of %group%"

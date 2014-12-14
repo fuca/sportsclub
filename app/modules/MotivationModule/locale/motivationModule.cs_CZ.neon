@@ -1,0 +1,70 @@
+adminMenuItem.label: "Motivace"
+protectedMenuItem.label: "Motivace"
+
+adminMenuItem.description: "Sekce pro správu motivačních záznamů"
+protectedMenuItem.description: "Přehled motivačních záznamů uživatele"
+
+taxForm:
+	groupNew: "Nová povinost"
+	groupEdit: "Upravit povinnost"
+	season: "Sezóna"
+	group: "Skupina"
+	editor: "Editor"
+	update: "Změnil"
+	ordered: "Vytvořil"
+	credit: "Kredity"
+	publicNoteToggle: "Přidat veřejnou poznámku"
+	publicNote: "Poznámka"
+	seasonSel: "Vyber sezónu .."
+	seasonMustFill: "Musí být vybraná Sezóna."
+	groupSel: "Vyber skupinu .."
+	groupMustFill: "Musí být vybraná skupina."
+	creditMustNumeric: "Kredity musí být čísla."
+
+taxForm.messages:
+	taxAlreadyExist: "Povinnosti pro danou sezónu a skupinu již existují."
+
+entryForm:
+	groupNew: "Nový záznam motivace"
+	member: "Uživatel"
+	subject: "Předmět"
+	amount: "Množství"
+	editor: "Editor"
+	season: "Sezóna"
+	seasonSel: "Vyber sezónu .."
+	type: "Typ"
+	
+admin:
+	taxAdd: "Přidej povinnost"
+	entryAdd: "Přidat záznam"
+	heading: "Motivační zdroje"
+	tax.heading: "Motivační povinnosti"
+	entry.heading: "Motivační záznamy"
+	createEntry.heading: "Nový motivační záznam"
+	createTax.heading: "Nová povinnost"
+	updateEntry.heading: "Upravit motivační záznam"
+	updateTax.heading: "Upravit povinnost"
+
+admin.grid:
+	season: "Sezóna"
+	group: "Skupina"    
+	credit: "Kredity"
+	orderedDate: "Přidáno"
+	note: "Poznámky"
+	owner: "Vlastník"
+	amount: "Množství"
+	type: "Typ"
+	rlyDeleteTaxId: "Opravdu chcete smazat povinnost #%id%?"
+protected:
+	myMotivation: "Moje motivace"
+
+protected.grid:
+	season: "Sezóna"
+	amount: "Množství"
+	updated: "Změna"
+	type: "Typ"
+	subject: "Předmět"
+
+user:
+	userMotivation.heading: "Motivace"
+	

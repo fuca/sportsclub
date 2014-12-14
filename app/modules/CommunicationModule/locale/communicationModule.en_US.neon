@@ -1,8 +1,8 @@
 
 adminMenuItem.label: "Forum"
-adminMenuItem.description: "Administration of communication resources."
+adminMenuItem.description: "Administration of communication resources"
 protectedForumMenuItem.label: "Forum"
-protectedForumMenuItem.description: "Provides overview of forums."
+protectedForumMenuItem.description: "Provides overview of forums"
 protectedMessagesMenuItem.label: "Messages"
 protectedMessagesMenuItem.description: "Contains user management of private messages"
 
@@ -31,8 +31,8 @@ admin.grid:
 	delete: "Delete"
 
 admin.grid.messages:
-	rlyDelForum: "Do you really want to delete forum #%id%"
-	rlyDelForumItems: "Do you really want to delete %i forums"
+	rlyDelForum: "Do you really want to delete forum #%id%?"
+	rlyDelForumItems: "Do you really want to delete %i forums?"
 
 grid:
 	markAsUnread: "Mark as unread"
@@ -41,7 +41,7 @@ grid:
 	starToggle: "Star toggle"
 
 forumForm.errors:
-	forumAlreadyExist: "Forum with given title already exist"
+	forumAlreadyExist: "Forum with given title already exist."
 
 messaging:
 	messageAdd: "Create new message"
@@ -64,9 +64,9 @@ forumForm:
 
 forThrForm:
 	title: "Title"
-	titleMustFill: "Title of forum thread must be filled"
+	titleMustFill: "Title of forum thread must be filled."
 	description: "Description"
-	descriptionMustFill: "Description must be filled"
+	descriptionMustFill: "Description must be filled."
 	forum: "Forum"
 	lastActivity: "Last activity"
 	author: "Author"

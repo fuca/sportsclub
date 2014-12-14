@@ -22,7 +22,7 @@ admin:
 	updateArticle.bread: "Update article"
 
 admin.tooltip:
-	pictureChange: "If you would like to change picture, simply choose new one and save changes"
+	pictureChange: "If you would like to change picture, simply choose new one and save changes."
 
 admin.grid:
 	change: "Change"
@@ -36,10 +36,10 @@ admin.grid:
 	rlyDelArticle: "Do you really want to delete article #%id%?"
 
 articleForm.errors:
-	articleAlreadyExist: "Article with given title already exist"
+	articleAlreadyExist: "Article with given title already exist."
 
 
 publicMenu:
 	articles.label: "Articles"
 public.messages:
-	noArticles: "No articles were found for this category"
+	noArticles: "No articles were found for this category."

@@ -1,1 +1,20 @@
-cancelButton.label: "Cancel"
+common:
+	yes: "Ano"
+	no: "Ne"
+	delete: "Smazat"
+	update:	"Upravit"
+	cancel: "Zrušit"
+
+forms:
+	cancelButton.label: "       Zrušit      "
+	submitButton.label: "       Uložit      "
+
+messages:
+	badArgumentFormat: "Špatný formát argumentu '%id%'"
+	couldNotSaveData: "Data nelze uložit. | Data '%id%' nelze uložit."
+	couldNotLoadData: "Data nelze načíst. | Data '%id%' nelze načíst."
+	couldNotDeleteData: "Data nelze odstranit. | Data '%id%' nelze odstranit."
+	nothingToShow: "Žádné údaje nebyly nalezeny."
+
+admin.messages:
+	dependencyErrorDelete: "Nelze smazat objekt, který je používán jiným objektem (%id%)."

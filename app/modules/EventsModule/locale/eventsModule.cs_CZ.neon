@@ -1,5 +1,82 @@
+adminMenuItem.label: "Události"
+clubMenuItem.label: "Události"
+userMenuItem.label: "Moje události"
+
+adminMenuItem.description: "Sekce pro správu událostí"
+clubMenuItem.description: "Přehled všech dostupných událostí"
+userMenuItem.description: "Poskztuje přehled událostí na kterých se aktuálně uživatel podílí"
+
+
+evCalPopTitle: "Události pro "
+eventsForDate: "Akce se konají v termínu %date%"
+eventEnds: "Končí "
+
+readMore: "..."
+
+userEvents: "Události na kterých se účastníte"
+
+common:
+	yes: "Ano"
+	no: "Ne"
+club:
+	calendarTab.label: "Kalendář"
+	agendaTab.label: "Agenda"
+	eventsSection: "Události"
+	heading: "Přehled"
+	showEvent.heading: "Detail události"
+	showEventDay.heading: "Událost v jednom dni"
+	
+grid:
+	title: "Název"
+	view: "Jdi na událost"
+	type: "Typ"
+	takeSince: "Začíná"
+	takeTill: "Končí"
+	updateParticipation: "Upravit účast"
+	updateEvent: "Upravit událost"
+	deleteEvent: "Upravit událost"
+
 admin:
-	eventAdd: "Add event"
-	eventNew: "New event"
+	eventAdd: "Přidat událost"
+	eventNew: "Nová událost"
+	event.heading: "Události"
+	heading: "Zdroje událostí"
+	addEvent.heading: "Nová událost"
+	updateEvent.heading: "Upravit událost %title"
+	updateEvent.title: "Upravit událost"
+	updateParticipation.heading: "Aktualizace účasti na %title%"
+	updateParticipation.bread: "Upravit účast události"
+	updateParticipation.title: "Upravit účast události"
+
 eventForm.errors:
-	eventAlreadyExist: "Event with given title already exist"
+	eventAlreadyExist: "Událost s daným názvem již existuje."
+
+protected.messages:
+	noDataFound: "Žádná data"
+
+partForm:
+	content: "Poznámka k účasti"
+	owners: "Uživatelé"
+	type: "Účast"
+	errorSave: "Účast pro uživatele #%user% na události #%event% nebyla aktualizována."
+	errorDupl: "Účast pro uživatele #%user% na události #%event% již existuje."
+
+participation:
+	cancel: "Zrušit účast"
+	type: "Účast"
+	yes.heading: "Účast (%count%)"
+	no.heading: "Neúčast (%count%)"
+
+eventParticipationType:
+	noIwont: "Ne, nechci se zúčastnit této události."
+	yesIDo: "Ano, chci se zúčastnit této události."
+
+eventType:
+	training: "Trénink"
+	match: "Zápas"
+	leagueMatch: "Ligový zápas"
+	teambuilding: "Teambuilding"
+	meeting: "Setkání"
+
+user:
+	userEvents.heading: "Uživatelské události"

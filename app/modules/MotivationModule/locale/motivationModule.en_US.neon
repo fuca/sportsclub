@@ -1,8 +1,8 @@
 adminMenuItem.label: "Motivation"
 protectedMenuItem.label: "Motivation"
 
-adminMenuItem.description: "Section for administration of motivation entries and motivation taxes."
-protectedMenuItem.description: "Overview of user related motivation resources."
+adminMenuItem.description: "Section for administration of motivation entries and motivation taxes"
+protectedMenuItem.description: "Overview of user related motivation resources"
 
 taxForm:
 	groupNew: "New motivation tax"
@@ -22,7 +22,7 @@ taxForm:
 	creditMustNumeric: "Credit must be type of numeric"
 
 taxForm.messages:
-	taxAlreadyExist: "Motivation tax for given season and group already exist"
+	taxAlreadyExist: "Motivation tax for given season and group already exist."
 
 entryForm:
 	groupNew: "New motivation entry"
@@ -54,7 +54,7 @@ admin.grid:
 	owner: "Owner"
 	amount: "Amount"
 	type: "Type"
-	rlyDeleteTaxId: "Do you really want to delete motivation tax #%id%"
+	rlyDeleteTaxId: "Do you really want to delete motivation tax #%id%?"
 protected:
 	myMotivation: "My motivation"
 

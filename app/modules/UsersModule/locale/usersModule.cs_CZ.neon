@@ -1,13 +1,118 @@
+adminMenuItem.label: "Uživatelé"
+protectedMenuDataItem.label: "Osobní údaje"
+protectedMenuProfileItem.label: "Profil"
+
+adminMenuItem.description: "Správa uživatelů a jejich webových profilů"
+protectedMenuDataItem.description: "Správa osobních dat uživatele"
+protectedMenuProfileItem.description: "Správa webového profilu uživatele"
+
+common:
+
+passwordChangeForm:
+	group: "Změna hesla"
+	oldPwDoesntMatch: "Staré heslo nesouhlasí"
+	newPwsDontMatch: "Nové heslo nesouhlasí"
+
+	oldPw: "Staré heslo"
+	new1: "Nové heslo"
+	new2: "Nové heslo znovu"
+	
+
 messages:
-	badArgumentFormat: "Bad format of user id, '%id%' given"
+	badArgumentFormat: "Špatný formát ID uživatele '%id%'"
+	passwordChanged: "Vaše heslo bylo úspěšně změněno"
+	
+admin:
+	userNew: "Nový uživatel"
+	userAdd: "Vytvořit nového uživatele"
+	userEdit: "Upravit uživatele"
+	profileEdit: "Upravit webový profil uživatele"
+	usersGrid: "Uživatelé"
+	wpPermitGrid: "Webové profily čekající na povolení"
+	heading: "Správa uživatelů"
+	newUser.heading: "Nový uživatel"
+	updateUser.heading: "Upravit uživatele"
+	updateProfile.title: "Upravit webový profil"
+	updateProfile.bread: "Upravit webový profil uživatele %name%"
 	
 
 admin.messages:
-	reallyDeleteItem: "Are you sure you want to delete %i items?"
-	dependencyErrorDelete: "You cannot delete entity, which is still in use"
-	newPwSuccess: "New password for user with id '%id%' was generated"
-	newPwFailed: "Generating of new password for user '%id%' failed"
-	createUserFailed: "Saving of new user failed"
-	deleteUserFailed: "Deleting user with id '%id%' failed"
-	updateUserFailed: "Update user with id '%id%' failed"
-	toggleUserFailed: "User with id '%id' activity toggle operation failed"
+	dependencyErrorDelete: "Nelze smazat objekt, který je nyní používán."
+	newPwSuccess: "Nové heslo pro uživatele s id '%id%' bylo změněno."
+	newPwFailed: "Vygenerování nového hesla pro uživatele '%id%' selhalo."
+	createUserFailed: "Uložení nového uživatele se nezdařilo."
+	webProfileUpdateFailed: "Uložení webového profilu #%id% selhalo."
+
+admin.grid:
+	never: "Nikdy"
+	update: "Uložit"
+	delete: "Smazat"
+	pwRegen: "Vygenerovat nové heslo"
+	updateWp: "Upravit profil uživatele"
+	denyProfile: "Zamítnout změny webového profilu"
+	permitProfile: "Povolit změny webového profilu"
+	reallyDeleteItems: "Opravdu chcete smazat všechny vybrané položky?"
+	
+admin.wpGrid:
+	photo.label: "Foto"
+	content.label: "Obsah"
+	reallyPermitItems: "Opravdu chcete povolit všechny vybrané položky?"
+	reallyPermitItem: "Opravdu chcete POVOLIT webový profil #%id%?"
+	reallyDenyItems: "Opravdu chcete zamítnout všechny vybrané položky?"
+	reallyDenyItem: "Opravdu chcete ZAMÍTNOUT webový profil #%id%?"
+
+webProfForm:
+	personalLikes.label: "Co mám rád"
+	personalDisLikes.label: "Co nemám rád"
+	personalInterests.label: "Moje zájmy"
+	jerseyNumber.label: "Číslo dresu"
+	jerseyNumber.mustNumber: "Číslo dresu musí být číslo"
+	equipment.label: "Vybavení"
+	favBrand.label: "Oblíbená značka"
+	favClub.label: "Oblíbený klub"
+	experience.label: "Zkušenosti"
+	howGotThere.label: "Co mě sem přivedlo"
+	moreAboutMe.label: "Více o mě"
+	picture.label: "Foto"
+	signature.label: "Podpis"
+	status.label: "Status"
+	publish.label: "Veřejný profil"
+	memberSince.label: "Členem od"
+	
+usrForm:
+	active: "Aktivní"
+	newUser: "Nový uživatel"
+	updateUser: "Upravit užvatele"
+	nick: "Přezdívka"
+	name: "Jméno"
+	surname: "Příjmení"
+	birthNumber: "Datum narození"
+	leagueId: "Identifikátor v lize"
+	livingAddress: "Adresa trvalého bydliště"
+	street: "Ulice"
+	houseNum: "Číslo popisné"
+	city: "Město"
+	postCode: "PSČ"
+	usrContact: "Kontakt"
+	phone: "Telefon"
+	email: "Email"
+	job: "Zaměstnání"
+	contactPerson: "Kontaktní osoba"
+	contName: "Jméno"
+	contPhone: "Telefon"
+
+user:
+	webProfile.heading: "Webový profil"
+	personalData.heading: "Osobní data"
+	default.bread: "Osobní sekce"
+	
+protected: 
+	userData: "Upravit osobní data"
+	userProfile: "Upravit webový profil"
+
+public:
+	webProfile.notPublished: "Zobrazení obsahu této stránky není povoleno."
+	rosters.bread: "Seznamy"
+	rosters.groupsMenu: "Skupiny"
+	rosterMenu.label: "Seznam pro skupinu %group%"
+	

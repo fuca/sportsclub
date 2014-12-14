@@ -79,7 +79,7 @@ class MotivationTax extends BaseEntity implements IIdentifiable {
     }
 
     public function __toString() {
-	return "{$this->getGroup()} {$this->getSeason()} (#{$this->getId()})";
+	return "{$this->getSportGroup()} {$this->getSeason()} (#{$this->getId()})";
     }
     
     public function getCredit() {

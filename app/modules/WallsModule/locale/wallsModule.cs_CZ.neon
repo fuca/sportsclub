@@ -1,0 +1,68 @@
+
+adminMenuItem.label: "Nástěnky"
+protectedMenuItem.label: "Nástěnky"
+
+adminMenuItem.description: "Správa nástěnek jednotlivých skupin"
+protectedMenuItem.description: "Přehled všech nástěnek a jejich příspěvků"
+
+admin:
+	wallPostNew: "Nový příspěvek"
+	wallPostAdd: "Přidat příspěvek"
+	heading: "Správa nástěnek"
+	wallPost.heading: "Příspěvky"
+	addWallPost.heading: "Nový příspěvek"
+	updateWallPost.heading: "Upravit příspěvek"
+	updateWallPost: "Upravit příspěvek"
+
+admin.wallPostForm:
+	title: "Název"
+	showFrom: "Zobrazit od"
+	showTo: "Zobrazit do"
+	content: "Obsah"
+	highlight: "Oznámení"
+	status: "Status"
+	commentMode: "Komentáře"
+	groups: "Skupiny"
+	author: "Autor"
+	editor: "Editor poslední změny"
+	titleMustFill: "Musí být vyplněn název."
+	showFromMustFill: "Musí být vyplněno pole zobrazit od."
+	showToMustFill: "Musí být vyplněno pole zobrazit do."
+	contentMustFill: "Musí být vyplněn obsah příspěvku."
+	
+	
+
+admin.wallPostForm.errors:
+	wallPostAlreadyExist: "Příspěvek s daným názvem již existuje."
+
+admin.grid:
+	title: "Název"
+	status: "Status"
+	cmntMode: "Komentáře"
+	author: "Autor"
+	change: "Změna"
+
+admin.grid.messages:
+	rlyDelWallPost: "Opravdu chete smazat příspěvek #%id%?"
+
+club:
+	heading: "Nástěnka skupiny %group%"
+	wallPosts.heading: "Nástěnka pro %cat% kategorii"
+	showWallPost.heading: "Detail nástěnky"
+	changeTime: "Poslední změna"
+	author: "Autor"
+	relatedGroups: "Související skupiny"
+	showTo: "Zobrazit do"
+	history.heading: "Další příspěvky"
+	wallpostHighlights: "Oznámení a upozornění"
+
+club.messages:
+	noWallPosts: "Na této nástěnce nejsou žádné příspěvky."
+
+postStatus:
+	draft: "Koncept"
+	published: "Publikováno"
+	notPub: "Nepublikováno"
+
+
+    

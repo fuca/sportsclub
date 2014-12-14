@@ -1,0 +1,37 @@
+adminMenuItem.label: "Platby"
+protectedMenuItem.label: "Platby"
+
+adminMenuItem.description: "Sekce správy plateb"
+protectedMenuItem.description: "Přehled plateb uživatele"
+
+admin.grid.messages:
+    rlyDelPayment: "Opravdu chcete smazat platbu #%id%?"
+    rlyDelPaymentItems: "Opravdu chcete smazat tyto %i platby?"
+admin.grid:
+    user: "Uživatel"
+    season: "Sezóna"
+    ordered: "Přidáno"
+    amount: "Částka"
+    status: "Status"
+    dueDate: "Datum splatnosti"
+    subject: "Předmět"
+    markDoneAcc: "Zaplaceno na účet"
+    markDoneCash: "Zaplaceno hotově"
+    markSent: "Odesláno"
+
+admin:
+    paymentNew: "Nová platba"
+    paymentAdd: "Přidat novou platbu"
+    heading: "Správa plateb"
+    payment.heading: "Platby"
+    addPayment.heading: "Nová platba"
+    updatePatment.heading: "Upravit platbu"
+
+
+user:
+    userPayments: "Moje platby"
+    paymentDetailId: "Detail platby"
+    payments.heading: "Platby"
+
+protected.grid.messages:
+    rlyMarkAsSent: "Opravdu chcete označit platbu #%id% jako odeslanou?"

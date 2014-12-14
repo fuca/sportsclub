@@ -1,0 +1,40 @@
+adminMenuItem.label: "Sezóny"
+adminMenuItem.description: "Sekce pro správu sezón, sezónních povinnosti a přihlášek"
+
+admin:
+	seasonAdd: "Přidat novou sezónu"
+	taxAdd: "Přidat novou sezónní povinnost"
+	appAdd: "Přidat novou sezónní přihlášku"
+	heading: "Sekce správy sezón"
+	season.heading: "Sezóny"
+	tax.heading: "Sezńní povinnosti"
+	apps.heading: "Sezónní přihlášky"
+	addSeasonTax.heading: "Nová sezónní povinnost"
+	addSeasonApplication.heading: "Nová sezónní přihláška"
+	addSeason.heading: "Nová sezóna"
+
+	updateSeason.heading: "Upravit sezónu %title%"
+	updateSeason.title: "Upravit sezónu"
+	updateSeasonApplication.heading: "Upravit sezónní přihlášku %name%"
+	updateSeasonApplication.title: "Upravit sezónní přihlášku"
+	updateSeasonTax.heading: "Upravit sezónní povinnost"
+
+admin.grid:
+	delete: "Smazat"
+	update: "Upravit"
+	
+	reallyDeleteAppId: "Opravdu chcete smazat sezónní přihlášku #%id%?"
+	reallyDeleteTaxId: "Opravdu chcete smazat sezónní povinnost #%id%?"
+	reallyDeleteSeasonId: "Opravdu chcete smazat sezónu #%id%?"
+
+admin.error:
+	seasonGroupExist: "Záznam pro tuto sezónu a skupinu již existuje."
+	seasonTaxIdDoesntExist: "Sezónní povinnost #%id% neexistuje."
+	seasonAppIdDoesntExist: "Sezónní přihláška #%id% neexistuje."
+	seasonAppUniqueExist: "Sezónní přihláška pro daného uživatele, skupinu a sezónu již existuje."
+	appDeadlineExpired: "Uzávěrka přihlášek pro tuto skupinu v dané sezóně již skončila."
+	noTaxForSeasonAndGroup: "Nejdříve musíte vytvořit sezónní povinnost pro danou sezónu a skupinu."
+
+seasonForm.errors:
+	labelAlreadyExist: "Sezóna s daným názvem '%label%' již existuje."
+

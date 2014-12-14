@@ -1,0 +1,93 @@
+
+adminMenuItem.label: "Fórum"
+adminMenuItem.description: "Sekce pro správu komunikačních prostředků"
+protectedForumMenuItem.label: "Fórum"
+protectedForumMenuItem.description: "Poskytuje přehled fóra"
+protectedMessagesMenuItem.label: "Zprávy"
+protectedMessagesMenuItem.description: "Obsahuje správu soukromých zpráv uživatele"
+
+admin:
+	forumAdd: "Přidat fórum"
+	forumNew: "Nové fórum"
+	heading: "Komunikační prostředky"
+	forum.heading: "Fórum"
+	addForum.heading: "Nové fórum"
+	updateForum.heading: "Upravit fórum %title%"
+	updateForum.bread: "Upravit fórum"
+	updateForum.title: "Upravit fórum"
+
+	forumThrAdd: "Přidat vlákno"
+	forumThread.heading: "Vlákno"
+	addForumThr.heading: "Nové vlákno"
+	updateForumThr.bread: "Upravit vlákno"
+	updateForumThr.title: "Upravit vlákno"
+	updateForumThr.heading: "Vlákno '%title%' upravit"
+
+admin.grid:
+	title: "Název"
+	comments: "Komentář"
+	author: "Autor"
+	change: "Změnit"
+	delete: "Smazat"
+	forum: "Fórum"
+
+admin.grid.messages:
+	rlyDelForum: "Opravdu chcete smazat fórum #%id%"
+	rlyDelForumItems: "Opravdu chcete smazat označená fóra"
+
+grid:
+	markAsUnread: "Označit jako nepřečtené"
+	markAsRead: "Označit jako přečtené"
+	delete: "Smazat"
+	starToggle: "Označit hvězdičkou"
+
+forumForm.errors:
+	forumAlreadyExist: "Fórum s daným názvem již existuje."
+
+messaging:
+	messageAdd: "Vytvoř novou zprávu"
+	inbox: "Přijaté zprávy"
+	outbox: "Odeslané zprávy"
+	deleted: "Odstraněné zprávy"
+pmForm:
+	multiUsers: "Příjemce"
+	subject: "Předmět"
+	content: "Obsah"
+	sent: "Odeslat"
+	delivered: "Doručeno"
+	sender: "Odesílatel"
+	starred: "&#9733"
+
+forumForm: 
+	title: "Název"
+	description: "Popis"
+	groups: "Skupiny"
+
+forThrForm:
+	title: "Název"
+	titleMustFill: "Musí být zadán název vlákna."
+	description: "Popis"
+	descriptionMustFill: "Musí být zadán popis."
+	forum: "Fórum"
+	lastActivity: "Poslední aktivita"
+	author: "Autor"
+	editor: "Editor"
+	commentMode: "Komentáře"
+
+
+club:
+	heading: "Fórum"
+	lastChange: "Poslední aktivita"
+	forum.heading: "Fórum %title%"
+
+user:
+	inbox.heading: "Přijaté"
+	outbox.heading: "Odeslané"
+	deleted.heading: "Odstraněné"
+
+protected.messages:
+	noForum: "Pro danou skupinu neexistuje žádné fórum."
+	noActivity: "Doposud žádná aktivita"
+
+protected:
+	lastChange: "Poslední změna"

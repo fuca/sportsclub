@@ -1,12 +1,12 @@
 adminMenuItem.label: "Payments"
 protectedMenuItem.label: "Payments"
 
-adminMenuItem.description: "Payments resources administration section."
-protectedMenuItem.description: "Overview of payments related with current user."
+adminMenuItem.description: "Payments resources administration section"
+protectedMenuItem.description: "Overview of payments related with current user"
 
 admin.grid.messages:
-    rlyDelPayment: "Do you really delete payment #%id%?"
-    rlyDelPaymentItems: "Do you really delete %i payments?"
+    rlyDelPayment: "Do you really want to delete payment #%id%?"
+    rlyDelPaymentItems: "Do you really wnt to delete %i payments?"
 admin.grid:
     user: "User"
     season: "Season"
@@ -34,4 +34,4 @@ user:
     payments.heading: "Payments"
 
 protected.grid.messages:
-    rlyMarkAsSent: "Do you really want to mark payment #%id% as SENT"
+    rlyMarkAsSent: "Do you really want to mark payment #%id% as SENT?"

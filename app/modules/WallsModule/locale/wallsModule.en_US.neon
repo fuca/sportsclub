@@ -2,14 +2,14 @@
 adminMenuItem.label: "Walls"
 protectedMenuItem.label: "Walls"
 
-adminMenuItem.description: "Administration of sport group's wall posts."
-protectedMenuItem.description: "Overview of all accessible sport group's walls and wall posts related with them."
+adminMenuItem.description: "Administration of sport group's wall posts"
+protectedMenuItem.description: "Overview of all accessible sport group's walls and wall posts related with them"
 
 admin:
 	wallPostNew: "New wallpost"
 	wallPostAdd: "Add wallpost"
 	heading: "Walls resources"
-	wallPost.heading: "Wall posts"
+	wallPost.heading: "Wallposts"
 	addWallPost.heading: "New wallpost"
 	updateWallPost.heading: "Update wallpost"
 	updateWallPost: "Update wallpost"
@@ -25,15 +25,15 @@ admin.wallPostForm:
 	groups: "Groups"
 	author: "Author"
 	editor: "Editor of last change"
-	titleMustFill: "Title has to be filled"
-	showFromMustFill: "Show from date must be filled"
-	showToMustFill: "Show till date must be filled"
-	contentMustFill: "Content of wallpost must be filled"
+	titleMustFill: "Title has to be filled."
+	showFromMustFill: "Show from date must be filled."
+	showToMustFill: "Show till date must be filled."
+	contentMustFill: "Content of wallpost must be filled."
 	
 	
 
 admin.wallPostForm.errors:
-	wallPostAlreadyExist: "Wallpost with given title already exist"
+	wallPostAlreadyExist: "Wallpost with given title already exist."
 
 admin.grid:
 	title: "Title"
@@ -43,12 +43,12 @@ admin.grid:
 	change: "Change"
 
 admin.grid.messages:
-	rlyDelWallPost: "Do you really want to delete wall post #%id%"
+	rlyDelWallPost: "Do you really want to delete wallpost #%id%?"
 
 club:
 	heading: "Wall of %group%"
-	wallPosts.heading: "Wall posts for %cat% category"
-	showWallPost.heading: "Wall post detail"
+	wallPosts.heading: "Wallposts for %cat% category"
+	showWallPost.heading: "Wallpost detail"
 	changeTime: "Last change"
 	author: "Author"
 	relatedGroups: "Related groups"
@@ -57,7 +57,7 @@ club:
 	wallpostHighlights: "Announcements and alerts"
 
 club.messages:
-	noWallPosts: "There are no wall posts at this wall"
+	noWallPosts: "There are no wallposts at this wall."
 
 postStatus:
 	draft: "Draft"

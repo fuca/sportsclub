@@ -3,7 +3,7 @@ adminMenuItem.label: "Partners"
 adminMenuItem.description: "Section for Partners administration"
 
 partnerForm:
-	partnerNameAlreadyExist: "Partner with this name already exist"
+	partnerNameAlreadyExist: "Partner with this name already exist."
 	name: "Name"
 	link: "Link"
 	note: "Note"
@@ -12,9 +12,9 @@ partnerForm:
 	active: "Active"
 	updated: "Updated"
 	editor: "Editor"
-	nameMustFill: "Field name is required"
-	linkMustFill: "Field link is required"
-	pictureMustFill: "Field picture is required"
+	nameMustFill: "Field name is required."
+	linkMustFill: "Field link is required."
+	pictureMustFill: "Field picture is required."
 
 admin:
 	heading: "Partners resources"
@@ -36,5 +36,5 @@ admin.grid:
 
 
 admin.grid.messages:
-	rlyDelPartnerItems: "Do you really want to delete %i partners"
-	rlyDelPartner: "Do you really wanto delete partner #%id%"
+	rlyDelPartnerItems: "Do you really want to delete %i partners?"
+	rlyDelPartner: "Do you really wanto delete partner #%id%?"

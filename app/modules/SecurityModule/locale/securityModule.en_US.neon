@@ -1,5 +1,5 @@
 adminMenuItem.label: "Security"
-adminMenuItem.description: "Section designated for manipulate with all security resources of whole application."
+adminMenuItem.description: "Section designated for manipulate with all security resources of whole application"
 protectedMenuItem.label: "Sign out"
 protectedMenuItem.description: "Guess what :-)"
 
@@ -70,7 +70,7 @@ aclForm:
 	resourceSelect: "Select resource .."
 	
 	role: "Role"
-	action: "Akce"
+	action: "Action"
 	mode: "Mode"
 	resource: "Resource"
 

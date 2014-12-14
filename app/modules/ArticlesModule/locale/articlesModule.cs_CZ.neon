@@ -1,5 +1,45 @@
+readMore: "více.."
+
+adminMenuItem.label: "Články"
+adminMenuItem.description: "Sekce pro správu článků"
+publicMenuItem.label: "Články"
+articles.heading: "Články"
+
+artStatus:
+	draft: "Koncept"
+	published: "Publikováno"
+	notPub: "Nepublikováno"
+
+
 admin:
-	articleAdd: "Add article"
-	articleNew: "New article"
+	articleAdd: "Přidat článek"
+	articleNew: "Nový článek"
+	heading: "Zdroje článků"
+	article.heading: "Články"
+	addArticle.heading: "Nový článek"
+	updateArticle.heading: "Uptavit článek"
+	updateArticle.title: "Upravit článek"
+	updateArticle.bread: "Upravit článek"
+
+admin.tooltip:
+	pictureChange: "Pokud chcete změnit obrázek, vyberte novoý a uložte změny."
+
+admin.grid:
+	change: "Změna"
+	author: "Autor"
+	title: "Název"
+	comments: "Komentáře"
+	view: "Náhled"
+	delete: "Smazat"
+	update: "Uložit"
+	state: "Status"
+	rlyDelArticle: "Opravdu chcete smazat článek #%id%?"
+
 articleForm.errors:
-	articleAlreadyExist: "Article with given title already exist"
+	articleAlreadyExist: "Článek s daným názvem již existuje."
+
+
+publicMenu:
+	articles.label: "Články"
+public.messages:
+	noArticles: "V této kategorii nebyly nalezeny žádné články."

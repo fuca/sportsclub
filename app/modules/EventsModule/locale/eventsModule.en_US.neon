@@ -2,9 +2,9 @@ adminMenuItem.label: "Events"
 clubMenuItem.label: "Events"
 userMenuItem.label: "My events"
 
-adminMenuItem.description: "Event resources administration section."
-clubMenuItem.description: "All accessible events overview."
-userMenuItem.description: "Provides overview of events participated by current user."
+adminMenuItem.description: "Event resources administration section"
+clubMenuItem.description: "All accessible events overview"
+userMenuItem.description: "Provides overview of events participated by current user"
 
 
 evCalPopTitle: "Events for "
@@ -36,6 +36,10 @@ grid:
 	updateEvent: "Update event"
 	deleteEvent: "Delete event"
 
+admin.grid.messages:
+	rlyDelEvent: "Do you really want to delete event #%id%?"
+	rlyDelEventItems: "Do you really want to delete %i events?"
+
 admin:
 	eventAdd: "Add event"
 	eventNew: "New event"
@@ -49,7 +53,7 @@ admin:
 	updateParticipation.title: "Update event participation"
 
 eventForm.errors:
-	eventAlreadyExist: "Event with given title already exist"
+	eventAlreadyExist: "Event with given title already exist."
 
 protected.messages:
 	noDataFound: "No data available"
@@ -58,8 +62,8 @@ partForm:
 	content: "Participation note"
 	owners: "Users"
 	type: "Participated"
-	errorSave: "Participation for user #%user% within event #%event% was not updated"
-	errorDupl: "Participation for user #%user% within event #%event% already exist"
+	errorSave: "Participation for user #%user% within event #%event% was not updated."
+	errorDupl: "Participation for user #%user% within event #%event% already exist."
 
 participation:
 	cancel: "Cancel participation"
@@ -68,8 +72,8 @@ participation:
 	no.heading: "Not participating (%count%)"
 
 eventParticipationType:
-	noIwont: "No, I don't want to participate at this event"
-	yesIDo: "Yes, I want participate at this event"
+	noIwont: "No, I don't want to participate at this event."
+	yesIDo: "Yes, I want participate at this event."
 
 eventType:
 	training: "Training"

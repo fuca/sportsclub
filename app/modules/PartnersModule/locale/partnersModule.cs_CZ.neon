@@ -1,0 +1,40 @@
+
+adminMenuItem.label: "Partneři"
+adminMenuItem.description: "Sekce pro správu partnerů"
+
+partnerForm:
+	partnerNameAlreadyExist: "Partner s tímto jménem již existuje."
+	name: "Jméno"
+	link: "Odkaz"
+	note: "Poznámka"
+	picture: "Obrázek"
+	member: "Manažer"
+	active: "Aktivní"
+	updated: "Upravil"
+	editor: "Editor"
+	nameMustFill: "Musí být vyplněno jméno."
+	linkMustFill: "Musí být vyplněn odkaz."
+	pictureMustFill: "Musí být vybrán obrázek."
+
+admin:
+	heading: "Správa partnerů"
+	partner.heading: "Partneři"
+	partnerAdd: "Přidat nového partnera"
+	addPartner.heading: "Nový partner"
+	updatePartner.heading: "Upravit partnera %name%"
+	updatePartner.bread: "Upravit partnera"
+
+
+
+admin.grid:
+	name: "Jméno"
+	referrer: "Manažer"
+	updated: "Upravil"
+	active: "Aktivní"
+	note: "Poznámka"
+
+
+
+admin.grid.messages:
+	rlyDelPartnerItems: "Opravdu chcete smazat %i partnery?"
+	rlyDelPartner: "Opravdu chcete smazat partnera #%id%?"

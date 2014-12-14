@@ -1,1 +1,205 @@
+groupPositions: "Pozice ve skupině"
+adminMenuItem.label: "Systém"
+adminMenuItem.description: "Správa záznamů skupin, ststických stránek a typu sportu"
+club: "Klub"
+profile: "Profil"
+administrator: "Správa"
+
+error:
+	heading: "Chyba"
+	accessDenied.heading: "Přístup byl odepřen."
+	accessDenies.content: "Nemáte potřebné oprávnění k zobrazení této stránky. Pro nápravu kontaktujte správce webu."
+	accessDenied.code: "chyba 403"
+
+	pageNotFound404.heading: "Stránka nenalezena"
+	pageNotFound404.content: "Vámi požadovaná stránka nebyla nalezena. Je možné, že zadaná adresa není správná, nebo že stránka již neexistuje."
+	pageNotFound404.code:  "chyba 404"
+
+	methodNotAllowed.heading: "Metoda není povolena"
+
+	methodNotAllowed.content: "Požadovaná metoda není pro URL povolena."
+	methodNotAllowed.code: "chyba 405"
+
+
+	pageNotFound410.heading: "Stránka nenalezena"
+	pageNotFound410.content: "Požadovaná stránka byla stažena z webu. Omlouváme se za způsobené nepříjemnosti."
+	pageNotFound410.code:  "chyba 404"
+
+	error5xx.heading: "Oops..."
+	error5xx.content: "Váš prohlížeč poslal požadavek, kterému servet nerozuměl, nebo ho nemohl provést."
+	error5xx.code: ""
+
+navigation:
+	options: "/ Možnosti"
+	back: "Zpět"
+	adminModule: "Administrační sekce"
+	clubModule: "Klubová sekce"
+	userModule: "Uživatelský modul"
+
+navigation.menu:
+	club: "Klubová sekce"
+	admin: "Administrace"
+	user: "Uživatelská sekce"
+	cats: "Kategorie"
+
+commentControl:
+	titleAdd: "Přidat komentář"
+	allData: "Komentáře"
+	noDataFound: "Nebyly nalezeny žádné komentáře."
+	commentsRestricted: "Nemáte povoleno přidávat komentáře."
+	title: "Název"
+	content: "Obsah"
+	contentMustFill: "Musí být vyplněn obsah."
+	commentsLabel: "Komentáře"
+	commentAdd: "Přidat komentář"
+	titlePlaceHolder: "Název Vašeho nového komentáře"
+	contentPlaceHolder: "Obsah Vašeho nového komentáře"
 	
+sportTypeForm:
+	newGroup: "Nový typ sportu"
+	name: "Jméno "
+	note: "Poznámka"
+	active: "Aktivní"
+
+sportGroupForm:
+	name: "Jméno"
+	desc: "Popis"
+	abbr: "Zkrratka"
+	parent: "Nadřazená skupina"
+	priority: "Priorita"
+	sport: "Typ sportu"
+	active: "Aktivní"
+	groupSel: "Vyberte sportovní skupinu .."
+	prioritySel: "Vyberte prioritu .."
+	sportSel: "Vyberte typ sportu .."
+
+admin:
+	sportAdd: "Přidat nový typ sportu"
+	groupAdd: "Přidat novou sportovní skupinu"	
+	pageAdd: "Přidat novou statickou stránku"
+	sportTypes.heading: "Typy sportu"
+	sportGroups.heading: "Sportovní skupiny"
+	heading: "Systémové zdroje"
+	addSportGroup.heading: "Nová sportovní skupina"
+	addSportType.heading: "Nový typ sportu"
+	updateSportGroup.heading: "Upravit sportovní skupinu %title%"
+	updateSportGroup.bread: "Upravit sportovní skupinu"
+	updateSportGroup.title: "Upravit sportovní skupinu"
+	updateSportType.heading: "Upravit typ sportu %title%"
+	updateSportType.title: "Upravit typ sportu"
+	updateSportType.bread: "Upravit typ sportu"
+	staticPages.heading: "Statické stránky"
+	addStaticPage.heading: "Nové statické stránky"
+	updateStaticPage.heading: "Upravit statickou stránku '%title%'"
+	updateStaticPage.bread: "Upravit statickou stránku"
+	updateStaticPage.title: "Upravit statickou stránku"
+
+admin.grid:
+	name: "Jméno"
+	note: "Poznámka"
+	sport: "Sport"
+	parent: "Nadřazený"
+	delete: "Smazat"
+	active: "Aktivní"
+
+	title: "Název"
+	abbr: "Zkratka"
+	commMode: "Komentáře"
+	status: "Status"
+	group: "Skupina"
+	
+admin.grid.messages:
+	rlyDelSport: "Opravdu chcete smazat spotr #%id%?"
+	rlyDelGroup: "Opravdu chcete smazat skupinu #%id%?"
+	rlyDelSportItems: "Opravdu chcete smazat všechny zvolené sporty?"
+	rlyDelGroupItems: "opravdu chcete smazat všechny zvolené skupiny?"
+	rlyDelPageItems: "Opravdu chcete smazat všechny zvolené stránky?"
+	rlyDelPage: "Opravdu chcete smazat stránku #%id%?"
+
+commentMode:
+	group: "Skupina"
+	allowed: "Povoleno"
+	restricted: "Zakázáno"
+	signedIn: "Přihlásit"
+
+statPageStatus:
+	draft: "Koncept"
+	published: "Publikováno"
+	notPub: "Nepublikováno"
+
+staticPageForm:
+
+	title: "Název"
+	abbr: "Zkratka"
+	parent: "Nadřazený"
+	group: "Skupina"
+	status: "Status"
+	commentMode: "Komentáře"
+	content: "Obsah"
+	pageSel: "Vyber nadřazený .. "
+	updated: "Upravil"
+	editor: "Editor"
+	pageAbbrExists: "Statická stránka s danou zkratkou již existuje."
+
+publicPages:
+	pagesMenuLabel: "Dostupné informace"
+	groupsMenu: "Skupiny"
+	    
+
+protected.rootPage: 
+	adminMenuHeading: "Struktura administrační sekce"
+	userMenuHeading: "Struktura uživatelské sekce"
+	clubMenuHeading: "Struktura klubové sekce"
+
+default:
+	signpost.bread: "Rozcestník aplikace"
+	sectionSignpost.bread: "Rozcestník sekce"
+
+
+notifications:
+	accActivated.subject: "Účet aktivován na %host%"
+	accActivated.body: "Vážený %name% %surname%, Váš účet byl aktivován. Můžete se přihlásit pomocí údajů, jak jste byl zvyklý."
+
+	accDeactivated.subject: "Účet deaktivován na %host%"
+	accDeactivated.body: "Vážený %name% %surname%, Váš účet byl deaktivován. Není možné se již přihlásit, dokud Váš účet nebude opět aktivován."
+
+	accCreated.subject: "Účet vytvořen na %host%"
+	accCreated.body: "Vážený %name% %surname%, Toto je informační zpráva o vytvoření účtu v našem informačním systému. Můžete se přihlásit pomocí emailu, který jste uvedl v žádosti a pomocí hesla: %pass%."
+
+	newMessage.subject: "Nová soukromá zpráva na %host%"
+	newMessage.body: "Vážený %name% %surname%, toto je informační zpráva o přijetí nové soukromé zprávy. Prosím, přihlaste se do našeho systému pro další podrobnosti."
+
+	newPayment.subject: "Nová platba přidaná na %host%"
+	newPayment.body: "Vážený %name% %surname%, toto je informační zpráva o přidání nové žádosti o platbu. Prosím, přihlaste se do našeho systému pro další podrobnosti."
+
+	newApplication.subject: "Nová přihláška v sezóně byla vytvořena na %host%"
+	newApplication.body: "Vážený %name% %surname%, toto je informační zpráva o tom, že jste byl přihlášen do sezóny %season% ve skupině %group%. Prosím, přihlaste se do našeho systému pro další podrobnosti."
+	
+	passwordChange.subject: "Uživatelské heslo bylo změněno na %host%"
+	passwordChange.body: "Vážený %name% %surname%, toto je informační zpráva o změně Vašeho hesla k účtu na %pass%"
+	newPassword.subject: "Nové heslo bylo vygenerováno na %host%"
+	newPassword.body: "Vážený %name% %surname%, toto je informační zpráva o vygenerování Vašeho systémového hesla na %pass%. Po přihlášení jej můžete změnit."
+
+
+homepage:
+	contacts: "Kontakty"
+	sitemap: "Mapa stránek"
+	homepage: "Domovská stránky"
+
+searchForm: 
+	submit: "Hledat"
+	keywordPlaceholder: "Zadejte text pro vyhledávání"
+
+
+searchResults:
+	heading: "Výsledky hledání pro '%keyword%'"
+	title: "Výsledky hledání"
+	articles.heading: "Výsledky v sekci článků"
+
+
+appealControl:
+	profileFillRequired: "Prosím, vyplňte Svůj profil."
+	profileLink.title: "Profil"
+
+	passwordChangeRequired: "Z bezpečnostních důvodu prosím změňte Své heslo."
+	pwChangeLink.title: "Změna hesla"	

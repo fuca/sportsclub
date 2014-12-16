@@ -30,8 +30,22 @@ admin:
 
 user:
     userPayments: "My payments"
-    paymentDetailId: "Payment detail"
+    paymentDetail.heading: "Payment detail"
     payments.heading: "Payments"
+
+user.detail:
+    vs: "vs"
+    dueDate: "Due date"
+    season: "Season"
+    subject: "Subject"
+    note: "Note"
+    status: "Status"
 
 protected.grid.messages:
     rlyMarkAsSent: "Do you really want to mark payment #%id% as SENT?"
+
+paymentStatus:
+    no: "Not payed"
+    sent: "Sent"
+    cash: "Cash"
+    acc: "Account"

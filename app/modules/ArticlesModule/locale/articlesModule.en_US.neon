@@ -1,5 +1,5 @@
 readMore: "more.."
-
+rss.label: "Rss feed"
 adminMenuItem.label: "Articles"
 adminMenuItem.description: "Administration of article resources"
 publicMenuItem.label: "Articles"

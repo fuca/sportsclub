@@ -30,8 +30,25 @@ admin:
 
 user:
     userPayments: "Moje platby"
-    paymentDetailId: "Detail platby"
+    paymentDetail.heading: "Detail platby"
     payments.heading: "Platby"
+    markSent: "Odeslat"
+
+user.detail:
+    vs: "vs"
+    dueDate: "Splatnost"
+    season: "Sezóna"
+    subject: "Za co?"
+    note: "Poznámka"
+    status: "Stav"
 
 protected.grid.messages:
     rlyMarkAsSent: "Opravdu chcete označit platbu #%id% jako odeslanou?"
+
+
+paymentStatus:
+    no: "Nezaplaceno"
+    sent: "Odesláno"
+    cash: "Hotově"
+    acc: "Na účet"
+    

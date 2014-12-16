@@ -1,0 +1,88 @@
+
+table.payment-detail {
+    font-size: 1em;
+    border: 1px solid #ddd;
+}
+
+table.payment-detail a {
+    color: #fff;
+}
+
+table.payment-detail td {
+    vertical-align: middle; 
+    text-align: center;
+    padding: 0 !important;
+    line-height: 2em;
+}
+
+table.payment-detail td.amount strong {
+    font-size: 3em; 
+}
+
+table.payment-detail td.ordered {
+border: 1px solid #ddd;
+font-size: .8em !important;
+}
+
+table.payment-detail td.note {
+    font-style: italic;
+    line-height: 3em;
+    color: #ED8383;
+}
+
+table.payment-detail td.subject {
+    font-size: 1.3em;
+    line-height: 3em;
+    color: #0044cc;
+    font-weight: bold;
+    text-align: left;
+    padding: 0 !important;
+}
+
+
+table.payment-detail td.id {
+    font-size: .8em;
+     vertical-align: middle; 
+    text-align: center;
+}
+
+table.payment-detail td.status {
+    vertical-align: middle; 
+    line-height: 2em;
+}
+
+table.payment-detail span.label {
+    position: relative;
+    padding: 1px 3px 1px;
+    margin: 0;
+    background: #888;
+    display: inline-block;
+    font-style: italic;
+    font-size: .8em !important;
+
+}
+
+table.payment-detail span.label-right { 
+    float: right;
+    border-bottom-right-radius: 0;
+    right: 0;
+}
+
+table.payment-detail span.label-left { 
+    float: left;
+    border-bottom-left-radius: 0;
+    left: 0;
+}
+
+table.payment-detail span.label-top { 
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    top:0;
+    
+}
+
+table.payment-detail span.label-bottom { 
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    bottom: 0;
+}

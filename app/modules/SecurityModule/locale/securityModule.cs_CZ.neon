@@ -33,13 +33,13 @@ loginControl.loginForm:
 	
 
 admin:
-	roleAdd: "Přidat novou roli"
-	ruleAdd: "Přidat nové pravidlo"
-	posAdd: "Přidat novou pozici"
+	roleAdd: "Přidat roli"
+	ruleAdd: "Přidat pravidlo"
+	posAdd: "Přidat pozici"
 	heading: "Správa bezpečnosti"
 	roles.heading: "Uživatelská role"
 	rules.heading: "Pravidla"
-	pos.heading: "Pozice uživatele ve skupině"
+	pos.heading: "Pozice uživatelů ve skupinách"
 	addPosition.heading: "Nová pozice"
 	addRule.heading: "Nové pravidlo"
 	addRole.heading: "Nová role"

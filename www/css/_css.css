@@ -66,5 +66,6 @@
     /* PARTNERS MODULE */
     @import url("_partners.css");   
 
-    //@import url("jquery.bxslider.css");   
+    /* PAYMENTS MODULE */
+    @import url("_payments.css");   
     

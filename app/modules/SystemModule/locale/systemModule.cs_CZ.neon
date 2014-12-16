@@ -52,8 +52,8 @@ commentControl:
 	contentMustFill: "Musí být vyplněn obsah."
 	commentsLabel: "Komentáře"
 	commentAdd: "Přidat komentář"
-	titlePlaceHolder: "Název Vašeho nového komentáře"
-	contentPlaceHolder: "Obsah Vašeho nového komentáře"
+	titlePlaceHolder: "Název komentáře"
+	contentPlaceHolder: "Obsah komentáře"
 	
 sportTypeForm:
 	newGroup: "Nový typ sportu"
@@ -74,9 +74,9 @@ sportGroupForm:
 	sportSel: "Vyberte typ sportu .."
 
 admin:
-	sportAdd: "Přidat nový typ sportu"
-	groupAdd: "Přidat novou sportovní skupinu"	
-	pageAdd: "Přidat novou statickou stránku"
+	sportAdd: "Přidat typ sportu"
+	groupAdd: "Přidat sportovní skupinu"	
+	pageAdd: "Přidat statickou stránku"
 	sportTypes.heading: "Typy sportu"
 	sportGroups.heading: "Sportovní skupiny"
 	heading: "Systémové zdroje"

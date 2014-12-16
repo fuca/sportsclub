@@ -1,18 +1,97 @@
-{* Latte template *}
-{layout ./base.latte}
-{block content}
-{if $data}
-<h3>{_paymentsModule.protected.paymentDetailId}</h3>
-    {$data->getId()}<br/>
-    {$data->getAmount()}<br/>
-    {$data->getSubject()}<br/>
-    {$data->getDueDate()|date:'%d.%m.%Y'}<br/>
-    {$data->getOrderedDate()|date:'%d.%m.%Y'}<br/>
-    {$data->getSeason()}<br/>
-    {$data->getVs()}<br/>
-    {$data->getStatus()}<br/>
-    {$data->getPublicNote()}<br/>
-    {$data->getEditor()}<br/>
-    {$data->getSeason()}<br/>
+{* Payments module User presenter *}
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+{block #side}left{/block}
+
+{block #breadcrumbs}
+    {include #parent} 
+    <li><a href="{plink :Payments:User:default}">{_paymentsModule.user.payments.heading}</a></li>
+    <li>{_paymentsModule.user.paymentDetail.heading}</li>
+{/block}
+
+{block #title}
+      {_paymentsModule.user.paymentDetail.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+    {control backSubMenu:contentSubMenu}
+{/block}
     
+{block #userContent}
+{if $data}
+    
+    {var $colorClass => "warning"}
+    {var $dueDateClass => "active"}
+    
+    {if ($data->getStatus() == \App\Model\Misc\Enum\PaymentStatus::YES_CASH) || 
+	($data->getStatus() == \App\Model\Misc\Enum\PaymentStatus::YES_ACCOUNT)}
+	{? $colorClass = "success"}
+    {elseif $data->getStatus() == \App\Model\Misc\Enum\PaymentStatus::SENT}
+	{? $colorClass = "warning"}
+    {else}
+	{? $colorClass = "danger"}
+    {/if}
+		
+    {if $data->getDueDate() < $now}
+	{? $dueDateClass = "danger"}
+    {/if}
+		
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-8">
+	    <table class="payment-detail table">
+		<thead>
+		</thead>
+		<tbody>
+		    <tr class="{$colorClass}">
+			<td colspan="2" class="status"><span class="label label-left label-top">{_ paymentsModule.user.detail.status}</span>{$data->getStatus()|paymentStatus}</td>
+			<td>
+			    {if ($data->getStatus() == \App\Model\Misc\Enum\PaymentStatus::NOT_YET)}
+				<a href="{link markAsSent!}"
+				   <button type="button" class="btn btn-primary btn-block">
+					{_ paymentsModule.user.markSent}
+				    </button>
+				</a>
+				{else}
+				<button type="button" class="btn btn-primary btn-block disabled">
+					{_ paymentsModule.user.markSent}
+				</button>
+			    {/if}
+			</td>
+		    </tr>
+		    <tr>
+			<td rowspan="5" class="id">#{$data->getId()}</td>
+			<td colspan="4" class="subject">
+			    {$data->getSubject()}
+			</td>
+		    </tr>
+		    <tr>
+			<td rowspan="3" class="amount {$colorClass}">
+			    <strong>{$data->getAmount()},-</strong>
+			</td>
+			<td colspan="3"><span class="label label-top label-right">{_ paymentsModule.user.detail.season}</span>{$data->getSeason()->getLabel()}</td>
+
+		    </tr>
+
+		    <tr>
+			 <td colspan="3" class="{$dueDateClass}"><span class="label label-top label-right">{_ paymentsModule.user.detail.dueDate}</span>{$data->getDueDate()|date:'%d.%m.%Y'}</td>
+		    </tr>
+
+		    <tr>
+			<td colspan="3" class="active"><span class="label label-top label-right">{_ paymentsModule.user.detail.vs}</span><strong>{$data->getVs()}</strong></td>
+		    </tr>
+
+		    <tr>
+			<td colspan="4" rowspan="1" class="note"><span class="label label-top label-right">{_ paymentsModule.user.detail.note}</span>{$data->getPublicNote()}</td>
+		    </tr>
+
+		</tbody>
+		<tfooter>
+		    <tr>
+			<td colspan="2" class="ordered active">{$data->getEditor()} ({$data->getOrderedDate()|date:'%d.%m.%Y'})</td>
+		    </tr>
+		</tfooter>
+	    </table>
+	</div>
+    </div>
 {/if}
+{/block}

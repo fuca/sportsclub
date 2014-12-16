@@ -37,9 +37,9 @@ final class PaymentStatus extends EnumType implements IEnum {
 
      public static function getOptions() {
 	return array(
-	    self::NOT_YET	=>  "No",
-	    self::SENT		=>  "Sent",
-	    self::YES_CASH	=>  "Cash",
-	    self::YES_ACCOUNT	=>  "Account");
+	    self::NOT_YET	=>  "paymentsModule.paymentStatus.no",
+	    self::SENT		=>  "paymentsModule.paymentStatus.sent",
+	    self::YES_CASH	=>  "paymentsModule.paymentStatus.cash",
+	    self::YES_ACCOUNT	=>  "paymentsModule.paymentStatus.acc");
     }
 }

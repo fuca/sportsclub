@@ -22,6 +22,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
     \Grido\Grid,
     \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Misc\Exceptions,
+    \Nette\Utils\DateTime,
     \App\Model\Misc\Enum\PaymentStatus;
 /**
  * PaymentPresenter
@@ -42,6 +43,14 @@ class UserPresenter extends SystemUserPresenter {
      */
     public $seasonService;
     
+    protected function createTemplate($class = NULL) {
+	$template = parent::createTemplate($class);
+	$template->registerHelper('paymentStatus', function ($s) {
+	    return $this->translator->translate(PaymentStatus::getOptions()[$s]);
+		});
+	return $template;
+    }
+    
     /**
      * @Secured(resource="default")
      */
@@ -59,6 +68,7 @@ class UserPresenter extends SystemUserPresenter {
 	    $this->handleDataLoad($id, "default", $ex);
 	}
 	$this->template->data = $payment;
+	$this->template->now = new DateTime();
     }
     
     public function handleMarkAsSent($id) {
@@ -142,6 +152,13 @@ class UserPresenter extends SystemUserPresenter {
 		->addAttributes(["title"=>$e->getSubject()])
 		->setText(\Nette\Utils\Strings::truncate($e->getSubject(), 20));
 
+    }
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back",":Payments:User:default");
+	return $c;
     }
     
 }

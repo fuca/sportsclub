@@ -8,7 +8,7 @@
 {/block}
 
 {block #title}
-    {_ seasonsModule.admin.addSeasonApplication.heading} | {include #parent}
+    {_ seasonsModule.admin.addSeasonApplication.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
@@ -47,7 +47,7 @@
 		</div>
 		    
 		<div class="form-group">
-			{input submitButton}
+			{input submitButton class=>"btn btn-lg btn-primary btn-block"}
 		</div>
 		
 	    </div>

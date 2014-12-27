@@ -8,7 +8,7 @@
 {/block}
 
 {block #title}
-    {_ usersModule.admin.newUser.heading} | {include #parent}
+    {_ usersModule.admin.newUser.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}

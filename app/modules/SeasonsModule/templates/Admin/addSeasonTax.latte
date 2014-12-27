@@ -8,7 +8,7 @@
 {/block}
 
 {block #title}
-    {_ seasonsModule.admin.addSeasonTax.heading} | {include #parent}
+    {_ seasonsModule.admin.addSeasonTax.heading} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
@@ -19,5 +19,41 @@
     <div class="page-header">
 	<h3>{_ seasonsModule.admin.addSeasonTax.heading}</h3>
     </div>
-    {control addSeasonTaxForm}
+    {form addSeasonTaxForm}
+		{control $form errors}
+		
+			
+		<div class="form-group">
+			{label season /} 
+			{input season class=>form-control}
+		</div>
+
+		<div class="form-group">
+			{label sportGroup /} 
+			{input sportGroup class=>form-control}
+		</div>     
+		
+		<div class="form-group">
+			{label appDate /} 
+			{input appDate class=>form-control}
+		</div>
+
+		{if ($form->isMemberShip())}
+		<div class="form-group">
+			{label memberShip /} 
+			{input memberShip class=>form-control}
+		</div>
+			{/if}
+			
+			<div class="form-group">
+			{label comment /} 
+			{input comment class=>form-control}
+		</div>     
+		
+		<div class="form-group"> 
+		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
+	    </div>
+		
+		
+		{/form}
 {/}

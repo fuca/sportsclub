@@ -8,7 +8,7 @@
 {/block}
 
 {block #title}
-    {_ usersModule.admin.updateProfile.title} | {include #parent}
+    {_ usersModule.admin.updateProfile.title} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
@@ -17,6 +17,7 @@
 
 {block #adminContent}
     {form updateWebProfileForm}
+		{control $form errors}
 	<div class="row">
 	    <div class="col-md-6">
 		<div class="form-group">

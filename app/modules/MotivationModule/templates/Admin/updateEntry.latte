@@ -19,6 +19,52 @@
     <div class="page-header">
 	<h3>{_ motivationModule.admin.updateEntry.heading}</h3>
     </div>
-    {control updateEntryForm}
+    {form updateEntryForm}
+        {control $form errors}
+        <div class="form-group">
+        {if $form->isCreate()}
+		{label App\MotivationModule\Forms\MotivationEntryForm::MULTI_OWNER_ID /} 
+		{input App\MotivationModule\Forms\MotivationEntryForm::MULTI_OWNER_ID class=>form-control}
+        {else}
+                {label owner /} 
+		{input owner class=>form-control}
+	
+        {/if}
+        </div>
+        
+        <div class="form-group">
+		{label subject /} 
+		{input subject class=>form-control}
+	</div>
+        
+        
+        <div class="form-group">
+		{label amount /} 
+		{input amount class=>form-control}
+	</div>
+        
+        
+        <div class="form-group">
+		{label season /} 
+		{input season class=>form-control}
+	</div>
+        
+        
+        <div class="form-group">
+		{label type /} 
+		{input type class=>form-control}
+	</div>
+        
+        {if $form->isUpdate()}
+        <div class="form-group">
+		{label editor /} 
+		{input editor class=>form-control}
+	</div>
+        {/if}
+        
+        <div class="form-group">
+		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
+	</div>        
+    {/form}
     
 {/}

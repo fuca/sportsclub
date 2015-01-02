@@ -88,7 +88,7 @@ class Forum extends BaseEntity implements IIdentifiable {
     protected $groups;
 
     /**
-     * @ORM\Column(type="string", nullable = false)
+     * @ORM\Column(type="text", nullable = false)
      */
     protected $description;
 

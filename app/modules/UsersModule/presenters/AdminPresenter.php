@@ -402,7 +402,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$headerData = $grid->getColumn('personalLikes')->headerPrototype;
 	$headerData->class[] = 'center';
-	$headerData->style['width'] = '80%';
+	$headerData->style['width'] = '70%';
 	
 	$grid->addColumnText("personalDisLikes", "usersModule.admin.wpGrid.photo.label")
 		->setCustomRender($this->wpPhotoRender)
@@ -410,7 +410,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$headerPhoto = $grid->getColumn('personalDisLikes')->headerPrototype;
 	$headerPhoto->class[] = 'center';
-	$headerPhoto->style['width'] = '5%';
+	$headerPhoto->style['width'] = '8%';
 	
 	$y = $this->tt("system.common.yes");
 	$n = $this->tt("system.common.no");

@@ -52,7 +52,7 @@ parameters:
 nette:
 	application:
 		errorPresenter: Public:Error
-		debugger: true
+		debugger: false
 		catchExceptions: false
 
 		mapping:
@@ -101,7 +101,7 @@ doctrine:
 		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
 
 annotations: # configure of annotations extension
-	ignore:	[hideInTree] # array of ignored annotations
+	ignore:	[hideInTree, licence] # array of ignored annotations
 	debug: yes
 
 monolog:

@@ -28,7 +28,7 @@ admin:
 	userEdit: "Upravit uživatele"
 	profileEdit: "Upravit webový profil uživatele"
 	usersGrid: "Uživatelé"
-	wpPermitGrid: "Webové profily čekající na povolení"
+	wpPermitGrid: "Webové profily čekající na schválení"
 	heading: "Správa uživatelů"
 	newUser.heading: "Nový uživatel"
 	updateUser.heading: "Upravit uživatele"
@@ -112,7 +112,8 @@ protected:
 
 public:
 	webProfile.notPublished: "Zobrazení obsahu této stránky není povoleno."
-	rosters.bread: "Seznamy"
+	rosters.bread: "Soupisky"
+	roster.label: "Soupiska"
 	rosters.groupsMenu: "Skupiny"
-	rosterMenu.label: "Seznam pro skupinu %group%"
+	rosterMenu.label: "Soupiska pro skupinu %group%"
 	

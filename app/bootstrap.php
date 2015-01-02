@@ -7,6 +7,7 @@ use \Nette\Forms\Form,
 $composer = require __DIR__ . '/../vendor/autoload.php';
 
 $configurator = new Nette\Configurator;
+$configurator->setDebugMode(true);
 //$configurator->setDebugMode(TRUE);  // debug mode MUST NOT be enabled on production server
 $configurator->enableDebugger(__DIR__ . '/../log');
 

@@ -290,7 +290,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->addColumnText('status', $this->tt('paymentsModule.admin.grid.status'))
 		->setTruncate(9)
 		->setSortable()
-		->setReplacement($states)
+		->setCustomRender($this->statusRender)
 		->setFilterSelect($states);
 
 	$headerSta = $grid->getColumn('status')->headerPrototype;
@@ -312,6 +312,10 @@ class AdminPresenter extends SystemAdminPresenter {
 		->setConfirm("delete", $this->tt("paymentsModule.admin.grid.messages.rlyDelPaymentItems"));
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-payments " . date("Y-m-d H:i:s", time()));
+    }
+    
+    public function statusRender($e) {
+	return $this->tt(PaymentStatus::getOptions()[$e->getStatus()]);
     }
 
     public function paymentsGridOpsHandler($op, $ids) {

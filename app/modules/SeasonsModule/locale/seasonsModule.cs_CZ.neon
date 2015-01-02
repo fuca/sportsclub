@@ -2,9 +2,9 @@ adminMenuItem.label: "Sezóny"
 adminMenuItem.description: "Sekce pro správu sezón, sezónních povinnosti a přihlášek"
 
 admin:
-	seasonAdd: "Přidat novou sezónu"
-	taxAdd: "Přidat novou sezónní povinnost"
-	appAdd: "Přidat novou sezónní přihlášku"
+	seasonAdd: "Přidata sezónu"
+	taxAdd: "Přidat sezónní povinnost"
+	appAdd: "Přidat sezónní přihlášku"
 	heading: "Sekce správy sezón"
 	season.heading: "Sezóny"
 	tax.heading: "Sezńní povinnosti"

@@ -306,7 +306,9 @@ class EventService extends BaseService implements IEventService, IEventModel {
 		    ->from('App\Model\Entities\Event', 'e')
 		    ->innerJoin('e.groups', 'g')
 		    ->where('g.id = :gid')
-		    ->setParameter("gid", $g->id);
+		    ->setParameter("gid", $g->id)
+		    ->andWhere("e.takePlaceTill >= :now")
+		    ->setParameter("now", new DateTime());
 	    return $qb->getQuery()->getResult();
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());

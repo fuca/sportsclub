@@ -284,12 +284,18 @@ class SportGroupService extends BaseService implements ISportGroupService {
 	}
     }
 
-    public function getSelectAllSportGroups($id = null) {
+    public function getSelectAllSportGroups($id = null, $active = null) {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
 	try {
 	    if ($data === null) {
-		$all = $this->groupDao->findAll();
+		
+		$qb = $this->groupDao->createQueryBuilder("g");
+		if ($active !== null) {
+		    $qb->where("g.active = :act")
+			    ->setParameter("act", $active);
+		}
+		$all = $qb->getQuery()->getResult();
 		$data = [];
 		foreach ($all as $g) {
 		    $type = $g->getSportType();

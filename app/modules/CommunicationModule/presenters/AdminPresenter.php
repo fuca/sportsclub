@@ -436,6 +436,13 @@ class AdminPresenter extends SystemAdminPresenter {
 	$c->setLabel("systemModule.navigation.options");
 	$c->addNode("communicationModule.admin.forumAdd",":Communication:Admin:addForum");
 	$c->addNode("communicationModule.admin.forumThrAdd",":Communication:Admin:addForumThread");
+	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	return $c;
+    }
+        
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
 	$c->addNode("systemModule.navigation.back",":Communication:Admin:default");
 	return $c;
     }

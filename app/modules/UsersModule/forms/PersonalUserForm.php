@@ -24,6 +24,7 @@ final class PersonalUserForm extends BaseForm {
 
 	$this->addHidden('id');
 	$this->addHidden("password");
+	$this->addHidden("leagueId");
 
 	$this->addSubmit('submitButton', "system.forms.submitButton.label");
 	
@@ -32,10 +33,6 @@ final class PersonalUserForm extends BaseForm {
 	$this->addText('nick', 'Přezdívka', 16, 16)
 		->addRule(Form::FILLED, 'Není zadáno příjmení')
 		->setRequired(TRUE);
-	
-	if ($this->getMode() == FormMode::UPDATE_MODE)
-	    $this->addCheckbox('active', "Aktivní");
-
 
 	$this->addText('name', 'Jméno', $nameLength, $nameLength)
 		->addRule(Form::FILLED, 'Není zadáno jméno')
@@ -50,16 +47,6 @@ final class PersonalUserForm extends BaseForm {
 		->addRule(Form::NUMERIC, 'Rodné číslo musí obsahovat pouze čísla')
 		->addRule(Form::LENGTH, 'Rodné číslo musí být dlouhé 10 znaků', 10)
 		->setRequired(TRUE);
-
-
-	$this->addText('leagueId', 'Identifikátor v lize');
-
-//	$this->addMultiSelect('roles', 'Role', $this->getRoles(), 6)
-//		->addRule(Form::FILLED, 'Role musí být vybrána')
-//		->setRequired(TRUE);
-//	$this->addMultiSelect('categories', 'Kategorie', $this->getCategories(), 6)
-//		->addRule(Form::FILLED, 'Kategorie musí být vybrána')
-//		->setRequired(TRUE);
 
 	$this->addGroup('Adresa trvalého bydliště');
 	$this->addText('street', 'Ulice')

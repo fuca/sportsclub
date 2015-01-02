@@ -19,7 +19,7 @@ partnerForm:
 admin:
 	heading: "Správa partnerů"
 	partner.heading: "Partneři"
-	partnerAdd: "Přidat nového partnera"
+	partnerAdd: "Přidat partnera"
 	addPartner.heading: "Nový partner"
 	updatePartner.heading: "Upravit partnera %name%"
 	updatePartner.bread: "Upravit partnera"

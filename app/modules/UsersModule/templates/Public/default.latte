@@ -19,7 +19,16 @@
 	    </li>
 	{/if}
     {/block}
-    <li>{$group->getName()}   ({$group->getSportType()->getName()})</li>
+    {var $type => $group->getSportType()}
+    <li>{$group->getName()}   {if $type}({$type->getName()}){/if}</li>
+{/block}
+    
+{block #title}
+    {var $type => $group->getSportType()}
+    
+    {$group->getName()}   {if $type}({$type->getName()}){/if} {$titleCrumbSeparator}
+    {_ usersModule.public.rosters.bread} {$titleCrumbSeparator} 
+    {include #parent} 
     
 {/block}
 
@@ -29,30 +38,44 @@
 {/block}
 
 {block #mainBlock}  
-<div class="row">
-    <div class="col-md-7">
-    <div class="list-group">
-    {foreach $data as $p} 
-	<a href="{plink :Users:Public:showWebProfile, $p->getOwner()->getId(), $p->getGroup()->getAbbr()}" class="list-group-item">
+    <div class="page-header">
+	{var $type => $group->getSportType()}
+	{if $type}
+	    {?$type = $group->getName()." (".$type->getName().")"}
+	{else}
+	    {?$type = $group->getName()}
+	{/if}
+	<h3>{_ usersModule.public.rosterMenu.label, null, ["group"=>$type]}</h3>
+    </div>
 
-	<h4 class="list-group-item-heading">
-	    {var jNum=>$p->getOwner()->getWebProfile()->getJerseyNumber()}
-	    {if !is_numeric(jNum)} 
-		<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-	    {else}
-		#{$jNum}
-	    {/if}
-	    {$p->getOwner()->getName()}
-	&nbsp;"{$p->getOwner()->getNick()}"
-	&nbsp;{$p->getOwner()->getSurName()}
-	</h4>
-	<p class="list-group-item-text">
-	    {$p->getName()}	    
-	</p>
-	</a>
-    {/foreach}
-    </div>
-    </div>
-    
- </div>
+    <div class="row">
+	<div class="col-md-7">
+	<div class="list-group">
+	{if !empty($data)}
+	    {foreach $data as $p} 
+		<a href="{plink :Users:Public:showWebProfile, $p->getOwner()->getId(), $p->getGroup()->getAbbr()}" class="list-group-item">
+
+		<h4 class="list-group-item-heading">
+		    {var jNum=>$p->getOwner()->getWebProfile()->getJerseyNumber()}
+		    {if !is_numeric(jNum)} 
+			<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+		    {else}
+			#{$jNum}
+		    {/if}
+		    {$p->getOwner()->getName()}
+		&nbsp;"{$p->getOwner()->getNick()}"
+		&nbsp;{$p->getOwner()->getSurName()}
+		</h4>
+		<p class="list-group-item-text">
+		    {$p->getName()}	    
+		</p>
+		</a>
+	    {/foreach}
+	{else}
+
+	{/if}
+	</div>
+	</div>
+
+     </div>
 {/block}

@@ -66,7 +66,7 @@ class PrivateMessageForm extends BaseForm {
 		->addRule(Form::FILLED, "communicationModule.pmForm.contentMustFill")
 		->setRequired("communicationModule.pmForm.contentMustFill");
 	
-	$this->addSubmit("submitButton", "system.forms.submitButton.label");
+	$this->addSubmit("submitButton", "communicationModule.pmForm.submitButton.label");
 	$this->onSuccess[] = callback($this->presenter, "privateMessageFormSuccess");
     }
     

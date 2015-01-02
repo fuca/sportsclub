@@ -1,6 +1,6 @@
 adminMenuItem.label: "Události"
 clubMenuItem.label: "Události"
-userMenuItem.label: "Moje události"
+userMenuItem.label: "Události"
 
 adminMenuItem.description: "Sekce pro správu událostí"
 clubMenuItem.description: "Přehled všech dostupných událostí"
@@ -13,7 +13,7 @@ eventEnds: "Končí "
 
 readMore: "..."
 
-userEvents: "Události na kterých se účastníte"
+userEvents: "Události, ke kterým jste  se vyjádřili"
 
 common:
 	yes: "Ano"
@@ -34,17 +34,17 @@ grid:
 	takeTill: "Končí"
 	updateParticipation: "Upravit účast"
 	updateEvent: "Upravit událost"
-	deleteEvent: "Upravit událost"
+	deleteEvent: "Smazat událost"
 
 admin:
 	eventAdd: "Přidat událost"
 	eventNew: "Nová událost"
 	event.heading: "Události"
-	heading: "Zdroje událostí"
+	heading: "Správa událostí"
 	addEvent.heading: "Nová událost"
 	updateEvent.heading: "Upravit událost %title"
 	updateEvent.title: "Upravit událost"
-	updateParticipation.heading: "Aktualizace účasti na %title%"
+	updateParticipation.heading: "Aktualizace účasti na"
 	updateParticipation.bread: "Upravit účast události"
 	updateParticipation.title: "Upravit účast události"
 
@@ -79,4 +79,11 @@ eventType:
 	meeting: "Setkání"
 
 user:
-	userEvents.heading: "Uživatelské události"
+	userEvents.heading: "Události"
+
+event:
+	confirmUntil.title: "Ukončení možnosti přihlášení"
+	participators.title: "Počet vyjádření"
+	takingPlaceSince.title: "Začátek"
+	takingPlace.title: "Koná se"
+	takingEditor.title: "Poslední změnu provedl"

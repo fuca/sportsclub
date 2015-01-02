@@ -12,12 +12,12 @@
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+    {control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
     <div class="page-header">
-	<h3>{_ eventsModule.admin.updateParticipation.heading}</h3>
+	<h3>{_ eventsModule.admin.updateParticipation.heading} <a target="_blank" href="{plink :Events:Club:showEvent, $id}">{$title}</a></h3>
     </div>
     {control participationControl:admin}
 {/}

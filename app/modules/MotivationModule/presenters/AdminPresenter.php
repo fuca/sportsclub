@@ -489,4 +489,11 @@ final class AdminPresenter extends SystemAdminPresenter {
 	return $c;
     }
     
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back",":Motivation:Admin:default");
+	return $c;
+    }
+    
 }

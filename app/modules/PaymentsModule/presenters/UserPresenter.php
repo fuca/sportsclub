@@ -90,6 +90,7 @@ class UserPresenter extends SystemUserPresenter {
 	}
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->paymentService->getPaymentsDataSource($this->getUser()->getIdentity()));
+	$grid->setTranslator($this->getTranslator());
 	$grid->setPrimaryKey("id");
 
 	
@@ -124,7 +125,7 @@ class UserPresenter extends SystemUserPresenter {
 	$grid->addColumnText('status', $this->tt('paymentsModule.admin.grid.status'))
 		->setTruncate(9)
 		->setSortable()
-		->setReplacement($states)
+		->setCustomRender($this->statusRender)
 		->setFilterSelect($states);
 	
 	$grid->addColumnText('season', $this->tt('paymentsModule.admin.grid.season'))
@@ -145,6 +146,10 @@ class UserPresenter extends SystemUserPresenter {
 		});
 	$grid->setFilterRenderType($this->filterRenderType);
 	return $grid;
+    }
+    
+    public function statusRender($e) {
+	return $this->tt(PaymentStatus::getOptions()[$e->getStatus()]);
     }
     
     public function subjectRender($e) {

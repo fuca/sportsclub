@@ -196,11 +196,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerName = $grid->getColumn('name')->headerPrototype;
 	$headerName->class[] = 'center';
 
-	$grid->addColumnText('referrer','partnersModule.admin.grid.referrer')
-		->setSortable()
-		->setFilterSelect($users);
-	$headerRef = $grid->getColumn('referrer')->headerPrototype;
-	$headerRef->class[] = 'center';
+    //	$grid->addColumnText('referrer','partnersModule.admin.grid.referrer')
+    //		->setSortable()
+    //		->setFilterSelect($users);
+    //	$headerRef = $grid->getColumn('referrer')->headerPrototype;
+    //	$headerRef->class[] = 'center';
 
 	$grid->addColumnDate('updated', 'partnersModule.admin.grid.updated', self::DATE_FORMAT)
 		->setSortable()

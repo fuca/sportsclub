@@ -63,3 +63,6 @@ div.forumpost-box-item {
    
    margin: 0 0 1%;
 }
+strong.thread-title {
+    font-size: 1.5em !important;
+}

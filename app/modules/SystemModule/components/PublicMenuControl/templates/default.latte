@@ -36,20 +36,23 @@
 					{var pages => $g->getStaticPages()}
 					{var children => $g->getChildren()}
 				    <li class="dropdown-submenu
-					{if $children->isEmpty()}
+					{*if $children->isEmpty()*}
+					{if false}
 					    disabled
 					{/}">
 
 					<!-- GROUP DROPDOWN TITLE -->
 					<a href="#">{$g->getName()}</a>
-					{if !$children->isEmpty() || !$pages->isEmpty()}
+					{*if !$children->isEmpty() || !$pages->isEmpty()*}
+					{if true}
 					    {block #treeDropDownSubMenu}
 					    <!-- GROUP DROPDOWN CONTENT -->
 						<ul class="dropdown-menu">
 						    {foreach $pages as $page}
 							<li><a href="{plink :System:Homepage:showStaticPage, $page->getAbbr()}">{$page->getTitle()}</a></li>
+							
 						    {/foreach}
-
+						    <li><a href="{plink :Users:Public:default, $g->getId()}">{_ usersModule.public.roster.label}</a></li>
 							{if  !$pages->isEmpty() && !$children->isEmpty()}
 							    <li class="divider"></li>
 							{/if}
@@ -61,9 +64,10 @@
 							    {else}
 								<li class="dropdown-submenu">	       
 								    <a tabindex="0" data-toggle="dropdown" href="#">{$child->getName()}</a>
-								    {include #treeDropDownSubMenu, children=>$child->getChildren(), pages=>$child->getStaticPages()}
+								    {include #treeDropDownSubMenu, children=>$child->getChildren(), pages=>$child->getStaticPages(), g=>$child}
 								</li>
 							    {/if}
+							    
 							{/foreach}
 						</ul>
 					    {/block}

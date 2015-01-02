@@ -29,7 +29,7 @@
 	<div class="panel panel-default">
 	    <a href="{plink showThread, $thread->getAlias()}">
 	    <div class="panel-body">
-		<strong>{$thread->getTitle()}</strong>
+		<strong class="thread-title">{$thread->getTitle()}</strong>
 		<div class="pull-right">
 		    <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
 		    {count($thread->getComments())}

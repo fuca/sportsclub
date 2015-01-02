@@ -102,6 +102,8 @@ class AdminPresenter extends SystemAdminPresenter {
 	    if ($e !== null) {
 		$this->setEntity($e);
 	    }
+	    $this->template->title = $e->getTitle();
+	    $this->template->id = $e->getAlias();
 	} catch (Exceptions\EntityNotFoundException $ex) {
 	    $this->handleEntityNotExists($id, "this", $ex);
 	} catch (Exceptions\DataErrorException $ex) {
@@ -287,6 +289,13 @@ class AdminPresenter extends SystemAdminPresenter {
 	$c->setLabel("systemModule.navigation.options");
 	$c->addNode("eventsModule.admin.eventAdd",":Events:Admin:addEvent");
 	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	return $c;
+    } 
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("systemModule.navigation.back",":Events:Admin:default");
 	return $c;
     } 
 }

@@ -338,6 +338,9 @@ final class MessagingPresenter extends SystemUserPresenter {
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
+	$c->addNode("communicationModule.messaging.inbox",":Communication:Messaging:inbox");
+	$c->addNode("communicationModule.messaging.outbox",":Communication:Messaging:outbox");
+	$c->addNode("communicationModule.messaging.deleted",":Communication:Messaging:deleted");
 	$c->addNode("communicationModule.messaging.messageAdd",":Communication:Messaging:createMessage");
 	$c->addNode("systemModule.navigation.back",":System:Default:userRoot");
 	return $c;

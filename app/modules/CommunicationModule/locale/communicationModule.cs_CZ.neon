@@ -1,5 +1,5 @@
 
-adminMenuItem.label: "Fórum"
+adminMenuItem.label: "Fóra"
 adminMenuItem.description: "Sekce pro správu komunikačních prostředků"
 protectedForumMenuItem.label: "Fórum"
 protectedForumMenuItem.description: "Poskytuje přehled fóra"
@@ -45,10 +45,10 @@ forumForm.errors:
 	forumAlreadyExist: "Fórum s daným názvem již existuje."
 
 messaging:
-	messageAdd: "Vytvoř novou zprávu"
-	inbox: "Přijaté zprávy"
-	outbox: "Odeslané zprávy"
-	deleted: "Odstraněné zprávy"
+	messageAdd: "Nová zpráva"
+	inbox: "Přijaté"
+	outbox: "Odeslané"
+	deleted: "Odstraněné"
 pmForm:
 	multiUsers: "Příjemce"
 	subject: "Předmět"
@@ -57,6 +57,7 @@ pmForm:
 	delivered: "Doručeno"
 	sender: "Odesílatel"
 	starred: "&#9733"
+	submitButton.label: "Odeslat zprávu"
 
 forumForm: 
 	title: "Název"
@@ -81,9 +82,10 @@ club:
 	forum.heading: "Fórum %title%"
 
 user:
-	inbox.heading: "Přijaté"
-	outbox.heading: "Odeslané"
-	deleted.heading: "Odstraněné"
+	inbox.heading: "Přijaté zprávy"
+	outbox.heading: "Odeslané zprávy"
+	deleted.heading: "Odstraněné zprávy"
+	createMessage.heading: "Nová zpráva"
 
 protected.messages:
 	noForum: "Pro danou skupinu neexistuje žádné fórum."

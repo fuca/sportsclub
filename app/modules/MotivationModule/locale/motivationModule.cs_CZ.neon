@@ -35,7 +35,7 @@ entryForm:
 	type: "Typ"
 	
 admin:
-	taxAdd: "Přidej povinnost"
+	taxAdd: "Přidat povinnost"
 	entryAdd: "Přidat záznam"
 	heading: "Motivační zdroje"
 	tax.heading: "Motivační povinnosti"

@@ -28,6 +28,7 @@ use \Doctrine\ORM\Mapping as ORM,
 /**
  * Description of EventParticipation relation between User and Event
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
+ * 
  * @ORM\Entity
  * @ORM\Table(name="EventParticipation", uniqueConstraints={@UniqueConstraint(name="unique_participation", columns={"owner_fk", "event_fk"})})
  */
@@ -65,7 +66,7 @@ class EventParticipation extends BaseEntity implements IIdentifiable {
     protected $updated;
     
     /** 
-     * @ORM\Column(type="string", nullable = false) 
+     * @ORM\Column(type="text", nullable = false) 
      */
     protected $content;
     

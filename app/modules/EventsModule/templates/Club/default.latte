@@ -22,7 +22,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
 	<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">{_ eventsModule.club.calendarTab.label}</a></li>
-	<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{_ eventsModule.club.agendaTab.label}</a></li>
+	<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{_ eventsModule.club.agendaTab.label}{if $data} ({count($data)}){/if}</a></li>
     </ul>
 
     <!-- Tab panes -->

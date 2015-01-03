@@ -35,7 +35,7 @@ use \Nette\Application\UI\Control,
     \App\SystemModule\Model\Service\ICommentable;
 
 /**
- * Description of LoginControl
+ * Control for adding comments
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -72,6 +72,10 @@ final class CommentControl extends Control {
 	$this->adminTemplate = $this->templatesDir . "defaultGrid.latte";
     }
 
+    /**
+     * Predicate which checks, if User has rights to creating comments
+     * @return boolean
+     */
     public function isCommenting() {
 	if (!isset($this->commenting)) {
 	    $mode = $this->getEntity()->getCommentMode();
@@ -135,6 +139,9 @@ final class CommentControl extends Control {
 	$this->renderComments();
     }
 
+    /**
+     * Form control render
+     */
     public function renderForm() {
 	$this->template->setFile($this->formTemplate);
 	$this->template->allowed = $this->isCommenting();
@@ -143,6 +150,9 @@ final class CommentControl extends Control {
 	$this->template->render();
     }
 
+    /**
+     * Comments data render
+     */
     public function renderComments() {
 	$this->template->setFile($this->dataTemplate);
 	$cs = $this->getEntity()->getComments();
@@ -156,6 +166,10 @@ final class CommentControl extends Control {
 	$this->template->render();
     }
 
+    /**
+     * CommentForm onSuccess event handler
+     * @param Form $form
+     */
     public function commentFormSuccess(Form $form) {
 	$values = $form->getValues();
 	switch ($form->getMode()) {
@@ -172,6 +186,10 @@ final class CommentControl extends Control {
 	}
     }
     
+    /**
+     * Delete comment signal handler
+     * @param numeric $id
+     */
     public function handleDeleteComment($id) {
 	$coll = $this->getEntity()->getComments();
 	    
@@ -179,6 +197,10 @@ final class CommentControl extends Control {
 	$this->presenter->deleteComment($comment);
     }
     
+    /**
+     * Get form signal handler
+     * @param numeric $id
+     */
     public function handleGetCommentForm($id) {
 	$this->template->showSimpleForm = true;
 	$form = $this->getComponent("updateCommentForm");
@@ -194,12 +216,22 @@ final class CommentControl extends Control {
 	}
     }
     
+    /**
+     * Form factory
+     * @param string $name
+     * @return CommentForm
+     */
     public function createComponentAddCommentForm($name) {
 	$form = new CommentForm($this, $name, $this->presenter->getTranslator());
 	$form->initialize();
 	return $form;
     }
     
+    /**
+     * Form factory
+     * @param string $name
+     * @return CommentForm
+     */
     public function createComponentUpdateCommentForm($name) {
 	$form = new CommentForm($this, $name, $this->presenter->getTranslator());
 	$form->setMode(FormMode::UPDATE_MODE);

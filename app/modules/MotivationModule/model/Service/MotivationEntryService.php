@@ -32,7 +32,7 @@ use \Kdyby\Doctrine\EntityDao,
     \App\Model\Service\BaseService,
     \App\Model\Misc\Exceptions;
 /**
- * MotivationEntryService
+ * Implementation of MotivationEntryService based on database
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */

@@ -25,7 +25,7 @@ use \Nette\Application\UI\Form,
     \Kdyby\Monolog\Logger;
 
 /**
- * AuthPresenter
+ * Authorization presenter
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AuthPresenter extends BasePresenter {
@@ -41,16 +41,6 @@ class AuthPresenter extends BasePresenter {
     }
     
     public function actionIn() {
-//	// set pw admin to user no 1
-//	$u = $this->users->getUser(1);
-//	//dd($u);
-//	$o = ['salt'=>$this->context->parameters['models']['salt'], 'cost'=>4];
-//	//dd("salt", $o);
-//	$h = \App\Misc\Passwords::hash("admin", $o);
-//	//dd($h);    
-//	$this->users->updateUser($u->setPassword($h));
-////	dd(\App\Misc\Passwords::verify("admin", $h));
-//	// $2y$04$$2a06$05IKqFG8iuPts/ceDww1QeqjiwOTM3OaQI8W.VyN3/1Ur.i
     }
 
     public function actionOut() {

@@ -93,21 +93,21 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     /**
+     * Action for render admin payments grid
      * @Secured(resource="default")
      */
     public function actionDefault() {
-	// render grid
     }
 
     /**
+     * Action for render form for create payment
      * @Secured(resource="createPayment")
      */
     public function actionCreatePayment() {
-	// render form
     }
 
     /**
-     * 
+     * Top-down handler for create payment
      * @param \Nette\ArrayHash $values
      */
     public function createPaymentHandle(ArrayHash $values) {
@@ -136,6 +136,7 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     /**
+     * Action for render form for payment update
      * @Secured(resource="updatePayment")
      */
     public function actionUpdatePayment($id) {
@@ -152,6 +153,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 
+    /**
+     * Top-down handler for update payment
+     * @param ArrayHash $values
+     */
     public function updatePaymentHandle(ArrayHash $values) {
 	$payment = new Payment((array) $values);
 	try {
@@ -164,6 +169,7 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     /**
+     * Delete payment signal handler
      * @Secured(resource="deletePayment")
      */
     public function handleDeletePayment($id) {
@@ -183,12 +189,22 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 	    
+    /**
+     * Add payment form control factory
+     * @param string $name
+     * @return PaymentForm
+     */
     public function createComponentAddPaymentForm($name) {
 	$form = $this->preparePaymentForm($name);
 	$form->initialize();
 	return $form;
     }
 
+    /**
+     * Update form control factory
+     * @param string $name
+     * @return PaymentForm
+     */
     public function createComponentUpdatePaymentForm($name) {
 	$form = $this->preparePaymentForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
@@ -211,6 +227,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $form;
     }
 
+    /**
+     * PaymentForm onSuccess event handler
+     * @param Form $form
+     */
     public function paymentFormSubmitHandle(Form $form) {
 	$values = $form->getValues();
 	switch ($form->getMode()) {
@@ -241,6 +261,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 
+    /**
+     * Admin payments grid control factory
+     * @param string $name
+     */
     public function createComponentPaymentsGrid($name) {
 
 	try {
@@ -314,10 +338,20 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->setExport("admin-payments " . date("Y-m-d H:i:s", time()));
     }
     
+    /**
+     * Grid column render
+     * @param Payment $e
+     * @return string
+     */
     public function statusRender($e) {
 	return $this->tt(PaymentStatus::getOptions()[$e->getStatus()]);
     }
 
+    /**
+     * Payments grid operations handler
+     * @param string $op
+     * @param array $ids
+     */
     public function paymentsGridOpsHandler($op, $ids) {
 	$me = $this->getUser()->getIdentity();
 	switch ($op) {
@@ -353,6 +387,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("this");
     }
     
+    /**
+     * Sub menu control factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
@@ -361,6 +400,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $c;	
     }
     
+    /**
+     * Back-only sub menu control factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentBackSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");

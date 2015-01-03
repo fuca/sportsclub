@@ -31,7 +31,7 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
     \Grido\Grid;
 
 /**
- * ArticleAdminPresenter
+ * Presenter for administrate Article entities.
  * @Secured(resource="ArticlesAdmin")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -56,19 +56,22 @@ class AdminPresenter extends SystemAdminPresenter {
     public $usersService;
     
     /**
+     * Default action for rendering grid.
      * @Secured(resource="default")
      */
     public function actionDefault() {
     }
     
     /**
-     *  * @Secured(resource="addArticle")
+     * Action for rendering form for add new Article.
+     * @Secured(resource="addArticle")
      */
     public function actionAddArticle() {
 	// form render
     }
     
     /**
+     * Action for rendering form to update Article.
      * @Secured(resource="updateArticle")
      */
     public function actionUpdateArticle($id) {
@@ -88,6 +91,7 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     /**
+     * Signal handler for deleting article.
      * @Secured(resource="deleteArticle")
      */
     public function handleDeleteArticle($id) {
@@ -106,7 +110,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
-    
+    /**
+     * Top-down method for creating article. Called by form success handler.
+     * @param ArrayHash $values
+     */
     public function createArticle(ArrayHash $values) {
 	try {
 	    $a = new Article((array)$values);
@@ -118,6 +125,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * Top-down method for updating Article. Called by form success handler.
+     * @param ArrayHash $values
+     */
     public function updateArticle(ArrayHash $values) {
 	try {
 	    $a = new Article((array)$values);
@@ -129,12 +140,22 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * Add Article form factory.
+     * @param string $name
+     * @return ArticleForm
+     */
     public function createComponentAddArticleForm($name) {
 	$form = $this->prepareArticleForm($name);
 	$form->initialize();
 	return $form;
     }
     
+    /**
+     * Update Article form factory
+     * @param string $name
+     * @return ArticleForm
+     */
     public function createComponentUpdateArticleForm($name) {
 	$form = $this->prepareArticleForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
@@ -155,6 +176,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $form;
     }
     
+    /** 
+     * Article form success handler
+     * @param Form $form
+     */
     public function articleFormSubmitted(Form $form) {
 	$values = $form->getValues();
 	try {
@@ -171,6 +196,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    /**
+     * Admin articles grid factory.
+     * @param string $name
+     * @return Grid
+     */
     public function createComponentArticlesGrid($name) {
 	
 	$articleStates = [null=>null]+ArticleStatus::getOptions();
@@ -251,24 +281,48 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $grid;
     }
     
+    /**
+     * Article detail redirection action.
+     * @param numeric $id
+     */
     public function actionGoToArticle($id) {
 	$this->redirect("Public:showArticle", $id);
     }
     
+    /**
+     * Grid column render.
+     * @param Article $e
+     * @return string
+     */
     public function titleRender($e) {
 	return \Nette\Utils\Html::el("span")
 		->addAttributes(["title"=>$e->getTitle()])
 		->setText(\Nette\Utils\Strings::truncate($e->getTitle(), 20));
     }
     
+    /**
+     * Grid column render.
+     * @param Article $e
+     * @return string
+     */
     public function statusRender($e) {
 	return $this->tt(ArticleStatus::getOptions()[$e->getStatus()]);
     }
     
+    /**
+     * Grid column render.
+     * @param Article $el
+     * @return string
+     */
     public function commentModeRender($el) {
 	return $this->tt(CommentMode::getOptions()[$el->getCommentMode()]);
     }
     
+    /**
+     * Grid operations handler.
+     * @param string $operation
+     * @param array $ids
+     */
     public function articlesGridOperationHandler($operation, $ids) {
 	switch($operation) {
 	    case "delete":
@@ -280,6 +334,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("this");
     }
     
+    /**
+     * Navigation sub menu factory.
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
@@ -288,6 +347,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $c;
     }
     
+    /**
+     * Navigation back-only sub menu factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentBackSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");

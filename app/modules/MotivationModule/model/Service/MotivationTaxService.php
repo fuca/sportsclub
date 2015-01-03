@@ -32,7 +32,7 @@ use \Kdyby\Doctrine\EntityManager,
     \App\SeasonsModule\Model\Service\ISeasonService;
 
 /**
- * MotivationTaxService
+ * Implementation of IMotivationTaxService using database
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */

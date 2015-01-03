@@ -28,7 +28,7 @@ use
     \Nette\Security\Permission;
 
 /**
- * ResourceService
+ * Authorization service implementation
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -140,6 +140,7 @@ class AclService extends BaseService implements IAclService, IAuthorizator {
     }
 
     // iiiiiiiiiiiiiiiiiiiii IAuthorizator iiiiiiiiiiiiiiiiiiiii
+    
     public function isAllowed($role, $resource, $privilege) {
 	return $this->getAcl()->isAllowed($role, $resource, $privilege);
     }

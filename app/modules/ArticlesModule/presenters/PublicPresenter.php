@@ -25,7 +25,7 @@ use \App\SystemModule\Presenters\SystemPublicPresenter,
  
 
 /**
- * ArticlePresenter
+ * Articles public section presenter. Serves for displaying articles within on public.
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -43,6 +43,10 @@ class PublicPresenter extends SystemPublicPresenter {
      */
     public $sportGroupService;
     
+    /**
+     * Action for displaying list of Articles within given group.
+     * @param string $abbr
+     */
     public function actionDefault($abbr = self::ROOT_GROUP) {
 	$data = null;
 	$sg = null;
@@ -58,6 +62,10 @@ class PublicPresenter extends SystemPublicPresenter {
 	$this->template->data = $data;
     }
     
+    /**
+     * Action for displaying detail of single article
+     * @param numeric $id
+     */
     public function actionShowArticle($id = null) {
 	$data = null;
 	try {
@@ -73,7 +81,10 @@ class PublicPresenter extends SystemPublicPresenter {
     }
     
     
-    
+    /**
+     * Handler for add comment to article
+     * @param ArrayHash $values
+     */
     public function addComment(ArrayHash $values) {
 	try {
 	    $comment = new ArticleComment((array) $values);
@@ -92,6 +103,10 @@ class PublicPresenter extends SystemPublicPresenter {
 	}
     }
     
+    /**
+     * Handler for update comment to article
+     * @param ArrayHash $values
+     */
     public function updateComment(ArrayHash $values) {
 	try {
 	    $comment = new ArticleComment((array) $values);
@@ -109,7 +124,11 @@ class PublicPresenter extends SystemPublicPresenter {
 	}
     }
     
-    public function deleteComment(WallPostComment $comm) {
+    /**
+     * Handler for delete article comment
+     * @param ArticleComment $comm
+     */
+    public function deleteComment(ArticleComment $comm) {
 	try {
 	    $this->articleService->deleteComment($comm, $this->getEntity());
 	} catch (Exceptions\DataErrorException $ex) {

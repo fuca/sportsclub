@@ -3,9 +3,9 @@
 namespace App\SecurityModule\Model\Misc\Annotations;
 
 /**
- * Description of SecuredAnnotation
+ * SecuredAnnotation for marking methods needs to be authorizated
  * @Annotation
- * @author fuca
+ * @author Michal Fučík
  */
 class Secured {
 
@@ -21,7 +21,6 @@ class Secured {
     }
 
     public function __toString() {
-	return self::PRIVILEGE_ID . "={$this->getPrivileges()}," . self::RESOURCE_ID . "={$this->getResource()}";
+	return "{$this->getResource()}";
     }
-
 }

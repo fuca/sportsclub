@@ -17,17 +17,47 @@
  */
 
 namespace App\MotivationModule\Model\Service;
- 
+
 use \App\Model\Entities\MotivationTax;
+
 /**
  * Interface for MotivationTaxService
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 interface IMotivationTaxService {
-    
+
+    /**
+     * @param MotivationTax $t
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createTax(MotivationTax $t);
+
+    /**
+     * @param MotivationTax $t
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateTax(MotivationTax $t);
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteTax($id);
+
+    /**
+     * @param numeric $id
+     * @return MotivationTax
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getTax($id);
+
+    /**
+     * Creates datasource for grid
+     * @return Doctrine
+     */
     function getTaxesDatasource();
 }

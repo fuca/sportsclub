@@ -6,9 +6,8 @@ use \Nette\Object,
     \App\Model\Misc\Exceptions;
 
 /**
- * Description of Resource
  *
- * @author fuca
+ * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 abstract class Resource extends Object {
 

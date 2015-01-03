@@ -56,7 +56,7 @@ interface IRoleService {
     function updateRole(Role $r);
     
     /**
-     * Reteurns role within specified numeric identifier
+     * Returns role within specified numeric identifier
      * @param numeric $id
      * @return \App\Model\Entities\Role
      * @throws \Nette\InvalidArgumentException
@@ -64,18 +64,23 @@ interface IRoleService {
     function getRole($id);
     
     /**
-     * 
-     * @param \App\Model\Entities\User $user
+     * Returns role associated with user
+     * @param \App\Model\Entities\User $u
      * @return type
      * @throws NullPointerException
      */
     function getUserRoles(User $u);
     
+    /**
+     * Returns role according to given name
+     * @param string $name
+     * @return Role
+     */
     function getRoleName($name);
     
     /**
-     * 
-     * @return type
+     * Returns all roles
+     * @return array
      */
     function getRoles();
     
@@ -86,9 +91,9 @@ interface IRoleService {
     function getRolesDatasource();
     
     /**
-     * 
-     * @param type $id
-     * @return type
+     * Returns associative array of roles and their keys
+     * @param numeric $id
+     * @return array
      */
     function getSelectRoles($id = null);
     

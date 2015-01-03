@@ -26,11 +26,38 @@ use \App\Model\Entities\MotivationEntry,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 interface IMotivationEntryService {
-    
+
+    /**
+     * @param MotivationEntry $e
+     * @throws Exceptions\DataErrorException
+     */
     function createEntry(MotivationEntry $e);
+
+    /**
+     * @param MotivationEntry $e
+     * @throws Exceptions\DataErrorException
+     */
     function updateEntry(MotivationEntry $e);
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteEntry($id);
+
+    /**
+     * @param numeric $id
+     * @return MotivationEntry
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getEntry($id);
+
+    /**
+     * Created grid datasource
+     * @param User $u
+     * @return Doctrine
+     */
     function getEntriesDataSource(User $u = null);
-    
 }

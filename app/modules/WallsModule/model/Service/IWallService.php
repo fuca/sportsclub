@@ -28,22 +28,74 @@ use \App\Model\Entities\WallPost,
  * @author <michal.fuca.fucik(at)gmail.com>
  */
 interface IWallService extends ICommenting {
-    
 
+    /**
+     * Creates WallPost database entry
+     * @param WallPost $w
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function createWallPost(WallPost $w);
-    
+
+    /**
+     * Updates database state of given entity
+     * @param WallPost $w
+     * @return WallPost
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function updateWallPost(WallPost $w);
-    
+
+    /**
+     * Removes WallPost entry with given id
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function removeWallPost($id);
-    
-    function getWallPost($id);
-    
+
+    /**
+     * Fetches entity identified by given id
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return WallPost
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function getWallPost($id, $useCache = true);
+
+    /**
+     * Gets wallposts associated with given group
+     * @param SportGroup $g
+     * @param boolean $highlight
+     * @param  WallPostStatus$status
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getWallPosts(SportGroup $g, $highlight = false, $published = null);
-    
+
+    /**
+     * Returns array of highlighted wallpost for announcements
+     * @param SportGroup $g
+     * @param string $rootAbbr
+     * @param boolean $published
+     * @return WallPost
+     * @throws Exceptions\DataErrorException
+     */
     function getHighlights(SportGroup $g = null, $rootAbbr = null, $published = null);
-    
+
+    /**
+     * Creates WallPosts datasource for Grid
+     * @return Doctrine
+     */
     function getWallPostsDatasource();
-    
+
+    /**
+     * Returns array of WallPosts for displaying within wall's history control
+     * @param SportGroup $g
+     * @param WallPostStatus $status
+     * @return WallPost
+     * @throws Exceptions\DataErrorException
+     */
     function getOldWallPosts(SportGroup $g, $status = WallPostStatus::PUBLISHED);
-    
 }

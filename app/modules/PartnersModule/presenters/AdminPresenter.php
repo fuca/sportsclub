@@ -56,20 +56,21 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     /**
+     * Action for displaying grid with Partners
      * @Secured(resource="default")
      */
     public function actionDefault() {
-	// render grid
     }
     
     /**
+     * Action for displaying of form for create new partner
      * @Secured(resource="createPartner")
      */
     public function actionCreatePartner() {
-	// render form
     }
 
     /**
+     * Top-down handler for create partner entry
      * @param \Nette\ArrayHash $values
      */
     public function createPartnerHandle(ArrayHash $values) {
@@ -84,6 +85,7 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     /**
+     * Action for displaying update form
      * @Secured(resource="updatePartner")
      */
     public function actionUpdatePartner($id) {
@@ -101,6 +103,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 
+    /**
+     * Top-down handler for update partner entry
+     * @param ArrayHash $values
+     */
     public function updatePartnerHandle(ArrayHash $values) {
 	$partner = new Partner((array) $values);
 	try {
@@ -113,6 +119,7 @@ class AdminPresenter extends SystemAdminPresenter {
     }
 
     /**
+     * Partner delete signal handler
      * @Secured(resource="deletePartner")
      */
     public function handleDeletePartner($id) {
@@ -130,12 +137,22 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 
+    /**
+     * Add partner form factory
+     * @param string $name
+     * @return PartnerForm
+     */
     public function createComponentAddPartnerForm($name) {
 	$form = $this->preparePartnerForm($name);
 	$form->initialize();
 	return $form;
     }
 
+    /**
+     * Update partner form factory
+     * @param string $name
+     * @return PartnerForm
+     */
     public function createComponentUpdatePartnerForm($name) {
 	$form = $this->preparePartnerForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
@@ -154,6 +171,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $form;
     }
 
+    /**
+     * PartnerForm success event handler
+     * @param Form $form
+     */
     public function partnerFormSuccessHandle(Form $form) {
 	$values = $form->getValues();
 	try {
@@ -170,6 +191,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
 
+    /**
+     * Partners grid factory
+     * @param string $name
+     */
     public function createComponentPartnersGrid($name) {
 
 	try {
@@ -245,10 +270,20 @@ class AdminPresenter extends SystemAdminPresenter {
 	$grid->setExport("admin-partners " . date("Y-m-d H:i:s", time()));
     }
     
+    /**
+     * Grid column render
+     * @param Partner $e
+     * @return string
+     */
     public function nameRender($e) {
 	return \Nette\Utils\Html::el("a")->setText($e->getName())->addAttributes(["href"=>$e->getLink()]);
     }
 
+    /**
+     * Partners grid operations handler
+     * @param string $op
+     * @param array $ids
+     */
     public function partnersGridOpsHandler($op, $ids) {
 	switch ($op) {
 	    case "delete":
@@ -260,6 +295,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("this");
     }
     
+    /**
+     * Component sub menu factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
@@ -268,6 +308,12 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $c;	
     }
     
+    
+    /**
+     * Component back-only sub menu factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentBackSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");

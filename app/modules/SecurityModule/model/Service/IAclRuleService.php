@@ -27,12 +27,60 @@ use \App\Model\Entities\AclRule,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface IAclRuleService {
-    
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return AclRule
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getRule($id);
+
+    /**
+     * Returns all rules
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getRules();
+
+    /**
+     * @param AclRule $arule
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createRule(AclRule $arule);
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteRule($id);
+
+    /**
+     * @param AclRule $arule
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateRule(AclRule $arule);
+
+    /**
+     * Creates datasource for Rule datagrid
+     * @return \Grido\DataSources\Doctrine
+     */
     function getRulesDatasource();
-    function getUniqueRule(Role $g, $resource = null, $priv = null);
+
+    /**
+     * 
+     * @param Role $r
+     * @param string $resource
+     * @param string $priv
+     * @return AclRule
+     * @throws Exceptions\NoResultException
+     */
+    function getUniqueRule(Role $r, $resource = null, $priv = null);
 }

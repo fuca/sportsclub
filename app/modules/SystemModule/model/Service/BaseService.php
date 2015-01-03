@@ -140,6 +140,13 @@ abstract class BaseService extends Object {
 	$this->setEntityClassName($entityClassName);
     }
     
+    /**
+     * Invalidates cache of given entity. If entity is null and force is true, cache of whole module gonna be deleted.
+     * @param BaseEntity $e
+     * @param array $tags
+     * @param boolean $force
+     * @return void
+     */
     protected function invalidateEntityCache(BaseEntity $e = null, array $tags = [self::ENTITY_COLLECTION, self::SELECT_COLLECTION], $force = false) {
 	$cache = $this->getEntityCache();
 	if (!$e instanceof IIdentifiable) {

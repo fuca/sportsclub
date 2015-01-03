@@ -28,10 +28,6 @@ final class ContactControl extends Control {
      */
     private $homepageTemplateFile;
 
-//    /**
-//     * @var \App\UsersModule\Model\Service\IUserService 
-//     */
-//    private $userService;
     
     private $userEntity;
     
@@ -71,15 +67,6 @@ final class ContactControl extends Control {
 	$this->homepageTemplateFile = $template;
     }
     
-//    public function setUserService(IUsersService $userService) {
-//	$this->userService = $userService;
-//    }
-    
-//    public function getSystemUserId() {
-//	if (!isset($this->systemUserId))
-//	    throw new Exceptions\InvalidStateException("Please set system user id, '{$this->systemUserId}' is not acceptable");
-//	return $this->systemUserId;
-//    }
     
     public function setUser(User $u) {
 	$this->userEntity = $u;
@@ -89,17 +76,13 @@ final class ContactControl extends Control {
 	if (!isset($this->userEntity)) {
 	    throw new Exceptions\InvalidStateException("Please set user entity!");
 	}
-//	    $user = null;
-//	    try {
-//		$user = $this->userService->getUser($this->getSystemUserId());
-//	    } catch (Exceptions\DataErrorException $ex) {
-//		// TODO 
-//	    }
-//	    $this->userEntity = $user;
-//	}
+
 	return $this->userEntity;
     }
     
+    /**
+     * Render full contact control 
+     */
     public function render() {
 	$this->template->setFile($this->templateFile);
 	$user = $this->getUser();
@@ -120,6 +103,9 @@ final class ContactControl extends Control {
 	$this->template->render();
     }
     
+    /**
+     * Renders quick contact for purpose of displaying on homepage
+     */
     public function renderHomepage() {
 	$this->template->setFile($this->homepageTemplateFile);
 	$user = $this->getUser();

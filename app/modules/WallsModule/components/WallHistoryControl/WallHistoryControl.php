@@ -22,7 +22,7 @@ use \Nette\Application\UI\Control,
     \Nette\ComponentModel\IContainer;
 
 /**
- * Description of WallHistoryControl
+ * Wall history control
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -48,6 +48,11 @@ final class WallHistoryControl extends Control {
      */
     private $param;
     
+    /**
+     * Class contructor
+     * @param IContainer $parent
+     * @param string $name
+     */
     public function __construct(IContainer $parent, $name) {
 	parent::__construct($parent, $name);
 	
@@ -60,6 +65,11 @@ final class WallHistoryControl extends Control {
 	return $this->templateFile;
     }
 
+    /**
+     * Template file name setter. Has to be in templates directory.
+     * @param string $template
+     * @throws \Nette\FileNotFoundException
+     */
     public function setTemplateFile($template) {
 	if (!file_exists($this->templatesDir . $template))
 	    throw new \Nette\FileNotFoundException("Template file with name '$template' does not exist");
@@ -78,6 +88,9 @@ final class WallHistoryControl extends Control {
 	$this->param = $string;
     }
 
+    /**
+     * Control template render
+     */
     public function render() {
 	$this->template->setFile($this->getTemplateFile());
 	$this->template->data = $this->getData();

@@ -32,7 +32,7 @@ use \App\Model\Entities\AclRule,
     \Kdyby\Doctrine\EntityManager;
 
 /**
- * Authorization and authentication service
+ * Authorization rules service
  *
  * @author <michal.fuca.fucik(at)gmail.com>.
  */

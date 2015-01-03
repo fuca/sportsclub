@@ -46,7 +46,11 @@ abstract class BaseForm extends Form {
 	$this->showCancel = $showCancel;
     }
 
-    
+    /**
+     * @param \Nette\ComponentModel\IContainer $parent
+     * @param string $name
+     * @param \Nette\Localization\ITranslator $translator
+     */
     public function __construct(IContainer $parent = NULL, $name = NULL, ITranslator $translator) {
 	parent::__construct($parent, $name);
 	$this->mode = FormMode::CREATE_MODE;
@@ -86,6 +90,10 @@ abstract class BaseForm extends Form {
 	}
     }
 
+    /**
+     * @param \App\Model\Misc\Enum\FormMode $mode
+     * @throws \Nette\InvalidArgumentException
+     */
     public function setMode($mode) {
 	if (array_key_exists($mode, FormMode::getOptions())) {
 	    $this->mode = $mode;
@@ -94,6 +102,10 @@ abstract class BaseForm extends Form {
 	}
     }
     
+    /**
+     * @param callable $successHandler
+     * @throws \App\Model\Misc\Exceptions\InvalidArgumentException
+     */
     public function setSuccessHandler($successHandler) {
 	if (!is_callable($successHandler))
 	    throw new \App\Model\Misc\Exceptions\InvalidArgumentException("Passed argument has to be callable");
@@ -117,7 +129,7 @@ abstract class BaseForm extends Form {
     }
 
     /**
-     * Method initializes inner components
+     * Method which initializes inner components
      */
     protected function initialize() {
 	if ($this->showCancel)

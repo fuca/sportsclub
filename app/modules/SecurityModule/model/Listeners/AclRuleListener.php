@@ -23,20 +23,19 @@ use \Nette\Object,
     \Kdyby\Monolog\Logger,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\SecurityModule\Model\Service\IAclService;
-	
-	
+
 /**
  * Acl rule events listener
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class AclRuleListener extends Object implements Subscriber {
-    
+
     /**
      * @var \Kdyby\Monolog\Logger
      */
     private $logger;
-    
+
     /**
      * @return \App\SecurityModule\Model\Service\IAclService
      */
@@ -44,27 +43,40 @@ class AclRuleListener extends Object implements Subscriber {
 
     public function getSubscribedEvents() {
 	return ["App\Model\Service\AclRuleService::onCreate",
-		"App\Model\Service\AclRuleService::onUpdate",
-		"App\Model\Service\AclRuleService::onDelete"];
+	    "App\Model\Service\AclRuleService::onUpdate",
+	    "App\Model\Service\AclRuleService::onDelete"];
     }
-    
+
     public function __construct(Logger $logger, IAclService $aclService) {
 	$this->logger = $logger;
 	$this->aclService = $aclService;
     }
-    
+
+    /**
+     * onCreate event handler
+     * @param BaseEntity $e
+     */
     public function onCreate(BaseEntity $e) {
 	$this->aclService->invalidateCache();
 	$this->logger->addInfo("AclRuleListener - onCreate - cache of aclService is gonna be deleted");
     }
-    
+
+    /**
+     * onUpdate event handler
+     * @param BaseEntity $e
+     */
     public function onUpdate(BaseEntity $e) {
 	$this->aclService->invalidateCache();
 	$this->logger->addInfo("AclRuleListener - onUpdate - cache of aclService is gonna be deleted");
     }
-    
+
+    /**
+     * onDelete event handler
+     * @param BaseEntity $e
+     */
     public function onDelete(BaseEntity $e) {
 	$this->aclService->invalidateCache();
 	$this->logger->addInfo("AclRuleListener - onDelete - cache of aclService is gonna be deleted");
     }
+
 }

@@ -83,6 +83,9 @@ final class PaymentForm extends BaseForm {
 	return PaymentOwnerType::getOptions();
     }
 
+    /**
+     * Initializes form elements
+     */
     public function initialize() {
 	$this->addHidden('id');
 

@@ -26,59 +26,126 @@ use \App\Model\Entities\User;
  * @author <michal.fuca.fucik(at)gmail.com>
  */
 interface IUserService {
-    
+
     /**
      * Creates new User entity
+     * @param User $u
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
      */
     function createUser(User $u);
-    
+
     /**
      * Updates User's entity state within database
+     * @param User $u
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
      */
     function updateUser(User $u);
-    
+
     /**
      * Deletes User entity from database
+     * @param type $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DependencyException
+     * @throws Exceptions\DataErrorException
+     * @throws EntityNotFoundException
      */
     function deleteUser($id);
-    
+
     /**
      * Returns User entity by specified numeric ID
-     * @return \App\Model\Entities\User
+     * @param type $id
+     * @return type
+     * @throws Exceptions\NullPointerException
+     * @throws \Nette\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
      */
     function getUser($id);
-    
+
     /**
      * Returns User entity by specified email address
+     * @param type $email
+     * @return type
+     * @throws Exceptions\NoResultException
      */
     function getUserEmail($email);
 
     /**
      * Returns collection of all users within database
+     * @return type
+     * @throws Exceptions\DataErrorException
      */
     function getUsers();
-    
-    function getSelectUsers();
-    
-    function getUsersDatasource();
-    
-    function getWebProfilesToPermitDatasource();
-    
-    function regeneratePassword($id);
-    
-    function toggleUser($id);
-    
-    function permitWebProfile($id, User $user);
-    
-    function denyWebProfile($id, User $user);
-    
-    function generateNewPassword($word = null);
-    
-    function updateLastLogin(User $u);
-    
-    /**
-     * Returns collection of Users according to given SportGroup
-     */
-  //function getUsers(SportGroup $g);
-}
 
+    /**
+     * Null active means all users, bool active means users with the same active value
+     * @param inteter $id
+     * @param bool|null $active
+     * @return array of pairs
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function getSelectUsers();
+
+    /**
+     * Returns datasource for grido datagrid
+     * @return \Grido\DataSources\Doctrine
+     */
+    function getUsersDatasource();
+
+    /**
+     * Creates datasource for grid
+     * @return Doctrine
+     */
+    function getWebProfilesToPermitDatasource();
+
+    /**
+     * Regenerate new password, stores in database and fires event
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function regeneratePassword($id);
+
+    /**
+     * Toggles user activity flag
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function toggleUser($id);
+
+    /**
+     * Permit web profile change
+     * @param numeric $id
+     * @param User $user
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function permitWebProfile($id, User $user);
+
+    /**
+     * Deny web profile change
+     * @param numeric $id
+     * @param User $user
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function denyWebProfile($id, User $user);
+
+    /**
+     * Hashes given word or generate random password
+     * @param string $word
+     * @return string
+     */
+    function generateNewPassword($word = null);
+
+    /**
+     * Updates last login information
+     * @param User $u
+     * @return User
+     * @throws Exceptions\DataErrorException
+     */
+    function updateLastLogin(User $u);
+}

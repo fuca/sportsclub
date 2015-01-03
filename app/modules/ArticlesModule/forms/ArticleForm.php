@@ -73,6 +73,9 @@ class ArticleForm extends BaseForm {
 	$this->users = $users;
     }   
     
+    /**
+     * Initializes form elements
+     */
     public function initialize() {
 	$this->addHidden("id");
 	$this->addHidden("alias");

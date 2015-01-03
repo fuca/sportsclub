@@ -27,7 +27,7 @@ use \App\SystemModule\Presenters\BasePresenter,
     \App\Model\Misc\Enum\WebProfileStatus;
 
 /**
- * Users PublicPresenter
+ * Users public section presenter
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -59,6 +59,10 @@ final class PublicPresenter extends SystemPublicPresenter {
 	$this->defaultPlayerRoleName = $name;
     }
     
+    /**
+     * Default action for rendering list of positions within group
+     * @param string $gid
+     */
     public function renderDefault($gid = self::ROOT_GROUP) {
 	$data = null;
 	try {
@@ -71,7 +75,7 @@ final class PublicPresenter extends SystemPublicPresenter {
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($gid, "default", $ex);
 	}
-	if ($group == null) { // nejsou data pro vykresleni te stranky
+	if ($group == null) {
 	    $this->redirect(":System:Homepage:default");
 	}
 	$filtered = array_filter($data, 
@@ -84,6 +88,11 @@ final class PublicPresenter extends SystemPublicPresenter {
 	$this->template->data = $filtered;
     }
     
+    /**
+     * Action for displaying user's web profile detail
+     * @param string $uid
+     * @param string $gid
+     */
     public function actionShowWebProfile($uid, $gid) {
 	if (!is_numeric($uid))
 	    $this->redirect("default");

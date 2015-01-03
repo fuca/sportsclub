@@ -21,26 +21,68 @@ namespace App\SeasonsModule\Model\Service;
 use App\Model\Entities\Season;
 
 /**
- * Interface for Event service
+ * Interface for Seasons service
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface ISeasonService {
-    
 
+    /**
+     * @param Season $s
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createSeason(Season $s);
-    
+
+    /**
+     * @param Season $s
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateSeason(Season $s);
-   
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteSeason($id);
-    
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return Season
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getSeason($id, $useCache = true);
-   
+
+    /**
+     * Creates datasource for grid access
+     * @return Doctrine
+     */
     function getSeasonsDataSource();
-    
+
+    /**
+     * Returns associative array of Season titles and their ids
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getSelectSeasons();
-    
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\DataErrorException
+     */
     function setSeasonCurrent($id);
-    
+
+    /**
+     * @return Season
+     * @throws Exceptions\DataErrorException
+     */
     function getCurrentSeason();
 }

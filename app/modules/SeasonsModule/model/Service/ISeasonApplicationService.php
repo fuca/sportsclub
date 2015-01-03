@@ -26,17 +26,53 @@ use App\Model\Entities\SeasonApplication;
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface ISeasonApplicationService {
-    
+
+    /**
+     * @param SeasonApplication $app
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\NoResultException
+     * @throws Exceptions\InvalidStateException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createSeasonApplication(SeasonApplication $app);
-    
+
+    /**
+     * @param SeasonApplication $app
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateSeasonApplication(SeasonApplication $app);
-    
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\NullPointerException
+     * @throws Exeptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteSeasonApplication($id);
-    
+
+    /**
+     * Created datasource for grid
+     * @return Doctrine
+     */
     function getSeasonApplicationsDataSource();
-    
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return SeasonApplication
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getSeasonApplication($id);
-    
+
+    /**
+     * Checks whether given applicated season is still applicable
+     * @param SeasonApplication $app
+     * @return boolean
+     */
     function isApplicationTime(SeasonApplication $app);
-    
 }

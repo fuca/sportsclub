@@ -19,16 +19,57 @@
 namespace App\PartnersModule\Model\Service;
 
 use \App\Model\Entities\Partner;
+
 /**
  * Interface for PartnerService
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 interface IPartnerService {
-    
+
+    /**
+     * Creates Partner entry within database.
+     * @param Partner $p
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createPartner(Partner $p);
+
+    /**
+     * Updates Partner's entry within database.
+     * @param Partner $p
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updatePartner(Partner $p);
+
+    /**
+     * Returns Partner entity with given id
+     * @param type $id
+     * @param type $useCache
+     * @return Partner
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getPartner($id, $useCache = true);
+
+    /**
+     * Deletes entry of Partner with given id
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deletePartner($id);
+
+    /**
+     * Finds Partners with active flag set to true
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getActivePartners();
+
+    /**
+     * Returns datasource for Grido
+     * @return Doctrine
+     */
     function getPartnersDatasource();
 }

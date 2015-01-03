@@ -17,19 +17,53 @@
  */
 
 namespace App\SystemModule\Model\Service;
-use 
-    \App\Model\Entities\Comment;
+
+use \App\Model\Entities\Comment;
 
 /**
  * Interface for comment service
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 interface ICommentService {
-    
+
+    /**
+     * 
+     * @param Comment $c
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function createComment(Comment $c);
+
+    /**
+     * 
+     * @param Comment $c
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function updateComment(Comment $c);
+
+    /**
+     * 
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteComment($id);
+
+    /**
+     * 
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return type
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getComment($id);
+
+    /**
+     * 
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getComments();
-    function getCommentsDatasource();
 }

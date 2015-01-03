@@ -52,6 +52,9 @@ final class WallPostForm extends BaseForm {
 	$this->sportGroups = $groups;
     }
 
+    /**
+     * Initializes form's elements
+     */
     public function initialize() {
 	
 	$this->addHidden("id");

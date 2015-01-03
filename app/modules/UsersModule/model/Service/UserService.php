@@ -314,10 +314,7 @@ class UserService extends BaseService implements IUserService {
 	}
     }
 
-    /**
-     * Returns datasource for grido datagrid
-     * @return \Grido\DataSources\Doctrine
-     */
+
     public function getUsersDatasource() {
 	$model = new Doctrine(
 		$this->userDao->createQueryBuilder('u'));
@@ -347,14 +344,7 @@ class UserService extends BaseService implements IUserService {
 	}
     }
 
-    /**
-     * Null active means all users, bool active means users with the same active value
-     * @param inteter $id
-     * @param bool|null $active
-     * @return array of pairs
-     * @throws Exceptions\InvalidArgumentException
-     * @throws Exceptions\DataErrorException
-     */
+
     public function getSelectUsers($id = null, $active = true) {
 	if (!is_bool($active) && !is_null($active)) 
 	    throw new Exceptions\InvalidArgumentException("Argument active has to be type of boolean or null, '$active' given");

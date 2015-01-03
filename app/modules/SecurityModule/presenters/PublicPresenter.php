@@ -50,6 +50,10 @@ final class PublicPresenter extends SystemPublicPresenter {
      */
     public $positionService;
     
+    /**
+     * Action for displaying list of playes positions within given group
+     * @param string $gid
+     */
     public function actionDefault($gid = self::ROOT_GROUP) {
 	$data = false;
 	try {

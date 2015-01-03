@@ -1,9 +1,4 @@
-destination ./doc
 
-source:
-	- ./app/modules/
-
-exclude: "*/tests/*"
 
 # list of scanned file extensions (e.g. php5, phpt...)
 extensions:
@@ -20,10 +15,6 @@ exclude:
 skipDocPath:
     - "./app/vendor/*"
 
-# or with certain name prefix
-skipDocPrefix:
-    - Nette
-
 # character set of source files; if you use only one across your files, we recommend you name it
 charset:
     # default
@@ -39,7 +30,7 @@ main: ApiGen
 title: "SportsClub"
 
 # base url used for sitemap (useful for public doc)
-baseUrl: http://api.apigen.org
+baseUrl: http://www.sportsclub.cz
 
 # custom search engine id, will be used by search box
 googleCseId: 011549293477758430224
@@ -68,15 +59,15 @@ autocomplete:
 accessLevels:
     # default
     - public
-    - protected
+    #- protected
     # other
-    - private
+    #- private
 
 # include elements marked as @internal/{@internal}
 internal: false # default [true]
 
 # generate documentation for PHP internal classes
-php: true # default [false]
+php: false # default [false]
 
 # generate tree view of classes, interfaces, traits and exceptions
 tree: true # default [false]

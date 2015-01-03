@@ -26,7 +26,7 @@ use \App\Model\Misc\Exceptions,
     \Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * PublicMenuControl
+ * Control for displaying menu control within header at every page
  *
  * @author Michal Fučík <michal.fuca.fucik@gmail.com>
  * @package sportsclub
@@ -109,6 +109,9 @@ final class PublicMenuControl extends \Nette\Application\UI\Control {
 	$this->treeData = $array;
     }
 
+    /**
+     * Template render method
+     */
     public function render() {
 	$this->template->setFile($this->getTemplateFile());
 	$this->template->collectedData = $this->brands;

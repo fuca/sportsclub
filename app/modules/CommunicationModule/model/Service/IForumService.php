@@ -30,49 +30,115 @@ use \App\Model\Entities\Forum,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface IForumService {
-    
+
     /**
-     * 
+     * @param Forum $f
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
      */
     function createForum(Forum $f);
-    
+
     /**
-     * 
+     * @param Forum $f
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
      */
     function updateForum(Forum $f);
-    
+
     /**
-     * 
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
      */
     function deleteForum($id);
-    
+
     /**
-     * 
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return Forum
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
      */
     function getForum($id);
-    
-    function getForumAlias($alias);
-    
+
     /**
-     * 
+     * Finds forum associated with given abbreviation
+     * @param string $alias
+     * @return Forum
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function getForumAlias($alias);
+
+    /**
+     * Fetches all forums belonging into given group
+     * @param SportGroup $g
+     * @return array
+     * @throws Exceptions\DataErrorException
      */
     function getForums(SportGroup $g);
-    
+
+    /**
+     * Returns associative array of Forums and their ids
+     * @param numeric $id
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getSelectForums($id = null);
-    
+
+    /**
+     * Creates datasource for grid
+     * @return Doctrine
+     */
     function getForumDatasource();
-    
+
+    /**
+     * @param ForumThread $t
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createForumThread(ForumThread $t);
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteForumThread($id);
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return ForumThread
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function getForumThread($id, $useCache = true);
+
+    /**
+     * @param string $alias
+     * @return ForumThread
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getForumThreadAlias($alias);
+
+    /**
+     * @param ForumThread $f
+     * @throws Exceptions\DataErrorException
+     */
     function updateForumThread(ForumThread $f);
+
+    /**
+     * Creates datasource for grid
+     * @return Doctrine
+     */
     function getForumThreadsDataSource();
-    
+
     function createComment(Comment $c, ICommentable $e);
+
     function updateComment(Comment $c, ICommentable $e);
+
     function deleteComment(Comment $c, ICommentable $e);
-    
-    // oddelat metody, co zanikly pro forum
-    
+
 }

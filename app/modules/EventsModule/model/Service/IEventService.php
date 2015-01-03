@@ -29,24 +29,86 @@ use \App\Model\Entities\Event,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface IEventService {
-    
+
+    /**
+     * @param Event $e
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createEvent(Event $e);
-    
+
+    /**
+     * @param Event $e
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateEvent(Event $e);
-    
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteEvent($id);
-    
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return Event
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getEvent($id);
-    
+
+    /**
+     * @param User $u
+     * @return Doctrine
+     */
     function getUserEventsDataSource(User $u);
-    
+
+    /**
+     * 
+     * @param string $alias
+     * @return Event
+     * @throws Exceptions\InvalidStateException
+     * @throws Exceptions\DataErrorException
+     */
     function getEventAlias($alias);
-    
+
+    /**
+     * @param SportGroup $g
+     * @return array
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function getEvents(SportGroup $g);
-    
+
+    /**
+     * @return Doctrine
+     */
     function getEventsDataSource();
-    
+
+    /**
+     * @param EventParticipation $ep
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createEventParticipation(EventParticipation $ep);
-    
+
+    /**
+     * @param User|numeric $u
+     * @param Event $e
+     * @throws Exceptions\DataErrorException
+     */
     function deleteEventParticipation($u, Event $e);
+
+    /**
+     * @param numeric $id
+     * @return EventParticipation
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function getEventParticipation($id);
 }

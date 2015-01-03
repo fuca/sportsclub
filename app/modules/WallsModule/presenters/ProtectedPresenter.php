@@ -30,7 +30,7 @@ use \App\SystemModule\Presenters\SystemClubPresenter,
     
 
 /**
- * WallsProtectedPresenter
+ * Walls presenter of club section
  * @Secured(resource="WallsClub"))
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -49,6 +49,7 @@ class ProtectedPresenter extends SystemClubPresenter {
     public $sportGroupService;
     
     /**
+     * Action for displaying wall of given group
      * @Secured(resource="default")
      */
     public function actionDefault($abbr = self::ROOT_GROUP) {
@@ -74,6 +75,7 @@ class ProtectedPresenter extends SystemClubPresenter {
     }
 
     /**
+     * Action for displaying detail of wallpost
      * @Secured(resource="showWallpost")
      */
     public function actionShowWallPost($id, $abbr = self::ROOT_GROUP) {

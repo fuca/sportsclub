@@ -32,7 +32,7 @@ use \Nette\Object,
     
 
 /**
- * ORM persistable entity representing acl rule
+ * Implementation of IAurhenticator. 
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */

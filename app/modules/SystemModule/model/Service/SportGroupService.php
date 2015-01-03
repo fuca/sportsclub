@@ -29,7 +29,7 @@ use \App\Model\Entities\SportGroup,
     \Kdyby\Doctrine\DuplicateEntryException;
 
 /**
- * Service for managing sport types
+ * Service for managing sport groups
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */

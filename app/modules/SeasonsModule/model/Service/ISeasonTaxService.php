@@ -28,12 +28,52 @@ use \App\Model\Entities\SeasonTax,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface ISeasonTaxService {
-    
+
+    /**
+     * @param SeasonTax $t
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createSeasonTax(SeasonTax $t);
+
+    /**
+     * @param SeasonTax $t
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateSeasonTax(SeasonTax $t);
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteSeasonTax($id);
+
+    /**
+     * @param numeric $id
+     * @return SeasonTax
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getSeasonTax($id);
+
+    /**
+     * Returns SeasonTax for specific SportGroup
+     * @param Season $s
+     * @param SportGroup $sg
+     * @return SeasonTax
+     * @throws Exceptions\NoResultException
+     * @throws Exceptions\DataErrorException
+     */
     function getSeasonTaxSG(Season $s, SportGroup $sg);
+
+    /**
+     * Creates datasource for grid usage
+     * @return Doctrine
+     */
     function getSeasonTaxesDataSource();
-   
 }

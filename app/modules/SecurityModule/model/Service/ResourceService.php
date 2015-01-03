@@ -31,7 +31,7 @@ use \Kdyby\PresenterTree,
     \Doctrine\Common\Annotations\Reader;
 
 /**
- * ResourceService
+ * Database implementation of IResourceService
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -71,10 +71,7 @@ class ResourceService extends BaseService implements IResourceService {
 	$this->presenterTree = $pt;
     }
 
-    /**
-     * Returns array tree of all resources
-     * @return array
-     */
+    
     public function getResources() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::ENTITY_COLLECTION);
@@ -86,10 +83,7 @@ class ResourceService extends BaseService implements IResourceService {
 	return $data;
     }
     
-    /**
-     * Returns flattened object tree
-     * @return array
-     */
+
     public function getSelectResources() {
 	$cache = $this->getEntityCache();
 	$data = $cache->load(self::SELECT_COLLECTION);
@@ -102,11 +96,7 @@ class ResourceService extends BaseService implements IResourceService {
 	return $data;
     }
 
-    /**
-     * Returns resource by given id
-     * @param string $id
-     * @return \App\SecurityModule\Model\Resource
-     */
+
     public function getResource($id) {
 	$cache = $this->getEntityCache();
 	$data = $cache->load($id);

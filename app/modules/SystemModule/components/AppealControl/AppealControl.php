@@ -24,7 +24,7 @@ use \Nette\Application\UI\Control,
     \App\Model\Misc\Enum\WebProfileStatus;
 
 /**
- * AppealControl
+ * Control for displaying appeal messages
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -61,6 +61,9 @@ final class AppealControl extends Control {
 	$this->templateFile = $template;
     }
     
+    /**
+     * Template render
+     */
     public function render() {
 	$this->template->setFile($this->getTemplateFile());
 	$this->template->changePassword = $this->user->getPasswordChangeRequired();

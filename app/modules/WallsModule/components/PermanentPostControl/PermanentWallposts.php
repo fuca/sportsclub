@@ -22,7 +22,7 @@ use \Nette\Application\UI\Control,
     \Nette\ComponentModel\IContainer;
 
 /**
- * PermanentWallposts
+ * Permanent wallposts control
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -48,9 +48,13 @@ final class PermanentWallposts extends Control {
      */
     private $param;
     
+    /**
+     * Class constructor
+     * @param IContainer $parent
+     * @param string $name
+     */
     public function __construct(IContainer $parent, $name) {
 	parent::__construct($parent, $name);
-	
 	$this->templatesDir = __DIR__ . "/templates/";
 	$this->templateFile = $this->templatesDir . "default.latte";
 	$this->data	    = [];
@@ -60,6 +64,11 @@ final class PermanentWallposts extends Control {
 	return $this->templateFile;
     }
 
+    /**
+     * Template file path setter. Has to be in templates directory.
+     * @param string $template
+     * @throws \Nette\FileNotFoundException
+     */
     public function setTemplateFile($template) {
 	if (!file_exists($this->templatesDir . $template))
 	    throw new \Nette\FileNotFoundException("Template file with name '$template' does not exist");
@@ -78,6 +87,9 @@ final class PermanentWallposts extends Control {
 	$this->param = $string;
     }
 
+    /**
+     * Template render method
+     */
     public function render() {
 	$this->template->setFile($this->getTemplateFile());
 	$this->template->data = $this->getData();

@@ -27,18 +27,31 @@ use \App\Model\Entities\SportGroup,
  */
 interface IArticleService {
     
+    
     /**
      * Saves article entity into database
+     * @param Article $a
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
      */
     function createArticle(Article $a);
     
     /**
      * Updates existing article entry within database
+     * @param Article $a
+     * @return Article
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
      */
     function updateArticle(Article $a);
     
     /**
      * Deletes existing entry from database
+     * @param type $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
      */
     function deleteArticle($id);
 
@@ -51,6 +64,14 @@ interface IArticleService {
      */
     function getArticle($id);
     
+    
+    /**
+     * Find article according to given alias
+     * @param type $alias
+     * @return type
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getArticleAlias($alias);
     
     /**
@@ -71,5 +92,13 @@ interface IArticleService {
      * @return array
      * @throws Exceptions\DataErrorException
      */
-    function getHighLights();
+    function getHighLights($limit = 10);
+    
+    /**
+     * Search collection of Articles according to given keyword
+     * @param type $keyword
+     * @return type
+     * @throws Exceptions\DataErrorException
+     */
+    function fulltextSearch($keyword);
 }

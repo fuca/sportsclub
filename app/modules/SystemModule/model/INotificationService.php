@@ -32,12 +32,51 @@ use \App\Model\Entities\User,
  */
 interface INotificationService {
     
+    /**
+     * Sends notification about creating of new password
+     * @param User $u
+     */
     function notifyNewPassword(User $u);
+    
+    /**
+     * Sends notification about creating new account 
+     * @param User $u
+     */
     function notifyNewAccount(User $u);
+    
+    /**
+     * Sends notification about deactivation of User's account
+     * @param User $u
+     */
     function notifyAccountDeactivated(User $u);
+    
+    /**
+     * Sends notification about user's account activation
+     * @param User $u
+     */
     function notifyAccountActivated(User $u);
-    function notifyNewPayment(Payment $u);    
+    
+    /**
+     * Sends notification about creating new payment
+     * @param Payment $u
+     */
+    function notifyNewPayment(Payment $u);
+    
+    /**
+     * Sends notification about receving new message
+     * @param MailBoxEntry $entry
+     */
     function notifyNewMessage(MailBoxEntry $entry);
+    
+    /**
+     * Sends notification about creating new seasonApplication
+     * @param SeasonApplication $app
+     */
     function notifyNewSeasonApplication(SeasonApplication $app);
+    
+    /**
+     * Sends notification about regeneration of system password
+     * @param User $u
+     */
     function notifyPasswordChange(User $u);
 }

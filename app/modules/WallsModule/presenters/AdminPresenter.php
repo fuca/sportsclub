@@ -56,19 +56,21 @@ class AdminPresenter extends SystemAdminPresenter {
     public $sportGroupService;
     
     /**
+     * Action for render wallposts grid
      * @Secured(resource="default")
      */
-    public function actionDefault() { // grid render
-	
+    public function actionDefault() { 
     }
     
     /**
+     * Action for render add wall post form
      * @Secured(resource="addWallpost")
      */
-    public function actionAddWallPost() { // form render
+    public function actionAddWallPost() {
     }
     
     /**
+     * Action for render updating wall post form
      * @Secured(resource="updateWallPost")
      */
     public function actionUpdateWallPost($id) {
@@ -87,6 +89,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    /**
+     * Top-down handler for create wallpost. Wallpost form onSuccess event handler.
+     * @param ArrayHash $values
+     */
     public function createWallPost(ArrayHash $values) {
 	try {
 	    $wp = new WallPost((array) $values);
@@ -98,6 +104,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("default");
     }
     
+    /**
+     * Top-down handler for update wallpost. Wallpost form onSuccess event handler.
+     * @param ArrayHash $values
+     */
     public function updateWallPost(ArrayHash $values) {
 	try {
 	    $wp = new WallPost((array) $values);
@@ -110,6 +120,7 @@ class AdminPresenter extends SystemAdminPresenter {
     }
     
     /**
+     * Delete wallpost signal handler
      * @Secured(resource="deleteWallPost")
      */
     public function handleDeleteWallPost($id) {
@@ -129,12 +140,22 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    /**
+     * Add wall post form factory
+     * @param string $name
+     * @return WallPostForm
+     */
     public function createComponentAddWallPostForm($name) {
 	$form = $this->prepareWallPostForm($name);
 	$form->initialize();
 	return $form;
     }
     
+    /**
+     * Update wall post form factory
+     * @param string $name
+     * @return WallPostForm
+     */
     public function createComponentUpdateWallPostForm($name) {
 	$form = $this->prepareWallPostForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
@@ -155,6 +176,10 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $form;
     }
     
+    /**
+     * Wall post form onSuccess handler
+     * @param WallPostForm $form
+     */
     public function wallPostFormSubmitted(Form $form) {
 	$values = $form->getValues();
 	try {
@@ -171,6 +196,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
     }
     
+    /**
+     * Wall posts admin grid factory
+     * @param name $name
+     * @return Grid
+     */
     public function createComponentWallPostsGrid($name) {
 	
 	$articleStates	= [null=>null] + WallPostStatus::getOptions();
@@ -245,14 +275,29 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $grid;
     }
     
+    /**
+     * Grid column render
+     * @param WallPost $e
+     * @return string
+     */
     public function statusRender($e) {
 	return $this->tt(WallPostStatus::getOptions()[$e->getStatus()]);
     }
     
+    /**
+     * Grid column render
+     * @param WallPost $el
+     * @return string
+     */
     public function commentModeRender($el) {
 	return $this->tt(CommentMode::getOptions()[$el->getCommentMode()]);
     }
     
+    /**
+     * Wall posts admin grid operations handler
+     * @param string $op
+     * @param array $ids
+     */
     public function wpostGridOpsHandler($op, $ids) {
 	switch($op) {
 	    case "delete":
@@ -264,6 +309,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	$this->redirect("this");
     }
     
+    /**
+     * Sub menu control factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
@@ -272,6 +322,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	return $c;
     }
     
+    /**
+     * Back-only sub menu control factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentBackWallPostsSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");

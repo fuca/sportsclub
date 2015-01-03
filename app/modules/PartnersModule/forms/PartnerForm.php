@@ -46,6 +46,9 @@ final class PartnerForm extends BaseForm {
 	$this->users = $users;
     }
 
+    /**
+     * Initializes form's elements
+     */
     public function initialize() {
 	
 	$this->addHidden('id');

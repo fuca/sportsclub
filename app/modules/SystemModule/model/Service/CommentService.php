@@ -65,7 +65,7 @@ class CommentService extends BaseService implements ICommentService {
     public function getUserService() {
 	return $this->userService;
     }
-    
+
     public function createComment(Comment $c) {
 	if ($c === null)
 	    throw new Exceptions\NullPointerException("Argument comment was null");
@@ -80,7 +80,7 @@ class CommentService extends BaseService implements ICommentService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
+
     public function updateComment(Comment $c) {
 	if ($c === null)
 	    throw new Exceptions\NullPointerException("Argument comment was null");
@@ -99,7 +99,7 @@ class CommentService extends BaseService implements ICommentService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
+
     public function getComment($id, $useCache = true) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
@@ -119,7 +119,7 @@ class CommentService extends BaseService implements ICommentService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
+
     public function deleteComment($id) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
@@ -134,17 +134,13 @@ class CommentService extends BaseService implements ICommentService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
+
     public function getComments() {
 	try {
 	    return $this->commentDao->findAll();    
 	} catch (\Exception $ex) {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
-    }
-    
-    public function getCommentsDatasource() {
-	
     }
     
      private function editorTypeHandle(Comment $a) {

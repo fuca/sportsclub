@@ -22,37 +22,88 @@ use \App\Model\Entities\Payment,
     \App\Model\Entities\User;
 
 /**
- * Interface  for Payment Service
+ * Interface for Payment Service
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface IPaymentService {
-    
+
     /**
-     * Persists payment into database
+     * Creates payment entry
+     * @param Payment $p
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
      */
     function createPayment(Payment $p);
-    
+
     /**
      * Updates existing payment within database
+     * @param Payment $p
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
      */
     function updatePayment(Payment $p);
-    
+
     /**
      * Permanently removes passed Payment
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DependencyException
+     * @throws Exceptions\DataErrorException
      */
     function deletePayment($id);
-    
-    function getPayment($id);
-    
+
+    /**
+     * Gets single payment entry
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return type
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    function getPayment($id, $useCache);
+
+    /**
+     * @param User $u
+     * @return Doctrine
+     */
     function getPaymentsDatasource(User $u = null);
-    
+
+    /**
+     * @param Payment $p
+     * @return string
+     */
     function generateVs(Payment $p);
-    
+
+    /**
+     * Returns dueDate according to configuration
+     * @return DateTime
+     */
     function getDefaultDueDate();
-    
+
+    /**
+     * 
+     * @param numeric $id
+     * @param User $user
+     * @throws Exceptions\InvalidArgumentException
+     */
     function markAsDoneAcc($id, User $user);
+
+    /**
+     * 
+     * @param numeric $id
+     * @param User $user
+     * @throws Exceptions\InvalidArgumentException
+     */
     function markAsDoneCash($id, User $user);
+
+    /**
+     * 
+     * @param numeric $id
+     * @param User $user
+     * @throws Exceptions\InvalidArgumentException
+     */
     function markAsDoneSent($id, User $user);
-    
 }

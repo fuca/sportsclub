@@ -17,6 +17,7 @@
  */
 
 namespace App\CommunicationModule\Model\Service;
+
 use \App\Model\Entities\MailBoxEntry;
 
 /**
@@ -24,24 +25,77 @@ use \App\Model\Entities\MailBoxEntry;
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 interface IPrivateMessageService {
-    
+
+    /**
+     * @param MailBoxEntry $pm
+     * @throws Exceptions\DataErrorException
+     */
     function createEntry(MailBoxEntry $pm);
-    
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return MailBoxEntry
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getEntry($id);
-    
+
+    /**
+     * Returns array of Users
+     * @param numeric $id
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getRecipients($id);
-    
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\DataErrorException
+     */
     function deleteEntry($id);
-    
+
+    /**
+     * Mark MailBoxEntry with given id as read
+     * @param numeric $id
+     */
     function markAsRead($id);
-    
+
+    /**
+     * Mark MailBoxEntry with given id as unread
+     * @param numeric $id
+     */
     function markAsUnread($id);
-    
+
+    /**
+     * Mark MailBoxEntry with given id as deleted
+     * @param numeric $id
+     */
     function markAsDeleted($id);
-    
+
+    /**
+     * Returns count of unread messages
+     * @param numeric $user
+     * @return numeric
+     * @throws Exceptions\DataErrorException
+     */
     function getNewsCount($user);
-    
+
+    /**
+     * @param User|numeric $user
+     * @return Doctrine
+     */
     function getInboxDatasource($user);
+
+    /**
+     * @param User|numeric $user
+     * @return Doctrine
+     */
     function getOutboxDatasource($user);
+
+    /**
+     * @param User|numeric $user
+     * @return Doctrine
+     */
     function getDeletedDatasource($user);
 }

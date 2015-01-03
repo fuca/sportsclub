@@ -22,18 +22,62 @@ use App\Model\Entities\User,
     App\Model\Entities\SportType;
 
 /**
- * Interface for System service
+ * Interface for SportTypes service
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface ISportTypeService {
-    
+
+    /**
+     * @param SportType $type
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function createSportType(SportType $type);
+
+    /**
+     * @param SportType $type
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function updateSportType(SportType $type);
+
+    /**
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DependencyException
+     * @throws Exceptions\DataErrorException
+     */
     function deleteSportType($id);
+
+    /**
+     * @param numeric $id
+     * @param boolean $useCache
+     * @return SportType
+     * @throws \Nette\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getSportType($id);
+
+    /**
+     * @param boolean $useCache
+     * @param boolean|null $active
+     * @return array
+     * @throws Exceptions\InvalidStateException
+     * @throws Exceptions\DataErrorException
+     */
     function getAllSportTypes();
+
+    /**
+     * @return \Grido\DataSources\Doctrine
+     */
     function getSportTypeDataSource();
+
+    /**
+     * @param boolean $useCache
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getSelectSportTypes($useCache = true);
-    
 }

@@ -36,7 +36,7 @@ use \App\Model\Entities\Payment,
     \Grido\DataSources\Doctrine;
 
 /**
- * Description of Payment service
+ * Implementation of IPaymentService
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
@@ -71,7 +71,7 @@ class PaymentService extends BaseService implements IPaymentService {
     
     /** @var Event dispatched every time after delete of Payment */
     public $onDelete = [];
-    
+
     public function getDefaultDueDate() {
 	return new DateTime($this->dueDate);
     }
@@ -103,6 +103,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	parent::__construct($em, Payment::getClassName(), $logger);
 	$this->paymentDao = $em->getDao(Payment::getClassName());
     }
+
 
     public function createPayment(Payment $p) {
 	if ($p === NULL)
@@ -179,6 +180,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	return $p;
     }
 
+
     public function getPayment($id, $useCache = true) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric", 1);
@@ -201,6 +203,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	return $data;
     }
 
+
     public function deletePayment($id) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");
@@ -219,6 +222,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+
 
     public function updatePayment(Payment $p) {
 	if ($p === NULL)
@@ -248,6 +252,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	}
     }
 
+
     public function getPaymentsDatasource(User $u = null) {
 	
 	$model = $this->paymentDao->createQueryBuilder('pa');
@@ -256,6 +261,7 @@ class PaymentService extends BaseService implements IPaymentService {
 	}
 	return new Doctrine($model);
     }
+
 
     public function markAsDoneSent($id, User $user) {
 	if (!is_numeric($id)) throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric");

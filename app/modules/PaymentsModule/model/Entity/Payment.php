@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2014 Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  *

@@ -25,7 +25,7 @@ use \App\SystemModule\Presenters\SystemUserPresenter,
     \Nette\Utils\DateTime,
     \App\Model\Misc\Enum\PaymentStatus;
 /**
- * PaymentPresenter
+ * User section Payments Presenter
  * @Secured(resource="PaymentsUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -52,12 +52,16 @@ class UserPresenter extends SystemUserPresenter {
     }
     
     /**
+     * Action for render user's payments grid
      * @Secured(resource="default")
      */
     public function actionDefault() {
-	// render grid
     }
     
+    /**
+     * Action for displaying payment details
+     * @param numeric $id
+     */
     public function actionPaymentDetails($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	$payment = null;
@@ -71,6 +75,10 @@ class UserPresenter extends SystemUserPresenter {
 	$this->template->now = new DateTime();
     }
     
+    /**
+     * Mark as sent signal handler
+     * @param numeric $id
+     */
     public function handleMarkAsSent($id) {
 	if (!is_numeric($id)) $this->handleBadArgument ($id);
 	try {
@@ -81,7 +89,11 @@ class UserPresenter extends SystemUserPresenter {
 	$this->redirect("this");
     }
     
-    
+    /**
+     * User's payments grid factory
+     * @param string $name
+     * @return Grid
+     */
     public function createComponentUserPaymentsGrid($name) {
 	try {
 	    $seasons = $this->seasonService->getSelectSeasons();
@@ -148,10 +160,20 @@ class UserPresenter extends SystemUserPresenter {
 	return $grid;
     }
     
+    /**
+     * Grid column render
+     * @param Payment $e
+     * @return string
+     */
     public function statusRender($e) {
 	return $this->tt(PaymentStatus::getOptions()[$e->getStatus()]);
     }
     
+    /**
+     * Grid column render
+     * @param Payment $e
+     * @return string
+     */
     public function subjectRender($e) {
 	return \Nette\Utils\Html::el("span")
 		->addAttributes(["title"=>$e->getSubject()])
@@ -159,6 +181,11 @@ class UserPresenter extends SystemUserPresenter {
 
     }
     
+    /**
+     * Back-only control factory
+     * @param string $name
+     * @return \App\Components\MenuControl
+     */
     public function createComponentBackSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");

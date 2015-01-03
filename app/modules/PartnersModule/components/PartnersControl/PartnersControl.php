@@ -41,6 +41,12 @@ class PartnersControl extends Control {
      */
     private $partners;
     
+    /**
+     * Class onstructor
+     * @param IContainer $parent
+     * @param string $name
+     * @param array $data Array of Partner entities for render.
+     */
     public function __construct(IContainer $parent, $name, array $data) {
 	
 	parent::__construct($parent, $name);
@@ -53,6 +59,11 @@ class PartnersControl extends Control {
 	return $this->templateFile;
     }
 
+    /**
+     * Sets template file name. Must be in templates directory.
+     * @param string $template
+     * @throws \Nette\FileNotFoundException
+     */
     public function setTemplateFile($template) {
 	if (!file_exists($this->templatesDir . $template))
 	    throw new \Nette\FileNotFoundException("Template file with name '$template' does not exist");
@@ -63,6 +74,9 @@ class PartnersControl extends Control {
 	return $this->partners;
     }
     
+    /**
+     * Renders control template
+     */
     public function render() {
 	$this->template->setFile($this->getTemplateFile());
 	$this->template->partners = $this->getPartners();

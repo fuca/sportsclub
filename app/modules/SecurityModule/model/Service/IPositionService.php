@@ -30,23 +30,80 @@ use \App\Model\Entities\User,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface IPositionService {
-    
+
+    /**
+     * 
+     * @param Position $p
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     * @throws Exceptions\DataErrorException
+     */
     function createPosition(Position $p);
-    
+
+    /**
+     * 
+     * @param Position $p
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DuplicateEntryException
+     */
     function updatePosition(Position $p);
-    
+
+    /**
+     * 
+     * @param Position $p
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function deletePosition(Position $p);
-    
+
+    /**
+     * 
+     * @param User $user
+     * @param Role $role
+     * @return boolean
+     * @throws Exceptions\DataErrorException
+     */
     function deletePositionsWithRole(Entities\User $user, Role $role);
-    
+
+    /**
+     * Returns array of positions which are associated with given user
+     * @param User $user
+     * @param boolean $useCache
+     * @return array
+     * @throws Exceptions\NullPointerException
+     * @throws Exceptions\DataErrorException
+     */
     function getUserPositions(User $u);
-    
+
+    /**
+     * @param SportGroup $g
+     * @param boolean $useCache
+     * @return array
+     * @throws Exceptions\DataErrorException
+     */
     function getPositionsWithinGroup(SportGroup $g, $useCache = null);
-    
+
+    /**
+     * @param numeric $id
+     * @return Position
+     * @throws InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
     function getPosition($id);
-    
+
+    /**
+     * @param User $u
+     * @param SportGroup $g
+     * @param Role $r
+     * @return Position
+     * @throws Exceptions\NoResultException
+     * @throws Exceptions\DataErrorException
+     */
     function getUniquePosition(User $u, SportGroup $g, Role $r);
-    
+
+    /**
+     * Creates Position's datasource
+     * @return Doctrine
+     */
     function getPositionsDatasource();
-    
 }

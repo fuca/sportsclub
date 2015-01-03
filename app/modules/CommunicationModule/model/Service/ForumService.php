@@ -103,6 +103,7 @@ class ForumService extends BaseService implements IForumService {
     }
     
     // <editor-fold desc="FORUM THREADS ADMINISTRATION">
+    
     public function createForumThread(ForumThread $t) {
 	try {
 	    $this->entityManager->beginTransaction();
@@ -126,6 +127,7 @@ class ForumService extends BaseService implements IForumService {
 	}
     }
     
+    
     public function deleteForumThread($id) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '$id' given");
@@ -142,6 +144,7 @@ class ForumService extends BaseService implements IForumService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
     
     public function getForumThread($id, $useCache = true) {
 	if ($id == NULL)
@@ -165,6 +168,7 @@ class ForumService extends BaseService implements IForumService {
 	}
 	return $data;
     }
+    
     
     public function getForumThreadAlias($alias) {
 	if (empty($alias))
@@ -190,6 +194,7 @@ class ForumService extends BaseService implements IForumService {
 	}
     }
 
+    
     public function updateForumThread(ForumThread $f) {
 	try {
 	    $fDb = $this->forumThreadDao->find($f->getId());
@@ -212,6 +217,7 @@ class ForumService extends BaseService implements IForumService {
 	}
     }
     
+    
     public function getForumThreadsDataSource() {
 	$model = new Doctrine(
 		$this->forumThreadDao->createQueryBuilder('ft'));
@@ -230,7 +236,7 @@ class ForumService extends BaseService implements IForumService {
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-    
+    // </editor-fold>
     // <editor-fold desc="FORUM ADMINISTRATION">
     public function createForum(Forum $f) {
 	try {

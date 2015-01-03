@@ -20,14 +20,29 @@ namespace App\SystemModule\Model\Service;
 use \App\Model\IIdentifiable;
 
 /**
- * Interface for services of dealing with Commentable entities
+ * Interface for commentable entity 
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>.
  */
 interface ICommentable extends IIdentifiable {
     
+    /**
+     * @param array|ArrayCollection $comments
+     */
     function setComments($comments);
+    
+    /**
+     * Returns array of Comments
+     */
     function getComments();
+    
+    /**
+     * @return CommentMode
+     */
     function getCommentMode();
+    
+    /**
+     * @param CommentMode $commentMode
+     */
     function setCommentMode($commentMode);
 }

@@ -36,7 +36,7 @@ use \App\Model\Entities\WallPost,
     \App\SystemModule\Model\Service\ICommentService;
 
 /**
- * Description of WallService
+ * Implementation of WallService
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class WallService extends BaseService implements IWallService {
@@ -70,6 +70,11 @@ class WallService extends BaseService implements IWallService {
     /** @var Event dispatched every time after delete of WallPost */
     public $onDelete = [];
 
+    /**
+     * Class contructor
+     * @param EntityManager $em
+     * @param Logger $logger
+     */
     public function __construct(EntityManager $em, Logger $logger) {
 	parent::__construct($em, WallPost::getClassName(), $logger);
 	$this->wallDao = $em->getDao(WallPost::getClassName());

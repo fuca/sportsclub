@@ -77,7 +77,7 @@
 }
 
 #content .right-box {
-    width: 260px;
+   x width: 260px;
     background: #fafafa url('../img/bg_header.png') repeat-x top center;
     margin-bottom: 20px;
     padding: 10px;
@@ -152,6 +152,7 @@
 
 #content .article-box {
     width: 675px;
+    padding: 0;
 }
 
 
@@ -159,7 +160,7 @@
     background: transparent no-repeat top center;  
     border: 1px solid #ccc;
     width: 46%;
-    margin: 0 2% 0 2%;
+    margin: 0 0 0 2%;
     padding: 0;
 }
 

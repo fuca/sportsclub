@@ -31,9 +31,6 @@ final class ContactControl extends Control {
     
     private $userEntity;
     
-    private $in;
-    private $tin;
-    
     public function __construct($parent, $name) {
 	parent::__construct($parent, $name);
 	$this->templatesDir	    = __DIR__ . "/templates/";
@@ -41,14 +38,6 @@ final class ContactControl extends Control {
 	$this->homepageTemplateFile = $this->templatesDir . "homepage.latte";
 	
 	
-    }
-    
-    public function setIn($in) {
-	$this->in = $in;
-    }
-
-    public function setTin($tin) {
-	$this->tin = $tin;
     }
 
     public function getTemplateFile() {
@@ -93,8 +82,8 @@ final class ContactControl extends Control {
 	$this->template->number = $address->getNumber();
 	$this->template->postCode = $address->getPostCode();
 	$this->template->city = $address->getCity();
-	$this->template->in = $this->in;
-	$this->template->tin = $this->tin;
+	$this->template->in = $address->provideIdentificationNumber();
+	$this->template->tin = $address->provideTaxIdentificationNumber();
 	$this->template->account = $address->provideAccountNumber();
 	
 	$this->template->cpPersonName = $contact->getContPersonName();
@@ -115,8 +104,8 @@ final class ContactControl extends Control {
 	$this->template->number = $address->getNumber();
 	$this->template->postCode = $address->getPostCode();
 	$this->template->city = $address->getCity();
-	$this->template->in = $this->in;
-	$this->template->tin = $this->tin;
+	$this->template->in = $address->provideIdentificationNumber();
+	$this->template->tin = $address->provideTaxIdentificationNumber();
 	$this->template->account = $address->provideAccountNumber();
 	$this->template->moreContactsLink = ":Security:Public:default";
 	$this->template->render();

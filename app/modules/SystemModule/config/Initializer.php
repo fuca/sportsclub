@@ -34,7 +34,6 @@ final class Initializer {
     public function __construct(ISportGroupService $groupService, Logger $logger) {
 	$this->groupService = $groupService;
 	$this->logger = $logger;
-	//$this->groupInit();
     }
    
     public function getGroupValues() {

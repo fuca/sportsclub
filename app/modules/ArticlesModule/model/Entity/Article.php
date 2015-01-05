@@ -29,6 +29,7 @@ use \Doctrine\ORM\Mapping as ORM,
     \App\Model\Misc\EntityMapperTrait,
     \App\Model\IIdentifiable,
     \Nette\Utils\DateTime,
+    \App\Model\Misc\Exceptions,
     \App\SystemModule\Model\Service\ICommentable;
 
 /**
@@ -203,6 +204,8 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
     }
 
     public function setStatus($status) {
+	if (!array_key_exists($status, ArticleStatus::getOptions()))
+		throw new Exceptions\InvalidArgumentException("ArticleStatus out of range");
 	$this->status = $status;
     }
 

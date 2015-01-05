@@ -14,6 +14,7 @@
 	    {block indicators}
 <!-- Indicators -->
 	    <ol class="carousel-indicators">
+		{dump count($highlights)}
 		{foreach $highlights as $key=>$a}
 		    <li data-target="#homepage-jumbotron-carousel" data-slide-to="{$key}" {if $iterator->isFirst()} class="active"{/} ></li>
 		{/foreach}
@@ -22,7 +23,7 @@
 
 <!--  Wrapper for slides -->		
 		<div class="carousel-inner" role="listbox">
-		    {foreach $articles as $article}
+		    {foreach $highlights as $article}
 			<div class="item
 			     {if $iterator->isFirst()} active{/} ">
 			    <img src="{$basePath}/assets/images/{$article->getPicture()|thumb:"article", "1028x370"}"/>

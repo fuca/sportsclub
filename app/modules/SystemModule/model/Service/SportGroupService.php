@@ -140,6 +140,10 @@ class SportGroupService extends BaseService implements ISportGroupService {
 		}
 	    }
 	    $typeId = $g->getSportType();
+	    if ($typeId === null) {
+		$g->setSportType(null);
+		return null;
+	    }
 	    $typeDb = $this->sportTypeDao->find($typeId);
 	    if ($typeDb !== null) {
 		$g->setSportType($typeDb);

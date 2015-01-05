@@ -63,6 +63,9 @@ final class Initializer {
 	    
 	    $addrValues = $this->userValues["contact"]["address"];
 	    $address = new Address((array) $addrValues);
+	    $address->applyAccountNumber($this->userValues["contact"]["address"]["accountNumber"]);
+	    $address->applyIdentificationNumber($this->userValues["contact"]["address"]["in"]);
+	    $address->applyTaxIdentificationNumber($this->userValues["contact"]["address"]["tin"]);
 	    
 	    $contValues = $this->userValues["contact"];
 	    $contact = new Contact((array) $contValues);
@@ -73,6 +76,7 @@ final class Initializer {
 	    $user = new User((array) $userValues);
 	    $user->setActive(true);
 	    $user->setContact($contact);
+	    $user->setBirthNumber("0000000000");
 	    $this->userService->createUser($user);
 	}
     }

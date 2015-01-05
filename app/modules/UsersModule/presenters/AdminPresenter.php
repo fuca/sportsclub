@@ -106,7 +106,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $this->userService->deleteUser($id);
 	} catch (Exceptions\DependencyException $ex) {
 	    $this->logInfo($ex->getMessage());
-	    $m = $this->getTranslator()->tt("usersModule.messages.dependencyErrorDelete");
+	    $m = $this->getTranslator()->translate("usersModule.messages.dependencyErrorDelete");
 	    $this->flashMessage($m, self::FM_WARNING);
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());

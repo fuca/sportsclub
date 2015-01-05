@@ -142,7 +142,7 @@ class UserService extends BaseService implements IUserService {
 	$user->setWebProfile(new WebProfile());
 	$user->contact->setUpdated($now);
 	$user->getWebProfile()->setUpdated($now);
-	$user->setProfileStatus(WebProfileStatus::BAD);
+	$user->getWebProfile()->setStatus(WebProfileStatus::BAD);
 
 	try {
 	    $this->contactDao->save($user->getContact());

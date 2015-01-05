@@ -1,17 +1,3 @@
-Nette Framework Sandbox
-=======================
-
-The basic skeleton of application.
-
-
-What is [Nette Framework](http://nette.org)?
---------------------------------------------
-
-Nette Framework is a popular tool for PHP web development. It is designed to be
-the most usable and friendliest as possible. It focuses on security and
-performance and is definitely one of the safest PHP frameworks.
-
-Nette Framework speaks your language and helps you to easily build better websites.
 
 
 Installing
@@ -39,3 +25,20 @@ It is CRITICAL that file `app/config/config.neon` & whole `app`, `log`
 and `temp` directory are NOT accessible directly via a web browser! If you
 don't protect this directory from direct web access, anybody will be able to see
 your sensitive data. See [security warning](http://nette.org/security-warning).
+
+
+
+
+APACHE
+    instalace
+    nastaveni
+
+adresare ktery musi mit nastaveny spesl prava
+
+jak zachazet s databazi
+
+jak pouzivat skripty
+
+je potreba composer, apache, php, prohlizec
+
+kde aplikace visi

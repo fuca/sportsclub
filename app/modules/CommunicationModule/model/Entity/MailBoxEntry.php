@@ -110,6 +110,8 @@ class MailBoxEntry extends BaseEntity {
     }
 
     public function setType($type) {
+	if (!array_key_exists($type, MailBoxEntryType::getOptions()))
+		throw new \App\Model\Misc\Exceptions\InvalidArgumentException("MailboxEntryType out of range");
 	$this->type = $type;
     }
 

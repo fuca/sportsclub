@@ -23,7 +23,7 @@ $robotLoader = $configurator->createRobotLoader()
 $configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConfig.local.neon');
 $configurator->addConfig(__DIR__ . '/modules/SystemModule/config/applicationConfig.neon');
 
-// enum types registering for database use (MUST BE ACCESSIBLE HERE DUE TO CONSOLE COMMAND USAGE)
+// enum types registering for database use (MUST BE ACCESSIBLE HERE DUE TO CONSOLE COMMAND USAGE) // this issue has been reported
 
 Type::addType("AclMode", "App\Model\Misc\Enum\AclMode");
 Type::addType("AclPrivilege", "App\Model\Misc\Enum\AclPrivilege");
@@ -51,12 +51,9 @@ Type::addType("WallPostStatus", "\App\Model\Misc\Enum\WallPostStatus");
 
 // form extensions
 DateInput::register($configurator);
-//Form::extensionMethod('addImageSelectBox', function(Form $_this, $name, $label = NULL, array $items = NULL, $size = NULL) {
-//  return $_this[$name] = new RadekDostal\NetteComponents\ImageSelectBox($label, $items, $size);
-//});
 
 \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader("class_exists");
 
 $container = $configurator->createContainer();
-$container->addService('robotLoader', $robotLoader); // presenter tree
+$container->addService('robotLoader', $robotLoader); // due to presenter tree
 return $container;

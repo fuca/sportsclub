@@ -49,7 +49,9 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 					"postCode"=>"789 85",
 					"street"=>"Masarykova",
 					"number"=>"546/25",
-					"accountNumber"=>"2500140367/2010"],
+					"accountNumber"=>"2500140367/2010",
+					"in"=>"",
+					"tin"=>""],
 				"phone"=>"420732504156",
 				"email"=>"michal.fuca.fucik@gmail.com"]]],
     ];

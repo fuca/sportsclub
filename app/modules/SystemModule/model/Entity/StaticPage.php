@@ -91,7 +91,7 @@ class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
     protected $editor;
     
     /**
-     * @ManyToOne(targetEntity="SportGroup")
+     * @ManyToOne(targetEntity="SportGroup", inversedBy="staticPages")
      * @JoinColumn(name="group_fk", referencedColumnName="id", nullable = true)
      **/
     protected $group;

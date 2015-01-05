@@ -151,19 +151,20 @@ articlesModule:
 	    webmaster: "webmaster@fbcmohelnice.cz"
 
 seasonsModule:
-	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem # AKTIVNI
+	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem 
 
 systemModule:
 	init:
-		group: # AKTIVNI
+		turnOff: true
+		group: 
 			name: "Club"
 			description: "Root system group"
 		
 	notifications:
-			senderMail: "misan.128@seznam.cz" # povinne, kdyz neni tu, bere se z init usera #AKTIVNI
+			senderMail: "misan.128@seznam.cz" # povinne, kdyz neni tu, bere se z init usera 
 			hostName: "FBC Mohelnice" # povinne, kdyz neni tu, bere se z init usera # AKTIVNI
-			smtpOptions: [] # nepovinne # AKTIVNI
-			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # nepovinne # AKTVNI
+			smtpOptions: [] # nepovinne 
+			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # nepovinne 
 securityModule:
 	defRoleAppEvents: "player" # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
 	defCommentAppEvents: "Created by system" #defaultni comment pro vytvarenou pozici, aby bylo videt, ze to je tvorene systemem
@@ -171,14 +172,16 @@ securityModule:
 	defaultUserEmail: %appDefaultEmail% # povinne
 
 	init:
-		roles: ["admin", "player", "guest", "member", "executive"] # AKTIVNI 			
+		turnOff: true
+		roles: ["admin", "player", "guest", "member", "executive"] 			
 
 paymentsModule:
-	dueDate: "1 month" # AKTIVNI
+	dueDate: "1 month" 
 
 usersModule: 
 	init:
-		user: #init uzivatel, hlavni admin # AKTIVNI
+		turnOff: true
+		user: #init uzivatel, hlavni admin 
 			name: "FBC"
 			surname: "Mohelnice, o.s."
 			nick: "Informační systém"
@@ -190,6 +193,8 @@ usersModule:
 					street: "Masarykova"
 					number: "546/25"
 					accountNumber: "2500140367/2010"
+					in: "228 90 785"
+					tin: "CZ 228 90 785"
 				phone: "420732504156"
 				email: %appDefaultEmail%
 	    

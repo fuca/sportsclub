@@ -24,7 +24,7 @@
 	    <article class="search-result-box">
 	    <div class="item-image">
 	    <a href="{plink :Articles:Public:ShowArticle $a->getAlias()}">
-		<img src="{$a->getPicture()}" class="img-responsive img-thumbnail" />
+		<img src="{$basePath}/assets/images/{$a->getPicture()|thumb:"article", "340x200"}" class="img-responsive img-thumbnail" />
 	    </a>
 	</div>
 	    

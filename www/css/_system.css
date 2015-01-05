@@ -98,6 +98,8 @@
 .search-result-box {
     background-color: #F3F2FA; 
     margin-top: 2%;
+    height: 110px;
+    overflow-y: hidden;
 }
 
 .search-result-box span {

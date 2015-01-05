@@ -18,7 +18,9 @@
 
 namespace App\MotivationModule\Model\Service;
 
-use \App\Model\Entities\MotivationTax;
+use \App\Model\Entities\MotivationTax,
+    \App\Model\Entities\Season,
+    \App\Model\Entities\SportGroup;
 
 /**
  * Interface for MotivationTaxService
@@ -60,4 +62,13 @@ interface IMotivationTaxService {
      * @return Doctrine
      */
     function getTaxesDatasource();
+    
+    /**
+     * Return one intance based on given season and group
+     * @param Season $s
+     * @param SportGroup $sg
+     * @return MotivationTax
+     * @throws Exceptions\DataErrorException
+     */
+    function getTaxSeason(Season $s, SportGroup $sg);
 }

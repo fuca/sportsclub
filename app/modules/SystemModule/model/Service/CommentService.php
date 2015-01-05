@@ -23,6 +23,7 @@ use
     \App\Model\Service\BaseService,
     \Kdyby\Doctrine\EntityManager,
     \Nette\Utils\DateTime,
+    \Nette\Caching\Cache,
     \App\Model\Entities\Comment,
     \App\UsersModule\Model\Service\IUserService,
     \App\SystemModule\Model\Service\ICommentService;

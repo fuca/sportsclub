@@ -22,5 +22,85 @@
 	</h3>
     </div>
 	
-    {control updatePaymentForm}
+    {form updatePaymentForm}
+    {control $form errors}
+
+    <div class="row">
+	<div class="col-sm-5">
+	    
+		<div class="form-group">
+		    {label owner /} 
+		    {input owner class=>form-control}
+		</div>
+
+
+	    <div class="form-group">
+		{label subject /} 
+		{input subject class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label amount /} 
+		{input amount class=>form-control}
+	    </div>
+
+
+	    <div class="form-group">
+		{label publicNote /} 
+		{input publicNote class=>form-control}
+	    </div>
+	    
+	    	    <div class="form-group">
+		{label protectedNote /} 
+		{input protectedNote class=>form-control}
+	    </div>
+
+	</div>
+	    
+	    <div class="col-sm-5 form-options">
+
+	    
+
+
+
+	    
+	    <div class="form-group">
+		{label vs /} 
+		{input vs class=>form-control}
+	    </div>
+	    	    
+	    <div class="form-group">
+		{label season /} 
+		{input season class=>form-control}
+	    </div>
+
+	    
+	    	    <div class="form-group">
+		{label dueDate /} 
+		{input dueDate class=>form-control}
+	    </div>
+
+	    {if $form->isUpdate()}
+		<div class="form-group">
+		    {label status /} 
+		    {input status class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label editor /} 
+		    {input editor class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label orderedDate /} 
+		    {input orderedDate class=>form-control}
+		</div>
+
+	    {/if}
+	    </div>
+	    <div class="col-sm-10">
+	    <div class="form-group">
+		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
+	    </div>
+		</div>
 {/}

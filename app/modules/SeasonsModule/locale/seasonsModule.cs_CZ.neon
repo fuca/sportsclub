@@ -7,15 +7,15 @@ admin:
 	appAdd: "Přidat sezónní přihlášku"
 	heading: "Sekce správy sezón"
 	season.heading: "Sezóny"
-	tax.heading: "Sezńní povinnosti"
+	tax.heading: "Sezónní povinnosti"
 	apps.heading: "Sezónní přihlášky"
 	addSeasonTax.heading: "Nová sezónní povinnost"
 	addSeasonApplication.heading: "Nová sezónní přihláška"
 	addSeason.heading: "Nová sezóna"
 
-	updateSeason.heading: "Upravit sezónu %title%"
+	updateSeason.heading: "Upravit sezónu"
 	updateSeason.title: "Upravit sezónu"
-	updateSeasonApplication.heading: "Upravit sezónní přihlášku %name%"
+	updateSeasonApplication.heading: "Upravit sezónní přihlášku"
 	updateSeasonApplication.title: "Upravit sezónní přihlášku"
 	updateSeasonTax.heading: "Upravit sezónní povinnost"
 

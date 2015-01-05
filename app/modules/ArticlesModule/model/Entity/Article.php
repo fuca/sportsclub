@@ -87,7 +87,7 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
 
     /**
      * ONE TO MANY
-     * @ManyToMany(targetEntity="Comment", cascade={"all"})
+     * @ManyToMany(targetEntity="Comment", cascade={"all"}, fetch="EAGER")
      * @JoinTable(name="Comment_Article",
      *      joinColumns={@JoinColumn(name="article_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique=true)})

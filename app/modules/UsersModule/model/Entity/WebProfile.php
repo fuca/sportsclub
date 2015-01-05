@@ -34,7 +34,7 @@ class WebProfile extends BaseEntity {
         use EntityMapperTrait;
     /**
      * @ORM\Id
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
     protected $id;

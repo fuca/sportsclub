@@ -16,21 +16,21 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Listeners;
+namespace App\PaymentsModule\Model\Listeners;
 
 use \Nette\Object,
     \Kdyby\Events\Subscriber,
-    \App\Model\Entities\SeasonApplication,
+    \App\Model\Entities\Payment,
     \Kdyby\Monolog\Logger,
     \App\SystemModule\Model\Service\INotificationService;
 	
 /**
- * ApplicationsListener of system module, 
- * designated for notify owner of created season applications
+ * PaymentsListener 
+ * designated for notify owners of created payments
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class ApplicationsListener extends Object implements Subscriber {
+class PaymentsListener extends Object implements Subscriber {
     
     /**
      * @var \Kdyby\Monolog\Logger
@@ -47,13 +47,13 @@ class ApplicationsListener extends Object implements Subscriber {
 	$this->notifService = $notif;
     }
     
-     public function getSubscribedEvents() {
-	return ["App\SeasonsModule\Model\Service\SeasonApplicationService::onCreate"];
+    public function getSubscribedEvents() {
+	return ["App\PaymentsModule\Model\Service\PaymentService::onCreate"];
     }
     
-    public function onCreate(SeasonApplication $app) {
-	$this->notifService->notifyNewSeasonApplication($app);
-	$this->logger->addInfo("System Module - Application Listener - onCreated - owner of season application $app has been notified");
+    public function onCreate(Payment $p) {
+	$this->notifService->notifyNewPayment($p);
+	$this->logger->addInfo("System Module - Payments Listener - onCreate - owner of $p has been notified");
     }
 
 }

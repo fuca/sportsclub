@@ -125,6 +125,13 @@ abstract class BasePresenter extends Presenter {
      */
     public $partnerService;
     
+    /**
+     * @inject
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    public $commentService;
+    
+    
 //    /**
 //     * @inject
 //     * @var \Brabijan\Images\ImagePipe
@@ -203,6 +210,7 @@ abstract class BasePresenter extends Presenter {
 	    $service = $context->getService($type."ImageService");
 	    return \Tomaj\Image\Helper\Image::thumb($service, $identifier, $size);
 	});
+	$template->locale = $this->getTranslator()->getLocale();
 	return $template;
     }
 
@@ -248,6 +256,7 @@ abstract class BasePresenter extends Presenter {
 	$c = new CommentControl($this, $name);
 	$c->setEntity($this->getEntity());
 	$c->setUser($this->getUser()->getIdentity());
+	$c->setCommentService($this->commentService);
 	//$c->setIsCommenting($this->isAllowedToComment($this->getEntity()));
 	return $c;
     }

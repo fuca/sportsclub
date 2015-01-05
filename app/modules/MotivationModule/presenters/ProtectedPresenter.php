@@ -20,6 +20,7 @@ namespace App\MotivationModule\Presenters;
 use	
     \App\SystemModule\Presenters\SystemUserPresenter,
     \Grido\Grid,    
+    \App\Model\Misc\Exceptions,
     \App\SecurityModule\Model\Misc\Annotations\Secured,
     \App\Model\Misc\Enum\MotivationEntryType;
 
@@ -38,16 +39,40 @@ final class ProtectedPresenter extends SystemUserPresenter {
     
     /**
      * @inject
+     * @var \App\SeasonsModule\Model\Service\ISeasonApplicationService
+     */
+    public $applicationService;
+    
+    /**
+     * @inject
      * @var \App\MotivationModule\Model\Service\IMotivationEntryService
      */
     public $entryService;
+    
+    /**
+     * @inject
+     * @var \App\MotivationModule\Model\Service\IMotivationTaxService
+     */
+    public $taxService;
     
     
     /**
      * @Secured(resource="default")
      */
     public function actionDefault() {
-	// grid render
+	$creditAmount = null;
+	$u = null;
+	try {
+	    $u = $this->getUser()->getIdentity();
+	    $s = $this->seasonService->getCurrentSeason();
+	    $app = $this->applicationService->getUsersApplication($u, $s);
+	    dd($app);
+	    $tax = $this->taxService->getTaxSeason($s, $app->getSportGroup());
+	    $creditAmount = $tax->getCredit();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad($u->getId(), null, $ex);
+	}
+	$this->template->creditAmount = $creditAmount;
     }
     
     public function createComponentUserMotivationGrid($name) {

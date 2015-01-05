@@ -28,8 +28,8 @@
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/ui-timepicker-addon.css">
 	<!--link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap.min.css"-->
 	<!--link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap-theme.min.css"-->
-	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="{$basePath}/css/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="{$basePath}/css/bootstrap/bootstrap-theme.min.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap/bootstrap-submenu.min.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/_css.css">
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/{$theme}/screen.css">
@@ -47,7 +47,7 @@
 	    {var ajax = $presenter->getParameter('ajax') == 'on'}
 	    
 	    <!--script src="{$basePath}/js/jquery.min.js"></script-->{**}
-	    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	    <script src="{$basePath}/js/jquery-2.1.1.min.js"></script>
 	    <script src="{$basePath}/js/bootstrap/bootstrap.min.js"></script>
 	    <script src="{$basePath}/js/bootstrap/bootstrap-submenu.min.js"></script>
 	    
@@ -77,6 +77,34 @@
 	    <script n:if="$ajax" src="{$basePath}/js/main.ajax.js"></script>
 	    <script n:if="!$ajax" src="{$basePath}/js/main.js"></script>
 	    <script src="{$basePath}/js/jquery.bxslider.min.js"></script>
+	    
+	    <script src="{$basePath}/js/tinymce/tinymce.min.js"></script>
+	    <script>
+		
+    tinyMCE.init({
+	mode: "specific_textareas",
+	editor_selector: "mceEditor",
+	menubar: "tools table format insert edit styleselect formatselect link print",
+	language: {$locale},
+	theme: "modern",
+	plugins: ["textcolor", "anchor", "hr", "link", "print", "charmap", "emoticons"],
+	toolbar1: "blockquote forecolor backcolor bullist numlist print emoticons"
+    
+    });
+    
+    tinyMCE.init({
+	mode: "specific_textareas",
+	editor_selector: "mceEditorComment",
+	theme: "modern",
+	menubar: "false",
+	language: {$locale},
+	plugins: ["textcolor", "anchor", "hr", "link", "print", "charmap", "emoticons"],
+	toolbar1: "blockquote forecolor backcolor bullist numlist emoticons bold italic link"
+    });
+    
+    
+	    </script>
+	    
 	{/}
 	<div class="container">
 <!----------------------------------------------------------------------------------->	

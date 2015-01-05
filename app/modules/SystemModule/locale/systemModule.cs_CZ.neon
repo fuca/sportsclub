@@ -64,7 +64,7 @@ sportTypeForm:
 sportGroupForm:
 	name: "Jméno"
 	desc: "Popis"
-	abbr: "Zkrratka"
+	abbr: "Zkratka"
 	parent: "Nadřazená skupina"
 	priority: "Priorita"
 	sport: "Typ sportu"
@@ -82,15 +82,15 @@ admin:
 	heading: "Systémové zdroje"
 	addSportGroup.heading: "Nová sportovní skupina"
 	addSportType.heading: "Nový typ sportu"
-	updateSportGroup.heading: "Upravit sportovní skupinu %title%"
+	updateSportGroup.heading: "Upravit sportovní skupinu"
 	updateSportGroup.bread: "Upravit sportovní skupinu"
 	updateSportGroup.title: "Upravit sportovní skupinu"
-	updateSportType.heading: "Upravit typ sportu %title%"
+	updateSportType.heading: "Upravit typ sportu"
 	updateSportType.title: "Upravit typ sportu"
 	updateSportType.bread: "Upravit typ sportu"
 	staticPages.heading: "Statické stránky"
-	addStaticPage.heading: "Nové statické stránky"
-	updateStaticPage.heading: "Upravit statickou stránku '%title%'"
+	addStaticPage.heading: "Nová statická stránka"
+	updateStaticPage.heading: "Upravit statickou stránku"
 	updateStaticPage.bread: "Upravit statickou stránku"
 	updateStaticPage.title: "Upravit statickou stránku"
 
@@ -184,7 +184,7 @@ notifications:
 homepage:
 	contacts: "Kontakty"
 	sitemap: "Mapa stránek"
-	homepage: "Domovská stránky"
+	homepage: "Domovská stránka"
 
 searchForm: 
 	submit: "Hledat"
@@ -198,7 +198,7 @@ searchResults:
 
 
 appealControl:
-	profileFillRequired: "Prosím, vyplňte Svůj profil."
+	profileFillRequired: "Prosím, upravte si svůj webový profil."
 	profileLink.title: "Profil"
 
 	passwordChangeRequired: "Z bezpečnostních důvodů si prosím změňte své heslo."

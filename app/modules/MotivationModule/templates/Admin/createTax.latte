@@ -12,7 +12,7 @@
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+    {control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
@@ -21,41 +21,48 @@
     </div>
 {form createTaxForm}
 {control $form errors}
+<div class="row">
+	<div class="col-sm-5">
+	    <div class="form-group">
+		{label season /} 
+		{input season class=>form-control}
+	    </div>
 
-		<div class="form-group">
-			{label season /} 
-			{input season class=>form-control}
-		</div>
+	    <div class="form-group">
+		{label sportGroup /} 
+		{input sportGroup class=>form-control}
+	    </div>     
 
-		<div class="form-group">
-			{label sportGroup /} 
-			{input sportGroup class=>form-control}
-		</div>     
-
-		<div class="form-group">
-			{label credit /} 
-			{input credit class=>form-control}
-		</div>
-
-		<div class="form-group">
-			{label publicNote /} 
-			{input publicNote class=>form-control}
-		</div>
-		
-		{if ($form->isUpdate())}
-			<div class="form-group">
-				{label editor /} 
-				{input editor class=>form-control}
-			</div>
-
-			<div class="form-group">
-				{label updated /} 
-				{input updated class=>form-control}
-			</div>
-		{/if}
-		
-		<div class="form-group"> 
+	    <div class="form-group">
+		{label credit /} 
+		{input credit class=>form-control}
+	    </div>
+	    <div class="form-group"> 
 		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
 	    </div>
+	</div>
+
+	<div class="col-sm-5 form-options">
+
+	    <div class="form-group">
+		{label publicNote /} 
+		{input publicNote class=>form-control}
+	    </div>
+
+	    {if ($form->isUpdate())}
+		<div class="form-group">
+		    {label editor /} 
+		    {input editor class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label updated /} 
+		    {input updated class=>form-control}
+		</div>
+	    {/if}
+	</div>
+
+
+    </div>
 {/form}
 {/}

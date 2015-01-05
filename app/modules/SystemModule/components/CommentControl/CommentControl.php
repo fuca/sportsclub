@@ -59,6 +59,12 @@ final class CommentControl extends Control {
      */
     private $user;
     
+    /**
+     * Comment service
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    private $commentService;
+    
     private $formTemplate;
     private $dataTemplate;
     private $templatesDir;
@@ -129,6 +135,14 @@ final class CommentControl extends Control {
 	    throw new Exceptions\InvalidStateException("Property Entity is not correctly set, please use appropriate setter first");
 	return $this->entity;
     }
+    
+    function getCommentService() {
+	return $this->commentService;
+    }
+
+    function setCommentService(\App\SystemModule\Model\Service\ICommentService $commentService) {
+	$this->commentService = $commentService;
+    }
 
     public function setEntity(ICommentable $entity) {
 	$this->entity = $entity;
@@ -182,6 +196,7 @@ final class CommentControl extends Control {
 		break;
 	}
 	if ($this->presenter->isAjax()) {
+	    unset($this->template->showSimpleForm);
 	    $this->redrawControl("commentsData");
 	}
     }
@@ -192,8 +207,9 @@ final class CommentControl extends Control {
      */
     public function handleDeleteComment($id) {
 	$coll = $this->getEntity()->getComments();
-	    
+
 	$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+	
 	$this->presenter->deleteComment($comment);
     }
     
@@ -205,9 +221,10 @@ final class CommentControl extends Control {
 	$this->template->showSimpleForm = true;
 	$form = $this->getComponent("updateCommentForm");
 	
-	    $coll = $this->getEntity()->getComments();
+	    //$coll = $this->getEntity()->getComments();
 	    
-	    $comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+	    //$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+	    $comment = $this->getCommentService()->getComment($id);
 	    
 	    $form->setDefaults($comment->toArray());
 	

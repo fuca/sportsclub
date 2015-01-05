@@ -12,7 +12,7 @@
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+    {control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
@@ -21,45 +21,51 @@
     </div>
     {form addSportGroupForm}
 	{control $form errors}
+  <div class="row">
+	<div class="col-sm-5">
+	    <div class="form-group">
+		{label name /} 
+		{input name class=>form-control}
+	    </div>
+	    
+	    <div class="form-group">
+		{label abbr /} 
+		{input abbr class=>form-control}
+	    </div>
+	    
+	    <div class="form-group">
+		{label description /} 
+		{input description class=>form-control}
+	    </div>     
 
-		<div class="form-group">
-			{label name /} 
-			{input name class=>form-control}
-		</div>
 
-		<div class="form-group">
-			{label description /} 
-			{input description class=>form-control}
-		</div>     
+	</div>
+	<div class="col-sm-5 form-options">
+	    <div class="form-group">
+		{label parent /} 
+		{input parent class=>form-control}
+	    </div>	
 
-		<div class="form-group">
-			{label abbr /} 
-			{input abbr class=>form-control}
-		</div>
+	    <div class="form-group">
+		{label priority /} 
+		{input priority class=>form-control}
+	    </div>     
 
-		<div class="form-group">
-			{label parent /} 
-			{input parent class=>form-control}
-		</div>	
-		
-		<div class="form-group">
-			{label priority /} 
-			{input priority class=>form-control}
-		</div>     
+	    <div class="form-group">
+		{label sportType /} 
+		{input sportType class=>form-control}
+	    </div>
 
-		<div class="form-group">
-			{label sportType /} 
-			{input sportType class=>form-control}
-		</div>
+	    <div class="form-group">
+		{label activity /} 
+		{input activity class=>form-control}
+	    </div>	
 
-		<div class="form-group">
-			{label activity /} 
-			{input activity class=>form-control}
-		</div>	
-		
-		<div class="form-group"> 
+	    <div class="form-group"> 
 		{input submit class=>"btn btn-lg btn-primary btn-block"}
 	    </div>
+	</div>
+
 		
 		{/form}
 {/}

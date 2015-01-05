@@ -16,21 +16,21 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Listeners;
+namespace App\SeasonsModule\Model\Listeners;
 
 use \Nette\Object,
     \Kdyby\Events\Subscriber,
-    \App\Model\Entities\MailBoxEntry,
+    \App\Model\Entities\SeasonApplication,
     \Kdyby\Monolog\Logger,
     \App\SystemModule\Model\Service\INotificationService;
 	
 /**
- * MessagesListener of system module, 
- * designated for notify recipient of created private messages
+ * ApplicationsListener 
+ * designated for notify owner of created season applications
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class MessagesListener extends Object implements Subscriber {
+class ApplicationsListener extends Object implements Subscriber {
     
     /**
      * @var \Kdyby\Monolog\Logger
@@ -48,12 +48,12 @@ class MessagesListener extends Object implements Subscriber {
     }
     
      public function getSubscribedEvents() {
-	return ["App\CommunicationModule\Model\Service\PrivateMessageService::onCreate"];
+	return ["App\SeasonsModule\Model\Service\SeasonApplicationService::onCreate"];
     }
     
-    public function onCreate(MailBoxEntry $entry) {
-	$this->notifService->notifyNewMessage($entry);
-	$this->logger->addInfo("System Module - Messages Listener - onCreate - recipient of $entry has been notified");
+    public function onCreate(SeasonApplication $app) {
+	$this->notifService->notifyNewSeasonApplication($app);
+	$this->logger->addInfo("System Module - Application Listener - onCreated - owner of season application $app has been notified");
     }
 
 }

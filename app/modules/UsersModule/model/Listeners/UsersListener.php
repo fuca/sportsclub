@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Listeners;
+namespace App\UsersModule\Model\Listeners;
 
 use \Nette\Object,
     \Kdyby\Events\Subscriber,
@@ -25,7 +25,7 @@ use \Nette\Object,
     \App\SystemModule\Model\Service\INotificationService;
 	
 /**
- * UserListener of system module designated for notify user 
+ * UserListener designated for notify user 
  * related with operations executed within user service
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>

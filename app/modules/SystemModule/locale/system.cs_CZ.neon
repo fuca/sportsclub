@@ -11,8 +11,8 @@ forms:
 
 messages:
 	badArgumentFormat: "Špatný formát argumentu '%id%'"
-	couldNotSaveData: "Data nelze uložit. | Data '%id%' nelze uložit."
-	couldNotLoadData: "Data nelze načíst. | Data '%id%' nelze načíst."
+	couldNotSaveData: "Data nelze uložit."
+	couldNotLoadData: "Data nelze načíst."
 	couldNotDeleteData: "Data nelze odstranit. | Data '%id%' nelze odstranit."
 	nothingToShow: "Žádné údaje nebyly nalezeny."
 

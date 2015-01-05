@@ -42,7 +42,7 @@ admin:
 	event.heading: "Události"
 	heading: "Správa událostí"
 	addEvent.heading: "Nová událost"
-	updateEvent.heading: "Upravit událost %title"
+	updateEvent.heading: "Upravit událost"
 	updateEvent.title: "Upravit událost"
 	updateParticipation.heading: "Aktualizace účasti na"
 	updateParticipation.bread: "Upravit účast události"

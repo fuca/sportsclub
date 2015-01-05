@@ -46,7 +46,7 @@ admin:
 	event.heading: "Events"
 	heading: "Event resources"
 	addEvent.heading: "New event"
-	updateEvent.heading: "Update event %title"
+	updateEvent.heading: "Update event "
 	updateEvent.title: "Update event"
 	updateParticipation.heading: "Update participation of %title%"
 	updateParticipation.bread: "Update event participation"

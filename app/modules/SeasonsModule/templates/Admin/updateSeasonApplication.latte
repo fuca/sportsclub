@@ -4,55 +4,54 @@
 {layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ seasonsModule.admin.updateSeasonApplication.heading}</li>
-{/block}
+{include #parent}<li>{_ seasonsModule.admin.updateSeasonApplication.heading}</li>
+    {/block}
 
 {block #title}
-    {_ seasonsModule.admin.updateSeasonApplication.title} {$titleCrumbSeparator} {include #parent}
+{_ seasonsModule.admin.updateSeasonApplication.title} {$titleCrumbSeparator} {include #parent}
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+{control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
-    <div class="page-header">
-	<h3>{_ seasonsModule.admin.updateSeasonApplication.heading}</h3>
-    </div>
-    {form updateSeasonApplicationForm}
-			{control $form errors}
-	<div class="row">
-	    <div class="col-md-1"></div>
-	    <div class="col-md-5">
-		<div class="form-group">
-			{label owner/} 
-			{input owner class=>form-control}
-		</div>
+<div class="page-header">
+    <h3>{_ seasonsModule.admin.updateSeasonApplication.heading}</h3>
+</div>
+{form updateSeasonApplicationForm}
+    {control $form errors}
+    <div class="row">
+
+	<div class="col-md-1"></div>
+	<div class="form-options col-md-5 ">
+	    <div class="form-group">
+		{label owner/} 
+		{input owner class=>form-control}
 	    </div>
-		    <div class="col-md-1"></div>
-	    <div class="form-options col-md-3 ">
-		<div class="form-group">
-			{label season/} 
-			{input season class=>form-control}
-		</div>
-		    
-		<div class="form-group">
-			{label sportGroup /}
-			{input sportGroup class=>form-control}
-		</div>
-		    
-		<div class="form-group">
-			{label comment /} 
-			{input comment class=>form-control}
-		</div>
-		    
-		<div class="form-group">
-			{input submitButton class=>"btn btn-lg btn-primary btn-block"}
-		</div>
-		
+
+	    <div class="form-group">
+		{label season/} 
+		{input season class=>form-control}
 	    </div>
-		<div class="col-md-1"></div>
+
+	    <div class="form-group">
+		{label sportGroup /}
+		{input sportGroup class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label comment /} 
+		{input comment class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
+	    </div>
+
 	</div>
-			
+	<div class="col-md-1"></div>
+    </div>
+
 {/form}
 {/}

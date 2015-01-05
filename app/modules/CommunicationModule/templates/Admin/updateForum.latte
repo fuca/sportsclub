@@ -4,20 +4,66 @@
 {layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ communicationModule.admin.updateForum.bread}</li>
-{/block}
+{include #parent}<li>{_ communicationModule.admin.updateForum.bread}</li>
+    {/block}
 
 {block #title}
-    {_ communicationModule.admin.updateForum.title}  {$titleCrumbSeparator}  {include #parent}
+{_ communicationModule.admin.updateForum.title}  {$titleCrumbSeparator}  {include #parent}
 {/block}
 
 {block #subMenu}
-    {control backSubMenu:contentSubMenu}
+{control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
-    <div class="page-header">
-	<h3>{_ communicationModule.admin.updateForum.heading, null, ["title"=>$forumTitle]}</h3>
+<div class="page-header">
+    <h3>{_ communicationModule.admin.updateForum.heading, null, ["title"=>$forumTitle]}</h3>
+</div>
+{form updateForumForm}
+    {control $form errors}
+    <div class="row">
+	<div class="col-sm-8">
+	    <div class="form-group">
+		{label title/}
+		{input title class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label description/}
+		{input description class=>"form-control mceEditor"}
+	    </div>
+	</div>
+
+	<div class="col-sm-3 form-options">
+
+	    <div class="form-group">
+		{label groups/}
+		<br/>
+		{input groups}
+	    </div>
+
+	    {if ($form->isUpdate())}
+		<div class="form-group">
+		    {label lastActivity/}
+		    {input lastActivity class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label author/}
+		    {input author class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label editor/}
+		    {input editor class=>form-control}
+		</div>
+
+	    {/if}
+
+	    <div class="form-group">
+		{input submitButton class=>"btn btn-block btn-primary"}
+	    </div>
+	</div>
     </div>
-    {control updateForumForm}
+{/form}
 {/}

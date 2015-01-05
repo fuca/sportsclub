@@ -19,6 +19,8 @@
 namespace App\SeasonsModule\Model\Service;
 
 use \App\Model\Entities\SeasonApplication,
+    \App\Model\Entities\User,
+    \App\Model\Entities\Season,
     \Nette\DateTime,
     \Nette\Caching\Cache,
     \Kdyby\Doctrine\EntityManager,
@@ -333,6 +335,28 @@ class SeasonApplicationService extends BaseService implements ISeasonApplication
 	$model = new Doctrine(
 		$this->seasonApplicationDao->createQueryBuilder('sa'));
 	return $model;
+    }
+    
+    public function getUsersApplication(User $u, Season $s) {
+	try {
+	    $id = "{$this->getEntityClassName()}/{$u->getId()}-{$s->getId()}";
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    if ($data === null) {
+		$data = $this->seasonApplicationDao->createQueryBuilder("a")
+		    ->where("a.owner = :owner")
+			->setParameter("owner", $u->getId())
+		    ->andWhere("a.season = :season")
+			->setParameter("season", $s->getId())
+		    ->getQuery()->getSingleResult();
+		$opts = [Cache::TAGS=>[self::ENTITY_COLLECTION, $id]];
+		$cache->save($id, $data, $opts);
+	    }
+	    return $data;
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 
 }

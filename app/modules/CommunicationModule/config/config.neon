@@ -19,5 +19,13 @@ services:
 		setup:
 			- setCacheStorage(@communicationModule.cacheStorage)
 			- setUserService()
+
+# Listeners 
+
+
+	communicationModule.messagesListener:
+		class:
+			App\CommunicationModule\Model\Listeners\MessagesListener
+		tags: [kdyby.subscriber]
 			
 			

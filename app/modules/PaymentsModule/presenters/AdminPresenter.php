@@ -235,25 +235,22 @@ class AdminPresenter extends SystemAdminPresenter {
 	$values = $form->getValues();
 	switch ($form->getMode()) {
 	    case FormMode::CREATE_MODE:
-		$oSelId = $values[PaymentForm::PAYMENT_OWNER_TYPE_SELECT_ID];
-		switch ($oSelId) {
-		    case PaymentOwnerType::SINGLE:
-			$this->createPaymentHandle($values);
-			break;
-		    case PaymentOwnerType::GROUP:
-			$groupId = $values[PaymentForm::OWNER_TYPE_GROUP];
-			try {
-			    $users = $this->getPositionService()->getUsersWithinGroup($groupId);
-			    $this->createMultiPaymentHandle($values, $users);
-			} catch (Exceptions\DataErrorException $ex) {
-			    $this->handleDataLoad(null, "this", $ex);
-			}
-			break;
-		    case PaymentOwnerType::SELECT:
+//		$oSelId = $values[PaymentForm::PAYMENT_OWNER_TYPE_SELECT_ID];
+//		switch ($oSelId) {
+//		    case PaymentOwnerType::GROUP:
+//			$groupId = $values[PaymentForm::OWNER_TYPE_GROUP];
+//			try {
+//			    $users = $this->getPositionService()->getUsersWithinGroup($groupId);
+//			    $this->createMultiPaymentHandle($values, $users);
+//			} catch (Exceptions\DataErrorException $ex) {
+//			    $this->handleDataLoad(null, "this", $ex);
+//			}
+//			break;
+//		    case PaymentOwnerType::SELECT:
 			$ids = $values[PaymentForm::OWNER_TYPE_SELECT];
 			$this->createMultiPaymentHandle($values, $ids);
 			break;
-		}
+//		}
 		break;
 	    case FormMode::UPDATE_MODE:
 		$this->updatePaymentHandle($values);

@@ -46,9 +46,11 @@ class CommentForm extends BaseForm {
 	$this->addHidden("id");
 	$this->addHidden("author");
 	
-	$this->addText("title", "systemModule.commentControl.title", 42);
+	$this->addText("title", "systemModule.commentControl.title", 42)
+		->setAttribute('class', 'form-control title');
 	
 	$this->addTextArea("content", "systemModule.commentControl.content", 45, 5)
+		->setAttribute('class', 'form-control comment mceEditorComment')
 		->addRule(Form::FILLED, "systemModule.commentControl.contentMustFill")
 		->setRequired("systemModule.commentControl.contentMustFill");
 	

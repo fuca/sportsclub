@@ -114,6 +114,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    if ($dbType !== null) {
 		$form = $this->getComponent('updateSportTypeForm');
 		$form->setDefaults($dbType->toArray());
+		$this->template->title = $dbType->getName();
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
@@ -266,6 +267,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 		$form = $this->getComponent('updateSportGroupForm');
 		$dbGroup->setPriority($dbGroup->getPriority()-1);
 		$form->setDefaults($dbGroup->toArray());
+		$this->template->title = $dbGroup->getName();
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
@@ -637,6 +639,13 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$c->addNode("systemModule.admin.groupAdd", ":System:Admin:addSportGroup");
 	$c->addNode("systemModule.admin.sportAdd", ":System:Admin:addSportType");
 	$c->addNode("systemModule.admin.pageAdd", ":System:Admin:addStaticPage");
+	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
+	return $c;
+    }
+    
+    public function createComponentBackSubMenu($name) {
+	$c = new \App\Components\MenuControl($this, $name);
+	$c->setLabel("systemModule.navigation.options");
 	$c->addNode("systemModule.navigation.back", ":System:Admin:default");
 	return $c;
     }

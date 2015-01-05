@@ -63,6 +63,9 @@ forumForm:
 	title: "Název"
 	description: "Popis"
 	groups: "Skupiny"
+	lastActivity: "Poslední změna"
+	author: "Autor"
+	editor: "Editor"
 
 forThrForm:
 	title: "Název"

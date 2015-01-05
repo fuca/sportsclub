@@ -25,7 +25,7 @@ admin:
     heading: "Správa plateb"
     payment.heading: "Platby"
     addPayment.heading: "Nová platba"
-    updatePatment.heading: "Upravit platbu"
+    updatePayment.heading: "Upravit platbu"
 
 
 user:

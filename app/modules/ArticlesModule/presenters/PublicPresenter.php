@@ -128,7 +128,7 @@ class PublicPresenter extends SystemPublicPresenter {
      * Handler for delete article comment
      * @param ArticleComment $comm
      */
-    public function deleteComment(ArticleComment $comm) {
+    public function deleteComment($comm) {
 	try {
 	    $this->articleService->deleteComment($comm, $this->getEntity());
 	} catch (Exceptions\DataErrorException $ex) {

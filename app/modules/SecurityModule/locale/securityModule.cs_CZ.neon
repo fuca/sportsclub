@@ -82,9 +82,9 @@ posForm:
 	note:	"Poznámka"
 	publishContact: "Zobrazit v kontaktech"
 	name: "Jméno"
-	userSelect: "Vyber uživatele .."
-	groupSelect: "Vyber skupinu .."
-	roleSelect: "vyber roli .. "
+	userSelect: "Vyberte uživatele .."
+	groupSelect: "Vyberte skupinu .."
+	roleSelect: "Vyberte roli .. "
 	newPosGroup: "Nová pozice"
 
 roleForm:

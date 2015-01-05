@@ -19,5 +19,93 @@
     <div class="page-header">
 	<h3>{_eventsModule.admin.eventNew}</h3>
     </div>
-    {control addEventForm}
+    {form addEventForm}
+    {control $form errors}
+    <div class="row">
+	<div class="col-sm-8">
+	     <div class="form-group">
+		{label eventType /} 
+		{input eventType class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label title /} 
+		{input title class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+		{label description /} 
+		{input description class=>"form-control mceEditor"}
+	    </div>
+	</div>
+
+	<div class="form-options col-sm-3">
+
+	    <div class="form-group">
+		{label takePlaceSince /} 
+		{input takePlaceSince class=>form-control}
+	    </div>
+
+	    
+		<div class="form-group">
+		{label takePlaceTill /} 
+		{input takePlaceTill class=>form-control}
+	    </div>
+	    
+	    <div class="form-group">
+
+		{label groups /} 
+		<br/>
+
+		{input groups}
+
+	    </div>
+	    
+	    <div class="form-group">
+		{label confirmUntill /} 
+		{input confirmUntill class=>form-control}
+	    </div>
+
+	    <div class="form-group">
+
+		{label visibility /} 
+		{input visibility class=>form-control}
+
+	    </div>
+
+	    <div class="form-group">
+
+		{label commentMode /} 
+
+		{input commentMode class=>form-control}
+
+	    </div>
+
+	    
+	    {if $form->isUpdate()}
+	
+		<div class="form-group">
+
+		    {label author /} 
+
+		    {input author class=>form-control}
+
+		</div>
+
+		<div class="form-group">
+
+		    {label editor /} 
+
+		    {input editor class=>form-control}
+
+		</div>
+	    {/if}
+	    <div class="form-group">
+		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
+	    </div>
+	</div>
+    </div>
+
+    {/form}
 {/}
+

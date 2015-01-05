@@ -85,6 +85,7 @@ class AdminPresenter extends SystemAdminPresenter {
 			})->toArray();
 		$e->setGroups($grArr);
 		$form->setDefaults($e->toArray());
+		$this->template->title = $e->getTitle();
 	    }
 	} catch (Exceptions\EntityNotFoundException $ex) {
 	    $this->handleEntityNotExists($id, "this", $ex);

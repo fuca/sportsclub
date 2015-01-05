@@ -39,7 +39,7 @@ parameters:
 	debugger: 
 		email: "michal.fuca.fucik@gmail.com"
 
-	wwwDir: %appDir%/../www/
+	wwwDir: %appDir%/../www
 	cacheDir: %tempDir%/cache/
 	modulesDir: %appDir%/modules/
 	libsDir: %appDir%/../vendor/others

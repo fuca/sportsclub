@@ -20,6 +20,14 @@ services:
 				- setLogger()
 				- setImageService(@userImageService)
 
+# Listeners
+
+	usersModule.usersListener:
+		class:
+			App\UsersModule\Model\Listeners\UsersListener
+		tags: [kdyby.subscriber]
+		setup:	
+
 
 # Initializer
 

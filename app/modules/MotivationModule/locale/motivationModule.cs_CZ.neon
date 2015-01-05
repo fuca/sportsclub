@@ -10,7 +10,7 @@ taxForm:
 	season: "Sezóna"
 	group: "Skupina"
 	editor: "Editor"
-	update: "Změnil"
+	update: "Datum změny"
 	ordered: "Vytvořil"
 	credit: "Kredity"
 	publicNoteToggle: "Přidat veřejnou poznámku"
@@ -67,4 +67,5 @@ protected.grid:
 
 user:
 	userMotivation.heading: "Motivace"
+	creditAmountGoal: "V této sezóně máte splnit: %x% kreditů"
 	

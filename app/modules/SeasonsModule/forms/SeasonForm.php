@@ -44,7 +44,7 @@ final class SeasonForm extends BaseForm {
 	
 	$this->addCheckbox('current', "Aktuální");
 	
-	$this->addTextArea("comment", "Poznámka");
+	$this->addTextArea("comment", "Poznámka", null, 7);
 
 	$this->addSubmit('submitButton', "Uložit");
 	$this->onSuccess[] = callback($this->presenter, "seasonFormSubmitHandle");

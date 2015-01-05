@@ -13,9 +13,9 @@ admin:
 	addSeasonApplication.heading: "New season application"
 	addSeason.heading: "New season"
 
-	updateSeason.heading: "Update season %title%"
+	updateSeason.heading: "Update season"
 	updateSeason.title: "Update season"
-	updateSeasonApplication.heading: "Update season application of %name%"
+	updateSeasonApplication.heading: "Update season application of"
 	updateSeasonApplication.title: "Update season application"
 	updateSeasonTax.heading: "Update season tax"
 

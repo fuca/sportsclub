@@ -9,6 +9,15 @@ ul {
     ================
 */
 
+#publicmenu-container a.navbar-brand {
+    color: #333;
+}
+
+#publicmenu-container a.navbar-brand:hover {
+    color: #fff;
+    background-color: #555;
+}
+
 .btn-group-justified {
     width: auto;
 }
@@ -36,50 +45,12 @@ ul.publicmenu li {
     border: none;
 }
 
-/*ul.publicmenu { position: relative; }*/
-
-/*ul.publicmenu li {
-    float: left; 
-    margin: 0; 
-    padding: 0; 
-}*/
-
-/*ul.publicmenu li a {
-    font-size: 1.05em;
-    float: left; 
-    display: block; 
-    color: #333; 
-    padding: 10px 0;
-    width: 121px;
-    margin: 5px 0 5px -1px; 
-    text-decoration: none;
-    text-align: center;
-    height: 18px;
-    border-right: 1px solid #aaa;
-}*/
-
 #publicmenu-container ul li a { color: #333; }
 
 #publicmenu-container ul li a:hover,  
 #publicmenu-container ul li a:active, 
-#publicmenu-container ul li a.active, 
-#publicmenu-container ul.publicmenu li.mega-hover a { color: #fff; }
+#publicmenu-container ul li a.active { color: #fff; }
 
-/*#publicmenu-container ul.publicmenu li.first a {
-    -webkit-border-radius: 3px 0 0 3px;
-    -moz-border-radius: 3px 0 0 3px;
-    border-radius: 3px 0 0 3px;
-    width: 122px;
-}*/
-
-#publicmenu-container ul.publicmenu li.last a { 
-    border: none;
-    -webkit-border-radius: 0 3px 3px 0;
-    -moz-border-radius: 0 3px 3px 0;
-    border-radius: 0 3px 3px 0;
-}
-
-ul.publicmenu li.mega-hover a,
 ul.publicmenu li a:hover {
     background: #555;
     color: #fff; 
@@ -89,87 +60,7 @@ ul.publicmenu li a:hover {
     width: 121px;
 }
 
-
-ul.publicmenu li .sub-container {
-    position: absolute; 
-}
-
-/* toto je podmenu */
-ul.publicmenu li .sub {  
-    top: 0px;
-    background: #555;
-    padding: 5px 10px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-
-/* odkaz podmenu */
-#publicmenu-container ul.publicmenu li.dc-mega-li div.sub-container li a {
-    color: #ddd;
-    border: none;
-    padding: 7px 10px;
-    text-align: left;
-}
-
-/* aktivni odkaz podmenu */
-#publicmenu-container ul.publicmenu li.dc-mega-li div.sub-container li a:hover, 
-#publicmenu-container ul.publicmenu li.dc-mega-li div.sub-container li a:active, 
-#publicmenu-container ul.publicmenu li.dc-mega-li div.sub-container li a.active, 
-#publicmenu-container ul.publicmenu li.dc-mega-li div.sub-container li.mega-hocver a {
-    color: #fff;
-    text-decoration: underline;
-}
-
-
-body.page ul.publicmenu li .sub { 
-    background: #fff;
-}
-
-ul.publicmenu li .sub .row { /*toto je radek podmenu*/
-    width: 100%; 
-    overflow: hidden; 
-    clear: both;
-
-}
-ul.publicmenu li .sub li {   /*toto je polozka podmenu*/
-    list-style: none; 
-    float: none; 
-    width: 160px; 
-    font-size: 1em; 
-    font-weight: normal;
-    xborder: 1px solid red;
-}
-ul.publicmenu li .sub li.mega-hdr { /*jednotlive sloupce podmenu */
-    float: left; 
-}
-ul.publicmenu li .sub li.mega-hdr.last {
-    margin-right: 0; 
-}
-ul.publicmenu li .sub li.mega-hdr a {  /*odkaz polozky podmenu*/
-    background: none; 
-    text-shadow: none; 
-    color: #111; 
-    display: block; 
-    float: none; 
-    text-decoration: none; 
-    padding: 3px;
-    margin: 0px;
-}
-
-ul.publicmenu li .sub li.mega-hdr a.mega-hdr-a {  /*nadpis sloupce podmenu*/     
-    font-size: 0.95em;   
-    text-transform: uppercase; 
-    font-weight: bold; 
-    color: #000;
-    margin-bottom: 5px;
-    border: 1px solid blue;
-}
-
-/* END OF MEGA MENU */
-
-
-
+/* END OF MENU */
 
 
 /* 

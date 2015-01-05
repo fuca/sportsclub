@@ -74,6 +74,12 @@ class ArticleService extends BaseService implements IArticleService, IRssModel {
      */
     private $config;
     
+    /**
+     * Comment service
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    private $commentService;
+    
 //    /**
 //     * @var \Brabijan\Images\ImageStorage
 //     */
@@ -130,7 +136,12 @@ class ArticleService extends BaseService implements IArticleService, IRssModel {
     public function getDefaultRssLimit() {
 	return $this->getConfig()[self::DEFAULT_RSS_LIMIT];
     }
+    
+    function setCommentService(\App\SystemModule\Model\Service\ICommentService $commentService) {
+	$this->commentService = $commentService;
+    }
 
+    
     public function createArticle(Article $a) {
 	if ($a === NULL)
 	    throw new Exceptions\NullPointerException("Argument Article was null");
@@ -399,19 +410,19 @@ class ArticleService extends BaseService implements IArticleService, IRssModel {
 	}
     }
 
-    public function deleteComment(Comment $c, ICommentable $e) {
+    public function deleteComment($c, ICommentable $e) {
 	try {
 	    $wpDb = $this->articleDao->find($e->getId());
 	    if ($wpDb !== null) {
 		$coll = $wpDb->getComments();
-		$id = $c->getId();
+		$id = $this->getMixId($c);
 		$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
 		$index = $coll->indexOf($comment);
 		$coll->remove($index);
 
 		$this->entityManager->merge($wpDb);
 		$this->entityManager->flush($wpDb);
-		$this->commentService->deleteComment($c->getId());    
+		$this->commentService->deleteComment($id);    
 		$this->invalidateEntityCache($wpDb);
 	    }
 	} catch (Exception $ex) {

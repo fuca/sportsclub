@@ -24,6 +24,8 @@ use \Kdyby\Doctrine\EntityManager,
     \Nette\Utils\DateTime,
     \Grido\DataSources\Doctrine,
     \App\Model\Entities\MotivationTax,
+    \App\Model\Entities\Season,
+    \App\Model\Entities\SportGroup,
     \App\Model\Service\BaseService,
     \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\DuplicateEntryException,
@@ -210,6 +212,29 @@ final class MotivationTaxService extends BaseService implements IMotivationTaxSe
 	} catch (DuplicateEntryException $ex) {
 	    $this->logWarning($ex->getMessage());
 	    throw new Exceptions\DuplicateEntryException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function getTaxSeason(Season $s, SportGroup $sg) {
+	try {
+	    $id = "{$this->getEntityClassName()}\\{$s->getId()}-{$sg->getId()}";
+	    $cache = $this->getEntityCache();
+	    $data = $cache->load($id);
+	    
+	    if (empty($data)) {
+		$data = $this->taxDao->createQueryBuilder("t")
+			->where("t.season = :season")
+			->setParameter("season", $s->getId())
+			->andWhere("t.sportGroup = :group")
+			->setParameter("group", $sg->getId())
+			->getQuery()->getSingleResult();
+		$opts = [Cache::TAGS =>[self::ENTITY_COLLECTION, $id]];
+		$cache->save($id, $data, $opts);
+	    }
+	    return $data;
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());

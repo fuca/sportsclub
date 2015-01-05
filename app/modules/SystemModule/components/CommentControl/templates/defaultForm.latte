@@ -5,6 +5,8 @@
 </div>
 
 {if $allowed}
+    {snippet addCommentForm}
+	{if !isset($showSimpleForm)}
     {form addCommentForm}
 		<div class="form-group">
 		    {label title class=>sr-only /}
@@ -13,12 +15,14 @@
 		
 		<div class="form-group">
 		    {label content class=>sr-only /}
-		    {input content class=>"form-control comment", placeholder=>$contentPlaceHolder}
+		    {input content class=>"form-control comment mceEditorComment", placeholder=>$contentPlaceHolder}
 		</div>
 		<div class="form-group">
 		    {input submit class=>"btn btn-large btn-primary btn-block"}
 		</div>
     {/form}
+    {/if}
+    {/snippet}
 {else}
     {_systemModule.commentControl.commentsRestricted}
 {/}

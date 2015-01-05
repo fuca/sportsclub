@@ -19,5 +19,11 @@
 <div class="page-header">
 <h3>{_motivationModule.protected.myMotivation}</h3>
 </div>
+
+{if $creditAmount}
+    <span class='motivation-goal'>
+	{_ motivationModule.user.creditAmountGoal, null, ["x"=>$creditAmount]}
+    </span>
+{/if}
 {control userMotivationGrid}
 {/}

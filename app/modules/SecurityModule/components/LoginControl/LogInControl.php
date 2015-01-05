@@ -132,6 +132,7 @@ final class LogInControl extends Control {
 	$this->template->pmsCount = 3;
 	$this->template->messagesMenu = true;
 	$this->template->adminMenuPredicate = true;
+	//$this->template->adminMenuPredicate = $this->user->isAllowed("App\System\Presenters\Default\adminRoot");
 	$this->template->render();
     }
 

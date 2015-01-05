@@ -22,3 +22,10 @@ services:
 			- setCacheStorage(@paymentsModule.cacheStorage)
 			- setUsersService()
 			- setSeasonService()
+
+# Listeners
+
+	paymentsModule.paymentsListener:
+		class:
+			App\PaymentsModule\Model\Listeners\PaymentsListener
+		tags: [kdyby.subscriber]

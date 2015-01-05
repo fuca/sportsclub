@@ -95,7 +95,7 @@ class SeasonApplication extends BaseEntity {
     }
 
     public function __toString() {
-	return "{$this->getOwner()} {$this->getSeason()} {$this->getGroup()}";
+	return "{$this->getOwner()} {$this->getSeason()} {$this->getSportGroup()}";
     }
     
     public function getId() {

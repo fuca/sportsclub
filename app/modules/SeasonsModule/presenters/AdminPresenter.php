@@ -162,6 +162,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	    if ($dbSeason !== null) {
 		$form = $this->getComponent('updateSeasonForm');
 		$form->setDefaults($dbSeason->toArray());
+		$this->template->title = $dbSeason->getLabel();
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);

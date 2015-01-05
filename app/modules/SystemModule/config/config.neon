@@ -99,26 +99,6 @@ services:
 		setup:	
 			- setPublicMenuFactory()
 
-	systemModule.applicationListener:
-		class:
-			App\SystemModule\Model\Listeners\ApplicationsListener
-		tags: [kdyby.subscriber]
-
-	systemModule.messagesListener:
-		class:
-			App\SystemModule\Model\Listeners\MessagesListener
-		tags: [kdyby.subscriber]
-
-	systemModule.paymentsListener:
-		class:
-			App\SystemModule\Model\Listeners\PaymentsListener
-		tags: [kdyby.subscriber]
-	systemModule.userListener:
-		class:
-			App\SystemModule\Model\Listeners\UsersListener
-		tags: [kdyby.subscriber]
-		setup:	
-
 # Initialize
 	
 	systemModule.initializer:

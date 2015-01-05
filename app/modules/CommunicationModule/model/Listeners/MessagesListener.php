@@ -16,21 +16,21 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Model\Listeners;
+namespace App\CommunicationModule\Model\Listeners;
 
 use \Nette\Object,
     \Kdyby\Events\Subscriber,
-    \App\Model\Entities\Payment,
+    \App\Model\Entities\MailBoxEntry,
     \Kdyby\Monolog\Logger,
     \App\SystemModule\Model\Service\INotificationService;
 	
 /**
- * PaymentsListener of system module, 
- * designated for notify owners of created payments
+ * MessagesListener  
+ * designated for notify recipient of created private messages
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-class PaymentsListener extends Object implements Subscriber {
+class MessagesListener extends Object implements Subscriber {
     
     /**
      * @var \Kdyby\Monolog\Logger
@@ -47,13 +47,13 @@ class PaymentsListener extends Object implements Subscriber {
 	$this->notifService = $notif;
     }
     
-    public function getSubscribedEvents() {
-	return ["App\PaymentsModule\Model\Service\PaymentService::onCreate"];
+     public function getSubscribedEvents() {
+	return ["App\CommunicationModule\Model\Service\PrivateMessageService::onCreate"];
     }
     
-    public function onCreate(Payment $p) {
-	$this->notifService->notifyNewPayment($p);
-	$this->logger->addInfo("System Module - Payments Listener - onCreate - owner of $p has been notified");
+    public function onCreate(MailBoxEntry $entry) {
+	$this->notifService->notifyNewMessage($entry);
+	$this->logger->addInfo("System Module - Messages Listener - onCreate - recipient of $entry has been notified");
     }
 
 }

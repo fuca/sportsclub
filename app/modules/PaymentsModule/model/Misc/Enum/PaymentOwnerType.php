@@ -27,17 +27,15 @@ use \App\Model\Misc\Enum\EnumType;
  */
 final class PaymentOwnerType extends EnumType implements IEnum {
     const 
-	SINGLE	=  "single",
 	GROUP	=  "group",
 	SELECT  =  "select";
     
     protected $name = "PaymentOwnerType";
-    protected $values = [self::SINGLE, self::GROUP, self::SELECT];
+    protected $values = [self::GROUP, self::SELECT];
 	    
 
     public static function getOptions() {
 	return array(
-	    self::SINGLE    => "Jeden člen",
 	    self::GROUP	    => "Skupinově",
 	    self::SELECT    => "Výběr z členů");
     }

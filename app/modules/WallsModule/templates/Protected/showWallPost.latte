@@ -36,13 +36,13 @@
 	    <div title="{_wallsModule.club.author}">
 		&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
 		&nbsp;
-		<a href="{plink :Users:Public:showWebProfile, $author->getId()}">
+		
 		    {if empty($nick)}
 			{$author->getName()}&nbsp;{$author->getSurName()}
 		    {else}
 			{$nick}
 		    {/if}
-		</a>
+		
 		<div class="hidden-xs"><br/></div>
 	    </div>
 	    <div title="{_wallsModule.club.changeTime}">

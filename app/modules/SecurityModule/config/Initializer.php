@@ -145,7 +145,7 @@ final class Initializer {
 	$role = $this->roleService->getRoleName("admin");
 	$rule = null;
 	try {
-	    $rule = $this->ruleService->getUniqueRule($role);
+	    $rule = $this->ruleService->getUniqueRule($role);	    
 	} catch (Exceptions\NoResultException $ex) {
 	    $this->logger->addDebug($ex->getMessage());
 	}

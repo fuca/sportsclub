@@ -62,6 +62,9 @@ forumForm:
 	title: "Title"
 	description: "Description"
 	groups: "Groups"
+	lastActivity: "Last change"
+	author: "Author"
+	editor: "Editor"
 
 forThrForm:
 	title: "Title"

@@ -11,12 +11,12 @@
 {/block}
 
 {block #subMenu}
-    {control subMenu:contentSubMenu}
+    {control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
     <div class="page-header">
-	<h3>{_ systemModule.admin.updateStaticPage.heading, null, ["title"=>$page->getTitle()]}</h3>
+	<h3>{_ systemModule.admin.updateStaticPage.heading} <small><em>{$page->getTitle()}</em></small></h3>
     </div>
     {form updateStaticPageForm}
 		{control $form errors}

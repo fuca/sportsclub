@@ -19,5 +19,50 @@
     <div class="page-header">
 	<h3>{_ communicationModule.admin.addForum.heading}</h3>
     </div>
-    {control addForumForm}
+    {form addForumForm}
+	{control $form errors}
+	<div class="col-sm-8">
+		<div class="form-group">
+		    {label title/}
+		    {input title class=>form-control}
+		</div>
+
+		<div class="form-group">
+		    {label description/}
+		    {input description class=>"form-control mceEditor"}
+		</div>
+	    </div>
+
+	    <div class="col-sm-3 form-options">
+		
+		<div class="form-group">
+		    {label groups/}
+		    <br/>
+		    {input groups}
+		</div>
+		
+		{if ($form->isUpdate())}
+		    <div class="form-group">
+			{label lastActivity/}
+			{input lastActivity class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label author/}
+			{input author class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label editor/}
+			{input editor class=>form-control}
+		    </div>
+		
+		{/if}
+
+		
+		<div class="form-group">
+		    {input submitButton class=>"btn btn-block btn-primary"}
+		</div>
+	    </div>
+	{/form}
 {/}

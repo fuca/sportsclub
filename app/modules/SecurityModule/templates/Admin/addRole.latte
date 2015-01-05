@@ -4,41 +4,49 @@
 {layout $layoutsPath.'adminSectionBaseTemplate.latte'}
 
 {block #breadcrumbs}
-    {include #parent}<li>{_ securityModule.admin.addRole.heading}</li>
-{/block}
+{include #parent}<li>{_ securityModule.admin.addRole.heading}</li>
+    {/block}
 
 {block #title}
-    {_ securityModule.admin.addRole.heading}  {$titleCrumbSeparator}  {include #parent}
+{_ securityModule.admin.addRole.heading}  {$titleCrumbSeparator}  {include #parent}
 {/block}
 
 {block #subMenu}
-    {control backSubMenu:contentSubMenu}
+{control backSubMenu:contentSubMenu}
 {/block}
 
 {block #adminContent}
-    {form addRoleForm}
-		
-		{control $form errors}
+{form addRoleForm}
 
-		<div class="form-group">
-			{label name /} 
-			{input name class=>form-control}
-		</div>
+    {control $form errors}
+    <div class="row">
+	<div class="col-sm-5">
 
-		<div class="form-group">
-			{label parents /} 
-			{input parents class=>form-control}
-		</div>     
+	    <div class="form-group">
+		{label name /} 
+		{input name class=>form-control}
+	    </div>
 
-		<div class="form-group">
-			{label note /} 
-			{input note class=>form-control}
-		</div>
-		
-		<div class="form-group"> 
+	    <div class="form-group">
+		{label note /} 
+		{input note class=>form-control}
+	    </div>
+
+	    <div class="form-group"> 
 		{input submitButton class=>"btn btn-lg btn-primary btn-block"}
 	    </div>
-		
-		{/form}
+	</div>
+
+	<div class="col-sm-5">
+
+	    <div class="form-group form-options">
+		{label parents /} 
+		</br>
+		{input parents}
+	    </div>  
+	</div>
+    </div>
+
+{/form}
 {/}
 

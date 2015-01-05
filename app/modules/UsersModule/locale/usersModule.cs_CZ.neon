@@ -116,4 +116,9 @@ public:
 	roster.label: "Soupiska"
 	rosters.groupsMenu: "Skupiny"
 	rosterMenu.label: "Soupiska pro skupinu %group%"
+
+webProfStatus:
+	bad: "Opravit!"
+	updated: "Upraveno"
+	ok: "V pořádku"
 	

@@ -18,7 +18,9 @@
 
 namespace App\SeasonsModule\Model\Service;
 
-use App\Model\Entities\SeasonApplication;
+use \App\Model\Entities\SeasonApplication,
+    \App\Model\Entities\User,
+    \App\Model\Entities\Season;
 
 /**
  * Interface for Event service
@@ -75,4 +77,13 @@ interface ISeasonApplicationService {
      * @return boolean
      */
     function isApplicationTime(SeasonApplication $app);
+    
+    /**
+     * Find unique application according to given User and Season
+     * @param User $u
+     * @param Season $s
+     * @return SeasonApplication
+     * @throws Exceptions\DataErrorException
+     */
+    public function getUsersApplication(User $u, Season $s);
 }

@@ -11,11 +11,11 @@
 			<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
 		    </a>
 		    <strong>{$c->getTitle()} </strong> 
-		    <br/> {$c->getContent()}
+		    <br/> {! $c->getContent()}
 		</p>
 		
 		<footer>
-		    <cite title="Source Title">{$c->getAuthor()}</cite> |
+		    <cite title="Source Title">{$c->getAuthor()}</cite>&nbsp;|&nbsp;
 		    {if $c->getAuthor()->getId() == $userId}
 			<a href="{link getCommentForm!, $c->getId()}" class="ajaxdialog">
 			    <span class="glyphicon glyphicon-pencil" aria-hidden="true">
@@ -24,7 +24,7 @@
 			    <span class="glyphicon glyphicon-remove" aria-hidden="true">
 			</a>
 		    {/if}
-		    |{$c->getUpdated()|date:'%d.%m.%Y %H:%M'}
+		    &nbsp;|&nbsp;{$c->getUpdated()|date:'%d.%m.%Y %H:%M'}
 		</footer>
 	    </blockquote>
 	{/foreach}

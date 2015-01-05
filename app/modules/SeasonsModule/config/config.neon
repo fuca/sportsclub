@@ -35,3 +35,11 @@ services:
 	seasons.adminPresenter:
 		class:	
 			App\SeasonsModule\Presenters\AdminPresenter
+
+
+# Listeners 
+
+	seasonsModule.applicationListener:
+		class:
+			App\SeasonsModule\Model\Listeners\ApplicationsListener
+		tags: [kdyby.subscriber]

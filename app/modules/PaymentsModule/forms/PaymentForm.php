@@ -37,7 +37,6 @@ final class PaymentForm extends BaseForm {
     
     const 
 	PAYMENT_OWNER_TYPE_SELECT_ID	= "ownerType",
-	OWNER_TYPE_SINGLE	= "single",
 	OWNER_TYPE_GROUP	= "sportGroup",
 	OWNER_TYPE_SELECT	= "owners";
 	    
@@ -89,44 +88,36 @@ final class PaymentForm extends BaseForm {
     public function initialize() {
 	$this->addHidden('id');
 
-	$osel = null;
-	if ($this->isCreate()) {
-	    $osel = $this->addSelect(self::PAYMENT_OWNER_TYPE_SELECT_ID, "Typ zadání platby", $this->getOwnersSelect());
+//	$osel = null;
+//	if ($this->isCreate()) {
+//	    $osel = $this->addSelect(self::PAYMENT_OWNER_TYPE_SELECT_ID, "Typ zadání platby", $this->getOwnersSelect());
+//	
+//	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_GROUP)
+//		    ->toggle("group-owner");
+//	    
+//	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_SELECT)
+//		    ->toggle("multi-owner");
+//	}
 	
-	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_SINGLE)
-		    ->toggle("single-owner");
-	
-	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_GROUP)
-		    ->toggle("group-owner");
-	    
-	    $osel->addCondition(Form::EQUAL, self::OWNER_TYPE_SELECT)
-		    ->toggle("multi-owner");
-	}
-
 	if ($this->isUpdate()) {
 	    $this->addSelect("owner", "Člen", $this->getUsers())
 		->setPrompt("Vyberte člena.. ")
 		->setOption("id", "single-owner")
 		->setRequired();
 	} else {
-	$this->addSelect("owner", "Člen", $this->getUsers())
-		->setPrompt("Vyberte člena.. ")
-		->setOption("id", "single-owner")
-		->addConditionOn($osel, Form::NOT_EQUAL, null)
-		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::SINGLE)
-		->setRequired();
 
-	$this->addSelect("sportGroup", "Skupina", $this->getSportGroups())
-		->setPrompt("Vyberte skupinu.. ")
-		->setOption("id", "group-owner")
-		->addConditionOn($osel, Form::NOT_EQUAL, null)
-		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::GROUP)
-		->setRequired();
+//	$this->addSelect("sportGroup", "Skupina", $this->getSportGroups())
+//		->setPrompt("Vyberte skupinu.. ")
+//		->setOption("id", "group-owner")
+//		->addConditionOn($osel, Form::NOT_EQUAL, null)
+//		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::GROUP)
+//		->toggle("group-owner");
+		
 
-	$this->addMultiSelect("owners", "Členové", $this->getUsers())
+	$this->addMultiSelect(self::OWNER_TYPE_SELECT, "Členové", $this->getUsers(), 25)
 		->setOption("id", "multi-owner")
-		->addConditionOn($osel, Form::NOT_EQUAL, null)
-		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::SELECT)
+//		->addConditionOn($osel, Form::NOT_EQUAL, null)
+//		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::SELECT)
 		->setRequired();
 	}
 	
@@ -162,14 +153,14 @@ final class PaymentForm extends BaseForm {
 		->addCondition(Form::EQUAL, true)
 		->toggle("protected-note");
 
-	$this->addTextArea("protectedNote", "Poznámka")
+	$this->addTextArea("protectedNote", "Poznámka", null, 3)
 		->setOption("id", "protected-note");
 
 	$this->addCheckbox("publicNoteToggle", "Napsat poznámku uživateli")
 		->addCondition(Form::EQUAL, true)
 		->toggle("public-note");
 
-	$this->addTextArea("publicNote", "Pzn. pro uživ.")
+	$this->addTextArea("publicNote", "Pzn. pro uživ.", null, 3)
 		->setOption("id", "public-note");
 
 	$this->addSubmit("submitButton", "Uložit");

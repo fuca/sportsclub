@@ -1,10 +1,11 @@
 #
 # #######################################################
 #	MAIN CONFIGURATION FILE OF WHOLE APPLICATION
-#		 SPORTSCLUB IS APPLICATION
+#	 SPORTSCLUB INFORMATION SYSTEM APPLICATION
 #	  DIPLOMA THESIS @ MASARYK UNIVERSITY BRNO
 #		    Bc. Michal Fučík
 #		michal.fuca.fucik@gmail.com
+#			 2014
 # #######################################################
 #
 
@@ -14,7 +15,7 @@
 
 #   SYNTAX HELP
 #   ------------
-#   %<field from paramaters>%
+#   %<field.from.paramaters>%
 #   @service
 #
 
@@ -24,10 +25,10 @@
 #	FRAMEWORK SETTINGS
 # ==============================
 
-includes:
-	# - nazev.neon ## nejnizsi priorita
-	# - nazev.neon ## vyssi priorita
-	# - applicationConfig.local.neon ##nejvyssi priorita
+includes: # includig of aditional configuration files
+	# - title1.neon ## the lowest priority
+	# - title2.neon ## higher priority
+	# - applicationConfig.local.neon ## the highest priority
 
 parameters:
 	database:
@@ -36,8 +37,8 @@ parameters:
 	models:
 		salt: $2a06$05IKqFG8iuPts/cr0.
 		
-	debugger: 
-		email: "michal.fuca.fucik@gmail.com"
+	debugger:
+		email: "michal.fuca.fucik@gmail.com" 
 
 	wwwDir: %appDir%/../www
 	cacheDir: %tempDir%/cache/
@@ -48,25 +49,33 @@ parameters:
 	appName: sportsclub
 	appDefaultEmail: "michal.fuca.fucik@gmail.com"
 
+	# TORN OFF INITIALIZERS PARAMETER # 
+	turnOffInit: true # true 
+
 
 nette:
 	application:
-		errorPresenter: Public:Error
+		# Presenter, where are uncaught exceptions sent to
+		errorPresenter: Public:Error 
 		debugger: false
 		catchExceptions: false
 
+		# namespace pattern, where robotLoader looks for presenter classes
 		mapping:
 			*: App\*Module\Presenters\*Presenter
 
+	# no comment needed
 	session:
 		expiration: 14 days
 		save_path: %tempDir%/sessions
 		name: %appName%
 		#autoStart: smart ## default smart on
-		
+
+	# system database connection, must be meant
 	database:
 		connection: %database%
-
+	
+	# section for routers settings
 	routing:
 		debugger: true
 		
@@ -74,17 +83,23 @@ nette:
 		#frames: yes ## default no (SAMEORIGIN)
 		
 	# mailer: smtp ## default je sendMailer
-
+	
+	# additioonal settings for forms is stored here
 	forms:
 		#EQUAL: 'Please enter %s' ## you can change default messages here
+
+	# DI container settings
 	container:
 		debugger: false #dumps whole DI container -> laggy
+
+	# tracy settings
 	debugger:
 		email: %debugger.email%
 		strictMode: true
-		editor: sublime
+		editor: sublime # default text editor for opening files accesible from tracy output
 		browser: chromium-browser
 
+# apache php module section
 php:
 	date.timezone: Europe/Prague
 	# zlib.output_compression: yes
@@ -95,43 +110,48 @@ php:
 # =========================================
 #
 
+# conf section for Kdyby\Doctrine 
 doctrine:
 	metadata:
 		App: %appDir%
-		#Modules: %appDir%/*Module/model ## hvezdicku to neumi
+		#Modules: %appDir%/*Module/model ## it doesnt know how to handle with * wildcard
 
+# conf section for Kdyby\Annotations
 annotations: # configure of annotations extension
 	ignore:	[hideInTree, licence] # array of ignored annotations
 	debug: yes
 
+# conf section for Kdyby\Monolog 
 monolog:
 	name: %appName%
-	registerFallback: yes # zapne logovani do souboru
+	registerFallback: yes # turns on logging into files
 
 	handlers:
 		- Monolog\Handler\SyslogHandler(%appName%, 'local4') # unix syslog handler
 
-facebook:
-	appId: "1234567890"
-	appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
-	permissions: [email]
+#facebook:
+	#appId: "1234567890"
+	#appSecret: "e807f1fcf82d132f9bb018ca6738a19f"
+#	permissions: [email]
 
+# conf section for Kdyby\Events
 events:
-    debugger: # these are the default values
+    debugger: # default values
         dispatchTree: off
         dispatchLog: on
         events: on
         listeners: on
 	
+# conf section for Kdyby\Translation
 translation:
 	default: cs
-	whitelist: [cs, en, de] #....
+	whitelist: [cs, en, de]
 	fallback: [cs_CZ, cs]
 	debugger: on
 	dirs: 
 		#- %appDir%/modules/SystemModule/locale # every module has own locale dir
 	resolvers:
-		session: on
+		session: on 
 		request: off # checking locale from request
 		header: off # accept language header preferred locales 
 
@@ -142,7 +162,7 @@ translation:
 #
 
 articlesModule:
-	rss:
+	rss: # configuration for RSS channel
 	    title: "FBC Mohelnice"
 	    description: "Webová prezentace florbalového klubu FBC Mohelnice, o.s."
 	    category: "aktuality,články,novinky,RSS"
@@ -151,37 +171,37 @@ articlesModule:
 	    webmaster: "webmaster@fbcmohelnice.cz"
 
 seasonsModule:
-	memberShip: true # udava, zda se bude v seasonTax pocitat s clenskym prispevkem 
+	memberShip: true # tells if, SeasonTax will deal with membership
 
 systemModule:
 	init:
-		turnOff: true
-		group: 
-			name: "Club"
+		turnOff: %turnOffInit%
+		group: # initial root sport group
+			name: "Klub"
 			description: "Root system group"
 		
 	notifications:
-			senderMail: "misan.128@seznam.cz" # povinne, kdyz neni tu, bere se z init usera 
-			hostName: "FBC Mohelnice" # povinne, kdyz neni tu, bere se z init usera # AKTIVNI
-			smtpOptions: [] # nepovinne 
-			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # nepovinne 
+			senderMail: "misan.128@seznam.cz" # if not here, init user email will be taken
+			hostName: "FBC Mohelnice" # if not here, init user name will be taken
+			smtpOptions: [] # smtp mailer options [optional]
+			desiredMailerType: App\SystemModule\Model\Service\EmailNotificationService::MAILER_TYPE_SEND # mailer type [optional]
 securityModule:
-	defRoleAppEvents: "player" # defaultni nazev role pro vytvareni pozice, musi existovat, viz nize
-	defCommentAppEvents: "Created by system" #defaultni comment pro vytvarenou pozici, aby bylo videt, ze to je tvorene systemem
-	deleteOldPositions: true # moznost vypnout mazani starych pozic pri pridavani nove
-	defaultUserEmail: %appDefaultEmail% # povinne
+	defRoleAppEvents: "player" # default player role name 
+	defCommentAppEvents: "Created by system" # default comment for initially created position
+	deleteOldPositions: true # option for disable deleting old positions after adding newone
+	defaultUserEmail: %appDefaultEmail% # [obligatory]
 
 	init:
-		turnOff: true
-		roles: ["admin", "player", "guest", "member", "executive"] 			
+		turnOff: %turnOffInit%
+		roles: ["admin", "player", "guest", "member", "executive"] # initial system roles, [admin, player, guest, member] are obligatory
 
 paymentsModule:
-	dueDate: "1 month" 
+	dueDate: "1 month" # Payment entities default dueDate
 
 usersModule: 
 	init:
-		turnOff: true
-		user: #init uzivatel, hlavni admin 
+		turnOff: %turnOffInit%
+		user: # initial system user, administrator
 			name: "FBC"
 			surname: "Mohelnice, o.s."
 			nick: "Informační systém"
@@ -193,8 +213,8 @@ usersModule:
 					street: "Masarykova"
 					number: "546/25"
 					accountNumber: "2500140367/2010"
-					in: "228 90 785"
-					tin: "CZ 228 90 785"
+					in: "228 90 785" # identification number (cs_IC)
+					tin: "CZ 228 90 785" # tax identification number (cs_DIC)
 				phone: "420732504156"
 				email: %appDefaultEmail%
 	    
@@ -207,9 +227,7 @@ usersModule:
 #
 	
 services:
-	#- App\Model\UserManager
 
-	# tohle uz neni treba je to nahrazeno 
 	robotLoader:
 		class: Nette\Loaders\RobotLoader
 		setup:
@@ -218,27 +236,30 @@ services:
 			- addDirectory(%appDir%)
 			- register()
 
-
+	# presenter tree needed for authorization resources collecting
 	presenterTree:	
 		class: Kdyby\PresenterTree
 
-	#- Nette\Caching\Storages\MemcachedStorage()
-	
+	# router factory service registering (- means no name register)
 	- App\RouterFactory
 	router: @App\RouterFactory::createRouter
 
-	cacheStorage: # redefinovani cache pro system, at je v tom poradek (nemusi to tu byt)
+	# system cache redefining [optional]
+	cacheStorage: 
 		class: 
 			Nette\Caching\Storages\FileStorage(%tempDir%)
 
+	# images backend service registration
 	imagesBackend: 
 		class:
 			\Tomaj\Image\Backend\FileBackend(%wwwDir%, %imagesDir%)
 
+	# images service for articles
 	articleImageService: 
 		class: \Tomaj\Image\ImageService(@imagesBackend, 'articles/:year/:month/:hash', ['340x200', '700x400', '1028x370'], 70)
 		autowired: no
 
+	#images service for users
 	userImageService: 
 		class: \Tomaj\Image\ImageService(@imagesBackend, 'users/:year/:hash', ['230x280'], 80)
 		autowired: no
@@ -251,6 +272,8 @@ services:
 # ===================================
 #
 
+# there is place for (registering) activation of DI container extensions
+# name:<CompilerExtension child class namespace path>
 
 extensions:
 
@@ -260,7 +283,6 @@ extensions:
 	events: Kdyby\Events\DI\EventsExtension
 	doctrine: Kdyby\Doctrine\DI\OrmExtension
 	doctrine2identity: Majkl578\NetteAddons\Doctrine2Identity\DI\IdentityExtension
-	facebook: Kdyby\Facebook\DI\FacebookExtension
 	translation: Kdyby\Translation\DI\TranslationExtension
 	monolog: Kdyby\Monolog\DI\MonologExtension
 	

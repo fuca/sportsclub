@@ -14,7 +14,6 @@
 	    {block indicators}
 <!-- Indicators -->
 	    <ol class="carousel-indicators">
-		{dump count($highlights)}
 		{foreach $highlights as $key=>$a}
 		    <li data-target="#homepage-jumbotron-carousel" data-slide-to="{$key}" {if $iterator->isFirst()} class="active"{/} ></li>
 		{/foreach}

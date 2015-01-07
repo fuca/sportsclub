@@ -74,7 +74,7 @@ class AdminPresenter extends SystemAdminPresenter {
      */
     public function createUser(ArrayHash $values) {
 
-	$nu = $this->hydrateUserFromUserForm($values);
+	$nu = UserEntityManageHelper::hydrateUserFromHash($values);
 	try {
 	    $this->userService->createUser($nu);
 	} catch (Exceptions\DataErrorException $ex) {
@@ -84,7 +84,7 @@ class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("Admin:default");
     }
-
+    
     // </editor-fold>
     // <editor-fold desc="REMOVE USER">
     
@@ -144,7 +144,8 @@ class AdminPresenter extends SystemAdminPresenter {
      */
     public function updateUser(ArrayHash $values) {
 	try {
-	    $this->userService->updateUser(UserEntityManageHelper::hydrateUserFromHash($values));
+	    $this->userService
+		    ->updateUser(UserEntityManageHelper::hydrateUserFromHash($values));
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->logError($ex->getMessage());
 	    $m = $this->tt("usersModule.messages.updateUserFailed", ["id" => $values->id]);
@@ -243,12 +244,19 @@ class AdminPresenter extends SystemAdminPresenter {
     public function webProfileFormSuccess(WebProfileForm $form) {
 	$values = $form->getValues();
 	try {
-	    $dbUser = $this->userService->getUser($this->getEntity()->getId());
+	    $dbUser = $this->userService->getUser($this->getEntity()->getId(), false);
 	    $wp = new WebProfile((array) $values);
 	    $wp->setUpdated(new \Nette\Utils\DateTime());
 	    $wp->setEditor($this->getUser()->getIdentity());
+	    
+	    if (!$values->picture->isOk()) {
+		$wp->setPicture($dbUser->getWebProfile()->getPicture());
+	    } else {
+		$wp->insertOldImgId($dbUser->getWebProfile()->getPicture());
+	    }
+	    
 	    $dbUser->setWebProfile($wp);
-	    $this->userService->updateUser($dbUser);
+	    $this->userService->changeWebProfile($dbUser);
 	} catch (Exceptions\DataErrorException $e) {
 	    $this->logError($e);
 	    $m = $this->tt("usersModule.admin.messages.webProfileUpdateFailed", ["id" => $values["id"]]);

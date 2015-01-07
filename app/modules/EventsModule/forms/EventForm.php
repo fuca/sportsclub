@@ -102,10 +102,6 @@ class EventForm extends BaseForm {
 		->addRule(Form::FILLED, "Čas potvrzení musí být zadán")
 		->setRequired("Čas potvrzení musí být zadán");
 
-	$this->addSelect("visibility", "Viditelnost", $this->getVisibility())
-		->addRule(Form::FILLED, "Viditelnost musí být vybrána")
-		->setRequired("Viditelnost musí být vybrána");
-
 	$this->addSelect("commentMode", "Komentáře", $this->getCommentModes())
 		->addRule(Form::FILLED, "Komentáře musí být vybrány")
 		->setRequired("Komentáře musí být vybrány");

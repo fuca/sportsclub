@@ -136,7 +136,7 @@ final class ParticipationControl extends Control {
 	$c = new EventParticipationForm($this, $name, $this->presenter->getTranslator());
 	$c->setMode(FormMode::UPDATE_MODE);
 	try {
-	    $users = $this->userService->getSelectUsers();
+	    $users = $this->userService->getSelectUsers($this->getPresenter()->getSelectUserIdOmit());
 	    $c->setUsers($users);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->presenter->handleDataLoad(null, "default", $ex);

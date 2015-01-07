@@ -61,7 +61,7 @@ final class PersonalUserForm extends BaseForm {
 		->addRule(Form::FILLED, 'Pole "Město" je povinné')
 		->setRequired(TRUE);
 
-	$this->addText('postalCode', 'PSČ', 5, 5)
+	$this->addText('postCode', 'PSČ', 5, 5)
 		->addRule(Form::FILLED, 'Pole "PSČ" je povinné')
 		->addRule(Form::NUMERIC, 'PSČ musí obsahovat pouze čísla')
 		->addRule(Form::LENGTH, 'PSČ musí být dlouhé 5 znaků', 5)

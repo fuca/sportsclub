@@ -115,6 +115,9 @@ touto platformou.
 	    - sudo apt-get install apache2 apache2-doc apache2-utils
 	    - apt-get install libapache2-mod-php5 php5 php-pear php5-xcache
 	    - sudo apt-get install php5-mysql - Instalace mysql podpory do php5.
+	    
+    Pro správnou funkci Monolog rozšíření musí být povoleny funkce openlog() 
+    a syslog().
 
     K nastavení samotného php modulu slouží tzv. soubor php.ini, který je umís-
     těn v adresáři /etc/php5/apache2/conf.d.
@@ -213,7 +216,7 @@ elektonické přílohy práce v kořenovém adresáři adresáři Apache2 server
 	    vytvoření prázné struktury databáze
 	b) Provedením konzolového příkazu:
 	    - php www/index.php \orm:schema:up --force - Tím dojde k validaci da-
-	    tabázového schématu a následnému aplikování do databáze.
+	    tabázového schématu a následnému nahrání do databáze.
 
 	   Pozor! Před provedením tohoto příkazu však musí být vypnuty iniciali-
 	   zátory stavu aplikace. Toho dosáhneme nastavením parametru "turnOffInit"
@@ -221,7 +224,9 @@ elektonické přílohy práce v kořenovém adresáři adresáři Apache2 server
 	   true. Tím se zamezí volání inicializačních procedur při vytváření 
 	   DI kontejneru aplikace. Po inicializaci schématu, je potřeba tento pa-
 	   rametr opět nastavit na false, aby při prvním spuštění proběhlo uvede-
-	   ní aplikace do použitelného stavu.
+	   ní aplikace do použitelného stavu. Z výše uvedeného plyne, že před
+	   každou validací databázového schématu je třeba vyřadit inicializační
+	   rutiny.
 
     Inicializace adresářové struktury
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

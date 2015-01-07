@@ -113,7 +113,7 @@ class Article extends BaseEntity implements IIdentifiable, ICommentable {
 	parent::__construct();
 	$this->created = new DateTime();
 	$this->status = ArticleStatus::DRAFT;
-	$this->commentMode = CommentMode::SIGNED;
+	$this->commentMode = CommentMode::ALLOWED;
 	$this->highlight = false;
 	$this->counter = 0;
 	$this->fromArray($values);

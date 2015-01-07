@@ -183,11 +183,11 @@ class WallService extends BaseService implements IWallService {
     }
     
     
-    public function getHighlights(SportGroup $g = null, $rootAbbr = null, $published = null) {
+    public function getHighlights(SportGroup $g = null, $rootAbbr = null, $published = true) {
 	try {
 	    $qb = $this->wallDao->createQueryBuilder("w");
 	    if ($g !== null) {
-		$qb->innerJoin('w.groups', 'g')
+		$qb->join('w.groups', 'g')
 		    ->where('g.id = :gid')
 			->setParameter("gid", $g->getId())
 		    ->orWhere("g.abbr = :abbr")
@@ -198,6 +198,7 @@ class WallService extends BaseService implements IWallService {
 		    ->setParameter("status", WallPostStatus::PUBLISHED);
 	    $qb->andWhere("w.highlight = true")
 			->orderBy("w.title", "ASC");
+		    
 	    return $qb->getQuery()->getResult();
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());

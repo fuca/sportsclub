@@ -98,7 +98,7 @@ class StaticPage extends BaseEntity implements IIdentifiable, ICommentable {
 
     /**
      * ONE TO MANY UNI
-     * @ManyToMany(targetEntity="Comment", cascade={"remove"})
+     * @ManyToMany(targetEntity="Comment", cascade={"all"}, fetch="EAGER")
      * @JoinTable(name="Comment_StaticPage",
      *      joinColumns={@JoinColumn(name="page_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id", unique = true)})

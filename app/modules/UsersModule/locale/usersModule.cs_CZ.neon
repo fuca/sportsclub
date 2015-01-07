@@ -21,6 +21,7 @@ passwordChangeForm:
 messages:
 	badArgumentFormat: "Špatný formát ID uživatele '%id%'"
 	passwordChanged: "Vaše heslo bylo úspěšně změněno"
+	updateUserFailed: "Změna dat uživatele selhala"
 	
 admin:
 	userNew: "Nový uživatel"
@@ -105,6 +106,7 @@ user:
 	webProfile.heading: "Webový profil"
 	personalData.heading: "Osobní data"
 	default.bread: "Osobní sekce"
+	heading: "Uživatelská sekce uživatelského modulu"
 	
 protected: 
 	userData: "Upravit osobní data"

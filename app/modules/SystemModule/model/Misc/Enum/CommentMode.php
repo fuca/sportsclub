@@ -26,16 +26,14 @@ use \App\Model\Misc\Enum\EnumType;
 final class CommentMode extends EnumType implements IEnum {
     const 
 	ALLOWED	    = "yes",
-	RESTRICTED  = "no",
-	SIGNED	    = "sig";
+	RESTRICTED  = "no";
     
     protected $name = "CommentMode";
-    protected $values = [self::ALLOWED, self::RESTRICTED, self::SIGNED];
+    protected $values = [self::ALLOWED, self::RESTRICTED];
     
     public static function getOptions() {
 	return [
 	    self::ALLOWED	=>  "systemModule.commentMode.allowed", 
-	    self::RESTRICTED	=>  "systemModule.commentMode.restricted", 
-	    self::SIGNED		=>  "systemModule.commentMode.signedIn"];
+	    self::RESTRICTED	=>  "systemModule.commentMode.restricted"];
     }
 }

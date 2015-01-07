@@ -41,6 +41,8 @@ admin.grid:
 	cmntMode: "Komentáře"
 	author: "Autor"
 	change: "Změna"
+	update: "Upravit"
+	delete: "Smazat"
 
 admin.grid.messages:
 	rlyDelWallPost: "Opravdu chete smazat příspěvek #%id%?"

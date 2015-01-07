@@ -64,6 +64,7 @@ services:
 		setup:
 				- setCacheStorage(@systemModule.cacheStorage)
 				- setUserService()
+				- setCommentService()
 
 	systemModule.notificationService:
 		class:

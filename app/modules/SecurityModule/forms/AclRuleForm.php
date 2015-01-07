@@ -153,7 +153,7 @@ class AclRuleForm extends BaseForm {
 	} catch (DuplicateEntryException $e) {
 	    $roleName = $this->getRoles();
 	    $this->addError(
-		    $this->tt("securityModule.aclForm.messages.ruleRoleResExists", null, ["role" => $roleName[$values->role], "resource" => $values->resource]));
+		    $this->presenter->tt("securityModule.aclForm.messages.ruleRoleResExists", null, ["role" => $roleName[$values->role], "resource" => $values->resource]));
 	}
     }
 }

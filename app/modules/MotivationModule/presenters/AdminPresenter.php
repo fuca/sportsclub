@@ -20,7 +20,7 @@ namespace App\MotivationModule\Presenters;
 
 use \App\SystemModule\Presenters\SystemAdminPresenter,
     \App\Model\Misc\Exceptions,
-    \Nette\Utils\ArrayHash, 
+    \Nette\Utils\ArrayHash,
     \Grido\Grid,
     \Nette\Application\UI\Form,
     \App\Model\Misc\Enum\FormMode,
@@ -37,63 +37,62 @@ use \App\SystemModule\Presenters\SystemAdminPresenter,
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 final class AdminPresenter extends SystemAdminPresenter {
-    
+
     /**
      * @inject
      * @var \App\MotivationModule\Model\Service\IMotivationEntryService
      */
     public $entryService;
-    
+
     /**
      * @inject
      * @var \App\MotivationModule\Model\Service\IMotivationTaxService
      */
     public $taxService;
-    
+
     /**
      * @inject
      * @var \App\SeasonsModule\Model\Service\ISeasonService
      */
     public $seasonService;
-    
+
     /**
      * @inject
      * @var \App\UsersModule\Model\Service\IUserService
      */
     public $userService;
-    
+
     /**
      * @inject
      * @var \App\SystemModule\Model\Service\ISportGroupService
      */
     public $groupService;
-    
     private $selectGroups;
     private $selectSeasons;
     private $selectUsers;
-    
+
     /**
      * @Secured(resource="default")
      */
     public function actionDefault() {
 	
     }
-    
+
     // <editor-fold desc="Motivation tax management">
-    
-    
+
     /**
      * @Secured(resource="createTax")
      */
     public function actionCreateTax() {
 	// render form
     }
-    
+
     /**
      * @Secured(resource="updateTax")
      */
     public function actionUpdateTax($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	try {
 	    $db = $this->taxService->getTax($id);
 	    if ($db !== null) {
@@ -102,9 +101,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
-	}	    
+	}
     }
-    
+
     public function createTax(ArrayHash $values) {
 	$tax = new MotivationTax((array) $values);
 	try {
@@ -115,7 +114,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("default");
     }
-    
+
     public function updateTax(ArrayHash $values) {
 	$tax = new MotivationTax((array) $values);
 	try {
@@ -126,16 +125,17 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("default");
     }
-    
+
     /**
      * @Secured(resource="deleteTax")
      */
     public function handleDeleteTax($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	$this->doDeleteTax($id);
 	$this->redirect("default");
     }
-    
+
     private function doDeleteTax($id) {
 	try {
 	    $this->taxService->deleteTax($id);
@@ -143,20 +143,20 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    $this->handleDataSave($id, "this", $ex);
 	}
     }
-    
+
     public function createComponentCreateTaxForm($name) {
 	$form = $this->prepareTaxForm($name);
 	$form->initialize();
 	return $form;
     }
-    
+
     public function createComponentUpdateTaxForm($name) {
 	$form = $this->prepareTaxForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
-    
+
     private function prepareTaxForm($name) {
 	$form = new MotivationTaxForm($this, $name, $this->getTranslator());
 	$form->setSeasons($this->getSelectSeasons());
@@ -164,11 +164,11 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$form->setSportGroups($this->getSelectSportGroups());
 	return $form;
     }
-    
+
     public function motTaxFormSuccessHandle(Form $form) {
 	$values = $form->getValues();
 	try {
-	    switch($form->getMode()) {
+	    switch ($form->getMode()) {
 		case FormMode::CREATE_MODE:
 		    $this->createTax($values);
 		    break;
@@ -181,70 +181,72 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    return;
 	}
     }
-    
+
     public function createComponentTaxesGrid($name) {
 	try {
-	    $seasons = [null=>null]+$this->seasonService->getSelectSeasons();
-	    $groups = [null=>null]+$this->groupService->getSelectApplicablegroups();
+	    $seasons = [null => null] + $this->seasonService->getSelectSeasons();
+	    $groups = [null => null] + $this->groupService->getSelectApplicablegroups();
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad(null, self::LAST_CHANCE_REDIRECT, $ex);
 	}
-	
+
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->taxService->getTaxesDataSource());
 	$grid->setPrimaryKey("id");
-	
+
 	$grid->addColumnNumber('id', '#')
 		->cellPrototype->class[] = 'center';
 	$headerId = $grid->getColumn('id')->headerPrototype;
 	$headerId->class[] = 'center';
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
-	
+
 	$grid->addColumnText('season', $this->tt("motivationModule.admin.grid.season"))
 		->setSortable()
 		->setFilterSelect($seasons);
-	
+
 	$headerSeas = $grid->getColumn('season')->headerPrototype;
 	$headerSeas->class[] = 'center';
-	
+
 	$grid->addColumnText('sportGroup', $this->tt("motivationModule.admin.grid.group"))
 		->setSortable()
 		->setFilterSelect($groups);
-	
+
 	$headerGrp = $grid->getColumn('sportGroup')->headerPrototype;
 	$headerGrp->class[] = 'center';
-	
-	
+
+
 	$grid->addColumnText('credit', $this->tt("motivationModule.admin.grid.credit"))
 		->setSortable()
 		->setFilterText();
-	
+
 	$headerCr = $grid->getColumn('credit')->headerPrototype;
 	$headerCr->class[] = 'center';
-	
+
 	$grid->addColumnDate("orderedDate", $this->tt("motivationModule.admin.grid.orderedDate"), self::DATE_FORMAT)
 		->setSortable();
 	$headerOd = $grid->getColumn('orderedDate')->headerPrototype;
 	$headerOd->class[] = 'center';
-	
+
 	$grid->addColumnText('publicNote', $this->tt("motivationModule.admin.grid.note"))
 		->setTruncate(20)
 		->setSortable()
 		->setFilterText();
-	
+
 	$headerNote = $grid->getColumn('publicNote')->headerPrototype;
 	$headerNote->class[] = 'center';
-	
-	$grid->addActionHref("update", "", "updateTax")
-		->setIcon("pencil");
-	
+
 	$grid->addActionHref('delete', '', "deleteTax!")
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("motivationModule.admin.grid.update")]))
 		->setConfirm(function($u) {
-		    return $this->tt("motivationModule.admin.grid.rlyDeleteTaxId", null, ["id"=>$u->getId()]);
+		    return $this->tt("motivationModule.admin.grid.rlyDeleteTaxId", null, ["id" => $u->getId()]);
 		});
-	
+
+	$grid->addActionHref("update", "", "updateTax")
+		->setIcon("pencil")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("motivationModule.admin.grid.update")]));
+
 	$operation = ['delete' => $this->tt("system.common.delete")];
 	$grid->setOperation($operation, $this->entryGridOpsHandler)
 		->setConfirm('delete', $this->tt("motivationModule.admin.grid.reallyDeleteItems"));
@@ -252,7 +254,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-motivation-taxes" . date("Y-m-d H:i:s", time()));
     }
-    
+
     public function taxGridOpsHandler($op, $ids) {
 	switch ($op) {
 	    case "delete":
@@ -263,23 +265,23 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("this");
     }
-    
+
     // </editor-fold>
-    
     // <editor-fold desc="Motivation entry management">
-    
+
     /**
      * @Secured(resource="createMotivationEntry")
      */
     public function actionCreateEntry() {
 	// render form
     }
-    
+
     /**
      * @Secured(resource="updateMotivationEntry")
      */
     public function actionUpdateEntry($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	try {
 	    $db = $this->entryService->getEntry($id);
 	    if ($db !== null) {
@@ -288,9 +290,9 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    }
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "default", $ex);
-	}	  
+	}
     }
-    
+
     public function createEntry(ArrayHash $values, array $ids) {
 	try {
 	    foreach ($ids as $id) {
@@ -304,7 +306,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("default");
     }
-    
+
     public function updateEntry(ArrayHash $values) {
 	$e = new MotivationEntry((array) $values);
 	try {
@@ -315,16 +317,17 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("default");
     }
-    
+
     /**
      * @Secured(resource="deleteMotivationEntry")
      */
     public function handleDeleteEntry($id) {
-	if (!is_numeric($id)) $this->handleBadArgument ($id);
+	if (!is_numeric($id))
+	    $this->handleBadArgument($id);
 	$this->doDeleteEntry($id);
 	$this->redirect("this");
     }
-    
+
     private function doDeleteEntry($id) {
 	try {
 	    $this->entryService->deleteEntry($id);
@@ -332,30 +335,34 @@ final class AdminPresenter extends SystemAdminPresenter {
 	    $this->handleDataLoad($id, "this", $ex);
 	}
     }
-    
+
     public function createComponentCreateEntryForm($name) {
 	$form = $this->prepareEntryForm($name);
 	$form->initialize();
 	return $form;
     }
-    
+
     public function createComponentUpdateEntryForm($name) {
 	$form = $this->prepareEntryForm($name);
 	$form->setMode(FormMode::UPDATE_MODE);
 	$form->initialize();
 	return $form;
     }
-    
+
     private function prepareEntryForm($name) {
 	$form = new MotivationEntryForm($this, $name, $this->getTranslator());
 	$form->setSeasons($this->getSelectSeasons());
-	$form->setUsers($this->getSelectUsers());
+	$usrs = $this->getSelectUsers();
+	$form->setUsers($usrs);
+	$uua = $usrs;
+	unset($uua[$this->getSelectUserIdOmit()]);
+	$form->setUpdateUsers($uua);
 	return $form;
     }
-    
+
     public function motEntryFormSuccessHandle(Form $form) {
 	$values = $form->getValues();
-	switch($form->getMode()) {
+	switch ($form->getMode()) {
 	    case FormMode::CREATE_MODE:
 		$ids = $values->offsetGet(MotivationEntryForm::MULTI_OWNER_ID);
 		$values->offsetUnset(MotivationEntryForm::MULTI_OWNER_ID);
@@ -366,69 +373,71 @@ final class AdminPresenter extends SystemAdminPresenter {
 		break;
 	}
     }
-    
+
     public function createComponentEntriesGrid($name) {
 
-	$seasons = [null=>null]+$this->getSelectSeasons();
-	$users = [null=>null]+$this->getSelectUsers();
-	
+	$seasons = [null => null] + $this->getSelectSeasons();
+	$users = [null => null] + $this->getSelectUsers();
+
 	$grid = new Grid($this, $name);
 	$grid->setModel($this->entryService->getEntriesDataSource());
 	$grid->setPrimaryKey("id");
-	
+
 	$grid->addColumnNumber('id', '#')
 		->cellPrototype->class[] = 'center';
 	$headerId = $grid->getColumn('id')->headerPrototype;
 	$headerId->class[] = 'center';
 	$headerId->rowspan = "2";
 	$headerId->style['width'] = '0.1%';
-	
+
 	$grid->addColumnText('season', $this->tt("motivationModule.admin.grid.season"))
 		->setSortable()
 		->setFilterSelect($seasons);
-	
+
 	$headerSeas = $grid->getColumn('season')->headerPrototype;
 	$headerSeas->class[] = 'center';
-	
+
 	$grid->addColumnText('owner', $this->tt("motivationModule.admin.grid.owner"))
 		->setSortable()
 		->setFilterSelect($users);
-	
+
 	$headerOwn = $grid->getColumn('owner')->headerPrototype;
 	$headerOwn->class[] = 'center';
-	
+
 	$grid->addColumnText('amount', $this->tt("motivationModule.admin.grid.amount"))
 		->setSortable()
 		->setFilterText();
-	
+
 	$headerAmnt = $grid->getColumn('amount')->headerPrototype;
 	$headerAmnt->class[] = 'center';
-	
+
 	$types = MotivationEntryType::getOptions();
 	$grid->addColumnText('type', $this->tt("motivationModule.admin.grid.type"))
 		->setSortable()
 		->setReplacement($types)
-		->setFilterSelect([null=>null]+$types);
-	
+		->setFilterSelect([null => null] + $types);
+
 	$headerT = $grid->getColumn('type')->headerPrototype;
 	$headerT->class[] = 'center';
-	
+
 	$grid->addColumnText('subject', $this->tt("motivationModule.protected.grid.subject"))
 		->setSortable()
 		->setFilterText();
-	
+
 	$headerSubj = $grid->getColumn('subject')->headerPrototype;
 	$headerSubj->class[] = 'center';
-	
-	$grid->addActionHref("update", "", "updateEntry")
-		->setIcon("pencil");
-	
+
 	$grid->addActionHref('delete', '', "deleteEntry!")
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("motivationModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
-		    return $this->tt("motivationModule.admin.grid.rlyDeleteEntryId", null, ["id"=>$u->getId()]);
+		    return $this->tt("motivationModule.admin.grid.rlyDeleteEntryId", null, ["id" => $u->getId()]);
 		});
-	
+
+	$grid->addActionHref("update", "", "updateEntry")
+		->setIcon("pencil")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("motivationModule.admin.grid.update")]));
+
 	$operation = ['delete' => $this->tt("system.common.delete")];
 	$grid->setOperation($operation, $this->entryGridOpsHandler)
 		->setConfirm('delete', $this->tt("motivationModule.admin.grid.reallyDeleteItems"));
@@ -436,7 +445,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-motivation-entries" . date("Y-m-d H:i:s", time()));
     }
-    
+
     public function entryGridOpsHandler($op, $ids) {
 	switch ($op) {
 	    case "delete":
@@ -447,7 +456,7 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	$this->redirect("this");
     }
-    
+
     private function getSelectUsers() {
 	try {
 	    if (!isset($this->selectUsers))
@@ -457,8 +466,8 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	return $this->selectUsers;
     }
-    
-    private function getSelectSeasons(){
+
+    private function getSelectSeasons() {
 	try {
 	    if (!isset($this->selectSeasons))
 		$this->selectSeasons = $this->seasonService->getSelectSeasons();
@@ -467,8 +476,8 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	return $this->selectSeasons;
     }
-    
-    private function getSelectSportGroups(){
+
+    private function getSelectSportGroups() {
 	try {
 	    if (!isset($this->selectGroups))
 		$this->selectGroups = $this->groupService->getSelectApplicablegroups();
@@ -477,23 +486,23 @@ final class AdminPresenter extends SystemAdminPresenter {
 	}
 	return $this->selectGroups;
     }
-    
+
     // </editor-fold>
-    
+
     public function createComponentSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
-	$c->addNode("motivationModule.admin.taxAdd",":Motivation:Admin:createTax");
-	$c->addNode("motivationModule.admin.entryAdd",":Motivation:Admin:createEntry");
-	$c->addNode("systemModule.navigation.back",":System:Default:adminRoot");
+	$c->addNode("motivationModule.admin.taxAdd", ":Motivation:Admin:createTax");
+	$c->addNode("motivationModule.admin.entryAdd", ":Motivation:Admin:createEntry");
+	$c->addNode("systemModule.navigation.back", ":System:Default:adminRoot");
 	return $c;
     }
-    
+
     public function createComponentBackSubMenu($name) {
 	$c = new \App\Components\MenuControl($this, $name);
 	$c->setLabel("systemModule.navigation.options");
-	$c->addNode("systemModule.navigation.back",":Motivation:Admin:default");
+	$c->addNode("systemModule.navigation.back", ":Motivation:Admin:default");
 	return $c;
     }
-    
+
 }

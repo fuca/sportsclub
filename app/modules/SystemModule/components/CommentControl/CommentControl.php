@@ -83,6 +83,9 @@ final class CommentControl extends Control {
      * @return boolean
      */
     public function isCommenting() {
+	if ($this->getEntity() === null) {
+	    return false;
+	}
 	if (!isset($this->commenting)) {
 	    $mode = $this->getEntity()->getCommentMode();
 	    switch ($mode) {
@@ -92,21 +95,18 @@ final class CommentControl extends Control {
 		case CommentMode::RESTRICTED:
 		    return false;
 		    break;
-		case CommentMode::SIGNED:
-		    return $this->getUser()->isLoggedIn();
-		    break;
 	    }
 	}
 	return $this->commenting;
     }
     
     public function getUser() {
-	if (!isset($this->user))
-	    throw new Exceptions\InvalidStateException("Property User is not correctly set, please use appropriate setter first");
+	//if (!isset($this->user))
+	//    throw new Exceptions\InvalidStateException("Property User is not correctly set, please use appropriate setter first");
 	return $this->user;
     }
 
-    public function setUser(User $user) {
+    public function setUser($user) {
 	$this->user = $user;
     }
     
@@ -131,8 +131,8 @@ final class CommentControl extends Control {
     }
 
     public function getEntity() {
-	if (!isset($this->entity))
-	    throw new Exceptions\InvalidStateException("Property Entity is not correctly set, please use appropriate setter first");
+	//if (!isset($this->entity))
+	//    throw new Exceptions\InvalidStateException("Property Entity is not correctly set, please use appropriate setter first");
 	return $this->entity;
     }
     
@@ -157,27 +157,31 @@ final class CommentControl extends Control {
      * Form control render
      */
     public function renderForm() {
-	$this->template->setFile($this->formTemplate);
-	$this->template->allowed = $this->isCommenting();
-	$this->template->titlePlaceHolder = $this->presenter->tt("systemModule.commentControl.titlePlaceHolder");
-	$this->template->contentPlaceHolder = $this->presenter->tt("systemModule.commentControl.contentPlaceHolder");
-	$this->template->render();
+	if ($this->getUser() !== null) {
+	    $this->template->setFile($this->formTemplate);
+	    $this->template->allowed = $this->isCommenting();
+	    $this->template->titlePlaceHolder = $this->presenter->tt("systemModule.commentControl.titlePlaceHolder");
+	    $this->template->contentPlaceHolder = $this->presenter->tt("systemModule.commentControl.contentPlaceHolder");
+	    $this->template->render();
+	}
     }
 
     /**
      * Comments data render
      */
     public function renderComments() {
-	$this->template->setFile($this->dataTemplate);
-	$cs = $this->getEntity()->getComments();
-	$iterator = $cs->getIterator();
-	$iterator->uasort(function ($a, $b) {
-	    return ($a->getCreated() < $b->getCreated()) ? 1 : -1;
-	});	
-	$cs = new ArrayCollection(iterator_to_array($iterator));
-	$this->template->data = $cs;
-	$this->template->userId = $this->getUser()->getId();
-	$this->template->render();
+	if ($this->getUser() !== null) {
+	    $this->template->setFile($this->dataTemplate);
+	    $cs = $this->getEntity()->getComments();
+	    $iterator = $cs->getIterator();
+	    $iterator->uasort(function ($a, $b) {
+		return ($a->getCreated() < $b->getCreated()) ? 1 : -1;
+	    });	
+	    $cs = new ArrayCollection(iterator_to_array($iterator));
+	    $this->template->data = $cs;
+	    $this->template->userId = $this->getUser()->getId();
+	    $this->template->render();
+	}
     }
 
     /**

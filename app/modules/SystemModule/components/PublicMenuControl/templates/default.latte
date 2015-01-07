@@ -49,7 +49,9 @@
 					    <!-- GROUP DROPDOWN CONTENT -->
 						<ul class="dropdown-menu">
 						    {foreach $pages as $page}
+							{if $page->getStatus() == \App\Model\Misc\Enum\StaticPageStatus::PUBLISHED}
 							<li><a href="{plink :System:Homepage:showStaticPage, $page->getAbbr()}">{$page->getTitle()}</a></li>
+							{/if}
 							
 						    {/foreach}
 						    <li><a href="{plink :Users:Public:default, $g->getId()}">{_ usersModule.public.roster.label}</a></li>

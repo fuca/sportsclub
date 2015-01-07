@@ -55,7 +55,7 @@ class PrivateMessageForm extends BaseForm {
 	
 	$this->addHidden("id");
 	if ($this->isCreate()) {
-	    $this->addMultiSelect("recipient", "communicationModule.pmForm.multiUsers", $this->getUsers());
+	    $this->addMultiSelect("recipient", "communicationModule.pmForm.multiUsers", $this->getUsers(), null, 20);
 	} else {
 	    $this->addSelect("recipient", "communicationModule.pmForm.multiUsers", $this->getUsers());
 	}

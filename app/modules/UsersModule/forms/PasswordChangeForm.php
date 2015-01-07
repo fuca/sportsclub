@@ -29,8 +29,8 @@ final class PasswordChangeForm extends BaseForm {
 	
 	$this->addPassword("new2", "usersModule.passwordChangeForm.new2")
 		->addRule(Form::FILLED, "usersModule.passwordChangeForm.newPwHasToBeFilled")
-		->addCondition(Form::FILLED, $this['new1'])
-		->addRule(Form::EQUAL, "usersModule.passwordChangeForm.newPwsDontMatch", $this['new1']->value)
+		->addConditionOn($this['new1'], Form::FILLED)
+		->addRule(Form::EQUAL, "usersModule.passwordChangeForm.newPwsDontMatch", $this['new1'])
 		->setRequired("usersModule.passwordChangeForm.newPwHasToBeFilled");
 	
 	$this->addSubmit("submitButton", "system.forms.submitButton.label");

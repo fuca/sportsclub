@@ -23,10 +23,14 @@
     <div class="col-md-4">
 	{control protectedMenu:grid, "user", "systemModule.protected.rootPage.userMenuHeading"}
     </div>
+    {if $clubMenuPredicate}
     <div class="col-md-4">
 	{control commonMenu:grid, "club", "systemModule.protected.rootPage.clubMenuHeading"}
     </div>
+    {/if}
+    {if $adminMenuPredicate}
     <div class="col-md-4">
 	{control adminMenu:grid, "admin", "systemModule.protected.rootPage.adminMenuHeading"}
     </div>
+    {/if}
 </div>

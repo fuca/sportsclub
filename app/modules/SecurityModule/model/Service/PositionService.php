@@ -198,16 +198,16 @@ class PositionService extends BaseService implements IPositionService {
 	}
     }
 
-    public function deletePosition(Position $p) {
+    public function deletePosition($p) {
 	if ($p == null)
 	    throw new Exceptions\NullPointerException("Argument Position cannot be null");
 	try {
-	    $db = $this->positionDao->find($p->id);
+	    $db = $this->positionDao->find($this->getMixId($p));
 	    if ($db !== null) {
 		$this->positionDao->delete($db);
 		$this->onDelete($db);
 	    }
-	    $this->invalidateEntityCache($p);
+	    $this->invalidateEntityCache($db);
 	} catch (\Exception $e) {
 	    $this->logError($e);
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -283,8 +283,6 @@ class PositionService extends BaseService implements IPositionService {
     }
 
     public function getPositionsWithinGroup(SportGroup $g, $useCache = true) {
-//	if (empty($gid) && !is_numeric($gid)) 
-//	    throw new Exceptions\InvalidArgumentException("Argument gid was bad shaped, '{$gid}' given");
 	try {
 	    $qb = $this->positionDao->createQueryBuilder();
 	    $qb->select("p")

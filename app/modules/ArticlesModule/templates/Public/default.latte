@@ -23,7 +23,7 @@
 	{foreach $data as $a}
 	    <article class="search-result-box">
 	    <div class="item-image">
-	    <a href="{plink :Articles:Public:ShowArticle $a->getAlias()}">
+	    <a href="{plink :Articles:Public:ShowArticle $a->getAlias(), $abbr}">
 		<img src="{$basePath}/assets/images/{$a->getPicture()|thumb:"article", "340x200"}" class="img-responsive img-thumbnail" />
 	    </a>
 	</div>

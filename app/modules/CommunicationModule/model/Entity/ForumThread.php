@@ -101,7 +101,7 @@ class ForumThread extends BaseEntity implements IIdentifiable, ICommentable {
     
     public function __construct(array $values = []) {
 	parent::__construct();
-	$this->commentMode = CommentMode::SIGNED;
+	$this->commentMode = CommentMode::ALLOWED;
 	$this->fromArray($values);
     }
     

@@ -23,39 +23,34 @@ use \App\SystemModule\Presenters\SecuredPresenter,
 
 /**
  * Presenter serving as root of all sections
- * @Secured{resource="SystemDefaultSectionRoot"}
+ * @Secured(resource="SystemDefaultSectionRoot")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
 class DefaultPresenter extends SecuredPresenter {
     
-    /**
-     * @Secured{resource="PublicRoot"}
-     */
     public function renderDefault() {
 	$this->template->layoutStyle = LayoutSectionStyle::INFO;
+	$this->template->adminMenuPredicate = $this->user->isAllowed("App\SystemModule\Presenters\DefaultPresenter","App\System\Presenters\Default\adminRoot");
+	$this->template->clubMenuPredicate = $this->user->isAllowed("App\SystemModule\Presenters\DefaultPresenter","App\System\Presenters\Default\clubRoot");
     }
     
-    
     /**
-     * @Secured{resource="ClubRoot"}
+     * @Secured(resource="ClubRoot")
      */
-    public function renderClubRoot() {
+    public function actionClubRoot() {
 	$this->template->layoutStyle = LayoutSectionStyle::CLUB;
 	// render club menu
     }
     
-    /**
-     * @Secured{resource="UserRoot"}
-     */
     public function renderUserRoot() {
 	$this->template->layoutStyle = LayoutSectionStyle::USER;
 	// render user menu
     }
     
     /**
-     * @Secured{resource="AdminRoot"}
+     * @Secured(resource="AdminRoot")
      */
-    public function renderAdminRoot() {
+    public function actionAdminRoot() {
 	$this->template->layoutStyle = LayoutSectionStyle::ADMIN;
 	// render admin menu
     }

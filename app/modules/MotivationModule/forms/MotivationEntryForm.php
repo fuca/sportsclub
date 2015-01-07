@@ -39,9 +39,22 @@ final class MotivationEntryForm extends BaseForm {
     /** @var array of available seasons */
     private $seasons;
 
-    /** @var array of users seasons */
+    /** @var array of users */
     private $users;
 
+    /** @var array of target users */
+    private $updateUsers;
+    
+    public function getUpdateUsers() {
+	return $this->updateUsers;
+	
+    }
+    
+    public function setUpdateUsers($updateUsers) {
+	$this->updateUsers = $updateUsers;
+    }
+
+    
     public function getSeasons() {
 	return $this->seasons;
     }
@@ -67,11 +80,11 @@ final class MotivationEntryForm extends BaseForm {
 	$this->addHidden('id');
 
 	if ($this->isCreate()) {
-	    $this->addMultiSelect(self::MULTI_OWNER_ID, "motivationModule.entryForm.member", $this->getUsers(), 25)
+	    $this->addMultiSelect(self::MULTI_OWNER_ID, "motivationModule.entryForm.member", $this->getUpdateUsers(), 25)
 		    ->setOption("id", "multi-owner")
 		    ->setRequired();
 	} else {
-	    $this->addSelect("owner", "motivationModule.entryForm.member", $this->getUsers())
+	    $this->addSelect("owner", "motivationModule.entryForm.member", $this->getUpdateUsers())
 		    ->setRequired();
 	}
 	

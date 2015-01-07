@@ -220,6 +220,9 @@ class AdminPresenter extends SystemAdminPresenter {
 	    $groups = $this->getSportGroupsService()->getSelectAllSportGroups();
 	    $form->setSeasons($seasons);
 	    $form->setUsers($users);
+	    $uua = $users;
+	    unset($uua[$this->getSelectUserIdOmit()]);
+	    $form->setUpdateUsers($uua);
 	    $form->setSportGroups($groups);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad(null, "default", $ex);
@@ -319,12 +322,14 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deletePayment!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("paymentsModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("paymentsModule.admin.grid.messages.rlyDelPayment", null, ["id" => $u->getId()]);
 		});
 
 	$grid->addActionHref('edit', '', 'updatePayment')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("paymentsModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete" => $this->tt("system.common.delete"),
 		    "markCash" => $this->tt("paymentsModule.admin.grid.markDoneCash"),

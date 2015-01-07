@@ -54,12 +54,17 @@ class UserPresenter extends SystemUserPresenter {
     public $notifService;  
     
     /**
+     * Action desired for displayin overview of user section
      * @Secured(resource="default")
      */
     public function actionDefault() {
 	
     }
     
+    /**
+     * Action desired for update own user data and password
+     * @Secured(resource="updateOwnData")
+     */
     public function actionData() {
 	$uUser = null;
 	try {
@@ -72,6 +77,10 @@ class UserPresenter extends SystemUserPresenter {
 	}
     }
 
+    /**
+     * Personal data form onSuccess event handler
+     * @param PersonalUserForm $form
+     */
     public function userFormSuccess(PersonalUserForm $form) {
 	$values = $form->getValues();
 	try {
@@ -90,6 +99,9 @@ class UserPresenter extends SystemUserPresenter {
 	}
     }
 
+    /** Action desired for update own user profile
+     * @Secured(resource="udateOwnProfile")
+     */
     public function actionProfile() {
 	$uWp = null;
 	try {
@@ -112,6 +124,11 @@ class UserPresenter extends SystemUserPresenter {
 	
 	$wp = new WebProfile((array) $values);
 	$user = $this->getUser()->getIdentity();
+	if (!$values->picture->isOk()) {
+	    $wp->setPicture($user->getWebProfile()->getPicture());
+	} else {
+	    $wp->insertOldImgId($user->getWebProfile()->getPicture());
+	}
 	
 	$wp->setStatus(WebProfileStatus::UPDATED);
 	$wp->setUpdated(new \Nette\Utils\DateTime());
@@ -119,13 +136,18 @@ class UserPresenter extends SystemUserPresenter {
 	$user->setWebProfile($wp);
 	
 	try {
-	    $this->userService->updateUser($user);
+	    $this->userService->changeWebProfile($user);
 	} catch (Exceptions\DataErrorException $e) {
 	    $this->handleDataSave($wp->getId(), "default", $e);
 	}
 	$this->redirect("this");
     }
     
+    /**
+     * Personal web profile form onSuccess event handler
+     * @param PasswordChangeForm $form
+     * @return void
+     */
     public function passWordChangeFormSuccess(PasswordChangeForm $form) {
 	$values = $form->getValues();
 	$user = $this->getUser()->getIdentity();
@@ -135,23 +157,32 @@ class UserPresenter extends SystemUserPresenter {
 	    return;
 	}
 	try {
-	    $hash = $this->userService->generateNewPassword($values->new1);
-	    $user->setPasswordChangeRequired(false);
-	    $this->userService->updateUser($user->setPassword($hash));
+	    $this->userService
+		    ->changePassword($user->insertRawPassword($values->new1));
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataSave($user->getId(), "default", $ex);
 	}
 	$this->flashMessage($this->tt("usersModule.messages.passwordChanged"), self::FM_SUCCESS);
-	$this->notifService->notifyPasswordChange($user->insertRawPassword($values->new1));
+	//$this->notifService->notifyPasswordChange($user->insertRawPassword($values->new1));
 	$this->redirect("this");
     }
 
+    /**
+     * Personal user data form control factory
+     * @param string $name
+     * @return PersonalUserForm
+     */
     public function createComponentUserDataForm($name) {
 	$form = new PersonalUserForm($this, $name, $this->getTranslator());
 	$form->initialize();
 	return $form;
     }
 
+    /**
+     * Personal user web profile form control factory
+     * @param string $name
+     * @return PersonalUserForm
+     */
     public function createComponentUserWebProfileForm($name) {
 	$form = new PersonalWebProfileForm($this, $name, $this->getTranslator());
 	$form->setMode(FormMode::UPDATE_MODE);
@@ -159,6 +190,11 @@ class UserPresenter extends SystemUserPresenter {
 	return $form;
     }
     
+    /**
+     * Personal user password change form control factory
+     * @param string $name
+     * @return PersonalUserForm
+     */
     public function createComponentUserPasswordChangeForm($name) {
 	$form = new PasswordChangeForm($this, $name, $this->getTranslator());
 	$form->initialize();

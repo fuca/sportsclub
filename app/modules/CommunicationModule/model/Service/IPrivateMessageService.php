@@ -42,14 +42,6 @@ interface IPrivateMessageService {
     function getEntry($id);
 
     /**
-     * Returns array of Users
-     * @param numeric $id
-     * @return array
-     * @throws Exceptions\DataErrorException
-     */
-    function getRecipients($id);
-
-    /**
      * @param numeric $id
      * @throws Exceptions\DataErrorException
      */
@@ -98,4 +90,12 @@ interface IPrivateMessageService {
      * @return Doctrine
      */
     function getDeletedDatasource($user);
+    
+    /**
+     * Toggles star markdown at message entry
+     * @param numeric $id
+     * @throws Exceptions\InvalidArgumentException
+     * @throws Exceptions\DataErrorException
+     */
+    public function starToggle($id);
 }

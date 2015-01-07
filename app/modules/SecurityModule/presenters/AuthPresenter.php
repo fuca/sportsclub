@@ -44,7 +44,7 @@ class AuthPresenter extends BasePresenter {
     }
 
     public function actionOut() {
-	$this->getUser()->logout();
+	$this->getUser()->logout(TRUE);
 	$this->flashMessage($this->tt("securityModule.loginControl.messages.uWereLoggedOut"), self::FM_INFO);
 	$this->redirect('in');
     }

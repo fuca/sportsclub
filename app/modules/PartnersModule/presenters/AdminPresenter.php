@@ -257,12 +257,14 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deletePartner!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("partnersModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("partnersModule.admin.grid.messages.rlyDelPartner", null, ["id" => $u->getId()]);
 		});
 
 	$grid->addActionHref('edit', '', 'updatePartner')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("partnersModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->partnersGridOpsHandler)
 		->setConfirm("delete", $this->tt("partnersModule.admin.grid.messages.rlyDelPartnerItems"));

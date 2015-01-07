@@ -17,6 +17,31 @@
     
 {block #userContent}
     <div class="page-header">
-	{control replyPrivateMessageForm}
+	{form replyPrivateMessageForm}
+	    {control $form errors}
+	    <div class="row">
+		<div class="col-sm-1"></div>
+		<div class="col-sm-8">
+		    <div class="form-group">
+			{label recipient/}
+			{input recipient class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label subject/}
+			{input subject class=>form-control}
+		    </div>
+
+		    <div class="form-group">
+			{label content/}
+			{input content class=>"form-control mceEditor"}
+		    </div>
+
+		    <div class="form-group">
+			{input submitButton class=>"btn btn-primary btn-block"}
+		    </div>
+		</div>
+	    </div>
+	{/form}
     </div>
    {/}

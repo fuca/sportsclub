@@ -37,6 +37,11 @@ class RoleForm extends BaseForm {
 	$this->addCheckboxList('parents', 'securityModule.roleForm.parents', $this->roles);
 
 	$this->addTextArea('note', 'securityModule.roleForm.note');
+	
+	if ($this->isUpdate()) {
+	    $this->addDate("added", 'securityModule.roleForm.note')
+		->setRequired();
+	}
 
 	$this->addSubmit('submitButton', 'system.forms.submitButton.label');
 

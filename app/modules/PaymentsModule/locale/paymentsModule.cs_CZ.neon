@@ -18,6 +18,8 @@ admin.grid:
     markDoneAcc: "Zaplaceno na účet"
     markDoneCash: "Zaplaceno hotově"
     markSent: "Odesláno"
+    delete: "Smazat platbu"
+    update: "Upravit platbu"
 
 admin:
     paymentNew: "Nová platba"

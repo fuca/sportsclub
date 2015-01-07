@@ -85,6 +85,10 @@ class MailBoxEntry extends BaseEntity {
 	$this->fromArray($values);
     }
     
+    public function __toString() {
+	return "{$this->getId()} {$this->getMessage()} {$this->getOwner()->getId()}";
+    }
+    
     public function getId() {
 	return $this->id;
     }

@@ -64,8 +64,8 @@ final class Initializer {
 	    $addrValues = $this->userValues["contact"]["address"];
 	    $address = new Address((array) $addrValues);
 	    $address->applyAccountNumber($this->userValues["contact"]["address"]["accountNumber"]);
-	    $address->applyIdentificationNumber($this->userValues["contact"]["address"]["in"]);
-	    $address->applyTaxIdentificationNumber($this->userValues["contact"]["address"]["tin"]);
+	    $address->applyIdentificationNumber($this->userValues["contact"]["address"]["identificationNumber"]);
+	    $address->applyTaxIdentificationNumber($this->userValues["contact"]["address"]["taxIdentificationNumber"]);
 	    
 	    $contValues = $this->userValues["contact"];
 	    $contact = new Contact((array) $contValues);

@@ -42,7 +42,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 	"deleteOldPositions"	=> false,
 	    "init"  =>	[
 		"turnOff"=>false,
-		"roles"	=>  ["admin", "player"]]];
+		"roles"	=>  ["admin","player"]]];
 		    
 
     public function loadConfiguration() {
@@ -61,7 +61,8 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IPubli
 		->addSetup("setDefaultComment", [$config["defCommentAppEvents"]]);
 	
 	
-	$rValues = array_unique(array_merge($config["init"]["roles"], [$config["defRoleAppEvents"]], ["admin","authenticated"]));
+	///$rValues = array_unique(array_merge($config["init"]["roles"], [$config["defRoleAppEvents"]], ["admin","authenticated"]));
+	$rValues = $config["init"]["roles"] + [$config["defRoleAppEvents"]];
 	$initializer = $builder->getDefinition($this->prefix("initializer"))
 		->addSetup("setRolesValues", [$rValues])
 		->addSetup("setDefaultUserEmail", [$config["defaultUserEmail"]]);

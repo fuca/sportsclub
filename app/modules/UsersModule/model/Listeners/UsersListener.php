@@ -51,6 +51,7 @@ final class UsersListener extends Object implements Subscriber {
 	return ["App\UsersModule\Model\Service\UserService::onCreate",
 		"App\UsersModule\Model\Service\UserService::onActivate",
 		"App\UsersModule\Model\Service\UserService::onDeactivate",
+		"App\UsersModule\Model\Service\UserService::onPasswordChange",
 		"App\UsersModule\Model\Service\UserService::onPasswordRegenerate"];
     }
     
@@ -69,9 +70,15 @@ final class UsersListener extends Object implements Subscriber {
 	$this->logger->addInfo("User Listener - onDeactivate - user $u notified");
     }
     
+    public function onPasswordChange(User $u) {
+	$this->notifService->notifyPasswordChange($u);
+	$this->logger->addInfo("User Listener - onPasswordChange - user $u notified");
+	$this->logger->addDebug("User Listener - onPasswordChange - new password for user $u is {$u->provideRawPassword()}");
+    }
+    
     public function onPasswordRegenerate(User $u) {
 	$this->notifService->notifyNewPassword($u);
 	$this->logger->addInfo("User Listener - onPasswordRegenerate - user $u notified");
-	$this->logger->addDebug("User Listener - onPasswordRegenerate - new password for user $u is $u->provideRawPassword()");
+	$this->logger->addDebug("User Listener - onPasswordRegenerate - new password for user $u is {$u->provideRawPassword()}");
     }
 }

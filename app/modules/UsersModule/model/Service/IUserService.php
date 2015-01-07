@@ -148,4 +148,19 @@ interface IUserService {
      * @throws Exceptions\DataErrorException
      */
     function updateLastLogin(User $u);
+    
+    /**
+     * Changes password by user, needs raw password set in User entity
+     * @param User $user
+     * @throws Exceptions\DataErrorException
+     */
+    public function changePassword(User $user);
+    
+    /**
+     * Processes changes at users web profile,
+     * in case of photo change, needs to set oldImgId
+     * @param User $u
+     * @throws Exceptions\DataErrorException
+     */
+    public function changeWebProfile(User $u);
 }

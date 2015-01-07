@@ -191,12 +191,14 @@ final class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deleteSportType!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("systemModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("systemModule.admin.grid.messages.rlyDelSport",null,["id"=>$u->getId()]);
 		});
 		
 	$grid->addActionHref('edit', '', 'updateSportType')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("systemModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete"=>$this->tt("systemModule.admin.grid.delete")], $this->sportsGridOpHandler)
 		->setConfirm("delete", $this->tt("systemModule.admin.grid.messages.rlyDelSportItems"));
@@ -370,12 +372,14 @@ final class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deleteSportGroup!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("systemModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("systemModule.admin.grid.messages.rlyDelGroup",null,["id"=>$u->getId()]);
 		});
 	
 	$grid->addActionHref('edit', '', 'updateSportGroup')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("systemModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete"=>$this->tt("systemModule.admin.grid.delete")], $this->sportGroupOpHandler)
 		->setConfirm("delete", $this->tt("systemModule.admin.grid.messages.rlyDelGroupItems"));
@@ -550,12 +554,14 @@ final class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deleteStaticPage!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("systemModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("systemModule.admin.grid.messages.rlyDelPage",null,["id"=>$u->getId()]);
 		});
 	
 	$grid->addActionHref('edit', '', 'updateStaticPage')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("systemModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete"=>$this->tt("systemModule.admin.grid.delete")], $this->staticPagesOpHandler)
 		->setConfirm("delete", $this->tt("systemModule.admin.grid.messages.rlyDelPageItems"));

@@ -24,13 +24,16 @@ use \App\Model\Entities\StaticPage,
     \Kdyby\Doctrine\EntityManager,
     \App\Model\Misc\Exceptions,
     \Kdyby\Doctrine\DBALException,
+    \App\SystemModule\Model\Service\ICommentable,
+    \App\Model\Entities\Comment,
     \Nette\Caching\Cache,
     \Kdyby\Monolog\Logger,
     \Nette\Utils\DateTime,
     \Nette\Utils\Strings,
     \Kdyby\Doctrine\DuplicateEntryException,
     \App\SystemModule\Model\Service\ISportGroupService,
-    \App\UsersModule\Model\Service\IUserService;
+    \App\UsersModule\Model\Service\IUserService,
+    \App\SystemModule\Model\Service\ICommentService;
 
 /**
  * Service for managing system resources
@@ -55,6 +58,12 @@ final class StaticPageService extends BaseService implements IStaticPageService 
     private $userService;
     
     /**
+     * Comment service
+     * @var \App\SystemModule\Model\Service\ICommentService
+     */
+    private $commentService;
+    
+    /**
      * Array of event callbacks
      * @var array Array of callbacks
      */
@@ -77,7 +86,16 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 	$this->pageDao = $em->getDao(StaticPage::getClassName());
 	$this->sportGroupDao = $em->getDao(SportGroup::getClassName());
     }
+    
+    public function getCommentService() {
+	return $this->commentService;
+    }
 
+    public function setCommentService(ICommentService $commentService) {
+	$this->commentService = $commentService;
+    }
+
+    
     function getUserService() {
 	return $this->userService;
     }
@@ -287,6 +305,54 @@ final class StaticPageService extends BaseService implements IStaticPageService 
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
 		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+    
+    public function createComment(Comment $c, ICommentable $e) {
+	try {
+	    $wpDb = $this->pageDao->find($e->getId());
+	    if ($wpDb !== null) {
+		$ccs = $wpDb->getComments();
+		$ccs->add($c);
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($wpDb);
+	    }
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function updateComment(Comment $c, ICommentable $e) {
+	try {
+	    $this->commentService->updateComment($c);
+	    $this->invalidateEntityCache($e);
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
+
+    public function deleteComment($c, ICommentable $e) {
+	try {
+	    $wpDb = $this->pageDao->find($e->getId());
+	    if ($wpDb !== null) {
+		$coll = $wpDb->getComments();
+		$id = $this->getMixId($c);
+		$comment = $coll->filter(function ($e) use ($id) {return $e->getId() == $id;})->first();
+		$index = $coll->indexOf($comment);
+		if (!is_numeric($index)) return;
+		$coll->remove($index);
+
+		$this->entityManager->merge($wpDb);
+		$this->entityManager->flush($wpDb);
+		$this->commentService->deleteComment($id);    
+		$this->invalidateEntityCache($wpDb);
+	    }
+	} catch (Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 }

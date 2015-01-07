@@ -217,12 +217,17 @@ class EmailNotificationService implements INotificationService {
 	$bodyKey = "systemModule.notification.newApplication.body";
 	$subject = $this->translator
 		->translate($subjKey, null, [
-		    "host"=>$this->getHostName(), 
-		    "season"=>$app->getSeason()->getLabel(), 
-		    "group"=>$app->getSportGroup()->getName()." ({$app->getSportGroup()->getSportType()->getName()})"]);
+		    "host"=>$this->getHostName()]);
+	$type = $app->getSportGroup()->getSportType();
+	$t = "";
+	if ($type !== NULL) {
+	    $t = " ({$type})";
+	}
 	$body = $this->translator->translate($bodyKey, null, 
 		["name"=>$u->getName(),
-		"surname"=>$u->getSurname()]);
+		"surname"=>$u->getSurname(),
+		"season"=>$app->getSeason()->getLabel(),
+		"group"=>$app->getSportGroup()->getName().$t]);
 	
 	$mail = new Message();
 	$mail->setFrom($this->getSenderEmail())

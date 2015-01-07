@@ -129,7 +129,8 @@ class AclRule extends BaseEntity implements IIdentifiable {
     }
     
     public function hasPrivilege() {
-	if (!empty($this->getPrivilege()))
+	$priv = $this->getPrivilege();
+	if (!empty($priv))
 		return true;
 	return false;
     }

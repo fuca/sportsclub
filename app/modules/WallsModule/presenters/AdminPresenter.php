@@ -261,12 +261,14 @@ class AdminPresenter extends SystemAdminPresenter {
 	
 	$grid->addActionHref('delete', '', 'deleteWallPost!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("wallsModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
-		    return $this->tt("wallsModule.admin.grid.messages.", null, ["id"=>$u->getId()]);
+		    return $this->tt("wallsModule.admin.grid.messages.rlyDelWallPost", null, ["id"=>$u->getId()]);
 		});
 	
 	$grid->addActionHref('edit', '', 'updateWallPost')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("wallsModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete"=>$this->tt("system.common.delete")], $this->wpostGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);

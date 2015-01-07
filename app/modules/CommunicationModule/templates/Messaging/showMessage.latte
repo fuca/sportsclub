@@ -1,0 +1,58 @@
+
+{* Communication module Messaging presenter *}
+
+{layout $layoutsPath.'userSectionBaseTemplate.latte'}
+
+{block #breadcrumbs}
+{include #parent}<li>{_ communicationModule.user.showMessage.heading}</li>
+    {/block}
+
+{block #title}
+{_communicationModule.user.showMessage.heading} {$titleCrumbSeparator} {include #parent}
+{/block}
+
+{block #subMenu}
+{control subMenu:contentSubMenu}
+{/block}
+
+{block #userContent}
+<div class="page-header">
+    <h3>{$m->getMessage()->getSubject()}</h3>
+</div>
+<span>{_ communicationModule.pmForm.sender}: <strong>{$m->getSender()->getName()} {$m->getSender()->getSurName()}</strong></span>
+<span>{_ communicationModule.pmForm.delivered}: <strong>{$m->getMessage()->getSent()|date:$dateTimeFormat}</strong></span>
+<div class="row">
+
+</div>
+<div class="col-sm-8">
+    <p>
+	{!$m->getMessage()->getContent()}
+    </p>
+</div>
+
+<div class="col-sm-1"></div>
+<div class="col-sm-1">
+    <p>
+	<a href="{plink replyMessageDetail!, $m->getId()}" role="button" class="btn btn-default btn-lg" title="{_ communicationModule.user.grid.replyMessage}">
+	    <span class="glyphicon glyphicon-repeat" aria-hidden="true" ></span>
+	</a>
+    </p>
+
+    <p>
+	<a href="{plink deleteMessageDetail!, $m->getId()}" role="button" class="btn btn-default btn-lg" title="{_ communicationModule.user.grid.deleteMessage}">
+	    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+	</a>
+    </p>
+    
+    <p>
+	<a href="{plink starMessageDetail!, $m->getId()}" role="button" class="btn btn-default btn-lg" title="{_ communicationModule.user.grid.starMessage}">
+	    <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+	</a>
+    </p>
+
+</div>
+
+
+
+
+{/block}

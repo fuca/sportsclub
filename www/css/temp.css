@@ -17,57 +17,6 @@
     float: right;
 }
 
-/*#content .main-box .aauthor {
-    background: #edeff4 url('../img/juna-article.png') no-repeat center right;
-    background-size: 230px;
-    height: 110px;
-    padding: 15px 20px;
-    margin: 20px 0 40px 0;
-    line-height: 1.9em;
-}
-
-#content .main-box .aauthor h4 {
-    font-size: 1.2em; 
-}
-
-#content .main-box .aauthor p {
-    font-size: 1em;
-    color: #555;
-    line-height: 1.8em; 
-}*/
-
-/*#content .main-box .comment_form { margin: 10px 0; }
-
-#content .main-box .comment_form form input.submit {
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    border: 1px solid #ccc;
-    padding: 5px 15px;
-    margin-top: 10px;
-    position: relative;
-}*/
-
-/*#content .main-box .comment_form textarea { 
-    width: 685px; 
-    border: 1px solid #ccc; 
-    height: 80px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    resize: vertical;
-}*/
-
-
-/*
-#content .main-box .comment {
-    line-height: 1.8em; 
-    background: #fafafa url('../img/bg_header.png') repeat-x top;
-    height: 110px;
-    padding: 15px 20px;
-    margin: 20px 0;
-}*/
-
 #content .main-box .comment h4 { font-size: 1.1em; }
 #content .main-box .comment h4 span { float: right; }
 
@@ -77,7 +26,7 @@
 }
 
 #content .right-box {
-   x width: 260px;
+    xwidth: 260px;
     background: #fafafa url('../img/bg_header.png') repeat-x top center;
     margin-bottom: 20px;
     padding: 10px;

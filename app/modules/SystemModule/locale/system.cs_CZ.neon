@@ -13,7 +13,7 @@ messages:
 	badArgumentFormat: "Špatný formát argumentu '%id%'"
 	couldNotSaveData: "Data nelze uložit."
 	couldNotLoadData: "Data nelze načíst."
-	couldNotDeleteData: "Data nelze odstranit. | Data '%id%' nelze odstranit."
+	couldNotDeleteData: "Data nelze odstranit."
 	nothingToShow: "Žádné údaje nebyly nalezeny."
 
 admin.messages:

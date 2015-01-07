@@ -280,7 +280,8 @@ class PaymentService extends BaseService implements IPaymentService {
     
     public function generateVs(Payment $p) {
 	if ($p == null) return rand (1000, 99999);
-	if (empty($p->getVs())) return $p->getOwner()->getBirthNumber();
+	$vs = $p->getVs();
+	if (empty($vs)) return $p->getOwner()->getBirthNumber();
 	return $p->getVs();
     }
    

@@ -191,9 +191,8 @@ securityModule:
 	deleteOldPositions: true # option for disable deleting old positions after adding newone
 	defaultUserEmail: %appDefaultEmail% # [obligatory]
 
-	init:
+	init: # adds neccessary roles
 		turnOff: %turnOffInit%
-		roles: ["admin", "player", "guest", "member", "executive"] # initial system roles, [admin, player, guest, member] are obligatory
 
 paymentsModule:
 	dueDate: "1 month" # Payment entities default dueDate
@@ -213,10 +212,13 @@ usersModule:
 					street: "Masarykova"
 					number: "546/25"
 					accountNumber: "2500140367/2010"
-					in: "228 90 785" # identification number (cs_IC)
-					tin: "CZ 228 90 785" # tax identification number (cs_DIC)
+					identificationNumber: "228 90 785" #  (cs_IC)
+					taxIdentificationNumber: "CZ 228 90 785" #  (cs_DIC)
 				phone: "420732504156"
 				email: %appDefaultEmail%
+				contPersonName: "Jarmila Votočková"
+				contPersonPhone: "775 654 321"
+				contPersonMail: "sekretariat@fbcmohelnie.cz"
 	    
 			
 	
@@ -285,8 +287,8 @@ extensions:
 	doctrine2identity: Majkl578\NetteAddons\Doctrine2Identity\DI\IdentityExtension
 	translation: Kdyby\Translation\DI\TranslationExtension
 	monolog: Kdyby\Monolog\DI\MonologExtension
-	
 
+	
 	# Application extensions (modules)
 	systemModule: App\SystemModule\Config\SystemModuleExtension
 	usersModule: App\UsersModule\Config\UsersModuleExtension

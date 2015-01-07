@@ -32,6 +32,8 @@ admin.grid:
 	updated: "Upravil"
 	active: "Aktivní"
 	note: "Poznámka"
+	update: "Upravit"
+	delete: "Smazat"
 
 
 

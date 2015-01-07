@@ -50,11 +50,11 @@ interface IPositionService {
 
     /**
      * 
-     * @param Position $p
+     * @param Position|numeric $p
      * @throws Exceptions\NullPointerException
      * @throws Exceptions\DataErrorException
      */
-    function deletePosition(Position $p);
+    function deletePosition($p);
 
     /**
      * 

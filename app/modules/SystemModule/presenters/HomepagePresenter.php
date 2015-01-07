@@ -23,6 +23,8 @@ use \App\SystemModule\Presenters\BasePresenter,
     \App\Model\Misc\Exceptions,
     \Nette\Application\UI\Form,
     \App\Model\Misc\Enum\FormMode,
+    \Nette\Utils\ArrayHash,
+    \Nette\Utils\DateTime,
     \App\SystemModule\Components\ContactControl,
     \App\ArticlesModule\Model\Service\IArticleService;
 
@@ -170,6 +172,67 @@ class HomepagePresenter extends SystemPublicPresenter {
 	    //}
 	}
 	return $c;
+    }
+    
+    /**
+     * Handler for add comment to article
+     * @param ArrayHash $values
+     */
+    public function addComment(ArrayHash $values) {
+	try {
+	    $comment = new \App\Model\Entities\PageComment((array) $values);
+	    $comment->setEditor($this->getUser()->getIdentity());
+	    $comment->setAuthor($comment->getEditor());
+	    $comment->setCreated(new DateTime());
+	    $comment->setUpdated(new DateTime());
+	    $this->staticPageService->createComment($comment, $this->getEntity());	    
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave(null, "this", $ex);
+	}
+	if (!$this->isAjax()) {
+	    $this->redirect("this");
+	} else {
+	    $this->redrawControl("commentsData");
+	}
+    }
+    
+    /**
+     * Handler for update comment to article
+     * @param ArrayHash $values
+     */
+    public function updateComment(ArrayHash $values) {
+	try {
+	    $comment = new \App\Model\Entities\PageComment((array) $values);
+	    $comment->setEditor($this->getUser()->getIdentity());
+	    $comment->setUpdated(new DateTime());
+	    $this->staticPageService->updateComment($comment, $this->getEntity());	    
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($values->id, "this", $ex);
+	}
+	
+	if (!$this->isAjax()) {
+	    $this->redirect("this");
+	} else {
+	    $this->redrawControl("commentsData");
+	}
+    }
+    
+    /**
+     * Handler for delete article comment
+     * @param ArticleComment $comm
+     */
+    public function deleteComment($comm) {
+	try {
+	    $this->staticPageService->deleteComment($comm, $this->getEntity());
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataDelete($comm->getId(), "this", $ex);
+	}
+	
+	if ($this->isAjax()) {
+	    $this->redrawControl("commentsData");
+	} else {
+	    $this->redirect("this");
+	}
     }
    
 }

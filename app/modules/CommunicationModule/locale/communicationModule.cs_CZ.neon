@@ -30,6 +30,7 @@ admin.grid:
 	change: "Změnit"
 	delete: "Smazat"
 	forum: "Fórum"
+	update: "Upravit"
 
 admin.grid.messages:
 	rlyDelForum: "Opravdu chcete smazat fórum #%id%"
@@ -58,6 +59,7 @@ pmForm:
 	sender: "Odesílatel"
 	starred: "&#9733"
 	submitButton.label: "Odeslat zprávu"
+	recipient: "Příjemce"
 
 forumForm: 
 	title: "Název"
@@ -89,6 +91,17 @@ user:
 	outbox.heading: "Odeslané zprávy"
 	deleted.heading: "Odstraněné zprávy"
 	createMessage.heading: "Nová zpráva"
+	showMessage.heading: "Detail zprávy"
+
+user.grid:
+	deleteMessage: "Přesunout do smazaných"
+	starMessage: "Označit zprávu"
+	replyMessage: "Opovědět"
+	purgeMessage: "Odstranit zprávu"
+
+user.grid.message:
+	reallyDelMessage: "Opravdu chcete tuto zprávu přesunout do smazaných?"
+	reallyPurgeMessage: "Opravdu se této zprávy chcete nadobro zbavit?"
 
 protected.messages:
 	noForum: "Pro danou skupinu neexistuje žádné fórum."

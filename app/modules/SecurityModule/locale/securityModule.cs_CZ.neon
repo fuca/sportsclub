@@ -63,6 +63,9 @@ admin.grid:
 	privilege: "Akce"
 	mode: "Mód"
 
+	delete: "Smazat"
+	update: "Upravit"
+
 aclForm:
 	roleSelect: "Vyberte roli .."
 	actionSelect: "Vyberte akci .."
@@ -81,7 +84,7 @@ posForm:
 	group: "Skupina"
 	note:	"Poznámka"
 	publishContact: "Zobrazit v kontaktech"
-	name: "Jméno"
+	name: "Název"
 	userSelect: "Vyberte uživatele .."
 	groupSelect: "Vyberte skupinu .."
 	roleSelect: "Vyberte roli .. "
@@ -93,6 +96,7 @@ roleForm:
 	note: "Poznámka"
 	newRoleGroup: "Nová role"
 	editRoleGroup: "Upravit roli"
+	added: "Přídáno"
 
 navigation:
 	back: "Zpět"

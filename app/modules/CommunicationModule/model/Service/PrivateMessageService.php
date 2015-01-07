@@ -88,15 +88,18 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 
     public function createEntry(MailBoxEntry $mb) {
 	try {
-	    foreach ($mb->getRecipient() as $toId) {
+	    $recArr = $mb->getRecipient();
+	    foreach ($recArr as $toId) {
+		$mb = clone($mb);
 		$mb->setRecipient($toId);
 		$this->saveMailboxEntry($mb);
+		$this->onCreate($mb);
 	    }
+	    $mb = clone($mb);
 	    $mb->setOwner($mb->getSender());
 	    $mb->setRecipient($mb->getOwner());
 	    $mb->setType(MailBoxEntryType::READ);
 	    $this->saveMailboxEntry($mb);
-	    $this->onCreate($mb);
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
@@ -117,10 +120,8 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 	if (!is_numeric($id)) 
 	    throw new Exceptions\InvalidArgumentException("Argument id must be type of numeric, '$id' given");
 	try {	    
-	    //$qb = $this->mailboxDao->createQueryBuilder("mb")->where("mb.owner = :owner")->andWhere("mb.message = :message")->setParameter("owner", $uId)->setParameter("message", $id);
 	    
 	    if (!$useCache) {
-		//return $qb->getQuery()->getSingleResult();
 		return $this->mailboxDao->find($id);
 	    }
 	    
@@ -132,22 +133,6 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 		$cache->save($id, $data, $opts);
 	    }
 	    return $data;
-	} catch (\Exception $ex) {
-	    $this->logError($ex->getMessage());
-	    throw new Exceptions\DataErrorException(
-		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
-	}
-    }
-    
-    public function getRecipients($id) {
-	try {
-	    return $this->mailboxDao->createQueryBuilder()
-		    ->select("mb.recipient")
-		    ->from(MailBoxEntry::getClassName(),"mb")
-		    ->where("mb.message = :message")
-		    ->andWhere("mb.sender != mb.recipient")
-		    ->setParameter("message", $id)
-		    ->getQuery()->getResult();
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException(
@@ -202,12 +187,13 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 	$this->markAs($id, MailBoxEntryType::DELETED);
     }
     
-    private function markAs($id, MailBoxEntryType $mbet) {
+    private function markAs($id, $mbet) {
 	try {
 	    $mbDb = $this->mailboxDao->find($id);
 	    if ($mbDb !== null) {
 		$mbDb->setType($mbet);
-		$this->mailboxDao->save($mbDb);
+		$this->entityManager->flush();
+		$this->invalidateEntityCache($mbDb);
 	    }
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
@@ -222,7 +208,9 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 		    ->where("mb.owner = :owner")
 		    ->andWhere("mb.recipient = mb.owner")
 		    ->andWhere("mb.sender != mb.recipient")
+		    ->andWhere("mb.type != :type")
 		    ->setParameter("owner", $this->getMixId($user))
+		    ->setParameter("type", MailBoxEntryType::DELETED)
 		);
 	return $model;
     }
@@ -243,8 +231,25 @@ final class PrivateMessageService extends BaseService implements IPrivateMessage
 		$this->mailboxDao->createQueryBuilder("mb")
 		    ->where("mb.owner = :owner")
 		    ->andWhere("mb.sender = :owner")
+		    ->andWhere("mb.type != :type")
 		    ->setParameter("owner", $this->getMixId($user))
+		    ->setParameter("type", MailBoxEntryType::DELETED)
 		);
 	return $model;
+    }
+    
+    public function starToggle($id) {
+	if (!is_numeric($id)) 
+	    throw new Exceptions\InvalidArgumentException("Argument \$id must be type of numeric, '$id' given ");
+	try {
+	  $entry = $this->mailboxDao->find($id);
+	  $star = $entry->getStarred();
+	  $entry->setStarred(!$star);
+	  $this->entityManager->flush();
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException(
+		    $ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
     }
 }

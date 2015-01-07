@@ -101,6 +101,7 @@ admin.grid:
 	parent: "Nadřazený"
 	delete: "Smazat"
 	active: "Aktivní"
+	update: "Upravit"
 
 	title: "Název"
 	abbr: "Zkratka"
@@ -156,29 +157,29 @@ default:
 	sectionSignpost.bread: "Rozcestník sekce"
 
 
-notifications:
+notification:
 	accActivated.subject: "Účet aktivován na %host%"
-	accActivated.body: "Vážený %name% %surname%, Váš účet byl aktivován. Můžete se přihlásit pomocí údajů, jak jste byl zvyklý."
+	accActivated.body: "Vážený/á %name% %surname%, Váš účet byl aktivován. Můžete se přihlásit pomocí údajů, jak jste byl zvyklý."
 
 	accDeactivated.subject: "Účet deaktivován na %host%"
-	accDeactivated.body: "Vážený %name% %surname%, Váš účet byl deaktivován. Není možné se již přihlásit, dokud Váš účet nebude opět aktivován."
+	accDeactivated.body: "Vážený/á %name% %surname%, Váš účet byl deaktivován. Není možné se již přihlásit, dokud Váš účet nebude opět aktivován."
 
 	accCreated.subject: "Účet vytvořen na %host%"
-	accCreated.body: "Vážený %name% %surname%, Toto je informační zpráva o vytvoření účtu v našem informačním systému. Můžete se přihlásit pomocí emailu, který jste uvedl v žádosti a pomocí hesla: %pass%."
+	accCreated.body: "Vážený/á %name% %surname%, Toto je informační zpráva o vytvoření účtu v našem informačním systému. Můžete se přihlásit pomocí emailu, který jste uvedl v žádosti a pomocí hesla: %pass%."
 
 	newMessage.subject: "Nová soukromá zpráva na %host%"
-	newMessage.body: "Vážený %name% %surname%, toto je informační zpráva o přijetí nové soukromé zprávy. Prosím, přihlaste se do našeho systému pro další podrobnosti."
+	newMessage.body: "Vážený/á %name% %surname%, toto je informační zpráva o přijetí nové soukromé zprávy. Prosím, přihlaste se do našeho systému pro další podrobnosti."
 
-	newPayment.subject: "Nová platba přidaná na %host%"
-	newPayment.body: "Vážený %name% %surname%, toto je informační zpráva o přidání nové žádosti o platbu. Prosím, přihlaste se do našeho systému pro další podrobnosti."
+	newPayment.subject: "Nová platba zadána na %host%"
+	newPayment.body: "Vážený/á %name% %surname%, toto je informační zpráva o přidání nové žádosti o platbu. Prosím, přihlaste se do našeho systému pro další podrobnosti."
 
 	newApplication.subject: "Nová přihláška v sezóně byla vytvořena na %host%"
-	newApplication.body: "Vážený %name% %surname%, toto je informační zpráva o tom, že jste byl přihlášen do sezóny %season% ve skupině %group%. Prosím, přihlaste se do našeho systému pro další podrobnosti."
+	newApplication.body: "Vážený/á %name% %surname%, toto je informační zpráva o tom, že jste byl přihlášen do sezóny %season% ve skupině %group%. Prosím, přihlaste se do našeho systému pro další podrobnosti."
 	
 	passwordChange.subject: "Uživatelské heslo bylo změněno na %host%"
-	passwordChange.body: "Vážený %name% %surname%, toto je informační zpráva o změně Vašeho hesla k účtu na %pass%"
+	passwordChange.body: "Vážený/á %name% %surname%, toto je informační zpráva o změně Vašeho hesla k účtu na '%pass%'"
 	newPassword.subject: "Nové heslo bylo vygenerováno na %host%"
-	newPassword.body: "Vážený %name% %surname%, toto je informační zpráva o vygenerování Vašeho systémového hesla na %pass%. Po přihlášení jej můžete změnit."
+	newPassword.body: "Vážený/á %name% %surname%, toto je informační zpráva o vygenerování nového systémového hesla k vašemu účtu. Heslo je: %pass% . Po přihlášení jej můžete změnit."
 
 
 homepage:

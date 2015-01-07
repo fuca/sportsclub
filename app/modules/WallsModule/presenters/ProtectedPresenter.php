@@ -160,7 +160,8 @@ class ProtectedPresenter extends SystemClubPresenter {
 	$c = new PermanentWallposts($this, $name);
 	$data = $group = null;
 	try {
-	    $gid = empty($abbr = $this->getParameter("abbr"))?self::ROOT_GROUP:$abbr;
+	    $abbr = $this->getParameter("abbr");
+	    $gid = empty($abbr)?self::ROOT_GROUP:$abbr;
 	    
 	    if (is_numeric($gid))
 		$group = $this->sportGroupService->getSportGroup($gid);
@@ -188,7 +189,8 @@ class ProtectedPresenter extends SystemClubPresenter {
 	$c = new WallHistoryControl($this, $name);
 	$data = $group = null;
 	try {
-	    $gid = empty($abbr = $this->getParameter("abbr"))?self::ROOT_GROUP:$abbr;
+	    $abbr = $this->getParameter("abbr");
+	    $gid = empty($abbr)?self::ROOT_GROUP:$abbr;
 	    
 	    if (is_numeric($gid))
 		$group = $this->sportGroupService->getSportGroup($gid);

@@ -249,6 +249,7 @@ class ForumService extends BaseService implements IForumService {
 	    
 	    $this->forumDao->save($f);
 	    $this->entityManager->commit();
+	    $this->invalidateEntityCache($f);
 	    $this->onCreate($f);
 	} catch (DBALException $ex) {
 	    $this->entityManager->rollback();
@@ -328,7 +329,7 @@ class ForumService extends BaseService implements IForumService {
 	    $qb = $this->entityManager->createQueryBuilder();
 	    $qb->select('f')
 		    ->from('App\Model\Entities\Forum', 'f')
-		    ->innerJoin('f.groups', 'g')
+		    ->join('f.groups', 'g')
 		    ->where('g.id = :gid')
 		    ->setParameter("gid", $g->id);
 	    return $qb->getQuery()->getResult();

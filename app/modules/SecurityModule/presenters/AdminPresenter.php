@@ -279,12 +279,14 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deleteRole!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("securityModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("securityModule.admin.grid.rlyDeleteRole", null, ["pos" => $u]);
 		});
 	
 	$grid->addActionHref('edit', '', 'updateRole')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("securityModule.admin.grid.update")]));
 	
 	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->roleGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
@@ -468,11 +470,14 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deleteRule!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("securityModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("securityModule.admin.grid.rlyDeleteRule", null, ["pos" => $u]);
 		});
 	$grid->addActionHref('edit', '', 'updateRule')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("securityModule.admin.grid.update")]));
+	
 	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->ruleGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);
 	$grid->setExport("admin-rules " . date("Y-m-d H:i:s", time()));
@@ -646,11 +651,14 @@ class AdminPresenter extends SystemAdminPresenter {
 
 	$grid->addActionHref('delete', '', 'deletePosition!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("securityModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("securityModule.admin.grid.rlyDeletePosition", null, ["pos" => $u]);
 		});
+		
 	$grid->addActionHref('edit', '', 'updatePosition')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title" => $this->tt("securityModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete" => $this->tt("system.common.delete")], $this->positionGridOpsHandler);
 	$grid->setFilterRenderType($this->filterRenderType);

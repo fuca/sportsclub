@@ -8,7 +8,7 @@ $composer = require __DIR__ . '/../vendor/autoload.php';
 
 $configurator = new Nette\Configurator;
 $configurator->setDebugMode(true);
-//$configurator->setDebugMode(TRUE);  // debug mode MUST NOT be enabled on production server
+//$configurator->setDebugMode(FALSE);  // debug mode MUST NOT be enabled on production server
 $configurator->enableDebugger(__DIR__ . '/../log');
 
 $configurator->setTempDirectory(__DIR__ . '/../temp');
@@ -55,5 +55,5 @@ DateInput::register($configurator);
 \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader("class_exists");
 
 $container = $configurator->createContainer();
-$container->addService('robotLoader', $robotLoader); // due to presenter tree
+//$container->addService('robotLoader', $robotLoader); // due to presenter tree
 return $container;

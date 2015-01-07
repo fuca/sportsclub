@@ -53,7 +53,7 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 					"in"=>"",
 					"tin"=>""],
 				"phone"=>"420732504156",
-				"email"=>"michal.fuca.fucik@gmail.com"]]],
+				"email"=>"michal.fuca.fucik@gmail.com"]]]
     ];
 
     public function loadConfiguration() {
@@ -71,7 +71,6 @@ ITranslationProvider, IAdminMenuDataProvider, IProtectedMenuDataProvider, IDatab
 	$initializer->addSetup("setUserValues", [$config["init"]["user"]]);
 	if (!$config["init"]["turnOff"])
 	    $initializer->addSetup("userInit");
-	
     }
 
     public function getTranslationResources() {

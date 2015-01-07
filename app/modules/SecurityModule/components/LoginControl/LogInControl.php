@@ -129,10 +129,12 @@ final class LogInControl extends Control {
 	$this->template->logOutLink = $this->presenter->link(":Security:Auth:out");
 	$this->template->isLoggedIn = $loggedIn;
 	$this->template->user = $loggedIn ? $this->getUser()->getIdentity() : null;
-	$this->template->pmsCount = 3;
-	$this->template->messagesMenu = true;
-	$this->template->adminMenuPredicate = true;
-	//$this->template->adminMenuPredicate = $this->user->isAllowed("App\System\Presenters\Default\adminRoot");
+	//$this->template->pmsCount = 3;
+	//$this->template->messagesMenu = true;
+	//$this->template->adminMenuPredicate = true;
+	$this->template->adminMenuPredicate = $this->user->isAllowed("App\SystemModule\Presenters\DefaultPresenter","App\System\Presenters\Default\adminRoot");
+	$this->template->clubMenuPredicate = $this->user->isAllowed("App\SystemModule\Presenters\DefaultPresenter","App\System\Presenters\Default\clubRoot");
+	//$this->template->userMenuPredicate = $this->user->isAllowed("App\SystemModule\Presenters\DefaultPresenter","App\System\Presenters\Default\userRoot");
 	$this->template->render();
     }
 

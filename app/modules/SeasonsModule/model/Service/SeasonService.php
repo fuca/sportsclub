@@ -78,7 +78,6 @@ class SeasonService extends BaseService implements ISeasonService {
 	    }
 	    $this->seasonEditorTypeHandle($s);
 	    $s->setUpdated(new DateTime());
-	    //$s->setApplications([]);
 	    $this->seasonDao->save($s);
 	    $this->invalidateEntityCache($s);
 	    $this->onCreate($s);
@@ -92,19 +91,6 @@ class SeasonService extends BaseService implements ISeasonService {
 		$ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
-
-    // upravit 
-//    private function seasonApplicationsCollSetup(Role $r) {
-//	$parents = $r->getParents();
-//	$parentsCollection = new ArrayCollection();
-//	if (is_array($parents) && count($parents) > 0) {
-//	    foreach ($parents as $parentId) {
-//		$parentObject = $this->roleDao->find($parentId);
-//		$parentsCollection->add($parentObject);
-//	    }
-//	}
-//	return $parentsCollection;
-//    }
 
     private function seasonEditorTypeHandle(Season $s) {
 	if ($s === null)

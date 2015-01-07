@@ -69,7 +69,9 @@ abstract class SystemPublicPresenter extends BasePresenter {
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataLoad($id, "this", $ex);
 	}
-	$c->setUser($user);
+	if (!empty($user)) {
+	    $c->setUser($user);
+	}
 	return $c;
     }
 

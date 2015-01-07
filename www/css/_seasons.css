@@ -1,0 +1,21 @@
+.seasonInfo {
+    margin-left: 5%;
+    xborder: 1px solid #bbb;
+    xborder-bottom: none;
+    width: 220px;
+    margin-bottom: 20px;
+    height: auto;
+}
+
+ul.seasonInfo li {
+    display: block;
+    width: 220px;
+    font-size: 1.1em;
+    padding: 5px 0 0 12px; 
+    border-bottom: 1px solid #bbb;
+    border-left: 10px solid transparent;
+}
+
+ul.seasonInfo strong {
+    padding-left: 1em;
+}

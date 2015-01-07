@@ -7,20 +7,6 @@ parameters:
 
 services:
 
-	securityModule.applicationsListener:
-		class:
-			App\SecurityModule\Model\Listeners\ApplicationsListener
-		tags: [kdyby.subscriber]
-		setup:
-				- setPositionService()
-				- setRoleService()
-
-	securityModule.aclRuleListener:
-		class:
-			App\SecurityModule\Model\Listeners\AclRuleListener
-		tags: [kdyby.subscriber]
-		setup:
-
 	securityModule.cacheStorage:
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/securityModule/)
 		autowired: false
@@ -71,10 +57,34 @@ services:
 				- setUsersService()
 				- setLogger()
 
+# Listeners
+
+	securityModule.applicationsListener:
+		class:
+			App\SecurityModule\Model\Listeners\ApplicationsListener
+		tags: [kdyby.subscriber]
+		setup:
+				- setPositionService()
+				- setRoleService()
+
+	securityModule.aclRuleListener:
+		class:
+			App\SecurityModule\Model\Listeners\AclRuleListener
+		tags: [kdyby.subscriber]
+		setup:
+
+	securityModule.RoleListener:
+		class:
+			App\SecurityModule\Model\Listeners\RoleListener
+		tags: [kdyby.subscriber]
+		setup:
+
 
 # Initializer
 	securityModule.initializer:
 			class:
 				App\SecurityModule\Config\Initializer
 			tags: [run]
+
+
 

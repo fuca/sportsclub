@@ -11,7 +11,7 @@ services:
 		class: Nette\Caching\Storages\FileStorage(%tempDir%/cache/services/usersModule)
 		autowired: no
 
-	users.userService:
+	usersModule.userService:
 			class:
 				App\UsersModule\Model\Service\UserService
 			setup:

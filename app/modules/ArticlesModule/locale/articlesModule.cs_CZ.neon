@@ -31,7 +31,7 @@ admin.grid:
 	comments: "Komentáře"
 	view: "Náhled"
 	delete: "Smazat"
-	update: "Uložit"
+	update: "Upravit"
 	state: "Status"
 	rlyDelArticle: "Opravdu chcete smazat článek #%id%?"
 

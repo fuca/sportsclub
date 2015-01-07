@@ -90,6 +90,12 @@ class WebProfile extends BaseEntity {
     /** @ORM\Column(type="string", nullable=true) */
     protected $signature;
     
+    /**
+     * transient old image id
+     * @var string
+     */
+    protected $oldImgId;
+    
     public function __construct(array $values = []) {
 	parent::__construct();
 	$this->status = WebProfileStatus::BAD;
@@ -229,4 +235,14 @@ class WebProfile extends BaseEntity {
     public function setPublish($publish) {
 	$this->publish = $publish;
     }
+    
+    public function provideOldImgId() {
+	return $this->oldImgId;
+    }
+
+    public function insertOldImgId($oldImgId) {
+	$this->oldImgId = $oldImgId;
+    }
+
+
 }

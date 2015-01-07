@@ -21,6 +21,7 @@ passwordChangeForm:
 messages:
 	badArgumentFormat: "Bad format of user id, '%id%' given"
 	passwordChanged: "Your password has been successfully changed"
+	updateUserFailed: "Update user failed"
 	
 admin:
 	userNew: "New user"

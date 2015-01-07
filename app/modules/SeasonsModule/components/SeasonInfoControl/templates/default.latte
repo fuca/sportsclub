@@ -1,0 +1,18 @@
+    
+{* SeasonInfo control template *}
+
+{if $season}
+    <div class="clearFix"></div>
+	<ul class="visible-md visible-lg seasonInfo">
+	    <li>{_ seasonsModule.infoControl.actualLabel}<br/>
+	    <strong>{$season->getLabel()}</strong></li>
+
+	    <li>{_ seasonsModule.infoControl.beginLabel}<br/>
+	    <strong>{$season->getDateSince()|date:"j.n.Y"}</strong></li>
+
+	    <li>{_ seasonsModule.infoControl.endLabel}</br>
+	    <strong>{$season->getDateTill()|date:"j.n.Y"}</strong><li>
+	</ul>
+    
+    
+{/if}

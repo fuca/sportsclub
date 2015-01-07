@@ -32,7 +32,8 @@ use \Nette,
     \Kdyby\Doctrine\Entities\BaseEntity,
     \App\SecurityModule\Components\LogInControl,
     \App\SystemModule\Model\Service\ICommentable,
-    \App\SystemModule\Components\AppealControl;
+    \App\SystemModule\Components\AppealControl,
+    \App\SeasonsModule\Components\SeasonInfoControl;
 
 /**
  * Base presenter for all application presenters.
@@ -69,6 +70,12 @@ abstract class BasePresenter extends Presenter {
 
     /** @var \Kdyby\Doctrine\Entities\BaseEntity actual managing entity */
     private $entity;
+    
+    /**
+     * Id of user, which is omitted during creating user select list
+     * @var numeric
+     */
+    protected $selectUserIdOmit = 1;
 
     /**
      * @inject
@@ -127,9 +134,19 @@ abstract class BasePresenter extends Presenter {
     
     /**
      * @inject
+     * @var \App\SeasonsModule\Model\Service\ISeasonService
+     */
+    public $seasonService;
+    
+    /**
+     * @inject
      * @var \App\SystemModule\Model\Service\ICommentService
      */
     public $commentService;
+    
+    public function getSelectUserIdOmit() {
+	return $this->selectUserIdOmit;
+    }
     
     
 //    /**
@@ -313,6 +330,16 @@ abstract class BasePresenter extends Presenter {
     
     protected function createComponentAppealControl($name) {
 	$c = new AppealControl($this, $name, $this->getUser()->getIdentity());
+	return $c;
+    }
+    
+    protected function createComponentSeasonInfoControl($name) {
+	$current = null;
+	$c = new SeasonInfoControl($this, $name);
+	try {
+	    $current = $this->seasonService->getCurrentSeason();
+	} catch (\App\Model\Misc\Exceptions\DataErrorException $ex) {}
+	$c->setSeason($current);
 	return $c;
     }
 

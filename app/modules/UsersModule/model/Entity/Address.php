@@ -55,10 +55,10 @@ class Address extends BaseEntity {
     protected $accountNumber;
     
     /** @ORM\Column(type="string", nullable=true) */
-    protected $in;
+    protected $identificationNumber;
     
     /** @ORM\Column(type="string", nullable=true) */
-    protected $tin;
+    protected $taxIdentificationNumber;
     
     public function __construct(array $values = []) {
 	parent::__construct();
@@ -110,19 +110,19 @@ class Address extends BaseEntity {
     }
     
     public function provideIdentificationNumber() {
-	return $this->in;
+	return $this->identificationNumber;
     }
     
     public function applyIDentificationNumber($in) {
-	$this->in = $in;
+	$this->identificationNumber = $in;
     }
     
     public function provideTaxIdentificationNumber() {
-	return $this->tin;
+	return $this->taxIdentificationNumber;
     }
     
     public function applyTaxIdentificationNumber($tin) {
-	$this->tin = $tin;
+	$this->taxIdentificationNumber = $tin;
     }
     
     

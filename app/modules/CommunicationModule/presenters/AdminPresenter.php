@@ -192,12 +192,14 @@ class AdminPresenter extends SystemAdminPresenter {
 	
 	$grid->addActionHref('delete', '', 'deleteForum!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("communicationModule.admin.grid.messages.rlyDelForum", null, ["id"=>$u->getId()]);
 		});
 		
 	$grid->addActionHref('edit', '', 'updateForum')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete"=>"communicationModule.admin.grid.delete"], 
 		$this->forumGridOpsHandler)
@@ -385,12 +387,14 @@ class AdminPresenter extends SystemAdminPresenter {
 	
 	$grid->addActionHref('delete', '', 'deleteForumThread!')
 		->setIcon('trash')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.admin.grid.delete")]))
 		->setConfirm(function($u) {
 		    return $this->tt("communicationModule.admin.grid.messages.rlyDelForumThr", null, ["id"=>$u->getId()]);
 		});
 		
 	$grid->addActionHref('edit', '', 'updateForumThread')
-		->setIcon('pencil');
+		->setIcon('pencil')
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.admin.grid.update")]));
 
 	$grid->setOperation(["delete"=>"communicationModule.admin.grid.delete"], 
 		$this->forumGridOpsHandler)

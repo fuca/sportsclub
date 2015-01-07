@@ -49,7 +49,18 @@ final class PaymentForm extends BaseForm {
 
     /** @var array of users seasons */
     private $users;
+    
+    /** @var array of users seasons */
+    private $updateUsers;
+    
+    public function getUpdateUsers() {
+	return $this->updateUsers;
+    }
 
+    public function setUpdateUsers($updateUsers) {
+	$this->updateUsers = $updateUsers;
+    }
+    
     public function getSportGroups() {
 	return $this->sportGroups;
     }
@@ -114,7 +125,7 @@ final class PaymentForm extends BaseForm {
 //		->toggle("group-owner");
 		
 
-	$this->addMultiSelect(self::OWNER_TYPE_SELECT, "Členové", $this->getUsers(), 25)
+	$this->addMultiSelect(self::OWNER_TYPE_SELECT, "Členové", $this->getUpdateUsers(), 25)
 		->setOption("id", "multi-owner")
 //		->addConditionOn($osel, Form::NOT_EQUAL, null)
 //		->addConditionOn($osel, Form::EQUAL, PaymentOwnerType::SELECT)

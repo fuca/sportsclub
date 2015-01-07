@@ -54,6 +54,8 @@ admin.grid:
 	owner: "Vlastník"
 	amount: "Množství"
 	type: "Typ"
+	update: "Upravit"
+	delete: "Smazat"
 	rlyDeleteTaxId: "Opravdu chcete smazat povinnost #%id%?"
 protected:
 	myMotivation: "Moje motivace"

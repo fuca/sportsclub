@@ -35,7 +35,7 @@ abstract class SystemUserPresenter extends SecuredPresenter {
 	    $secAnn = $this->annotationReader->getClassAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
 	    if ($secAnn) {
 		if (!$this->getUser()->isAllowed($element->getName())) {
-		    $this->flashMessage("securityModule.authorization.noPrivilesSection", self::FM_ERROR);
+		    $this->flashMessage($this->tt("securityModule.authorization.noPrivilegesSection"), self::FM_ERROR);
 		    $this->redirect(':System:Default:userRoot');
 		}
 	    }
@@ -45,7 +45,7 @@ abstract class SystemUserPresenter extends SecuredPresenter {
 	    $secAnn = $this->annotationReader->getMethodAnnotation($element, "\App\SecurityModule\Model\Misc\Annotations\Secured");
 	    if ($secAnn) {
 		if (!$this->getUser()->isAllowed($element->getDeclaringClass()->name, $element->getName())) {
-		    $this->flashMessage("securityModule.authorization.noPrivilesAction", self::FM_ERROR);
+		    $this->flashMessage($this->tt("securityModule.authorization.noPrivilegesAction"), self::FM_ERROR);
 		    $this->redirect('default');
 		}
 	    }

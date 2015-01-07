@@ -94,7 +94,9 @@ class UserService extends BaseService implements IUserService {
     
     /** @var Event dispatched every time after password regeneration */
     public $onPasswordRegenerate = [];
-
+    
+    public $onPasswordChange = [];
+    
     public function __construct(EntityManager $em) {
 	parent::__construct($em, User::getClassName());
 	$this->userDao = $em->getDao(User::getClassName());
@@ -102,7 +104,7 @@ class UserService extends BaseService implements IUserService {
 	$this->contactDao = $em->getDao(Contact::getClassName());
 	$this->webProfileDao = $em->getDao(WebProfile::getClassName());
     }
-    
+ 
     public function setImageService(ImageService $imageService) {
 	$this->imageService = $imageService;
     }
@@ -128,8 +130,8 @@ class UserService extends BaseService implements IUserService {
 
 	$now = new DateTime();
 	$rawPass = null;
-	
-	if (empty($user->getPassword())) {
+	$userPass = $user->getPassword();
+	if (empty($userPass)) {
 	    $rawPass = Strings::random(self::RANDOM_PASS_LENGTH);    
 	} else {
 	    $rawPass = $user->getPassword();
@@ -177,13 +179,10 @@ class UserService extends BaseService implements IUserService {
 	if ($formUser == null)
 	    throw new Exceptions\NullPointerException("Argument User cannot be null", 0);
 
-	$this->entityManager->clear(User::getClassName());
-	$this->entityManager->beginTransaction();
 	$uDb = null;
 	$id = $formUser->getId();
 	try {
 	    $uDb = $this->getUser($id, false);
-	    
 	} catch (\Exception $ex) {
 	    $this->logError($ex->getMessage());
 	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
@@ -193,7 +192,6 @@ class UserService extends BaseService implements IUserService {
 	    $this->handleUpdateContact($uDb, $formUser);
 	    $this->handleUpdateUser($uDb, $formUser);
 	    $this->invalidateEntityCache($uDb);
-	    $this->entityManager->commit();
 	    $this->onUpdate(clone $uDb);
 	}
     }
@@ -210,9 +208,7 @@ class UserService extends BaseService implements IUserService {
 	    $formUser->getContact()->setUpdated($now);
 	    $uDb->getContact()->fromArray($formUser->getContact()->toArray());
 	    $this->entityManager->merge($uDb->getContact());
-	    //$this->entityManager->flush();
 	} catch (DuplicateEntryException $e) {
-	    $this->entityManager->rollback();
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -228,28 +224,10 @@ class UserService extends BaseService implements IUserService {
      */
     private function handleUpdateUser(User $uDb, User $formUser) {
 	$identifier = null;
+	$now = new DateTime();
 	try {
-	    $now = new DateTime();
-	    if ($formUser->getWebProfile() === null) {
-		$formUser->setWebProfile($uDb->getWebProfile());	
-	    } else {
-		if ($formUser->getWebProfile()->getPicture() == "") {
-		    $formUser->getWebProfile()->setPicture($uDb->getWebProfile()->getPicture());
-		} else {
-		    $origId = $uDb->getWebProfile()->getPicture();
-		    $this->imageService->removeResource($origId);
-		    
-		    $identifier = $this->imageService
-			    ->storeNetteFile($formUser->getWebProfile()->getPicture());
-		    $formUser->getWebProfile()->setPicture($identifier);
-		}
-		
-		$uDb->getWebProfile()->fromArray($formUser->getWebProfile()->toArray());
-		
-	    }
 	    $this->editorTypeHandle($uDb->getWebProfile());
-	    
-	    $formUser->getWebProfile()->setUpdated($now);
+	    $formUser->setWebProfile($uDb->getWebProfile());
 	    $formUser->setCreated($uDb->getCreated());
 	    $formUser->setUpdated($now);
 	    $formUser->setLastLogin($uDb->getLastLogin());
@@ -260,11 +238,9 @@ class UserService extends BaseService implements IUserService {
 	    $this->entityManager->flush();
 	} catch (DuplicateEntryException $e) {
 	    $this->imageService->removeResource($identifier);
-	    $this->entityManager->rollback();
 	    throw new Exceptions\DuplicateEntryException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	} catch (\Exception $e) {
 	    $this->imageService->removeResource($identifier);
-	    $this->entityManager->rollback();
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
     }
@@ -300,7 +276,8 @@ class UserService extends BaseService implements IUserService {
 	if (!is_numeric($id))
 	    throw new \Nette\InvalidArgumentException("Argument id has to be type of numeric, '$id' given", 1);
 	try {
-	    return $this->userDao->find($id);
+	    $u = $this->userDao->find($id);
+	    return $u;
 	} catch (\Exception $e) {
 	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
 	}
@@ -370,30 +347,6 @@ class UserService extends BaseService implements IUserService {
 	}
     }
 
-    public function regeneratePassword($id) {
-	if (!is_numeric($id))
-	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
-
-	try {
-	    $this->entityManager->beginTransaction();
-	    $user = $this->getUser($id, false);
-	    
-	    $newPw = Strings::random(self::RANDOM_PASS_LENGTH);
-	    $user->setPassword($this->generateNewPassword($newPw));
-	    $user->setPasswordChangeRequired(true);
-	    
-	    $this->entityManager->merge($user);
-	    $this->entityManager->flush();
-	    
-	    $this->invalidateEntityCache($user);
-	    $this->entityManager->commit();
-	} catch (\Exception $e) {
-	    $this->entityManager->rollback();
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
-	}
-	$this->onPasswordRegenerate($user->insertRawPassword($newPw));
-    }
-
     public function toggleUser($id) {
 	if (!is_numeric($id))
 	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
@@ -427,9 +380,9 @@ class UserService extends BaseService implements IUserService {
 	    $this->entityManager->merge($user);
 	    $this->entityManager->flush();
 	    $this->invalidateEntityCache($user);
-	} catch (\Exception $e) {
-	    
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
 	$this->onUpdate($u);
 	return $u;
@@ -450,8 +403,9 @@ class UserService extends BaseService implements IUserService {
 		$this->entityManager->flush();
 		$this->onUpdate($wpDb);
 	    }
-	} catch (\Exception $e) {
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -469,8 +423,9 @@ class UserService extends BaseService implements IUserService {
 		$this->entityManager->flush();
 		$this->onUpdate($wpDb);
 	    }
-	} catch (\Exception $e) {
-	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
 
@@ -483,8 +438,65 @@ class UserService extends BaseService implements IUserService {
 	    if ($id !== null) $editor = $this->userDao->find($id);
 	    $e->setEditor($editor);
 	} catch (\Exception $ex) {
-	    throw new Exceptions\DataErrorException($ex);
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
 	}
     }
+    
+    public function regeneratePassword($id) {
+	if (!is_numeric($id))
+	    throw new Exceptions\InvalidArgumentException("Argument id has to be type of numeric, '{$id}' given");
 
+	try {
+	    $user = $this->getUser($id, false);
+	    
+	    $newPw = Strings::random(self::RANDOM_PASS_LENGTH);
+	    $user->setPassword($this->generateNewPassword($newPw));
+	    $user->setPasswordChangeRequired(true);
+	    
+	    $this->entityManager->merge($user);
+	    $this->entityManager->flush();
+	    
+	    $this->invalidateEntityCache($user);
+	} catch (\Exception $e) {
+	    throw new Exceptions\DataErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
+	}
+	$this->onPasswordRegenerate($user->insertRawPassword($newPw));
+    }
+
+    public function changePassword(User $u) {
+	try {
+	    $raw = $u->provideRawPassword();
+	    $hash = $this->generateNewPassword($raw);
+	    
+	    $user = $this->userDao->find($u->getId());
+	    $user->setPassword($hash);
+	    $user->setPasswordChangeRequired(false);
+	    $this->entityManager->flush();
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+	$user->insertRawPassword($raw);
+	$this->onPasswordChange(clone $user);
+    }
+    
+    public function changeWebProfile(User $u) {
+	try {
+	    $wp = $u->getWebProfile();
+	    $user = $this->userDao->find($u->getId());
+	    if ($wp->getPicture() instanceof \Nette\Http\FileUpload &&
+$wp->getPicture()->isOk()) {
+		$oldImgId = $wp->provideOldImgId();
+		$this->imageService->removeResource($oldImgId);
+		$identifier = $this->imageService
+			    ->storeNetteFile($wp->getPicture());
+		    $wp->setPicture($identifier);
+	    }
+	    $this->entityManager->flush();
+	} catch (\Exception $ex) {
+	    $this->logError($ex->getMessage());
+	    throw new Exceptions\DataErrorException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+	}
+    }
 }

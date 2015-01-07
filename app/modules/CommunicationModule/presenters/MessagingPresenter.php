@@ -30,7 +30,7 @@ use \App\CommunicationModule\Forms\PrivateMessageForm,
     
 
 /**
- * MessagingPresenter
+ * MessagingPresenter of communication's module user section
  * @Secured(resource="MessagingUser")
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
@@ -93,18 +93,31 @@ final class MessagingPresenter extends SystemUserPresenter {
 	}
     }
     
+    /**
+     * Signal handler from grid
+     * @param numeric $id
+     */
     public function handleDeleteMessage($id) {
 	if (!is_numeric($id))
 	    $this->handleBadArgument ($id);
+	$this->markAsDeleted($id);
+	$this->redirect('this');
+    }
+    
+    /**
+     * Common logic
+     * @param numeric $id
+     */
+    private function markAsDeleted($id) {
 	try {
 	    $this->privateMessageService
-		    ->deleteMessage($id, $this->getUser()->getIdentity());
+		    ->markAsDeleted($id);
 	} catch (Exceptions\DataErrorException $ex) {
 	    $this->handleDataDelete($id, "this", $ex);
 	}
     }
     
-    public function createMessage(ArrayHash $values) {
+    protected function createMessage(ArrayHash $values) {
 	$pm = new PrivateMessage((array) $values);
 	$mb = new MailBoxEntry((array) $values);
 	$mb->setMessage($pm);
@@ -203,19 +216,32 @@ final class MessagingPresenter extends SystemUserPresenter {
     }
     
     public function subjectRender($el) {
-	return \Nette\Utils\Html::el("span")
-		->addAttributes(["title"=>$el->getMessage()->getSubject()])
-		->setText(\Nette\Utils\Strings::truncate($el->getMessage()->getSubject(), 17));
+	if ($el->getType() == \App\Model\Misc\Enum\MailBoxEntryType::UNREAD) {
+	    return \Nette\Utils\Html::el("strong")->setHtml(\Nette\Utils\Html::el("a")
+		    ->addAttributes(["title"=>$el->getMessage()->getSubject(), "href"=>$this->link("showMessage", [$el->getId()])])
+		    ->setText(\Nette\Utils\Strings::truncate($el->getMessage()->getSubject(), 17)));
+	} else {
+	    return \Nette\Utils\Html::el("a")
+		    ->addAttributes(["title"=>$el->getMessage()->getSubject(), "href"=>$this->link("showMessage", [$el->getId()])])
+		    ->setText(\Nette\Utils\Strings::truncate($el->getMessage()->getSubject(), 17));
+	}
     }
     
     public function sentRender($el) {
 	return $el->getMessage()->getSent()->format(self::DATETIME_FORMAT);
     }
     
+    
     public function senderRender($el) {
 	return \Nette\Utils\Html::el("span")
 		->addAttributes(["title"=>$el->getSender()])
 		->setText(\Nette\Utils\Strings::truncate($el->getSender(), 17));
+    }
+    
+    public function recipientRender($el) {
+	return \Nette\Utils\Html::el("span")
+		->addAttributes(["title"=>$el->getRecipient()])
+		->setText(\Nette\Utils\Strings::truncate($el->getRecipient(), 17));
     }
     
     public function starredRender($el) {
@@ -233,7 +259,19 @@ final class MessagingPresenter extends SystemUserPresenter {
     }
     
     public function handleToggleStarred($id) {
-	// TODO 
+	if (!is_numeric($id))
+	    $this->handleBadArgument ($id);
+	$this->doStarToggleMessage($id);
+	$this->redirect("this");
+    }
+    
+    public function actionShowMessage($id) {
+	try {
+	    $m = $this->privateMessageService->getEntry($id);
+	    $this->template->m = $m;
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "default", $ex);
+	}
     }
     
     public function createComponentInboxGrid($name) {
@@ -250,6 +288,13 @@ final class MessagingPresenter extends SystemUserPresenter {
 	
 	$grid->addActionHref("reply", "", "replyMessage")
 		->setIcon("repeat");
+	
+	$grid->addActionHref("delete", "", "deleteMessage!")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.user.grid.deleteMessage")]))
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return "communicationModule.user.grid.message.reallyDelMessage";
+		});
 	return $grid;
     }
     
@@ -310,13 +355,68 @@ final class MessagingPresenter extends SystemUserPresenter {
     }
     
     private function doStarToggleMessage($id) {
-	
+	try {
+	    $this->privateMessageService->starToggle($id);
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataSave($id, "this", $ex);
+	}
     }
     
     public function createComponentOutboxGrid($name) {
-	$grid = $this->prepareMailBoxGrid($name);
+	try {
+	    $users = $this->userService->getSelectUsers();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "default", $ex);
+	}
+	$grid = new Grid($this, $name);
+	$grid->setTranslator($this->getTranslator());
 	$grid->setModel($this->privateMessageService
 		->getOutboxDatasource($this->getUser()->getIdentity()));
+	
+	$grid->addColumnText("starred", "communicationModule.pmForm.starred")
+		->setSortable()
+		->setCustomRender($this->starredRender);
+	
+	$headerStar = $grid->getColumn('starred')->headerPrototype;
+	$headerStar->class[] = 'center';
+	$headerStar->style['width'] = '1%';
+	
+	$grid->addColumnText("recipient", "communicationModule.pmForm.recipient")
+		->setTruncate(17)
+		->setCustomRender($this->recipientRender)
+		->setSortable()
+		->setFilterSelect([null=>null]+$users);
+	
+	$headerSender = $grid->getColumn('recipient')->headerPrototype;
+	$headerSender->class[] = 'center';
+	$headerSender->style['width'] = '15%';
+	
+	$grid->addColumnText("subject", "communicationModule.pmForm.subject")
+		->setCustomRender($this->subjectRender)
+		->setSortable()
+		->setFilterText();
+	
+	$headerSbj = $grid->getColumn('subject')->headerPrototype;
+	$headerSbj->class[] = 'center';
+	$headerSbj->style['width'] = '50%';
+	
+	$grid->addColumnDate("sent", "communicationModule.pmForm.delivered")
+		->setCustomRender($this->sentRender)
+		->setSortable();
+	
+	$headerSnt = $grid->getColumn('sent')->headerPrototype;
+	$headerSnt->class[] = 'center';
+	$headerSnt->style['width'] = '15%';
+	
+	$grid->setFilterRenderType($this->filterRenderType);
+	
+	$grid->addActionHref("delete", "", "deleteMessage!")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.user.grid.deleteMessage")]))
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return "communicationModule.user.grid.message.reallyDelMessage";
+		});
+	
 	$grid->setOperation([
 	    "delete"=>$this->tt("communicationModule.grid.delete"),
 	    "starToggle"=>$this->tt("communicationModule.grid.starToggle")],
@@ -325,14 +425,94 @@ final class MessagingPresenter extends SystemUserPresenter {
     }
     
     public function createComponentDeletedGrid($name) {
-	$grid = $this->prepareMailBoxGrid($name);
+	
+	try {
+	    $users = $this->userService->getSelectUsers();
+	} catch (Exceptions\DataErrorException $ex) {
+	    $this->handleDataLoad(null, "default", $ex);
+	}
+	$grid = new Grid($this, $name);
+	$grid->setTranslator($this->getTranslator());
 	$grid->setModel($this->privateMessageService
 		->getDeletedDatasource($this->getUser()->getIdentity()));
+	
+	$grid->addColumnText("starred", "communicationModule.pmForm.starred")
+		->setSortable()
+		->setCustomRender($this->starredRender);
+	
+	$headerStar = $grid->getColumn('starred')->headerPrototype;
+	$headerStar->class[] = 'center';
+	$headerStar->style['width'] = '1%';
+	
+	$grid->addColumnText("recipient", "communicationModule.pmForm.recipient")
+		->setTruncate(17)
+		->setCustomRender($this->recipientRender)
+		->setSortable()
+		->setFilterSelect([null=>null]+$users);
+	
+	$headerSender = $grid->getColumn('recipient')->headerPrototype;
+	$headerSender->class[] = 'center';
+	$headerSender->style['width'] = '15%';
+	
+	$grid->addColumnText("subject", "communicationModule.pmForm.subject")
+		->setCustomRender($this->subjectRender)
+		->setSortable()
+		->setFilterText();
+	
+	$headerSbj = $grid->getColumn('subject')->headerPrototype;
+	$headerSbj->class[] = 'center';
+	$headerSbj->style['width'] = '50%';
+	
+	$grid->addColumnDate("sent", "communicationModule.pmForm.delivered")
+		->setCustomRender($this->sentRender)
+		->setSortable();
+	
+	$headerSnt = $grid->getColumn('sent')->headerPrototype;
+	$headerSnt->class[] = 'center';
+	$headerSnt->style['width'] = '15%';
+	
+	$grid->setFilterRenderType($this->filterRenderType);
+	
+	$grid->addActionHref("delete", "", "purgeMessage!")
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("communicationModule.user.grid.purgeMessage")]))
+		->setIcon('trash')
+		->setConfirm(function($u) {
+		    return "communicationModule.user.grid.message.reallyPurgeMessage";
+		});
+	
 	$grid->setOperation([
 	    "delete"=>$this->tt("communicationModule.grid.delete"),
 	    "starToggle"=>$this->tt("communicationModule.grid.starToggle")],
 	    $this->gridOperationsHandler);
 	return $grid;
+    }
+    
+    public function handlePurgeMessage($id) {
+	if (!is_numeric($id))
+	    $this->handleBadArgument ($id);
+	$this->doDeleteMessage($id);
+	$this->redirect("this");
+    }
+    
+    
+    public function handleDeleteMessageDetail($id) {
+	if (!is_numeric($id))
+	    $this->handleBadArgument ($id);
+	$this->markAsDeleted($id);
+	$this->redirect("inbox");
+    }
+    
+    public function handleStarMessageDetail($id) {
+	if (!is_numeric($id))
+	    $this->handleBadArgument ($id);
+	$this->doStarToggleMessage($id);
+	$this->redirect("inbox");
+    }
+    
+    public function handleReplyMessageDetail($id) {
+	if (!is_numeric($id))
+	    $this->handleBadArgument ($id);
+	$this->redirect("replyMessage", [$id]);
     }
     
     public function createComponentSubMenu($name) {

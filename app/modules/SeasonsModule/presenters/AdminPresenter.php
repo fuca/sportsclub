@@ -267,7 +267,7 @@ class AdminPresenter extends SystemAdminPresenter {
 		->setIcon('pencil');
 
 	$grid->addActionHref('current', '', 'setSeasonCurrent!')
-		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
+		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.setCurrent")]))
 		->setIcon('check');
 
 	$grid->setOperation(["delete" => $this->tt("seasonsModule.admin.grid.delete")], null, $this->seasonsGridOperationsHandler);
@@ -426,7 +426,7 @@ class AdminPresenter extends SystemAdminPresenter {
 
     public function createComponentSeasonTaxGrid($name) {
 	$grid = new Grid($this, $name);
-	$grid->setModel($this->getSeasonTaxService()->getSeasonTaxesDataSource()); // TODO add where season id == given id
+	$grid->setModel($this->getSeasonTaxService()->getSeasonTaxesDataSource());
 	$grid->setPrimaryKey('id');
 
 	$grid->addColumnNumber('id', '#')
@@ -465,13 +465,13 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerNote->class[] = 'center';
 
 	$grid->addActionHref('delete', '', 'deleteSeasonTax!')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
+	    ->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.delete")]))
 		->setIcon('trash')
 		->setConfirm(function($u) {
 		    return $this->tt("seasonsModule.admin.grid.reallyDeleteTaxId", null, ["id" => $u->getId()]);
 		});
 	$grid->addActionHref('edit', '', 'updateSeasonTax')
-//->setElementPrototype(\Nette\Utils\Html::el("span")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
+	    ->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("seasonsModule.admin.grid.update")]))
 		->setIcon('pencil');
 
 	$grid->setOperation(
@@ -595,8 +595,8 @@ class AdminPresenter extends SystemAdminPresenter {
     public function prepareSeasonApplicationForm($name) {
 	$form = new SeasonApplicationForm($this, $name, $this->getTranslator());
 	try {
-	    $seasons = $this->getSeasonService()->getSelectSeasons();
-	    $users = $this->getUsersService()->getSelectUsers();
+	    $seasons = $this->getSeasonService()->getSelectSeasons(); 
+	    $users = $this->getUsersService()->getSelectUsers($this->getSelectUserIdOmit());
 	    $groups = $this->getSportGroupsService()->getSelectApplicableGroups();
 	    $form->setSeasons($seasons);
 	    $form->setUsers($users);

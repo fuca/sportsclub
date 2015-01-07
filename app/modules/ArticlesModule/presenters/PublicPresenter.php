@@ -32,6 +32,11 @@ use \App\SystemModule\Presenters\SystemPublicPresenter,
 class PublicPresenter extends SystemPublicPresenter {
     
     /**
+     * @persistent
+     */
+    public $abbr;
+    
+    /**
      * @inject
      * @var \App\ArticlesModule\Model\Service\IArticleService
      */
@@ -60,13 +65,14 @@ class PublicPresenter extends SystemPublicPresenter {
 	    $this->handleDataLoad($abbr, ":System:Homepage:default", $ex);
 	}
 	$this->template->data = $data;
+	$this->template->abbr = $abbr;
     }
     
     /**
      * Action for displaying detail of single article
      * @param numeric $id
      */
-    public function actionShowArticle($id = null) {
+    public function actionShowArticle($id = null, $abbr = self::ROOT_GROUP) {
 	$data = null;
 	try {
 	    if (is_numeric($id))

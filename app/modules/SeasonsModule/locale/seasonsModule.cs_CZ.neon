@@ -22,7 +22,8 @@ admin:
 admin.grid:
 	delete: "Smazat"
 	update: "Upravit"
-	
+	setCurrent: "Nastavit jako aktuální"
+
 	reallyDeleteAppId: "Opravdu chcete smazat sezónní přihlášku #%id%?"
 	reallyDeleteTaxId: "Opravdu chcete smazat sezónní povinnost #%id%?"
 	reallyDeleteSeasonId: "Opravdu chcete smazat sezónu #%id%?"
@@ -38,3 +39,8 @@ admin.error:
 seasonForm.errors:
 	labelAlreadyExist: "Sezóna s daným názvem '%label%' již existuje."
 
+
+infoControl:
+    actualLabel: "Sezóna"
+    beginLabel: "Začala"
+    endLabel: "Končí"

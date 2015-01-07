@@ -119,10 +119,14 @@ final class Initializer {
     }
     
     public function positionsInit() {
-	$user = $this->userService->getUserEmail($this->getDefaultUserEmail());
-	$role = $this->roleService->getRoleName("admin");
-	$group = $this->groupService->getSportGroupAbbr("root");
 	$pos = null;
+	try {
+	    $user = $this->userService->getUserEmail($this->getDefaultUserEmail());
+	    $role = $this->roleService->getRoleName("admin");
+	    $group = $this->groupService->getSportGroupAbbr("root");
+	} catch (Exceptions\NoResultException $ex) {
+	    return null;
+	}
 	try {
 	    $pos = $this->positionService->getUniquePosition($user, $group, $role);
 	} catch (Exceptions\NoResultException $ex) {

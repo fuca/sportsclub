@@ -104,7 +104,7 @@ final class UserForm extends BaseForm {
 		->addRule(Form::FILLED, 'usersModule.usrForm.cityMustFill')
 		->setRequired('usersModule.usrForm.cityMustFill');
 
-	$this->addText('postalCode', 'usersModule.usrForm.postCode', 5, 5)
+	$this->addText('postCode', 'usersModule.usrForm.postCode', 5, 5)
 		->addRule(Form::FILLED, 'usersModule.usrForm.postCodeMustFill')
 		->addRule(Form::NUMERIC, 'usersModule.usrForm.postCodeNumsOly')
 		->addRule(Form::LENGTH, 'usersModule.usrForm.postCode5NumsOnly', 5)
@@ -160,9 +160,11 @@ final class UserForm extends BaseForm {
 	    switch ($e->getCode()) {
 		case Exceptions\DuplicateEntryException::EMAIL_EXISTS:
 		    $form['email']->addError($this->tt("usersModule.usrForm.emailAlreadyExist",null,["email"=>$values->email]));
+		    return;
 		    break;
 		case Exceptions\DuplicateEntryException::BIRTH_NUM_EXISTS:
 		    $form['birthNumber']->addError($this->tt("usersModule.usrForm.birthNumberAlreadyExist",null,["number"=>$values->birthNumber]));
+		    return;
 		    break;
 	    }
 	}

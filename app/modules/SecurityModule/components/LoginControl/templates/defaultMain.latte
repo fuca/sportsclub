@@ -17,20 +17,24 @@
 		<li class="mail"><a href="#">{$pmsCount}</a>{control mailMenu}</li>
 </ul>
 	    {/if*}
-
+	    
 	    <ul>
 		<li class="web">
 		    <a role="button" class="btn" href="{plink :System:Homepage:default}">{_systemModule.profile}</a>
 		</li>
 	    </ul>
+	    
 	</div>
 	    
 	<div class="col-6-md">
+	    {if $clubMenuPredicate}
 	    <ul>
 		<li class="club">
 		    {control commonMenu, "", "systemModule.club"}
 		</li>
 	    </ul>
+	    {/if}
+	    
 	    {if $adminMenuPredicate}
 		<ul>
 		    <li class="admin">
@@ -38,7 +42,6 @@
 		    </li>
 		</ul>
 	    {/if}
-	    
 
 	</div>
 

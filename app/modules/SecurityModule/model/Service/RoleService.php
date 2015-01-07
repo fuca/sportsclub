@@ -235,7 +235,7 @@ class RoleService extends BaseService implements IRoleService {
 	
 		$dbRole->fromArray($r->toArray());
 		$dbRole->setParents($this->roleParentsCollSetup($r));
-		$dbRole->setAdded(new \Nette\Utils\DateTime());
+		//$dbRole->setAdded(new \Nette\Utils\DateTime()); // this might cause hierarchy problems
 		$this->entityManager->merge($dbRole);
 		$this->entityManager->flush();
 		$this->invalidateEntityCache($dbRole);

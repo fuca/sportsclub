@@ -361,10 +361,14 @@ class EventService extends BaseService implements IEventService, IEventModel {
 	    $qb = $this->eventDao->createQueryBuilder("e");
 	    
 	    if ($abbr !== null) {
-		$qb->innerJoin(SportGroup::getClassName(), "g")
-			->where("g.abbr = :abbr")->setParameter("abbr", $abbr);
+		
+//		    $qb->from('App\Model\Entities\Event', 'e')
+		    $qb->join("e.groups", "g")
+			->where("g.abbr = :abbr")
+			->setParameter("abbr", $abbr);
 	    }
-	    $qq = $qb->andWhere("e.takePlaceSince <= :now")->andWhere("e.takePlaceTill >= :now")
+	    $qq = $qb->andWhere("e.takePlaceSince <= :now")
+		    ->andWhere("e.takePlaceTill >= :now")
 		    ->setParameter("now", $date)
 		    ->getQuery();
 	    $res = $qq->getResult();

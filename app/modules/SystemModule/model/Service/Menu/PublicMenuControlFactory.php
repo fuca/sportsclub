@@ -121,18 +121,20 @@ final class PublicMenuControlFactory extends BaseService implements IPublicMenuC
 			    if ($e->getParent() == null) return true;
 			    return false;
 			});
-	    $rootGroup = $rootArray[0];
-	    foreach ($sportTypes as $type) {
-		$typeGroups = array_filter($groups, 
-			function($e) use ($type) {
-		    if ($e->getSportType() != null && $e->getSportType()->getId() == $type->getId()) 
-			return true;
-		    return false;
-			});
-		array_push($res, [
-			PMC::TYPE_ID	=> $type, 
-			PMC::GROUPS_ID	=> $typeGroups, 
-			PMC::ROOT_ID	=> $rootGroup]);
+	    if (!empty($rootArray)) {
+		$rootGroup = $rootArray[0];
+		foreach ($sportTypes as $type) {
+		    $typeGroups = array_filter($groups, 
+			    function($e) use ($type) {
+			if ($e->getSportType() != null && $e->getSportType()->getId() == $type->getId()) 
+			    return true;
+			return false;
+			    });
+		    array_push($res, [
+			    PMC::TYPE_ID	=> $type, 
+			    PMC::GROUPS_ID	=> $typeGroups, 
+			    PMC::ROOT_ID	=> $rootGroup]);
+		}
 	    }
 	    
 	} catch (Exceptions\DataErrorException $ex) {

@@ -16,19 +16,19 @@
  * limitations under the License.
  */
 
-namespace App\SystemModule\Components;
+namespace App\SeasonsModule\Components;
 
 use \Nette\Application\UI\Control,
     \Nette\ComponentModel\IContainer,
-    \App\Model\Entities\User,
+    \App\Model\Entities\Seasonm
     \App\Model\Misc\Enum\WebProfileStatus;
 
 /**
- * Control for displaying appeal messages
+ * Control for displaying information about season
  *
  * @author Michal Fučík <michal.fuca.fucik(at)gmail.com>
  */
-final class AppealControl extends Control {
+final class SeasonInfoControl extends Control {
     
     /**
      * @var string directory with templates
@@ -39,14 +39,13 @@ final class AppealControl extends Control {
     private $templateFile;
     
     /**
-     * User which is appealed on
-     * @var array $partners
+     * Actual season
+     * @var Season
      */
-    private $user;
+    private $season;
     
-    public function __construct(IContainer $parent, $name, User $user) {
+    public function __construct(IContainer $parent, $name) {
 	parent::__construct($parent, $name);
-	$this->user = $user;
 	$this->templatesDir	    = __DIR__ . "/templates/";
 	$this->templateFile	    = $this->templatesDir . "default.latte";
     }
@@ -61,13 +60,20 @@ final class AppealControl extends Control {
 	$this->templateFile = $template;
     }
     
+    public function getSeason() {
+	return $this->season;
+    }
+
+    public function setSeason($season) {
+	$this->season = $season;
+    }
+    
     /**
      * Template render
      */
     public function render() {
 	$this->template->setFile($this->getTemplateFile());
-	$this->template->changePassword = $this->user->getPasswordChangeRequired();
-	$this->template->fillProfile = $this->user->getWebProfile()->getStatus() == WebProfileStatus::BAD ?true:false;
+	$this->template->season = $this->getSeason();
 	$this->template->render();
     }
 }

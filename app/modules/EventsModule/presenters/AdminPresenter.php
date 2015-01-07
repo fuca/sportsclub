@@ -242,8 +242,11 @@ class AdminPresenter extends SystemAdminPresenter {
 	$headerDead->class[] = 'center';
 
 	$grid->addActionHref('delete', '', 'deleteEvent!')
+		->setIcon('trash')
 		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("eventsModule.grid.deleteEvent")]))
-		->setIcon('trash');
+		->setConfirm(function($u) {
+		    return $this->tt("eventsModule.admin.grid.rlyDelEvent", null, ["id"=>$u->getId()]);
+		});
 	
 	$grid->addActionHref("participation", "", "updateParticipation")
 		->setElementPrototype(\Nette\Utils\Html::el("a")->addAttributes(["title"=>$this->tt("eventsModule.grid.updateParticipation")]))

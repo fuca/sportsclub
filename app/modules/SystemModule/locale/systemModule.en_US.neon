@@ -156,7 +156,7 @@ default:
 	sectionSignpost.bread: "Section signpost"
 
 
-notifications:
+notification:
 	accActivated.subject: "Account activated at %host%"
 	accActivated.body: "Dear %name% %surname%, Your account has been activated. You can sign in with credentials as you were used to."
 
